@@ -8,8 +8,7 @@ import { ChevronRight, FolderKanban, LayoutDashboard, Settings } from "lucide-re
 import SideMenu from "./components/side-bar";
 
 export default function MainLayout({parentThis}:{parentThis:any}) {
-    const [s, ss] = useState(false)
-    return (<div className='min-h-screen flex flex-col flex-wrap dark' >
+    return (<div className='min-h-screen flex flex-col flex-wrap' >
         {/* <div className='w-full shadow-lg bg-background h-16 shadow-xl border-b'>hello</div> */}
         <Header />
         

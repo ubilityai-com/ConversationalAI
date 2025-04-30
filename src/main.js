@@ -2671,6 +2671,7 @@ class Main extends React.Component {
     }
 
     handleRightDrawerAnyFormChange(event, index, innerIndex, entityIndex, isHandler) {
+        console.log({event, index, innerIndex, entityIndex, isHandler});
         let { name, value, checked, type } = event.target
         const elementsIndex = this.state.nodes
             .findIndex(element => element.id === this.state.clickedElement.id)
@@ -2784,6 +2785,7 @@ class Main extends React.Component {
                 }
             }
         }
+        console.log({newArray,newData,elementsIndex});
         newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
 
         this.setState({

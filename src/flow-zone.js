@@ -80,7 +80,7 @@ const FlowZone = (props) => {
     /////////////////////////////////////////
     onDragOver={props.onDragOver}
     onDrop={props.onDrop}
-    colorMode='dark'
+    // colorMode='dark'
     // elements={props.allDroppedElements.map(elem => {
     //   return {
     //     ...elem, data: {
