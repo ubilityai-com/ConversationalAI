@@ -1,5 +1,6 @@
 import { Background, Controls, MiniMap, ReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import ButtonEdge from './components/edgeTypes/button-edge';
 import MessageNode from './components/nodesTypes/Message';
 import StartNode from './components/nodesTypes/StartNode';
 // import handler from './components/handler/handler'
@@ -42,7 +43,9 @@ const FlowZone = (props) => {
     // NumberPrompt: numberPrompt,
 
   };
-
+  const edgeTypes = {
+    buttonEdge: ButtonEdge
+  }
   //const [elements, setElements] = useState([]);
   //const [elementPositionY, setElementPositionY] = useState(0);
 
@@ -98,6 +101,7 @@ const FlowZone = (props) => {
     //onElementsRemove={props.onElementRemove}
     onConnect={props.onConnect}
     minZoom={0.1}
+    colorMode={props.state.darkMode ? "dark" : "light"}
     //onPaneClick={onPaneClick}
     //onPaneScroll={onPaneScroll}
     //onPaneContextMenu={onPaneContextMenu}
@@ -116,12 +120,13 @@ const FlowZone = (props) => {
     //connectionLineType={connectionLineType}
     //snapToGrid={true}
     nodeTypes={nodeTypes}
+    edgeTypes={edgeTypes}
 
   // connectionLineComponent={ConnectionLine}
   //snapGrid={snapGrid}
   >
     <MiniMap
-      style={{ background: 'white' }}
+      className='bg-background'
       nodeStrokeColor={(n) => {//color of border of nodes in mini-map
         // if (n.style?.background) return n.style.background;
         // if (n.type === 'input') return '#0041d0';

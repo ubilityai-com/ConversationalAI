@@ -10,7 +10,7 @@ import SideMenu from "./components/side-bar";
 export default function MainLayout({parentThis}:{parentThis:any}) {
     return (<div className='min-h-screen flex flex-col flex-wrap' >
         {/* <div className='w-full shadow-lg bg-background h-16 shadow-xl border-b'>hello</div> */}
-        <Header />
+        <Header theme={parentThis.state.darkMode} toggleDarkMode={parentThis.toggleDarkMode} />
         
         {/* <SideNav/> */}
         <SideMenu parentThis={parentThis}/>

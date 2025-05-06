@@ -57,7 +57,8 @@ class Main extends React.Component {
 
 
         this.state = {
-            reactFlowInstance:null,
+            reactFlowInstance: null,
+            theme: localStorage.getItem('darkMode') === 'true',
             droppedElement: null,
             clickedElement: null,
             flowZoneSelectedManyElement: [],
@@ -333,8 +334,8 @@ class Main extends React.Component {
         console.log({ changes });
         this.setState((prevState) => ({ edges: applyEdgeChanges(changes, prevState.edges) }))
     }
-    setReactFlowInstance(rfInst){
-        this.setState(()=>({reactFlowInstance:rfInst}))
+    setReactFlowInstance(rfInst) {
+        this.setState(() => ({ reactFlowInstance: rfInst }))
     }
 
     // Get  Cards, Intents and Entities from DB and save them in state variables
@@ -1746,7 +1747,7 @@ class Main extends React.Component {
 
     // when 2 components are connnected
     onConnect = (params) => {
-        console.log({params});
+        console.log({ params });
         if (params.source === params.target) {
             this.handleSnackBarMessageOpen("Couldn't connect component with itself !", '#ce3a32', 3000)
         }
@@ -1766,25 +1767,27 @@ class Main extends React.Component {
                 }
                 else {
                     let edgeColor = sourceElement.data.color
-                    console.log({eddd: addEdge(
-                        {
-                            ...params,
-                            arrowHeadType: "arrowclosed",
-                            type: "default" ,
-                            markerEnd: { type: MarkerType.ArrowClosed },
-                            style: { stroke: "#afafb5", strokeWidth: 2 },
-                          },
-                        this.state.edges
-                    )});
+                    console.log({
+                        eddd: addEdge(
+                            {
+                                ...params,
+                                arrowHeadType: "arrowclosed",
+                                type: "default",
+                                markerEnd: { type: MarkerType.ArrowClosed },
+                                style: { stroke: "#afafb5", strokeWidth: 2 },
+                            },
+                            this.state.edges
+                        )
+                    });
                     this.setState((prevState) => ({
                         edges: addEdge(
                             {
                                 ...params,
                                 arrowHeadType: "arrowclosed",
-                                type: "default" ,
+                                type: "buttonEdge",
                                 markerEnd: { type: MarkerType.ArrowClosed },
                                 style: { stroke: "#afafb5", strokeWidth: 2 },
-                              },
+                            },
                             prevState.edges
                         )
                     }))
@@ -1991,11 +1994,11 @@ class Main extends React.Component {
             // this.props.setAppBarHeight(this.ApplicationBarElement.current.offsetHeight)
 
             const position =
-            this.state.reactFlowInstance.screenToFlowPosition(
-              {
-                x: clientX,
-                y: clientY,
-              });
+                this.state.reactFlowInstance.screenToFlowPosition(
+                    {
+                        x: clientX,
+                        y: clientY,
+                    });
             let generateID = uuidv4();
 
             let newElement = {
@@ -2338,13 +2341,13 @@ class Main extends React.Component {
     //Add Sub Condition or Entity 
     handleRightDrawerAddInnerCounters(event, index, innerIndex) {
         //const { name } = event.target.offsetParent //get button name
-
+        console.log({ index, innerIndex });
         const elementsIndex = this.state.nodes
             .findIndex(element => element.id === this.state.clickedElement.id)
 
         let newArray = [...this.state.nodes]
         let newData = { ...newArray[elementsIndex].data }
-
+        console.log({ newData });
         let newDynamicDataHandler = [...newData.dynamicDataHandler]
         let newDynamicDataHandlerObject = { ...newDynamicDataHandler[index] }
 
@@ -2369,6 +2372,7 @@ class Main extends React.Component {
                 innerDynamicDataHandler: newInnerDynamicDataHandler
             }
         }
+        console.log({ newDynamicDataHandler });
         newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
 
 
@@ -2376,7 +2380,7 @@ class Main extends React.Component {
             ...newArray[elementsIndex],
             data: newData
         }
-
+        console.log({ newArray });
         this.setState({
             nodes: newArray,
         });
@@ -2503,10 +2507,10 @@ class Main extends React.Component {
         const elementsIndex = this.state.nodes
             .findIndex(element => element.id === this.state.clickedElement.id)
 
-        let newArray = [...this.state.nodes]
-        let newData = { ...newArray[elementsIndex].data }
-
-        if (this.handleRightDrawerCheckIfRemovedConditionIsConnectedWhenSubtractCounters({ ...newArray[elementsIndex] }, isHandler, index)) {
+        let newNodes = [...this.state.nodes]
+        let newData = { ...newNodes[elementsIndex].data }
+        console.log({ newData });
+        if (this.handleRightDrawerCheckIfRemovedConditionIsConnectedWhenSubtractCounters({ ...newNodes[elementsIndex] }, isHandler, index)) {
             let alertMessage = isHandler ? 'Condition' : 'Choice'
             alertMessage = alertMessage + ' is connected !! To remove it, Please remove connection first.'
 
@@ -2516,100 +2520,100 @@ class Main extends React.Component {
             let newFormData = null
             let newDynamicDataHandler = null
 
-            if (newArray[elementsIndex].type === 'Handler') {
+            if (newNodes[elementsIndex].type === 'Handler') {
                 newDynamicDataHandler = [...newData.dynamicDataHandler]
                 newDynamicDataHandler.splice(index, 1)
                 newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
 
-                newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
-                this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(this.state.edges, newArray[elementsIndex].id, false, index)
+                newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
+                this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
             }
-            else if (newArray[elementsIndex].type === 'Message') {
+            else if (newNodes[elementsIndex].type === 'Message') {
                 newDynamicDataHandler = [...newData.dynamicDataHandler]
                 newDynamicDataHandler.splice(index, 1)
                 newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
 
-                newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
-                this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(this.state.edges, newArray[elementsIndex].id, false, index)
+                newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
+                this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
             }
-            else if (newArray[elementsIndex].type === 'DatePrompt') {
+            else if (newNodes[elementsIndex].type === 'DatePrompt') {
                 newDynamicDataHandler = [...newData.dynamicDataHandler]
                 newDynamicDataHandler.splice(index, 1)
                 newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
 
-                newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
-                this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(this.state.edges, newArray[elementsIndex].id, false, index)
+                newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
+                this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
             }
-            else if (newArray[elementsIndex].type === 'NumberPrompt') {
+            else if (newNodes[elementsIndex].type === 'NumberPrompt') {
                 newDynamicDataHandler = [...newData.dynamicDataHandler]
                 newDynamicDataHandler.splice(index, 1)
                 newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
 
-                newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
-                this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(this.state.edges, newArray[elementsIndex].id, false, index)
+                newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
+                this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
             }
-            else if (newArray[elementsIndex].type === 'ChoicePrompt') {
+            else if (newNodes[elementsIndex].type === 'ChoicePrompt') {
                 if (!isHandler) {
                     newFormData = [...newData.formData]
                     newFormData.splice(index, 1)
                     newData = { ...newData, formData: newFormData }
 
-                    newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
-                    this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(this.state.edges, newArray[elementsIndex].id, false, index)
+                    newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
+                    this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
                 }
                 else {
                     newDynamicDataHandler = [...newData.dynamicDataHandler]
                     newDynamicDataHandler.splice(index, 1)
                     newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
 
-                    newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
-                    this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(this.state.edges, newArray[elementsIndex].id, true, index)
+                    newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
+                    this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, true, index)
                 }
             }
-            else if (newArray[elementsIndex].type === 'WebListCard') {
+            else if (newNodes[elementsIndex].type === 'WebListCard') {
                 if (!isHandler) {
                     newFormData = [...newData.formData]
                     newFormData.splice(index, 1)
                     newData = { ...newData, formData: newFormData }
 
-                    newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
-                    this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(this.state.edges, newArray[elementsIndex].id, false, index)
+                    newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
+                    this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
                 }
                 else {
                     newDynamicDataHandler = [...newData.dynamicDataHandler]
                     newDynamicDataHandler.splice(index, 1)
                     newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
 
-                    newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
-                    this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(this.state.edges, newArray[elementsIndex].id, true, index)
+                    newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
+                    this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, true, index)
                 }
             }
-            else if (newArray[elementsIndex].type === 'ListCard') {
+            else if (newNodes[elementsIndex].type === 'ListCard') {
                 if (!isHandler) {
                     newFormData = [...newData.formData]
                     newFormData.splice(index, 1)
                     newData = { ...newData, formData: newFormData }
 
-                    newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
-                    this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(this.state.edges, newArray[elementsIndex].id, false, index)
+                    newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
+                    this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
                 }
                 else {
                     newDynamicDataHandler = [...newData.dynamicDataHandler]
                     newDynamicDataHandler.splice(index, 1)
                     newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
 
-                    newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
-                    this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(this.state.edges, newArray[elementsIndex].id, true, index)
+                    newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
+                    this.handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, true, index)
                 }
             }
         }
     }
 
     //Adjust Connections After Removing Condition or Choice
-    handleRightDrawerAdjustConnectionsWhenSubtractCounters(newArrayToAdjust, elementsId, startWithH, deletedIndex) {
-        let newArray = [...newArrayToAdjust]
-
-        newArrayToAdjust.forEach((edge, index) => {
+    handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodesToAdjust, elementsId, startWithH, deletedIndex) {
+        let edgesToModify = [...this.state.edges]
+        const currentEdges = this.state.edges
+        currentEdges.forEach((edge, index) => {
             if (edge.source === elementsId) {
                 let oldSourceHandleAsNumber = edge.sourceHandle // = parseInt(edge.sourceHandle)
                 let newSourceHandle = null
@@ -2622,7 +2626,7 @@ class Main extends React.Component {
                     if (oldSourceHandleNumber > deletedIndex + 1) {
                         newSourceHandle = 'h-' + (oldSourceHandleNumber - 1)
 
-                        newArray[index] = { ...newArray[index], sourceHandle: newSourceHandle }
+                        edgesToModify[index] = { ...edgesToModify[index], sourceHandle: newSourceHandle }
                     }
                 }
 
@@ -2631,13 +2635,13 @@ class Main extends React.Component {
                     if (oldSourceHandleAsNumber > deletedIndex + 1) {
                         newSourceHandle = '' + (oldSourceHandleAsNumber - 1)
 
-                        newArray[index] = { ...newArray[index], sourceHandle: newSourceHandle }
+                        edgesToModify[index] = { ...edgesToModify[index], sourceHandle: newSourceHandle }
                     }
                 }
             }
         })
 
-        this.setState({ edges: newArray });
+        this.setState({ edges: edgesToModify, nodes: newNodesToAdjust });
     }
 
     handleRightDrawerCheckIfRemovedConditionIsConnectedWhenSubtractCounters(element, isHandler, indexToCheck) {
@@ -2671,7 +2675,7 @@ class Main extends React.Component {
     }
 
     handleRightDrawerAnyFormChange(event, index, innerIndex, entityIndex, isHandler) {
-        console.log({event, index, innerIndex, entityIndex, isHandler});
+        console.log({ event, index, innerIndex, entityIndex, isHandler });
         let { name, value, checked, type } = event.target
         const elementsIndex = this.state.nodes
             .findIndex(element => element.id === this.state.clickedElement.id)
@@ -2785,7 +2789,7 @@ class Main extends React.Component {
                 }
             }
         }
-        console.log({newArray,newData,elementsIndex});
+        console.log({ newArray, newData, elementsIndex });
         newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
 
         this.setState({
@@ -3080,6 +3084,16 @@ class Main extends React.Component {
         event.preventDefault();
         this.setState({ IDOnSelectionContextMenu: node.id });
     };
+    toggleDarkMode = () => this.setState(prev => {
+        if (!prev.darkMode) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        localStorage.setItem('darkMode', (!prev.darkMode).toString());
+        return { darkMode: !prev.darkMode }
+    });
+
     ///RENDER/FUNCTION/////////////////////////////////////////////////////////////////////////////
     render() {
 

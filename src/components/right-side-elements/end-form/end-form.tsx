@@ -1,10 +1,10 @@
-import { Separator } from "@radix-ui/react-separator"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
+import { Separator } from "../../ui/separator"
 import { Switch } from "../../ui/switch"
 
-export function renderEndForm(props: any, ClickedElement: any) {
+export default function EndForm(props: any, ClickedElement: any) {
     return (
       // Message and End Components
       <div className="mt-4">

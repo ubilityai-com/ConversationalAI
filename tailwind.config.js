@@ -1,3 +1,5 @@
+import { fontFamily } from "tailwindcss/defaultTheme";
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
@@ -44,6 +46,11 @@ module.exports = {
           card: {
             DEFAULT: "hsl(var(--card))",
             foreground: "hsl(var(--card-foreground))",
+          },
+          fontFamily: {
+            sans: ["var(--font-sans)", ...fontFamily.sans],
+            mono: ["var(--font-mono)", ...fontFamily.mono],
+            chivo: ["var(--font-chivo)", ...fontFamily.sans],
           },
         },
         borderRadius: {

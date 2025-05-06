@@ -1,36 +1,15 @@
 import { CircleSmall, MessageCircle, Workflow } from 'lucide-react';
-import React, { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
 
 // The MenuItemWit
-const DynamicIcon = ({ iconName }:{iconName:string}) => {
-    const [Icon, setIcon] = useState<React.ComponentType<{ size: number }> | null>(null);
-  
-    React.useEffect(() => {
-      const loadIcon = async () => {
-        try {
-          const iconModule = await import(`react-icons/fa/${iconName}`);
-          setIcon(iconModule[iconName]);  // Use the icon component
-        } catch (error) {
-          console.error('Error loading icon:', error);
-        }
-      };
-  
-      loadIcon();
-    }, [iconName]);
-  
-    if (!Icon) {
-      return <div>Loading...</div>;  // Show a loading state until the icon is loaded
-    }
-  
-    return <Icon size={24} />;
-  };
+
 const MenuItemWithSubMenu = ({ label, children }: { label: ReactNode, children: ReactNode }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     return (
         <li className="relative px-5 py-3 cursor-pointer hover:bg-muted group text-sm rounded-xl">
             {label}
-            <div className="absolute left-full top-0 min-w-52 max-h-96 p-1 shadow-lg bg-background rounded-r-md z-50 opacity-0 invisible transform -translate-x-2 group-hover:opacity-100 group-hover:visible group-hover:translate-x-1 transition-all duration-300 ease-in-out rounded-xl">
+            <div className="absolute left-full top-0 min-w-52 max-h-96 p-1 shadow-lg bg-background rounded-r-md z-50 opacity-0 invisible transform -translate-x-2 group-hover:opacity-100 group-hover:visible group-hover:translate-x-2 transition-all duration-300 ease-in-out rounded-xl">
                 <ul className="py-2 list-none m-0">
                     {children}
                 </ul>
@@ -59,10 +38,10 @@ const SubMenuItem = ({ children }: { children: ReactNode }) => {
 
 // The main SideMenu component
 const SideMenu = ({ parentThis }: { parentThis: any }) => {
-    console.log({parentThis});
-    
+    console.log({ parentThis });
+
     return (
-        <div className="flex h-auto fixed left-6 top-1/4 z-50 w-auto bg-background text-foreground rounded-xl shadow-md">
+        <div className="flex h-auto fixed left-6 top-1/4 z-50 w-auto bg-background text-foreground rounded-xl border drop-shadow-lg">
             <ul className="list-none p-1 m-0 w-full">
 
                 <MenuItemWithSubMenu label={
@@ -81,10 +60,12 @@ const SideMenu = ({ parentThis }: { parentThis: any }) => {
 
                             <div
                                 draggable="true"
+                                key={component.name}
                                 onDragStart={() => { parentThis.getDroppedElement(component); }}
                             >
-                                
-                                <SubMenuItem><MessageCircle/>{component.name}</SubMenuItem>
+                                {/* <DynamicIcon name="AArrowDown"  /> */}
+
+                                <SubMenuItem><MessageCircle />{component.name}</SubMenuItem>
                             </div>
                         )
                     })}
@@ -96,6 +77,21 @@ const SideMenu = ({ parentThis }: { parentThis: any }) => {
                         <span className=''>Flows</span>
                     </div>
                 }>
+                    {parentThis.state.rpasList.map((rpa:any) => (
+                        <div
+                            draggable="true"
+                            key={rpa.name}
+                            onDragStart={() => { parentThis.getDroppedElement({ ...rpa, type: 'RPA' }); }}
+                        >
+
+                            <SubMenuItem><MessageCircle />{((rpa.name).length > 25)
+                                ? (((rpa.name).substring(0, 25 - 3)) + '...')
+                                : rpa.name
+                            }</SubMenuItem>
+                        </div>
+
+                    ))
+                    }
                     <SubMenuItem>All Customers</SubMenuItem>
                     <SubMenuItem>VIP Customers</SubMenuItem>
                     <SubMenuItem>Analytics</SubMenuItem>

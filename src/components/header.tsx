@@ -1,140 +1,160 @@
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import * as NavigationMenu from '@radix-ui/react-navigation-menu';
-import { ChevronDown, Edit, Home, Import, LogOut, Moon, Settings, Sun, Trash, User } from 'lucide-react';
-import React, { useRef, useState } from 'react';
-import { Button } from './ui/button';
 
-export default function Header() {
-  const [projectName, setProjectName] = React.useState("Project 1");
-  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const userDropdownRef = useRef(null);
+import { ChevronDown, Edit, Home, Import, LogOut, Moon, Settings, Sun, Trash, User } from "lucide-react"
+import { useState } from "react"
+import { Avatar, AvatarFallback } from "./ui/avatar"
+import { Button } from "./ui/button"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from "./ui/dialog"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { Input } from "./ui/input"
+import { Label } from "./ui/label"
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "./ui/navigation-menu"
+import { Switch } from "./ui/switch"
 
-  const darkMode = false
-  const toggleDarkMode = () => {
-    // setDarkMode(!darkMode);
-    // Here you would add actual dark mode implementation
-  };
+interface HeaderProps {
+  theme: boolean
+  toggleDarkMode: () => void
+}
+
+export default function Header({ theme, toggleDarkMode }: HeaderProps) {
+  const [projectName, setProjectName] = useState("Project 1")
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const handleLogout = () => {
     // Implement logout functionality
-    console.log("Logging out...");
-  };
+    console.log("Logging out...")
+  }
+
   return (
-    <header className="flex items-center justify-between px-6 py-2 bg-background border-b border-gray-200 relative">
+    <header className="flex items-center justify-between px-6 py-2 bg-background border-b border-border relative">
       {/* Logo on the left */}
       <div className="flex items-center">
-        <img src={`./ubility-logo.png`} alt="Logo" className="h-11 block" />
-        {/* <img src={`./ubility-logo-dark.png`} alt="Logo" className="h-11 hidden dark:block" /> */}
-
+        <img data-light={!theme} src="./ubility-logo.png" alt="Logo" className="h-11 block data-[light=false]:hidden" />
+        <img data-dark={theme} src="./ubility-logo-dark.png" alt="Logo" className="h-11 hidden data-[dark=true]:block" />
       </div>
 
       {/* Breadcrumb in the middle */}
-      <NavigationMenu.Root className="flex items-center">
-        <NavigationMenu.List className="flex gap-2 items-center">
-          <NavigationMenu.Item>
-            <NavigationMenu.Link
-              className="flex items-center text-gray-400 hover:text-blue-600 transition-colors"
+      <NavigationMenu>
+        <NavigationMenuList className="flex gap-2 items-center text-base">
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              className="flex items-center text-muted-foreground hover:text-primary transition-colors py-1"
               href="/dashboard"
             >
-              <Home size={16} className="mr-1" />
+              <Home size={18} className="mr-1.5" />
               <span>Projects</span>
-            </NavigationMenu.Link>
-          </NavigationMenu.Item>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
 
-          <span className="text-gray-400">/</span>
+          <span className="text-muted-foreground mx-1">/</span>
 
           {/* Project name with dropdown */}
-          <NavigationMenu.Item>
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger asChild>
-                <button className="flex items-center text-blue-600 font-medium hover:underline gap-1 outline-none">
-                  {projectName}
-                  <ChevronDown size={16} />
-                </button>
-              </DropdownMenu.Trigger>
-
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content
-                  className="bg-background rounded-md shadow-lg p-2 min-w-48 border border-muted"
-                  sideOffset={5}
+          <NavigationMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="link"
+                  className="flex items-center text-primary font-medium gap-1 p-0 h-auto text-base"
                 >
-                  <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted rounded cursor-pointer outline-none">
-                    <Edit size={16} />
-                    Change Name
-                  </DropdownMenu.Item>
+                  {projectName}
+                  <ChevronDown size={18} />
+                </Button>
+              </DropdownMenuTrigger>
 
-                  <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted rounded cursor-pointer outline-none">
-                    <Import size={16} />
-                    Import
-                  </DropdownMenu.Item>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem onSelect={() => setIsDialogOpen(true)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  <span>Change Name</span>
+                </DropdownMenuItem>
 
-                  <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted rounded cursor-pointer outline-none">
-                    <Settings size={16} />
-                    Settings
-                  </DropdownMenu.Item>
+                <DropdownMenuItem onSelect={() => console.log("Import")}>
+                  <Import className="mr-2 h-4 w-4" />
+                  <span>Import</span>
+                </DropdownMenuItem>
 
-                  <DropdownMenu.Separator className="h-px bg-gray-800 my-1" />
+                <DropdownMenuItem onSelect={() => console.log("Settings")}>
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
 
-                  <DropdownMenu.Item className="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded cursor-pointer outline-none">
-                    <Trash size={16} />
-                    Delete Project
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Root>
-          </NavigationMenu.Item>
-        </NavigationMenu.List>
-      </NavigationMenu.Root>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem
+                  onSelect={() => console.log("Delete project")}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash className="mr-2 h-4 w-4" />
+                  <span>Delete Project</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
 
       {/* User avatar with dropdown */}
-      <div className="relative" ref={userDropdownRef}>
-        <button
-          className="flex items-center gap-3 pl-4 pr-3 py-1.5 rounded-full hover:bg-gray-100 transition-colors"
-          onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-        >
-          <div className="flex items-center">
-            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-gray-200 shadow-sm">
-              {/* You can replace this with an actual image */}
-              <User size={20} className="text-gray-600" />
-            </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="rounded-full p-0 w-10 h-10 hover:bg-muted transition-colors">
+            <Avatar className="h-10 w-10 border-2 border-border">
+              <AvatarFallback>
+                <User size={20} className="text-muted-foreground" />
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <div className="flex flex-col space-y-1 p-2">
+            <p className="text-sm font-medium leading-none">John Doe</p>
+            <p className="text-xs leading-none text-muted-foreground">john.doe@example.com</p>
           </div>
-        </button>
-
-        {/* User dropdown menu */}
-        {userDropdownOpen && (
-          <div className="absolute top-full right-0 mt-2 bg-background rounded-lg shadow-lg p-1.5 min-w-max border border-gray-200 z-10 w-48">
-            <div className="p-3 mb-1 bg-gray-50 rounded-md">
-              <p className="text-sm font-medium text-gray-800">John Doe</p>
-              <p className="text-xs text-gray-500">john.doe@example.com</p>
-            </div>
-
-            {/* Toggle Switch Layout */}
-            <button
-              className="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-muted rounded-md cursor-pointer outline-none w-full text-left"
-              onClick={toggleDarkMode}
-            >
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <div className="flex items-center justify-between cursor-default" onClick={(e) => e.preventDefault()}>
               <div className="flex items-center gap-2">
-                {darkMode ? <Moon size={16} /> : <Sun size={16} />}
-                <span>{darkMode ? "Dark Mode" : "Light Mode"}</span>
+                {theme ? <Moon size={16} className="text-foreground" /> : <Sun size={16} className="text-foreground" />}
+                <span>{theme ? "Dark Mode" : "Light Mode"}</span>
               </div>
-              <div className="relative w-9 h-5 rounded-full bg-background">
-                <div className={`absolute w-4 h-4 rounded-full bg-background top-0.5 shadow transition-transform ${darkMode ? 'translate-x-4' : 'translate-x-0.5'}`}></div>
-              </div>
-            </button>
-
-            <div className="h-px bg-background my-1.5"></div>
-
-            <button
-              className="flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-md cursor-pointer outline-none w-full text-left"
-              onClick={handleLogout}
-            >
-              <LogOut size={16} />
-              Log Out
-            </button>
-          </div>
-        )}
-      </div>
-      <Button variant={"default"} className='absolute bottom-[-50px] right-5 z-50'>Publish</Button>
+              <Switch checked={theme} onCheckedChange={toggleDarkMode} />
+            </div>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={handleLogout}>
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Log Out</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <DialogDemo open={isDialogOpen} setIsOpen={setIsDialogOpen} />
     </header>
-  );
+  )
 }
+const DialogDemo = ({ open, setIsOpen }: { open: boolean, setIsOpen: React.Dispatch<React.SetStateAction<boolean>> }) => (
+  <Dialog open={open} onOpenChange={(open) => { setIsOpen(open) }}>
+    
+    <DialogPortal>
+      <DialogOverlay className="DialogOverlay" />
+      <DialogContent className="DialogContent">
+        <DialogTitle className="DialogTitle">Edit profile</DialogTitle>
+        <DialogDescription className="DialogDescription">
+          Make changes to your profile here. Click save when you're done.
+        </DialogDescription>
+        <Label
+          htmlFor="name"
+        >
+          Name
+        </Label>
+        <Input
+          id="name"
+          defaultValue="Pedro Duarte"
+        />
+        <div
+          style={{ display: "flex", marginTop: 25, justifyContent: "flex-end" }}
+        >
+          <DialogClose asChild>
+            <Button className="Button green">Save changes</Button>
+          </DialogClose>
+        </div>
+      </DialogContent>
+    </DialogPortal>
+  </Dialog>
+);

@@ -33,7 +33,7 @@ export function RPAListForm({ clickedElement, handleRightDrawerAnyFormChange }: 
                 <Switch
                     checked={clickedElement.data.save || false}
                     onCheckedChange={(checked) => {
-                        const event = { target: { name: "save", checked } }
+                        const event = { target: { name: "save", checked, type:"checkbox" } }
                         handleRightDrawerAnyFormChange(event, -1, -1, -1, false)
                     }}
                     id="save-switch"

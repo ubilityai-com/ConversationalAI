@@ -113,7 +113,7 @@ export const SearchableSelect = <T extends React.Key>({
             role="combobox"
             // loading={loading}
             aria-expanded={open}
-            className="w-full justify-between font-normal"
+            className="w-full justify-between font-normal text-foreground"
             onClick={(e) => {
               setOpen((prev) => !prev);
               e.preventDefault();

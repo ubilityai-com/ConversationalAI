@@ -59,7 +59,7 @@ interface ListCardFormProps {
   entities: string[]
 }
 
-export function ListCardForm({
+export default function ListCardForm({
   clickedElement,
   handleRightDrawerAnyFormChange,
   handleRightDrawerSubtractCounters,
@@ -75,7 +75,7 @@ export function ListCardForm({
     console.log({clickedElement});
     
   return (
-    <div className="space-y-4 overflow-y-auto">
+    <div className="space-y-4">
       <div>
         <Label className="block text-sm p-1 mb-1 font-normal">The message that should be displayed on the card</Label>
         <Label className="block text-sm p-1 mb-1 font-normal">Bot says</Label>
@@ -91,7 +91,7 @@ export function ListCardForm({
       <div>
         <Label className="block text-sm p-1 mb-1 font-normal mt-5">Configure the list of clickable choices</Label>
         {Array.from(Array(clickedElement.data.formData.length), (e, index) => (
-          <div key={index} className="mb-4 border-l-2 border-gray-200 pl-2">
+          <div key={index} className="mb-4 border-l-2 border-border pl-2">
             <div className="flex items-center justify-between px-2 py-1">
               <span className="text-sm font-normal ml-2">{`Choice ${index + 1}`}</span>
               {(index > 0 || (index === 0 && clickedElement.data.formData.length > 1)) && (
@@ -175,7 +175,8 @@ export function ListCardForm({
 
         <Label className="block text-sm p-1 mb-1 font-normal">Add new choice</Label>
         <Button
-          className="w-[93%] mx-2 mb-4 bg-green-600 hover:bg-green-700 text-xs h-8"
+          className="mx-2 mb-4 text-xs h-8"
+          variant={"outline"}
           onClick={(event) => handleRightDrawerAddCounters(event, false)}
         >
           ADD
@@ -215,7 +216,7 @@ export function ListCardForm({
           Array(clickedElement.data.dynamicDataHandler[index].innerDynamicDataHandler.length),
           (e, innerIndex) => {
             return (
-              <div key={`${index}-${innerIndex}`} className="mb-4 border-l-2 border-gray-200 pl-2">
+              <div key={`${index}-${innerIndex}`} className="mb-4 border-l-2 border-border pl-2">
                 {innerIndex === 0 && (
                   <div className="flex items-center justify-between px-2 py-1">
                     <span className="text-sm font-normal ml-2">{`Condition ${index + 1}`}</span>
@@ -379,7 +380,7 @@ export function ListCardForm({
                       (e, entityIndex) => (
                         <div
                           key={`Entity-${index}-${innerIndex}-${entityIndex}`}
-                          className="ml-2 border-l-2 border-gray-200 pl-2 mb-2"
+                          className="ml-2 border-l-2 border-border pl-2 mb-2"
                         >
                           <div className="flex items-center justify-between px-2 py-1">
                             <Label className="text-sm font-normal">{`Entity ${entityIndex + 1}`}</Label>
@@ -503,11 +504,15 @@ export function ListCardForm({
       {clickedElement.data.dynamicDataHandler.length !== 0 && (
         <Label className="block text-sm p-1 mb-1 font-normal">Add new condition</Label>
       )}
-      <Button
-        className="w-[93%] mx-2 mb-2 bg-green-600 hover:bg-green-700 text-xs h-8"
+       <Button
+        type="button"
+        variant="outline"
+        size="sm"
         onClick={(event) => handleRightDrawerAddCounters(event, true)}
+        className="mt-2"
       >
-        {clickedElement.data.dynamicDataHandler.length !== 0 ? "ADD" : "ENABLE"}
+
+        {clickedElement.data.dynamicDataHandler?.length > 0 ? <><Plus className="h-4 w-4 mr-2" /> ADD</> : "ENABLE"}
       </Button>
 
       <LoopFromForm
