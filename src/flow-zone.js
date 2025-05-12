@@ -58,9 +58,9 @@ const FlowZone = (props) => {
   // const onDrop = (event, node) => {/*console.log('client : ', event.clientX , ' / ' + event.clientY )*/; addItem(event.clientX, event.clientY); event.preventDefault();}
   // );/
   console.log({ props });
-  return (<ReactFlow
+  return (
+  <ReactFlow
     className='h-full flex-1 w-full'
-
     onNodesChange={props.applyNodeChangesFunc}
     onEdgesChange={props.applyEdgeChangesFunc}
     // nodeDragThreshold={3}
@@ -145,7 +145,8 @@ const FlowZone = (props) => {
     />
     <Controls />
     <Background
-      // style={{ background: "#fafafa" }}
+    className='bg-canvas'
+      // style={{ background: "#f2f4f7" }}
       size={1}
     //gap={16}// Warning: Received NaN for the `x` and `y` attribute. If this is expected, cast the value to a string
     //variant="dots"

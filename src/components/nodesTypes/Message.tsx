@@ -1,6 +1,7 @@
 // GreenNode.tsx
 
 import { Handle, NodeProps, Position } from "@xyflow/react";
+import { MessageSquare } from "lucide-react";
 import { useState } from "react";
 function NeonCircle() {
   const [isHovered, setIsHovered] = useState(false);
@@ -23,17 +24,19 @@ function NeonCircle() {
     </div>
   );
 }
-function removeHTMLTags(htmlCode:string) {
+function removeHTMLTags(htmlCode: string) {
   const withoutHTMLTags = htmlCode.replace(/<[^>]*>/g, '');
   return withoutHTMLTags.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 }
 function MessageNode({ data }: NodeProps) {
   const [isHovered, setIsHovered] = useState(false);
   console.log({ data });
-  const message  = removeHTMLTags(data.botSays as string)
+  const message = removeHTMLTags(data.botSays as string)
   return (
-    <div className="bg-border text-foreground p-3 px-4 rounded-md text-center min-w-[100px] w-72 h-auto flex justify-center items-center flex-col gap-2">
-      <h2 className="flex justify-start text-muted-foreground text-left w-full text-sm">Message</h2>
+    <div className="bg-background shadow-lg text-foreground border border-border p-3 pb-0 px-4 rounded-xl text-center min-w-[100px] w-72 h-auto flex justify-center items-center flex-col gap-2">
+      <h2 className="flex justify-start items-center gap-2 text-muted-foreground text-left w-full text-xs font-extrabold">
+        <MessageSquare />
+        Message</h2>
 
       <Handle
         type="target"
@@ -54,8 +57,8 @@ function MessageNode({ data }: NodeProps) {
 
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)} />
-      <div className="bg-background p-1 rounded-md w-full flex flex-col flex-wrap justify-start items-center px-2 overflow-hidden break-all h-auto">
-        <div className={`overflow-hidden break-words max-h-[500px] [display:-webkit-box] [white-space:normal] [text-overflow:ellipsis] [-webkit-line-clamp:100] [-webkit-box-orient:vertical] text-foreground text-sm ${message?`text-gray-400`:`text-gray-300`} text-ellipsis truncate`}>{message ? message : "Enter Message"}</div>
+      <div className="bg-accent p-1 rounded-md w-full flex flex-col flex-wrap justify-start items-start px-2 overflow-hidden break-all h-auto">
+        <div className={`overflow-hidden break-words max-h-[500px] [display:-webkit-box] [white-space:normal] [text-overflow:ellipsis] [-webkit-line-clamp:100] [-webkit-box-orient:vertical] text-foreground text-sm ${message ? `text-gray-500` : `text-gray-400`} text-ellipsis truncate`}>{message ? message : "Enter Message"}</div>
       </div>
       <Handle
         id={"1"}

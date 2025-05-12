@@ -54,18 +54,6 @@ const TextOnlyTooltip = ({
   </TooltipProvider>
 )
 
-interface LoadingButtonProps {
-  isLoading: boolean
-  disabled: boolean
-  onClick: () => void
-}
-
-const LoadingButton = ({ isLoading, disabled, onClick }: LoadingButtonProps) => (
-  <Button variant="outline" size="icon" className="h-6 w-6 ml-2" disabled={disabled || isLoading} onClick={onClick}>
-    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-  </Button>
-)
-
 interface HandlerFormProps {
   clickedElement: any
   handleRightDrawerAnyFormChange: (

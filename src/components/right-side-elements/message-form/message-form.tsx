@@ -134,8 +134,8 @@ export default function MessageForm({
               }}
               formats={formats}
               modules={modules}
-              className="min-h-[100px]"
-            />
+              className="my-4 text-foreground dark:border-border rounded-md dark:text-foreground"
+              />
           )}
         </div>
       </div>

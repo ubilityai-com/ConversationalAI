@@ -32,6 +32,7 @@
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
     --ring: 207.4, 62.4%, 65.7%;
+    --canvas: 240 5% 96%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -67,6 +68,7 @@
     --border: 0 0% 14.9%;
     --input: 240 3.7% 35%;
     --ring: 0 0% 83.1%;
+    --canvas:0 0% 0%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -118,6 +120,7 @@
     --border: 0 0% 89.8%;
     --input: 0 0% 89.8%;
     --ring: 207.4, 62.4%, 65.7%;
+    --canvas: 240 5% 96%;
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -153,6 +156,7 @@
     --border: 0 0% 14.9%;
     --input: 240 3.7% 35%;
     --ring: 0 0% 83.1%;
+    --canvas:0 0% 0%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -188,4 +192,45 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.quill > * {
+  border-color: inherit !important;
+  color: inherit !important;
+}
+.quill > .ql-toolbar {
+  /* border radius of the toolbar */
+  border-radius: 10px 10px 0 0;
+}
+.quill > .ql-container {
+  /* border radius of the container and for font size*/
+  font-size: inherit;
+  border-radius: 0 0 10px 10px;
+}
+.ql-toolbar.ql-snow .ql-picker-label {
+  color: inherit !important;
+  opacity: 0.76;
+}
+.ql-snow .ql-picker {
+  color: inherit !important;
+}
+.quill > .ql-container > .ql-editor.ql-blank::before {
+  /* for placeholder */
+  color: inherit;
+}
+.ql-snow.ql-toolbar button svg {
+  opacity: 0.76;
+  color: currentColor;
+}
+.ql-snow .ql-stroke {
+  /* for the border of the editor */
+  stroke: currentColor !important;
+}
+.ql-snow .ql-fill {
+  /* for the bg color */
+  fill: currentColor !important;
+}
+.ql-picker-item {
+  /* for dropdown */
+  color: #444 !important;
 }

@@ -2106,7 +2106,7 @@ class Main extends React.Component {
         let allInputsAreFilled = true
 
         this.state.nodes.forEach((element) => {
-
+            
             if (element.type === 'Handler') {
                 if (!element.data.greet || !element.data.restart || !element.data.thankYou || !element.data.cancel || !element.data.bye) {
                     allInputsAreFilled = false
