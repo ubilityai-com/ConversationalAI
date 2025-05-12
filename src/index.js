@@ -1,14 +1,16 @@
+import { ReactFlowProvider } from '@xyflow/react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import MainFunction from './main-migration';
 import reportWebVitals from './reportWebVitals';
-import MainFunction from './main';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <MainFunction />
+    <ReactFlowProvider>
+      <MainFunction />
+    </ReactFlowProvider>
   </React.StrictMode>
 );
 

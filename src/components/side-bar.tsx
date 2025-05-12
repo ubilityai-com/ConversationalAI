@@ -1,11 +1,10 @@
 import { CircleSmall, MessageCircle, Workflow } from 'lucide-react';
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
+import { useFlowStore } from '../store/flow-store';
 
 // The MenuItemWit
 
 const MenuItemWithSubMenu = ({ label, children }: { label: ReactNode, children: ReactNode }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
     return (
         <li className="relative px-5 py-3 cursor-pointer hover:bg-muted group text-sm rounded-xl">
             {label}
@@ -14,15 +13,6 @@ const MenuItemWithSubMenu = ({ label, children }: { label: ReactNode, children: 
                     {children}
                 </ul>
             </div>
-        </li>
-    );
-};
-
-// Regular menu item component
-const MenuItem = ({ children }: { children: ReactNode }) => {
-    return (
-        <li className="px-5 py-3 cursor-pointer text-foreground hover:bg-muted transition-colors duration-200">
-            {children}
         </li>
     );
 };
@@ -37,9 +27,8 @@ const SubMenuItem = ({ children }: { children: ReactNode }) => {
 };
 
 // The main SideMenu component
-const SideMenu = ({ parentThis }: { parentThis: any }) => {
-    console.log({ parentThis });
-
+const SideMenu = () => {
+    const { setDroppedElement, components, rpasList } = useFlowStore()
     return (
         <div className="flex h-auto fixed left-6 top-1/4 z-50 w-auto bg-background text-foreground rounded-xl border drop-shadow-lg">
             <ul className="list-none p-1 m-0 w-full">
@@ -50,7 +39,7 @@ const SideMenu = ({ parentThis }: { parentThis: any }) => {
                         <span className=''>Basic</span>
                     </div>
                 }>
-                    {parentThis.state.components.map((component: {
+                    {components.map((component: {
                         "name": string,
                         "type": string,
                         "icon": string,
@@ -61,10 +50,8 @@ const SideMenu = ({ parentThis }: { parentThis: any }) => {
                             <div
                                 draggable="true"
                                 key={component.name}
-                                onDragStart={() => { parentThis.getDroppedElement(component); }}
+                                onDragStart={() => { setDroppedElement(component); }}
                             >
-                                {/* <DynamicIcon name="AArrowDown"  /> */}
-
                                 <SubMenuItem><MessageCircle />{component.name}</SubMenuItem>
                             </div>
                         )
@@ -77,11 +64,11 @@ const SideMenu = ({ parentThis }: { parentThis: any }) => {
                         <span className=''>Flows</span>
                     </div>
                 }>
-                    {parentThis.state.rpasList.map((rpa:any) => (
+                    {rpasList.map((rpa: any) => (
                         <div
                             draggable="true"
                             key={rpa.name}
-                            onDragStart={() => { parentThis.getDroppedElement({ ...rpa, type: 'RPA' }); }}
+                            onDragStart={() => { setDroppedElement({ ...rpa, type: 'RPA' }); }}
                         >
 
                             <SubMenuItem><MessageCircle />{((rpa.name).length > 25)

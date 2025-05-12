@@ -1,27 +1,35 @@
 
 import { ChevronDown, Edit, Home, Import, LogOut, Moon, Settings, Sun, Trash, User } from "lucide-react"
-import { useState } from "react"
+import { memo, useState } from "react"
+import { useFlowStore } from "../store/flow-store"
 import { Avatar, AvatarFallback } from "./ui/avatar"
 import { Button } from "./ui/button"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from "./ui/dialog"
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle } from "./ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "./ui/navigation-menu"
 import { Switch } from "./ui/switch"
 
-interface HeaderProps {
-  theme: boolean
-  toggleDarkMode: () => void
-}
-
-export default function Header({ theme, toggleDarkMode }: HeaderProps) {
+export default memo(function Header() {
   const [projectName, setProjectName] = useState("Project 1")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const theme = useFlowStore(state => state.theme)
+  const toggleTheme = useFlowStore(state => state.toggleTheme)
 
   const handleLogout = () => {
     // Implement logout functionality
     console.log("Logging out...")
+  }
+  const toggleDarkMode = () => {
+    const newTheme = !theme
+    if (newTheme) {
+      document.documentElement.classList.add("dark")
+    } else {
+      document.documentElement.classList.remove("dark")
+    }
+    localStorage.setItem("darkMode", newTheme.toString())
+    toggleTheme()
   }
 
   return (
@@ -127,10 +135,10 @@ export default function Header({ theme, toggleDarkMode }: HeaderProps) {
       <DialogDemo open={isDialogOpen} setIsOpen={setIsDialogOpen} />
     </header>
   )
-}
+})
 const DialogDemo = ({ open, setIsOpen }: { open: boolean, setIsOpen: React.Dispatch<React.SetStateAction<boolean>> }) => (
   <Dialog open={open} onOpenChange={(open) => { setIsOpen(open) }}>
-    
+
     <DialogPortal>
       <DialogOverlay className="DialogOverlay" />
       <DialogContent className="DialogContent">

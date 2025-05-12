@@ -1,11 +1,14 @@
 import { GripVertical } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useFlowStore } from '../store/flow-store';
 import RightSideBody from './right-side-body';
 
 let isFirstTime = true;
-export default function RightSideDrawer({ open, parentThis }: { open: "open" | "closed", parentThis: any }) {
+export default function RightSideDrawer() {
     const drawerRef = useRef<HTMLDivElement>(null);
     const [newWidthRightDrawer, setNewWidthRightDrawer] = useState(100)
+    const clickedElement = useFlowStore(state => state.clickedElement)
+
     useEffect(() => {
         const handleWindowResize = () => {
             const rightSideWidth = document.body.offsetWidth * 0.3
@@ -24,12 +27,13 @@ export default function RightSideDrawer({ open, parentThis }: { open: "open" | "
             setNewWidthRightDrawer(offsetRight + 10);
         }
     }
-
+    console.log({clickedElement});
+    
 
     return (
         <div
             ref={drawerRef}
-            data-open={open}
+            data-open={!!clickedElement?"open":"closed"}
             style={{ width: `${newWidthRightDrawer}px` }}
             className={`fixed top-[70px] right-0 h-[calc(100%-70px)] min-h-[calc(100%-70px)] overflow-y-auto overflow-x-hidden group w-[${newWidthRightDrawer}px] bg-background shadow-2xl border-l border-border transform transition-transform duration-300 ease-in-out z-40 data-[open=closed]:translate-x-full data-[open=open]:translate-x-0`}
         >
@@ -43,7 +47,7 @@ export default function RightSideDrawer({ open, parentThis }: { open: "open" | "
                     <GripVertical className="h-4 w-4 text-white" />
                 </div>
             </div>
-            <RightSideBody parentThis={parentThis} />
+            <RightSideBody />
         </div>
     );
 }
