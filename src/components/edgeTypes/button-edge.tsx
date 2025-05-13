@@ -1,9 +1,12 @@
-import { getSmoothStepPath, useReactFlow, EdgeProps } from '@xyflow/react'
-import { useState, MouseEvent } from 'react'
-import "./index.css"
-const foreignObjectSize = 40
+import {
+  BaseEdge,
+  EdgeLabelRenderer,
+  getBezierPath,
+  type EdgeProps
+} from '@xyflow/react';
+import { useFlowStore } from '../../store/flow-store';
 
-const ButtonEdge = ({
+export default function CustomEdge({
   id,
   sourceX,
   sourceY,
@@ -12,64 +15,44 @@ const ButtonEdge = ({
   sourcePosition,
   targetPosition,
   style = {},
-  data,
-  markerEnd
-}: EdgeProps) => {
-  const [edgePath, edgeCenterX, edgeCenterY] = getSmoothStepPath({
+  markerEnd,
+}: EdgeProps) {
+  const setEdges = useFlowStore(state => state.setEdges);
+  const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
     sourcePosition,
     targetX,
     targetY,
-    targetPosition
-  })
+    targetPosition,
+  });
 
-  const reactFlowInstance = useReactFlow()
-  const [isVisible, setIsVisible] = useState(false)
-
-  const onEdgeClick = (evt: MouseEvent, edgeId: string) => {
-    evt.stopPropagation()
-    const edgeToDelete = reactFlowInstance.getEdge(edgeId)
-    // You can now use `edgeToDelete` or call `reactFlowInstance.setEdges` to remove it
-    console.log('Delete edge:', edgeToDelete)
-  }
+  const onEdgeClick = () => {
+    setEdges((edges) => edges.filter((edge) => edge.id !== id));
+  };
 
   return (
     <>
-      <path
-        id={id}
-        style={style}
-        className='react-flow__edge-path'
-        d={edgePath}
-        markerEnd={markerEnd}
-        onMouseEnter={() => setIsVisible(true)}
-        onMouseLeave={() => setIsVisible(false)}
-      />
+      <BaseEdge path={edgePath} style={style} onMouseEnter={() => {
+        console.log("innn");
 
-      <foreignObject
-        width={foreignObjectSize}
-        height={foreignObjectSize}
-        x={edgeCenterX - foreignObjectSize / 2}
-        y={edgeCenterY - foreignObjectSize / 2}
-        className='edgebutton-foreignobject'
-        requiredExtensions='http://www.w3.org/1999/xhtml'
-        onMouseEnter={() => setIsVisible(true)}
-        onMouseLeave={() => setIsVisible(false)}
-      >
-        {isVisible && (
-          <div>
-            <button
-              className='edgebutton'
-              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-              onClick={(event) => onEdgeClick(event, id)}
-            >
-              ×
-            </button>
-          </div>
-        )}
-      </foreignObject>
+      }} />
+      <EdgeLabelRenderer>
+        <div
+          className="button-edge__label nodrag nopan"
+          style={{
+            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+          }}
+          onMouseEnter={() => {
+            console.log("b");
+
+          }}
+        >
+          <button className="rounded-full w-7 h-7 border bg-background hover:bg-violet-400 hover:text-white" onClick={onEdgeClick}>
+            ×
+          </button>
+        </div>
+      </EdgeLabelRenderer>
     </>
-  )
+  );
 }
-
-export default ButtonEdge

@@ -5,6 +5,7 @@ import ButtonEdge from './components/edgeTypes/button-edge';
 import MessageNode from './components/nodesTypes/Message';
 import StartNode from './components/nodesTypes/StartNode';
 import { useFlowStore } from './store/flow-store';
+import connectionLine from './components/edgeTypes/connection-line';
 
 const FlowZone = () => {
   const nodeTypes = {
@@ -304,6 +305,7 @@ const FlowZone = () => {
       onNodeContextMenu={handleNodeContextMenu}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
+      connectionLineComponent={connectionLine}
     >
       <MiniMap
         className='bg-background'

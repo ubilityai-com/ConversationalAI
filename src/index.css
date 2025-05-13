@@ -234,3 +234,9 @@ code {
   /* for dropdown */
   color: #444 !important;
 }
+/*xy flow*/
+.button-edge__label {
+  position: absolute;
+  pointer-events: all;
+  transform-origin: center;
+}

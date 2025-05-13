@@ -23,7 +23,6 @@ export default function RightSideBody() {
     const handleRightDrawerAnyFormChange = useRightDrawerStore(state => state.handleRightDrawerAnyFormChange)
 
 
-    const clickedElementChanged = !!clickedElement
 
     useEffect(() => {
         const loadComponent = async () => {
@@ -35,7 +34,7 @@ export default function RightSideBody() {
         };
         if (clickedElement?.type)
             loadComponent();
-    }, [clickedElementChanged]);
+    }, [clickedElement?.type]);
 
 
 
