@@ -10,6 +10,7 @@ export interface ValidationWarning {
     title: string
     description: string
     severity?: "low" | "medium" | "high"
+
 }
 
 interface ValidationDialogProps {
@@ -18,29 +19,30 @@ interface ValidationDialogProps {
     title?: string
     description?: string
     cancelButtonText?: string
+    warnings: ValidationWarning[]
 }
-const warnings: ValidationWarning[] = [
-    {
-        id: "missing-name",
-        title: "Missing Configuration data",
-        description: "Please fill all the fields in all Components.",
-        severity: "high",
-    },
-    {
-        id: "missing-handler",
-        title: "Missing Connections",
-        description:
-            "Please connect all the components together.",
-        severity: "high",
-    },
-    {
-        id: "missing-connections",
-        title: "Missing Bot Configuration",
-        description: "Missing Bot Configuration",
-        severity: "high",
-    },
+// const warnings: ValidationWarning[] = [
+//     {
+//         id: "missing-name",
+//         title: "Missing Configuration data",
+//         description: "Please fill all the fields in all Components.",
+//         severity: "high",
+//     },
+//     {
+//         id: "missing-handler",
+//         title: "Missing Connections",
+//         description:
+//             "Please connect all the components together.",
+//         severity: "high",
+//     },
+//     {
+//         id: "missing-connections",
+//         title: "Missing Bot Configuration",
+//         description: "Missing Bot Configuration",
+//         severity: "high",
+//     },
 
-]
+// ]
 
 export function ValidationDialog({
     open,
@@ -48,7 +50,10 @@ export function ValidationDialog({
     title = "Configuration Warnings",
     description = "The following issues were found in your configuration:",
     cancelButtonText = "Go Back and Fix",
+    warnings
 }: ValidationDialogProps) {
+    console.log({warnings});
+    
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[500px] max-h-[90vh]">

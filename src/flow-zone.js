@@ -2,15 +2,17 @@ import { addEdge, Background, Controls, MarkerType, MiniMap, ReactFlow, useReact
 import '@xyflow/react/dist/style.css';
 import { v4 as uuidv4 } from "uuid";
 import ButtonEdge from './components/edgeTypes/button-edge';
+import connectionLine from './components/edgeTypes/connection-line';
+import ChoiceNode from './components/nodesTypes/ChoiceNode';
 import MessageNode from './components/nodesTypes/Message';
 import StartNode from './components/nodesTypes/StartNode';
 import { useFlowStore } from './store/flow-store';
-import connectionLine from './components/edgeTypes/connection-line';
 
 const FlowZone = () => {
   const nodeTypes = {
     Handler: StartNode,
     Message: MessageNode,
+    ChoicePrompt: ChoiceNode
   };
   const edgeTypes = {
     buttonEdge: ButtonEdge

@@ -204,7 +204,7 @@ export const useRightDrawerStore = create<RightDrawerStore>((set, get) => ({
 
         setNodes(newArray)
     },
-
+    
     // Update the handleRightDrawerSubtractCounters function to use the local handleSnackBarMessageOpen
     handleRightDrawerSubtractCounters: (event, index, isHandler) => {
         const { nodes, setNodes, clickedElement } = useFlowStore.getState()

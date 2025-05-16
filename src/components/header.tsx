@@ -1,14 +1,13 @@
 
 import { ChevronDown, Edit, Home, Import, LogOut, Moon, Settings, Sun, Trash, User } from "lucide-react"
 import { memo, useState } from "react"
+import { createFlowObject } from "../lib/create-flow-object"
+import { handleFlowZoneCheckIfAllHandlesAreConnected } from "../lib/utils"
 import { useFlowStore } from "../store/flow-store"
 import { useRightDrawerStore } from "../store/right-drawer-store"
 import { Avatar, AvatarFallback } from "./ui/avatar"
 import { Button } from "./ui/button"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle } from "./ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
-import { Input } from "./ui/input"
-import { Label } from "./ui/label"
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "./ui/navigation-menu"
 import { Switch } from "./ui/switch"
 
@@ -20,10 +19,7 @@ export default memo(function Header() {
   const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
   const setFormDialogStatus = useFlowStore(state => state.setFormDialogStatus)
   const handleSaveFormDialogCheckIfAllRequiredDataAreFilledForEachElement = useRightDrawerStore(state => state.handleSaveFormDialogCheckIfAllRequiredDataAreFilledForEachElement)
-  const handleFlowZoneCheckIfAllHandlesAreConnected = useFlowStore(state => state.handleFlowZoneCheckIfAllHandlesAreConnected)
   const checkIfWebUrlIsEmpty = useFlowStore(state => state.checkIfWebUrlIsEmpty)
-
-
 
   const toggleTheme = useFlowStore(state => state.toggleTheme)
 
@@ -45,11 +41,47 @@ export default memo(function Header() {
     const isAllNodesValid = handleSaveFormDialogCheckIfAllRequiredDataAreFilledForEachElement()
     const isAllHandlesConnected = handleFlowZoneCheckIfAllHandlesAreConnected()
     const isWebUrlEmpty = checkIfWebUrlIsEmpty()
-    console.log({ isAllNodesValid, isAllHandlesConnected, isWebUrlEmpty });
-    setDialogProps({})
-    setIsFormDialogOpen(true)
-    setFormDialogStatus("validation")
+    const flowObject = createFlowObject()
 
+    console.log({ isAllNodesValid, isAllHandlesConnected, isWebUrlEmpty, flowObject });
+    const warnings = []
+    if (!isAllNodesValid) {
+      warnings.push({
+        id: "missing-name",
+        title: "Missing Configuration data",
+        description: "Please fill all the fields in all Components.",
+        severity: "high",
+      })
+    }
+    if (!isAllHandlesConnected) {
+      warnings.push({
+        id: "missing-handler",
+        title: "Missing Connections",
+        description:
+          "Please connect all the components together.",
+        severity: "high",
+      })
+    }
+    if (!isWebUrlEmpty) {
+      warnings.push({
+        id: "missing-connections",
+        title: "Missing Bot Configuration",
+        description: "Missing Bot Configuration",
+        severity: "high",
+      }
+      )
+    }
+
+    if (warnings.length > 0) {
+      setDialogProps({ warnings })
+      setFormDialogStatus("validation")
+    } else setFormDialogStatus("publish")
+    setIsFormDialogOpen(true)
+
+  }
+  const handleChangeName = () => {
+    setFormDialogStatus("changeName")
+    setIsFormDialogOpen(true)
   }
   return (
     <header className="flex items-center justify-between px-6 py-2 bg-background border-b border-border relative">
@@ -88,7 +120,7 @@ export default memo(function Header() {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="start" className="w-48">
-                <DropdownMenuItem onSelect={() => setIsDialogOpen(true)}>
+                <DropdownMenuItem onSelect={handleChangeName}>
                   <Edit className="mr-2 h-4 w-4" />
                   <span>Change Name</span>
                 </DropdownMenuItem>
@@ -157,33 +189,3 @@ export default memo(function Header() {
     </header>
   )
 })
-const DialogDemo = ({ open, setIsOpen }: { open: boolean, setIsOpen: React.Dispatch<React.SetStateAction<boolean>> }) => (
-  <Dialog open={open} onOpenChange={(open) => { setIsOpen(open) }}>
-
-    <DialogPortal>
-      <DialogOverlay className="DialogOverlay" />
-      <DialogContent className="DialogContent">
-        <DialogTitle className="DialogTitle">Edit profile</DialogTitle>
-        <DialogDescription className="DialogDescription">
-          Make changes to your profile here. Click save when you're done.
-        </DialogDescription>
-        <Label
-          htmlFor="name"
-        >
-          Name
-        </Label>
-        <Input
-          id="name"
-          defaultValue="Pedro Duarte"
-        />
-        <div
-          style={{ display: "flex", marginTop: 25, justifyContent: "flex-end" }}
-        >
-          <DialogClose asChild>
-            <Button className="Button green">Save changes</Button>
-          </DialogClose>
-        </div>
-      </DialogContent>
-    </DialogPortal>
-  </Dialog>
-);

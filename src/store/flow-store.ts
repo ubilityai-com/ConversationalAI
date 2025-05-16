@@ -1,4 +1,5 @@
 import { applyEdgeChanges, applyNodeChanges, Edge, getConnectedEdges, Node, type ReactFlowInstance } from "@xyflow/react"
+import { v4 } from "uuid"
 import { create } from "zustand"
 
 interface FlowState {
@@ -32,6 +33,8 @@ interface FlowState {
     setEdges: (value: Edge[] | ((prev: Edge[]) => Edge[])) => void
     applyEdgeChangesFunc: (changes: any) => void
     deleteNode: (id: string) => void
+    duplicateNode: (id: string) => void
+
     // User and authentication
     userData: any
     setUserData: (data: any) => void
@@ -164,7 +167,6 @@ export const useFlowStore = create<FlowState>((set, get) => ({
         set((state) => ({
             nodes: applyNodeChanges(changes, state.nodes),
         })),
-
     edges: [],
     setEdges: (valueOrUpdater) =>
         set((state) => ({
@@ -178,19 +180,19 @@ export const useFlowStore = create<FlowState>((set, get) => ({
             edges: applyEdgeChanges(changes, state.edges),
         })),
     deleteNode: (id) => set((state) => {
-        const nodes=state.nodes
-        const edges =state.edges
+        const nodes = state.nodes
+        const edges = state.edges
         // Filter nodes 
-        const removeNodeAndEdges = (id:string, nodes:Node[], edges:Edge[]) => {
-            const connectedEdges = getConnectedEdges([{id,data:{},position:{x:12,y:121}}], edges)
+        const removeNodeAndEdges = (id: string, nodes: Node[], edges: Edge[]) => {
+            const connectedEdges = getConnectedEdges([{ id, data: {}, position: { x: 12, y: 121 } }], edges)
             const updatedNodes = nodes.filter((n) => n.id !== id)
             const updatedEdges = edges.filter((e) => !connectedEdges.some((ce) => ce.id === e.id))
-    
+
             return { nodes: updatedNodes, edges: updatedEdges }
-          }
-    
-          const { nodes: updatedNodes, edges: updatedEdges } = removeNodeAndEdges(id, nodes, edges)
-    
+        }
+
+        const { nodes: updatedNodes, edges: updatedEdges } = removeNodeAndEdges(id, nodes, edges)
+
 
         // Check clickedElement
         const newClickedElement = state.clickedElement?.id === id
@@ -200,12 +202,25 @@ export const useFlowStore = create<FlowState>((set, get) => ({
         return {
             ...state,
             nodes: updatedNodes,
-            edges:updatedEdges,
+            edges: updatedEdges,
             clickedElement: newClickedElement,
             isRightOpen: false,
             mousePositionManySelectedElementMenu: { mouseX: null, mouseY: null }
         };
     }),
+    duplicateNode: (id) => {
+        set((state) => {
+            let nodeToDuplicate = state.nodes.find(node => node.id === id)
+            console.log({ nodeToDuplicate });
+            nodeToDuplicate = { ...nodeToDuplicate,id:v4(), position: { x: nodeToDuplicate.position.x + 150, y: nodeToDuplicate.position.y + 150 } }
+            console.log({nodeToDuplicate});
+            
+            const cloned = JSON.parse(JSON.stringify(nodeToDuplicate));
+            console.log({nodeToDuplicate});
+            
+            return { nodes: [...state.nodes, cloned] }
+        })
+    },
     // User and authentication
     userData: {},
     setUserData: (data) => set({ userData: data }),
@@ -273,6 +288,8 @@ export const useFlowStore = create<FlowState>((set, get) => ({
         const nodes = get().nodes
         const edges = get().edges
         nodes.forEach((element) => {
+            console.log({ element });
+
             if (element.type === "Handler") {
                 let allAreSources = true
 

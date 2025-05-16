@@ -1,5 +1,3 @@
-"use client"
-
 import axios from "axios"
 import { Loader2, Minus, Plus } from 'lucide-react'
 import type * as React from "react"
@@ -160,7 +158,7 @@ export default function HandlerForm({
   return (
     <div className="space-y-4">
       <div>
-        <Label className="block text-sm mb-1 font-normal">Reply to</Label>
+        <Label className="block text-sm mb-2 font-normal">Reply to</Label>
         <SearchableSelect
           name="replyType"
           options={[
@@ -194,7 +192,7 @@ export default function HandlerForm({
       {clickedElement.data.inactivity && (
         <>
           <div>
-            <Label className="block text-sm mb-1 font-normal">Type</Label>
+            <Label className="block text-sm mb-2 font-normal">Type</Label>
             <SearchableSelect
               name="type"
               options={[
@@ -214,7 +212,7 @@ export default function HandlerForm({
           </div>
 
           <div>
-            <Label className="block text-sm mb-1 font-normal">Delay (minute)</Label>
+            <Label className="block text-sm mb-2 font-normal">Delay (minute)</Label>
             <Input
               type="number"
               name="delay"
@@ -227,7 +225,7 @@ export default function HandlerForm({
 
           {clickedElement.data.type === "text" && (
             <div>
-              <Label className="block text-sm mb-1 font-normal">Text</Label>
+              <Label className="block text-sm mb-2 font-normal">Text</Label>
               <Input
                 name="text"
                 placeholder="Text"
@@ -240,7 +238,7 @@ export default function HandlerForm({
 
           {clickedElement.data.type === "handover" && (
             <div>
-              <Label className="block text-sm mb-1 font-normal">Queues</Label>
+              <Label className="block text-sm mb-2 font-normal">Queues</Label>
               <SearchableSelect
                 showRefresh
                 loading={isLoadingQueues}
@@ -275,7 +273,7 @@ export default function HandlerForm({
 
       {clickedElement.data.replyType === "text" && (
         <div>
-          <Label className="block text-sm mb-1 font-normal">Text To Reply</Label>
+          <Label className="block text-sm mb-2 font-normal">Text To Reply</Label>
           <Input
             name="replyToText"
             placeholder="Text To Reply"
@@ -288,7 +286,7 @@ export default function HandlerForm({
       {clickedElement.data.replyType === "button" && (
         <>
           <div>
-            <Label className="block text-sm mb-1 font-normal">Access Token</Label>
+            <Label className="block text-sm mb-2 font-normal">Access Token</Label>
             <Input
               name="accessToken"
               placeholder="Access Token"
@@ -312,7 +310,7 @@ export default function HandlerForm({
           </div>
 
           <div >
-            <Label className="block text-sm mb-1 font-normal">Templates</Label>
+            <Label className="block text-sm mb-2 font-normal">Templates</Label>
 
             <SearchableSelect
               showRefresh
@@ -399,7 +397,7 @@ export default function HandlerForm({
 
           {clickedElement.data.templateButtonList?.length > 0 && (
             <div>
-              <Label className="block text-sm mb-1 font-normal">Template button</Label>
+              <Label className="block text-sm mb-2 font-normal">Template button</Label>
               <SearchableSelect
                 name="templateButton"
                 options={
@@ -424,7 +422,7 @@ export default function HandlerForm({
       )}
 
       <div>
-        <Label className="block text-sm mb-1 font-normal">Greet</Label>
+        <Label className="block text-sm mb-2 font-normal">Greet</Label>
         <Input
           name="greet"
           placeholder="Welcome message"
@@ -434,7 +432,7 @@ export default function HandlerForm({
       </div>
 
       <div>
-        <Label className="block text-sm mb-1 font-normal">Restart</Label>
+        <Label className="block text-sm mb-2 font-normal">Restart</Label>
         <Input
           name="restart"
           placeholder="Message displayed when bot restarts"
@@ -444,7 +442,7 @@ export default function HandlerForm({
       </div>
 
       <div>
-        <Label className="block text-sm mb-1 font-normal">Thank You</Label>
+        <Label className="block text-sm mb-2 font-normal">Thank You</Label>
         <Input
           name="thankYou"
           placeholder="Message displayed when user thanks the bot"
@@ -454,7 +452,7 @@ export default function HandlerForm({
       </div>
 
       <div>
-        <Label className="block text-sm mb-1 font-normal">Cancel</Label>
+        <Label className="block text-sm mb-2 font-normal">Cancel</Label>
         <Input
           name="cancel"
           placeholder="Message displayed when user cancels conversation"
@@ -464,7 +462,7 @@ export default function HandlerForm({
       </div>
 
       <div>
-        <Label className="block text-sm mb-1 font-normal">Bye</Label>
+        <Label className="block text-sm mb-2 font-normal">Bye</Label>
         <Input
           name="bye"
           placeholder="Message displayed when user says bye"
@@ -475,7 +473,7 @@ export default function HandlerForm({
 
       <Separator className="my-4" />
 
-      <Label className="block text-sm mb-1 font-normal">
+      <Label className="block text-sm mb-2 font-normal">
         Enable the bot to handle user messages before starting the conversation.
       </Label>
 
@@ -536,7 +534,7 @@ export default function HandlerForm({
                     </div>
                   </div>
 
-                  <Label className="block text-sm mb-1 font-normal">Choice</Label>
+                  <Label className="block text-sm mb-2 font-normal">Choice</Label>
                   <SearchableSelect
                     name="choice"
                     options={[
@@ -563,7 +561,7 @@ export default function HandlerForm({
                   {clickedElement.data.dynamicDataHandler[index].innerDynamicDataHandler[innerIndex]?.choice ===
                     "Keyword" && (
                       <div>
-                        <Label className="block text-sm mb-1 font-normal">Value</Label>
+                        <Label className="block text-sm mb-2 font-normal">Value</Label>
                         <Input
                           name="value"
                           placeholder="Value"
@@ -573,7 +571,7 @@ export default function HandlerForm({
                           }
                           onChange={(event) => handleRightDrawerAnyFormChange(event, index, innerIndex, -1, true)}
                         />
-                        <Label className="block text-sm mb-1 font-normal">
+                        <Label className="block text-sm mb-2 font-normal">
                           Enable to save the keyword value in a variable to be used by the bot
                         </Label>
                         <div className="flex items-center space-x-2 mx-2 mb-2">
@@ -594,7 +592,7 @@ export default function HandlerForm({
                         </div>
                         {clickedElement.data.dynamicDataHandler[index].innerDynamicDataHandler[innerIndex]?.save && (
                           <>
-                            <Label className="block text-sm mb-1 font-normal">Variable Name</Label>
+                            <Label className="block text-sm mb-2 font-normal">Variable Name</Label>
                             <Input
                               name="variableName"
                               placeholder="Variable Name"
@@ -613,7 +611,7 @@ export default function HandlerForm({
                   {clickedElement.data.dynamicDataHandler[index].innerDynamicDataHandler[innerIndex]?.choice ===
                     "AI NLP" && (
                       <div>
-                        <Label className="block text-sm mb-1 font-normal">Intent</Label>
+                        <Label className="block text-sm mb-2 font-normal">Intent</Label>
                         <SearchableSelect
                           name="intent"
                           options={intents.map((option) => ({
@@ -702,7 +700,7 @@ export default function HandlerForm({
                               {!clickedElement.data.dynamicDataHandler[index].innerDynamicDataHandler[innerIndex]
                                 ?.entities[entityIndex]?.any && (
                                   <>
-                                    <Label className="block text-sm mb-1 font-normal">Value</Label>
+                                    <Label className="block text-sm mb-2 font-normal">Value</Label>
                                     <Input
                                       name="value"
                                       placeholder="Value"
@@ -718,7 +716,7 @@ export default function HandlerForm({
                                   </>
                                 )}
 
-                              <Label className="block text-sm mb-1 font-normal">Or any value of the above entity</Label>
+                              <Label className="block text-sm mb-2 font-normal">Or any value of the above entity</Label>
                               <div className="flex items-center space-x-2 mx-2 mb-2">
                                 <Switch
                                   checked={
@@ -747,7 +745,7 @@ export default function HandlerForm({
                   {clickedElement.data.dynamicDataHandler[index].innerDynamicDataHandler[innerIndex]?.choice ===
                     "Variable" && (
                       <div>
-                        <Label className="block text-sm mb-1 font-normal">Operator</Label>
+                        <Label className="block text-sm mb-2 font-normal">Operator</Label>
                         <SearchableSelect
                           name="operator"
                           options={operations.map((option) => ({
@@ -770,7 +768,7 @@ export default function HandlerForm({
                           placeholder="Select operator"
                           className="w-[93%] mx-2 mb-2 h-9 text-xs"
                         />
-                        <Label className="block text-sm mb-1 font-normal">Value</Label>
+                        <Label className="block text-sm mb-2 font-normal">Value</Label>
                         <Input
                           name="value"
                           placeholder="Value"
@@ -790,7 +788,7 @@ export default function HandlerForm({
       })}
 
       {clickedElement.data.dynamicDataHandler?.length > 0 && (
-        <Label className="block text-sm mb-1 font-normal">Add new condition</Label>
+        <Label className="block text-sm mb-2 font-normal">Add new condition</Label>
       )}
       <Button
         type="button"

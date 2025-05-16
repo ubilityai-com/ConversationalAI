@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { createFlowObject } from "../../lib/create-flow-object"
 import { useFlowStore } from "../../store/flow-store"
 import { Button } from "../ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
@@ -18,14 +19,25 @@ export function PublishDialog({
     // onSubmit,
 }: ConfigurationDialogProps) {
 
-    const { formDialogBotName, formDialogApplyValues } = useFlowStore();
+    const { formDialogBotName, formDialogApplyValues, setFormDialogBotName, setFormDialogApplyValues } = useFlowStore();
     const [botName, setBotName] = useState(formDialogBotName)
     const handlePublish = () => {
+        const flowObject = createFlowObject()
+        console.log({ flowObject });
+
 
     }
     const handleChangeBotName = (event: React.ChangeEvent<HTMLInputElement>) => {
         setBotName(event.target.value)
     }
+    const handleSaveFormDialogOnChange = (value: string, variableName: string) => {
+        if (variableName === "formDialogBotName") {
+            setFormDialogBotName(value)
+        } else if (variableName === "formDialogApplyValues") {
+            setFormDialogApplyValues(value)
+        }
+    }
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[425px]">

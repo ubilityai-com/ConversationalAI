@@ -28,9 +28,41 @@ const TextOnlyTooltip = ({
         </Tooltip>
     </TooltipProvider>
 )
+type Choice = 'Keyword' | 'AI NLP' | 'Variable';
 
+interface Entity {
+    any?: boolean;
+    value?: string;
+    name?:string;
+}
+
+interface InnerDynamicDataHandler {
+    choice: Choice;
+    value?: string;
+    save?: boolean;
+    variableName?: string;
+    entities: Entity[];
+    intent?:string;
+    operator?:string
+}
+
+interface DynamicDataHandler {
+    innerDynamicDataHandler: InnerDynamicDataHandler[];
+}
+
+interface FormItem {
+    text?: string;
+}
+
+interface FormNodeData {
+    botSays?: string;
+    formData: FormItem[];
+    save?: boolean;
+    variableName?: string;
+    dynamicDataHandler: DynamicDataHandler[];
+}
 interface ChoicePromptFormProps {
-    clickedElement: any
+    clickedElement: {data:FormNodeData}
     handleRightDrawerAnyFormChange: (
         event: any,
         index: number,
@@ -70,7 +102,6 @@ export default function ChoicePromptForm({
                 <Input
                     name="botSays"
                     placeholder="Message"
-                    className="w-[93%] mx-2 mb-2 text-xs"
                     value={clickedElement.data.botSays || ""}
                     onChange={(event) => handleRightDrawerAnyFormChange(event, -1, -1, -1, false)}
                 />
@@ -125,7 +156,7 @@ export default function ChoicePromptForm({
                 <Switch
                     checked={clickedElement.data.save || false}
                     onCheckedChange={(checked) => {
-                        const event = { target: { name: "save", checked, type:"checkbox" } }
+                        const event = { target: { name: "save", checked, type: "checkbox" } }
                         handleRightDrawerAnyFormChange(event, -1, -1, -1, false)
                     }}
                     id="save-switch"
@@ -141,7 +172,6 @@ export default function ChoicePromptForm({
                     <Input
                         name="variableName"
                         placeholder="Variable Name"
-                        className="w-[93%] mx-2 mb-2 text-xs"
                         value={clickedElement.data.variableName || ""}
                         onChange={(event) => handleRightDrawerAnyFormChange(event, -1, -1, -1, false)}
                     />
@@ -237,7 +267,6 @@ export default function ChoicePromptForm({
                                                 <Input
                                                     name="value"
                                                     placeholder="Value"
-                                                    className="w-[93%] mx-2 mb-2 text-xs"
                                                     value={
                                                         clickedElement.data.dynamicDataHandler[index].innerDynamicDataHandler[innerIndex].value || ""
                                                     }
@@ -253,7 +282,7 @@ export default function ChoicePromptForm({
                                                             false
                                                         }
                                                         onCheckedChange={(checked) => {
-                                                            const event = { target: { name: "save", checked, type:"checkbox" } }
+                                                            const event = { target: { name: "save", checked, type: "checkbox" } }
                                                             handleRightDrawerAnyFormChange(event, index, innerIndex, -1, true)
                                                         }}
                                                         id={`save-switch-${index}-${innerIndex}`}
@@ -268,7 +297,6 @@ export default function ChoicePromptForm({
                                                         <Input
                                                             name="variableName"
                                                             placeholder="Variable Name"
-                                                            className="w-[93%] mx-2 mb-2 text-xs"
                                                             value={
                                                                 clickedElement.data.dynamicDataHandler[index].innerDynamicDataHandler[innerIndex]
                                                                     .variableName || ""
@@ -298,7 +326,6 @@ export default function ChoicePromptForm({
                                                         handleRightDrawerAnyFormChange(event, index, innerIndex, -1, true)
                                                     }}
                                                     placeholder="Select an intent"
-                                                    className="w-[93%] mx-2 mb-2 h-9 text-xs"
                                                 />
 
                                                 {/* Entities Section */}
@@ -357,8 +384,7 @@ export default function ChoicePromptForm({
                                                                         handleRightDrawerAnyFormChange(event, index, innerIndex, entityIndex, true)
                                                                     }}
                                                                     placeholder="Select an entity"
-                                                                    className="w-[93%] mx-2 mb-2 h-9 text-xs"
-                                                                />
+                                                                                />
 
                                                                 {!clickedElement.data.dynamicDataHandler[index].innerDynamicDataHandler[innerIndex]
                                                                     .entities[entityIndex].any && (
@@ -367,7 +393,6 @@ export default function ChoicePromptForm({
                                                                             <Input
                                                                                 name="value"
                                                                                 placeholder="Value"
-                                                                                className="w-[93%] mx-2 mb-2 text-xs"
                                                                                 value={
                                                                                     clickedElement.data.dynamicDataHandler[index].innerDynamicDataHandler[innerIndex]
                                                                                         .entities[entityIndex].value || ""
@@ -389,7 +414,7 @@ export default function ChoicePromptForm({
                                                                                 .entities[entityIndex].any || false
                                                                         }
                                                                         onCheckedChange={(checked) => {
-                                                                            const event = { target: { name: "any", checked, type:"checkbox" } }
+                                                                            const event = { target: { name: "any", checked, type: "checkbox" } }
                                                                             handleRightDrawerAnyFormChange(event, index, innerIndex, entityIndex, true)
                                                                         }}
                                                                         id={`any-switch-${index}-${innerIndex}-${entityIndex}`}
@@ -427,13 +452,11 @@ export default function ChoicePromptForm({
                                                         handleRightDrawerAnyFormChange(event, index, innerIndex, -1, true)
                                                     }}
                                                     placeholder="Select an operator"
-                                                    className="w-[93%] mx-2 mb-2 h-9 text-xs"
                                                 />
                                                 <Label className="block text-sm p-1 mb-1 font-normal">Value</Label>
                                                 <Input
                                                     name="value"
                                                     placeholder="Value"
-                                                    className="w-[93%] mx-2 mb-2 text-xs"
                                                     value={
                                                         clickedElement.data.dynamicDataHandler[index].innerDynamicDataHandler[innerIndex].value || ""
                                                     }
