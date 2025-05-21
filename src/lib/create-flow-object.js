@@ -1,4 +1,5 @@
 import { useFlowStore } from "../store/flow-store";
+import { objToReturnDynamic } from "./utils";
 
 
 /**
@@ -877,6 +878,56 @@ export function createFlowObject() {
             nextflag: handleRightDrawerCheckIfLoopFromFlagEnabledInNextNode(element, '-1'),
           }
         }
+      }
+      else if (element.type === 'Switch') {
+        function transformData(data) {
+          return data.map((item, index) => {
+            const { operator_type, first_operator, operation, second_operator } = item;
+
+            // Helper function to determine if operator contains a variable (${v})
+            const determineOperatorSource = (operator) => {
+              return operator.includes('${') ? 'variable' : 'text';
+            };
+
+            return {
+              type: operator_type,
+              operator: operation,
+              firstOperatorSource: determineOperatorSource(first_operator),
+              secondOperatorSource: determineOperatorSource(second_operator),
+              firstOperator: first_operator,
+              secondOperator: second_operator,
+              relatedCase: `condition${index}`
+            };
+          });
+        }
+        const finalObj = objToReturnDynamic(element.data.json)
+        const dataToSend = transformData(finalObj.conditions)
+
+        let cases = {}
+
+        obj2 = {
+          type: "handler",
+        }
+        finalObj.conditions.forEach((obj, index) => {
+          cases = {
+            ...cases,
+            [`condition${index}`]: this.getNext(element.id, (index + 1) + '')
+          }
+        })
+        obj2 = { ...obj2, next: this.getNext(element.id, '0') }
+        cases = {
+          ...cases,
+          Other: element.id + '-handler-1',
+        }
+        obj1 = {
+          type: 'switchHandler',
+          next: element.id + '-handler-1',
+          data: {
+            conditions: dataToSend,
+            cases: cases
+          },
+        }
+
       }
 
       // Add objects to flow

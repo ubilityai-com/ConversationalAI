@@ -3,16 +3,21 @@ import '@xyflow/react/dist/style.css';
 import { v4 as uuidv4 } from "uuid";
 import ButtonEdge from './components/edgeTypes/button-edge';
 import connectionLine from './components/edgeTypes/connection-line';
+import AgentNode from './components/nodesTypes/AgentNode';
 import ChoiceNode from './components/nodesTypes/ChoiceNode';
-import MessageNode from './components/nodesTypes/Message';
 import StartNode from './components/nodesTypes/StartNode';
+import SwitchNode from './components/nodesTypes/Switch';
+import { SwitchJson } from './elements/switchJson';
 import { useFlowStore } from './store/flow-store';
+import MessageNode from './components/nodesTypes/Message';
 
 const FlowZone = () => {
   const nodeTypes = {
     Handler: StartNode,
     Message: MessageNode,
-    ChoicePrompt: ChoiceNode
+    ChoicePrompt: ChoiceNode,
+    Agent: AgentNode,
+    Switch: SwitchNode
   };
   const edgeTypes = {
     buttonEdge: ButtonEdge
@@ -114,6 +119,12 @@ const FlowZone = () => {
           }
         } else if (droppedElement.type === "End") {
           newData = { ...newData, botSays: "" }
+        }
+        else if (droppedElement.type === 'Switch') {
+          newData = {
+            ...newData,
+            json: SwitchJson
+          }
         }
 
         newData = {

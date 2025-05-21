@@ -1,6 +1,7 @@
 import axios from "axios"
 import type React from "react"
 import { create } from "zustand"
+import { validateArray } from "../lib/utils"
 import { useFlowStore } from "./flow-store"
 
 // Add a type for form events that can handle both value and checked properties
@@ -711,6 +712,17 @@ export const useRightDrawerStore = create<RightDrawerStore>((set, get) => ({
                             }
                         })
                     })
+                }
+            } else if (element.type === 'ConfirmPrompt') {
+                if (!element.data.botSays || !element.data.errorMessage || (element.data.save && !element.data.variableName)) {
+                    allInputsAreFilled = false
+                }
+            }
+            else if (element.type === 'Switch') {
+                if (!validateArray(element.data.json))
+                    allInputsAreFilled = false
+                if (element.data.loopFromSwitch && element.data.loopFromName.trim().length === 0) {
+                    allInputsAreFilled = false
                 }
             }
             // Additional element type checks omitted for brevity

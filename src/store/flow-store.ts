@@ -373,5 +373,11 @@ export const useFlowStore = create<FlowState>((set, get) => ({
             icon: "Stop",
             color: "#E32212",
         },
+        {
+            "name": "Switch",
+            "type": 'Switch',
+            "icon": "Switch",
+            "color": '#00AFB9'//"#1e62ea",
+        },
     ],
 }))
