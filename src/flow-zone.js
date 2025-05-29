@@ -4,12 +4,14 @@ import { v4 as uuidv4 } from "uuid";
 import ButtonEdge from './components/edgeTypes/button-edge';
 import connectionLine from './components/edgeTypes/connection-line';
 import AgentNode from './components/nodesTypes/AgentNode';
+import Chain from './components/nodesTypes/Chain';
 import ChoiceNode from './components/nodesTypes/ChoiceNode';
+import MessageNode from './components/nodesTypes/Message';
+import RPANode from './components/nodesTypes/RPA';
 import StartNode from './components/nodesTypes/StartNode';
 import SwitchNode from './components/nodesTypes/Switch';
-import { SwitchJson } from './elements/switchJson';
+import { setAutomationArray } from './lib/automation-utils';
 import { useFlowStore } from './store/flow-store';
-import MessageNode from './components/nodesTypes/Message';
 
 const FlowZone = () => {
   const nodeTypes = {
@@ -17,7 +19,9 @@ const FlowZone = () => {
     Message: MessageNode,
     ChoicePrompt: ChoiceNode,
     Agent: AgentNode,
-    Switch: SwitchNode
+    Switch: SwitchNode,
+    RPA: RPANode,
+    BasicLlm: Chain
   };
   const edgeTypes = {
     buttonEdge: ButtonEdge
@@ -47,94 +51,30 @@ const FlowZone = () => {
   const addNewElementToFlowZone = (clientX, clientY) => {
     console.log({ droppedElement, nodes });
     if (droppedElement) {
-      const position = reactFlowInstance.screenToFlowPosition({
-        x: clientX,
-        y: clientY,
-      })
-
-      const generateID = uuidv4()
+      const position = reactFlowInstance.screenToFlowPosition({ x: clientX, y: clientY });
+      const generateID = uuidv4();
 
       let newElement = {
         id: generateID,
         type: droppedElement.type,
         data: { label: droppedElement.name },
         position,
-      }
+      };
 
-      let newData = { ...newElement.data }
+      let newData = { ...newElement.data };
 
-      if (droppedElement.type !== "Card" && droppedElement.type !== "RPA") {
-        // All elements except Cards and RPAs
-        if (droppedElement.type === "Message") {
-          newData = {
-            ...newData,
-            botSays: "",
-            advanced: false,
-            regex: "",
-            errorMessage: "",
-            save: false,
-            variableName: "",
-            dynamicDataHandler: [],
-          }
-        } else if (droppedElement.type === "DatePrompt" || droppedElement.type === "NumberPrompt") {
-          newData = { ...newData, botSays: "", errorMessage: "", save: false, variableName: "", dynamicDataHandler: [] }
-        } else if (droppedElement.type === "ConfirmPrompt") {
-          newData = { ...newData, botSays: "", errorMessage: "", save: false, variableName: "" }
-        } else if (droppedElement.type === "ChoicePrompt") {
-          newData = {
-            ...newData,
-            botSays: "",
-            save: false,
-            variableName: "",
-            formData: [{ text: "" }],
-            dynamicDataHandler: [],
-          }
-        } else if (droppedElement.type === "WebListCard") {
-          newData = {
-            ...newData,
-            botSays: "",
-            save: false,
-            variableName: "",
-            formData: [{ text: "" }],
-            dynamicDataHandler: [],
-          }
-        } else if (droppedElement.type === "ListCard") {
-          newData = {
-            ...newData,
-            botSays: "",
-            save: false,
-            variableName: "",
-            formData: [{ text: "", urlSwitch: false, url: "" }],
-            dynamicDataHandler: [],
-          }
-        } else if (droppedElement.type === "KnowledgeBase") {
-          newData = { ...newData, limit: limitArray[2], score: scoreArray[4] }
-        } else if (droppedElement.type === "RPAList") {
-          newData = {
-            ...newData,
-            ticketList: "",
-            save: false,
-            variableName: "",
-            description: "Display informations returned from robot server as choice list.",
-          }
-        } else if (droppedElement.type === "End") {
-          newData = { ...newData, botSays: "" }
+      if (droppedElement.type !== "Card") {
+        let defaults = droppedElement.defaults || {};
+        if (defaults.automated) {
+          defaults = { ...defaults, rightSideData: { ...defaults.rightSideData, json: setAutomationArray(defaults.rightSideData.json) } }
         }
-        else if (droppedElement.type === 'Switch') {
-          newData = {
-            ...newData,
-            json: SwitchJson
-          }
-        }
-
+        console.log({ sss: setAutomationArray(defaults.rightSideData.json) })
         newData = {
           ...newData,
           color: droppedElement.color,
           icon: droppedElement.icon,
-          loopFromSwitch: false,
-          loopFromName: droppedElement.type === "End" ? "None" : "",
-          mousePositionHandleMenu: mousePositionHandleMenu,
-        }
+          ...defaults,
+        };
       } else if (droppedElement.type === "Card") {
         newData = {
           label: "Card",
@@ -143,37 +83,15 @@ const FlowZone = () => {
           color: "#607D8B",
           icon: "InsertDriveFile",
           variables: droppedElement.variables,
-          mousePositionHandleMenu: mousePositionHandleMenu,
-        }
-      } else if (droppedElement.type === "RPA") {
-        let rpaVariables = []
-        if (droppedElement.inputs) {
-          Object.keys(droppedElement.inputs).map((key, index) => {
-            return (rpaVariables = rpaVariables.concat({ [key]: droppedElement.inputs[key], asVariable: false }))
-          })
-        }
-
-        newData = {
-          ...newData,
-          label: droppedElement.name,
-          inputs: { ...droppedElement.inputs, None: "None" },
-          outputs: { ...droppedElement.outputs },
-          rpaOutputs:
-            droppedElement.rpaoutputs && droppedElement.rpaoutputs.length > 0 ? [...droppedElement.rpaoutputs] : [],
-          variables: { ...droppedElement.variables },
-          icon: "DeviceHub",
-          color: "#8f8f8f",
-          token: droppedElement.token,
-          rpaVariables: rpaVariables,
-          mousePositionHandleMenu: mousePositionHandleMenu,
-        }
+          mousePositionHandleMenu,
+        };
       }
 
-      newElement = { ...newElement, data: newData }
-      console.log({ setNodes });
-      setNodes((prevNodes) => [...prevNodes, newElement])
-      setDroppedElement(null)
+      newElement = { ...newElement, data: newData };
+      setNodes((prevNodes) => [...prevNodes, newElement]);
+      setDroppedElement(null);
     }
+
   }
 
   const theme = useFlowStore(state => state.theme)

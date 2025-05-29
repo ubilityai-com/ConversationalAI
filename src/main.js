@@ -1,25 +1,8 @@
-import React, { useState } from 'react';
-// import clsx from 'clsx';
 import { addEdge, applyEdgeChanges, applyNodeChanges, getConnectedEdges, isEdge, isNode, MarkerType } from '@xyflow/react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-//import jwt from 'jsonwebtoken';
-//import from Material UI
-// import Drawer from '@material-ui/core/Drawer';
-// import IconButton from '@material-ui/core/IconButton';
-// import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-// import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-// import Menu from '@material-ui/core/Menu';
-// import MenuItem from '@material-ui/core/MenuItem';
-// //import from my files
-// import ApplicationBar from './app-bar'
-// import LeftDrawerBody from './left-drawer-body';
-// import RightDrawerBody from './right-drawer-body'
-// import FromDialog from './form-dialog'
-// import FlowZone from './flow-zone';
-// import SnackBarMessage from './snackbar-message'
-
 import MainLayout from './MainLayout';
 const rightDrawerWidth = 300;
 
@@ -2106,7 +2089,7 @@ class Main extends React.Component {
         let allInputsAreFilled = true
 
         this.state.nodes.forEach((element) => {
-            
+
             if (element.type === 'Handler') {
                 if (!element.data.greet || !element.data.restart || !element.data.thankYou || !element.data.cancel || !element.data.bye) {
                     allInputsAreFilled = false
@@ -3092,6 +3075,9 @@ class Main extends React.Component {
         }
         localStorage.setItem('darkMode', (!prev.darkMode).toString());
         return { darkMode: !prev.darkMode }
+    });
+    deleteEdge = (id) => this.setState(prev => {
+        return { edges: prev.edges.filter((edge) => edge.id !== id) }
     });
 
     ///RENDER/FUNCTION/////////////////////////////////////////////////////////////////////////////

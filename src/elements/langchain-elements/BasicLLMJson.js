@@ -1,0 +1,122 @@
+export const BasicLLMJson = {
+  nodeType: "langchain",
+  type: "BasicLlm",
+  label: "Basic LLM Chain",
+  color: "#72797b",
+  defaults: {
+    normalHandle: ["regular", "basic", "automationTools", "langchain"],
+    nodesCanConnectWith: {
+      "1": { nodeType: "model", title: "Chat Model", required: true },
+      "3": { nodeType: "outputParser", title: "Output Parser" },
+    },
+    rightSideData: {
+      outputData: {},
+      json: [
+        {
+          type: "dropdown",
+          label: "Prompt Type",
+          value: "Prompt",
+          variableName: "promptType",
+          required: true,
+          hasDynamicVariable: false,
+          list: [
+            {
+              option: "Prompt",
+              value: "Prompt",
+            },
+            {
+              option: "Chat Prompt",
+              value: "chatPrompt",
+            },
+          ],
+          options: {
+            Prompt: [
+              {
+                type: "textfield",
+                label: "Template",
+                multiline: true,
+                minRows: 4,
+                required: true,
+                variableName: "template",
+                value: "",
+                placeholder:
+                  "What is a good name for a company that makes {product}?",
+                hasDynamicVariable: true,
+                helperSpan: "Input variables can be added between {}"
+              },
+            ],
+            chatPrompt: [
+              {
+                type: "textfield",
+                label: "Template",
+                multiline: true,
+                minRows: 4,
+                required: true,
+                variableName: "template",
+                value: "",
+                placeholder: "prompt",
+                hasDynamicVariable: true,
+              },
+              {
+                type: "textfield",
+                label: "Question",
+                required: true,
+                multiline: true,
+                minRows: 4,
+                variableName: "question",
+                chatbotQuestion: true,
+                value: "",
+                placeholder: "e.g Whats going on your mind ?",
+                hasDynamicVariable: true,
+              },
+              {
+                type: "dynamic",
+                fieldsArray: [],
+                title: "Messages",
+                variableName: "messages",
+                // required: true,
+                structure: [
+                  {
+                    type: "row",
+                    title: "Message",
+                    variableName: "message",
+                    removeButton: true,
+                  },
+                  {
+                    label: "Human Message",
+                    type: "textfield",
+                    value: "",
+                    multiline: true,
+                    minRows: 4,
+                    // required: true,
+                    placeholder: "message",
+                    variableName: "humanMessage",
+                    hasDynamicVariable: true,
+                    rightSideInput: true,
+                  },
+                  {
+                    label: "AI Message",
+                    type: "textfield",
+                    value: "",
+                    multiline: true,
+                    minRows: 4,
+                    // required: true,
+                    placeholder: "message",
+                    variableName: "aiMessage",
+                    hasDynamicVariable: true,
+                    rightSideInput: true,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      ],
+      jsonOutput: {
+        Output: "",
+        "Error": "",
+        "Status": ""
+      },
+    },
+  }
+};

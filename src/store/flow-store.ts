@@ -1,6 +1,7 @@
 import { applyEdgeChanges, applyNodeChanges, Edge, getConnectedEdges, Node, type ReactFlowInstance } from "@xyflow/react"
 import { v4 } from "uuid"
 import { create } from "zustand"
+import { SwitchJson } from "../elements/switchJson"
 
 interface FlowState {
     // Flow instance
@@ -96,12 +97,21 @@ interface FlowState {
     mousePositionManySelectedElementMenu: { mouseX: number | null; mouseY: number | null }
     setMousePositionManySelectedElementMenu: (position: { mouseX: number | null; mouseY: number | null }) => void
 
-    showSnackBarMessage: { open: boolean; message: string | null; color: string | null; duration: number }
-    setShowSnackBarMessage: (message: {
-        open: boolean
-        message: string | null
-        color: string | null
+    showSnackBarMessage: {
+        open: true
+        message: string
+        color: "default" | "destructive" | "success" | "warning" | "info"
         duration: number
+    } | {
+        open: false
+    }
+    setShowSnackBarMessage: (message: {
+        open: true
+        message: string
+        color: "default" | "destructive" | "success" | "warning" | "info"
+        duration: number
+    } | {
+        open: false
     }) => void
 
     handleFlowZoneCheckIfAllHandlesAreConnected: () => boolean
@@ -212,12 +222,12 @@ export const useFlowStore = create<FlowState>((set, get) => ({
         set((state) => {
             let nodeToDuplicate = state.nodes.find(node => node.id === id)
             console.log({ nodeToDuplicate });
-            nodeToDuplicate = { ...nodeToDuplicate,id:v4(), position: { x: nodeToDuplicate.position.x + 150, y: nodeToDuplicate.position.y + 150 } }
-            console.log({nodeToDuplicate});
-            
+            nodeToDuplicate = { ...nodeToDuplicate, id: v4(), position: { x: nodeToDuplicate.position.x + 150, y: nodeToDuplicate.position.y + 150 } }
+            console.log({ nodeToDuplicate });
+
             const cloned = JSON.parse(JSON.stringify(nodeToDuplicate));
-            console.log({nodeToDuplicate});
-            
+            console.log({ nodeToDuplicate });
+
             return { nodes: [...state.nodes, cloned] }
         })
     },
@@ -348,36 +358,83 @@ export const useFlowStore = create<FlowState>((set, get) => ({
             type: "Message",
             icon: "QuestionAnswer",
             color: "#4b98ea",
+            defaults: {
+                botSays: "",
+                advanced: false,
+                regex: "",
+                errorMessage: "",
+                save: false,
+                variableName: "",
+                dynamicDataHandler: [],
+                loopFromSwitch: false,
+                loopFromName: "",
+            }
         },
         {
             name: "Choice",
             type: "ChoicePrompt",
             icon: "InsertComment",
             color: "#61b765",
+            defaults: {
+                botSays: "",
+                save: false,
+                variableName: "",
+                formData: [{ text: "" }],
+                dynamicDataHandler: [],
+                loopFromSwitch: false,
+                loopFromName: "",
+            }
         },
         {
             name: "Web List Card",
             type: "WebListCard",
             icon: "LinearScale",
             color: "#1b3d8c",
+            defaults: {
+                botSays: "",
+                save: false,
+                variableName: "",
+                formData: [{ text: "" }],
+                dynamicDataHandler: [],
+                loopFromSwitch: false,
+                loopFromName: "",
+            }
         },
         {
             name: "List Card",
             type: "ListCard",
             icon: "LinearScale",
             color: "#855DA1",
+            defaults: {
+                botSays: "",
+                save: false,
+                variableName: "",
+                formData: [{ text: "", urlSwitch: false, url: "" }],
+                dynamicDataHandler: [],
+                loopFromSwitch: false,
+                loopFromName: "",
+            }
         },
         {
             name: "End",
             type: "End",
             icon: "Stop",
             color: "#E32212",
+            defaults: {
+                botSays: "",
+                loopFromSwitch: false,
+                loopFromName: "None",
+            }
         },
         {
-            "name": "Switch",
-            "type": 'Switch',
-            "icon": "Switch",
-            "color": '#00AFB9'//"#1e62ea",
-        },
-    ],
+            name: "Switch",
+            type: "Switch",
+            icon: "Switch",
+            color: "#00AFB9",
+            defaults: {
+                json: SwitchJson,
+                loopFromSwitch: false,
+                loopFromName: "",
+            }
+        }]
 }))

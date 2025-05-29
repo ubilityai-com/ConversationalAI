@@ -46,7 +46,7 @@ const TooltipWrapper: React.FC<TooltipWrapperProps> = ({ children }) => {
                 </TooltipTrigger>
                 <TooltipContent side="top" align="center" className="bg-transparent p-0 shadow-none z-50"
                     sideOffset={4}>
-                    <div className="flex gap-3 bg-white p-1 rounded shadow border border-gray-200">
+                    <div className="flex gap-3  p-1 rounded shadow border border-border">
                         <button onClick={handleDuplicate} className="hover:text-blue-500">
                             <Copy size={16} />
                         </button>

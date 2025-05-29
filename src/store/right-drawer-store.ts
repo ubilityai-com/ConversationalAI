@@ -19,7 +19,7 @@ type DynamicDataHandler = {
 }
 // Update the interface to include handleSnackBarMessageOpen
 interface RightDrawerStore {
-    handleSnackBarMessageOpen: (message: string, color: string, duration: number) => void
+    handleSnackBarMessageOpen: (message: string, color: "default" | "destructive" | "success" | "warning" | "info", duration: number) => void
     // Rest of the interface remains the same
     handleRightDrawerAddCounters: (event: React.MouseEvent | { preventDefault: () => void }, isHandler: boolean) => void
     handleRightDrawerAddInnerCounters: (
@@ -74,11 +74,12 @@ export const useRightDrawerStore = create<RightDrawerStore>((set, get) => ({
     // Now update the handleRightDrawerAnyFormChange function to handle the event.target properly
     handleRightDrawerAnyFormChange: (event, index, innerIndex, entityIndex, isHandler) => {
         const { nodes, setNodes, clickedElement, variablesNamesOfEachRPA, intents, operations } = useFlowStore.getState()
-        const { handleRightDrawerCheckIfRemovedConditionIsConnectedWhenSubtractCounters, handleSnackBarMessageOpen } = get()
+        const { handleRightDrawerCheckIfRemovedConditionIsConnectedWhenSubtractCounters, handleSnackBarMessageOpen,  } = get()
 
         let { name, value, checked, type } = event.target
         const elementsIndex = nodes.findIndex((element) => element.id === clickedElement.id)
-
+        console.log({event, index, innerIndex, entityIndex, isHandler,elementsIndex,nodes,variablesNamesOfEachRPA});
+        
         if (elementsIndex === -1) return
 
         const newArray = [...nodes]
@@ -122,7 +123,7 @@ export const useRightDrawerStore = create<RightDrawerStore>((set, get) => ({
                                 } // When innerIndex (asVariable) which is false switch to text input reset its value
                             }
                         } else {
-                            handleSnackBarMessageOpen("There is no existed variable related to this rpa !!", "#ce3a32", 2000)
+                            handleSnackBarMessageOpen("There is no existed variable related to this rpa !!", "destructive", 2000)
                         }
                     }
 
@@ -139,7 +140,7 @@ export const useRightDrawerStore = create<RightDrawerStore>((set, get) => ({
                     ) {
                         handleSnackBarMessageOpen(
                             "This Choice is connected, Please remove connection so you can enable URL",
-                            "#ce3a32",
+                            "destructive",
                             2000,
                         )
                     } else {
@@ -232,7 +233,7 @@ export const useRightDrawerStore = create<RightDrawerStore>((set, get) => ({
             let alertMessage = isHandler ? "Condition" : "Choice"
             alertMessage = alertMessage + " is connected !! To remove it, Please remove connection first."
 
-            handleSnackBarMessageOpen(alertMessage, "#ce3a32", 2000)
+            handleSnackBarMessageOpen(alertMessage, "destructive", 2000)
         } else {
             let newDynamicDataHandler = null
 
@@ -340,7 +341,7 @@ export const useRightDrawerStore = create<RightDrawerStore>((set, get) => ({
                 })
                 .then((response) => {
                     handleRightDrawerSetIconNameInItsNode(response.data.image_name, file.name, index)
-                    handleSnackBarMessageOpen("Icon Uploaded", "#68b04b", 1500)
+                    handleSnackBarMessageOpen("Icon Uploaded", "success", 1500)
                 })
                 .catch((error) => {
                     const errorData =
@@ -349,11 +350,11 @@ export const useRightDrawerStore = create<RightDrawerStore>((set, get) => ({
 
                     if (errorData && errorData.includes("already exists")) {
                         handleRightDrawerSetIconNameInItsNode(error.response.data.file_name, file.name, index)
-                        handleSnackBarMessageOpen("Icon Already Exists", "#d4b72a", 1500)
+                        handleSnackBarMessageOpen("Icon Already Exists", "info", 1500)
                     } else if (errorData && errorData.includes("Size")) {
-                        handleSnackBarMessageOpen("Failed Uploading Icon (Size greater than 20 MB)", "#ce3a32", 2000)
+                        handleSnackBarMessageOpen("Failed Uploading Icon (Size greater than 20 MB)", "destructive", 2000)
                     } else {
-                        handleSnackBarMessageOpen("Failed Uploading Icon !!", "#ce3a32", 2000)
+                        handleSnackBarMessageOpen("Failed Uploading Icon !!", "destructive", 2000)
                     }
                 })
         }
@@ -774,13 +775,13 @@ export const useRightDrawerStore = create<RightDrawerStore>((set, get) => ({
                 headers: { Authorization: "Bearer " + authToken },
             })
             .then((response) => {
-                handleSnackBarMessageOpen("Bot Configuration Saved Successfully", "#68b04b", 2000)
+                handleSnackBarMessageOpen("Bot Configuration Saved Successfully", "success", 2000)
                 const updatedBot = { ...response.data }
                 setUpdatingBot(updatedBot)
             })
             .catch((error) => {
                 console.log("Save Or Update Bot Error", error)
-                handleSnackBarMessageOpen("Failed Saving Bot Configuration !", "#ce3a32", 3000)
+                handleSnackBarMessageOpen("Failed Saving Bot Configuration !", "destructive", 3000)
             })
 
         if (formDialogApplyValues === "Staging") {
@@ -794,11 +795,11 @@ export const useRightDrawerStore = create<RightDrawerStore>((set, get) => ({
             axios
                 .post(`${userData.bot_configuration.web_staging_url}/api/bot`, body_json)
                 .then((res) => {
-                    handleSnackBarMessageOpen("Bot Configuration Sent Successfully", "#68b04b", 2000)
+                    handleSnackBarMessageOpen("Bot Configuration Sent Successfully", "success", 2000)
                 })
                 .catch((res) => {
                     console.log("Error Data")
-                    handleSnackBarMessageOpen("Sending Bot Configuration Was Not Successfully", "#ce3a32", 3000)
+                    handleSnackBarMessageOpen("Sending Bot Configuration Was Not Successfully", "destructive", 3000)
                 })
         } else if (formDialogApplyValues === "Production") {
             const body_json = {
@@ -811,10 +812,10 @@ export const useRightDrawerStore = create<RightDrawerStore>((set, get) => ({
             axios
                 .post(`${userData.bot_configuration.web_production_url}/api/bot`, body_json)
                 .then((res) => {
-                    handleSnackBarMessageOpen("Bot Configuration Sent Successfully", "#68b04b", 2000)
+                    handleSnackBarMessageOpen("Bot Configuration Sent Successfully", "success", 2000)
                 })
                 .catch((res) => {
-                    handleSnackBarMessageOpen("Sending Bot Configuration Was Not Successfully", "#ce3a32", 3000)
+                    handleSnackBarMessageOpen("Sending Bot Configuration Was Not Successfully", "destructive", 3000)
                 })
         }
 

@@ -39,7 +39,7 @@ interface RPAFormProps {
     variablesNamesOfEachRPA: Record<string, string[]>
 }
 
-export function RPAForm({
+export default function RPAForm({
     clickedElement,
     handleRightDrawerAnyFormChange,
     variablesNamesOfEachRPA,
@@ -66,7 +66,7 @@ export function RPAForm({
                                                 id={`asVariable-${index}`}
                                                 checked={clickedElement.data.rpaVariables[index].asVariable || false}
                                                 onCheckedChange={(checked) => {
-                                                    const event = { target: { name: "asVariable", checked } }
+                                                    const event = { target: { name: "asVariable", checked, type : "checkbox" } }
                                                     handleRightDrawerAnyFormChange(event, index, "asVariable", -1, false)
                                                 }}
                                             />
@@ -82,7 +82,6 @@ export function RPAForm({
                                                 <Input
                                                     name="value"
                                                     placeholder="Value"
-                                                    className="w-[93%] mx-2 mb-2 text-xs"
                                                     value={clickedElement.data.rpaVariables[index][varKey] || ""}
                                                     onChange={(event) => handleRightDrawerAnyFormChange(event, index, varKey, -1, false)}
                                                 />

@@ -649,7 +649,7 @@ const Dyn: React.FC<DynamicComponentProps> = (props) => {
 
             {level === 0 && (
                 <div className="mt-4">
-                    <Label className="block text-sm font-normal mb-2">{`Add new ${json.title}`}</Label>
+                    <Label className="block text-xs font-normal mb-2">{`Add new ${json.title}`}</Label>
                     <Button
                         type="button"
                         variant="outline"

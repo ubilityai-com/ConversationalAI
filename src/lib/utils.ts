@@ -6,6 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 interface DropdownItem {
+  id:string
   type: "dropdown";
   value: string;
   typeOfValue?: "integer" | "array" | string;
@@ -14,6 +15,7 @@ interface DropdownItem {
 }
 
 interface DynamicItem {
+  id:string
   type: "dynamic";
   variableName: string;
   fieldsArray: ApiResItem[][];
@@ -24,6 +26,7 @@ interface DynamicItem {
 }
 
 interface TextFieldItem {
+  id:string
   type: "textfield" | "textFormatter";
   value: string;
   typeOfValue?: "integer" | "float" | string;
