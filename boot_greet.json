@@ -1,0 +1,122 @@
+{
+    "firstElementId": {
+        "next": "72948516",
+        "start": false,
+        "greet": "hello, iam your ubility bot",
+        "cancel": "cancel conv"
+    },
+    "72948516": {
+        "next": "29374819",
+        "type": "Message",
+        "text": "what is your first name ?",
+        "saveUserInputAs": "user_firstname",
+        "usedVariables": null
+    },
+    "29374819": {
+        "next": "19375629",
+        "type": "Message",
+        "text": "what is your last name ?",
+        "saveUserInputAs": "user_last_name",
+        "usedVariables": null
+    },
+    "19375629": {
+        "next": "97304308",
+        "type": "Message",
+        "text": "hello ${user_firstname} ${user_last_name}",
+        "saveUserInputAs": null,
+        "usedVariables": [
+            "user_firstname",
+            "user_last_name"
+        ]
+    },
+    "97304308": {
+        "type": "MultipleChoice",
+        "choices": [
+            "English",
+            "العربية"
+        ],
+        "message": "Please choose the language الرجاء اختيار اللغة",
+        "next": "9730430c",
+        "saveUserInputAs": "language",
+        "usedVariables": null
+    },
+    "9730430c": {
+        "type": "Handler",
+        "cases": {
+            "English": "2f5902c4",
+            "العربية": "43f67c34",
+            "Other": "79b2c254"
+        },
+        "saveUserInputAs": null,
+        "usedVariables": [
+            "language"
+        ]
+    },
+    "2f5902c4": {
+        "next": "7bb0cd1d",
+        "type": "Message",
+        "text": "your lang is eng",
+        "saveUserInputAs": null,
+        "usedVariables": null
+    },
+    "43f67c34": {
+        "next": "7bb0cd1d",
+        "type": "Message",
+        "text": "لغتك العربية",
+        "saveUserInputAs": null,
+        "usedVariables": null
+    },
+    "79b2c254": {
+        "next": "67345894",
+        "type": "Message",
+        "text": "please don't type !!!!!!!!!!!!!",
+        "saveUserInputAs": null,
+        "usedVariables": null
+    },
+    "7bb0cd1d": {
+        "type": "Router",
+        "conditions": [
+            {
+                "dataType": "string",
+                "operation": "equal",
+                "firstOperator": "${user_firstname}",
+                "secondOperator": "kahled",
+                "next": "198s73j9k"
+            },
+            {
+                "dataType": "number",
+                "operation": "greaterThan",
+                "firstOperator": 8,
+                "secondOperator": 9,
+                "next": "ma82je7g"
+            },
+            {
+                "next":"67345894"
+            }
+        ],
+        "saveUserInputAs": null,
+        "usedVariables": null
+    },
+    "198s73j9k": {
+        "next": "67345894",
+        "type": "Message",
+        "text": "condition1",
+        "saveUserInputAs": null,
+        "usedVariables": null
+    },
+    "ma82je7g": {
+        "next": "67345894",
+        "type": "Message",
+        "text": "condition2",
+        "saveUserInputAs": null,
+        "usedVariables": null
+    },
+    "67345894": {
+        "next": null,
+        "type": "Message",
+        "text": "bye bye",
+        "saveUserInputAs": null,
+        "usedVariables": null,
+        "startFrom": "97304308"
+    }
+}
