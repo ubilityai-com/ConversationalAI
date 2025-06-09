@@ -1,6 +1,7 @@
 class Router {
-    constructor(conditions) {
+    constructor(conditions,usedVariables) {
         this.conditions = conditions;
+        this.usedVariables = usedVariables || [];
     }
 
     evaluateCondition(condition, variables) {
@@ -32,9 +33,16 @@ class Router {
 
     // replace variables
     _getValue(value, variables) {
-        if (typeof value === 'string' && value.startsWith('${') && value.endsWith('}')) {
+        if (typeof value === 'string' && 
+            value.startsWith('${') && 
+            value.endsWith('}')) {
+            
             const varName = value.slice(2, -1);
-            return variables[varName] || '';
+            
+            // Only replace if variable is in usedVariables
+            if (this.usedVariables.includes(varName)) {
+                return variables[varName] || '';
+            }
         }
         return value;
     }

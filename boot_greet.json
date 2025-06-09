@@ -6,11 +6,24 @@
         "cancel": "cancel conv"
     },
     "72948516": {
-        "next": "29374819",
+        "next": "j283udr5",
         "type": "Message",
         "text": "what is your first name ?",
         "saveUserInputAs": "user_firstname",
         "usedVariables": null
+    },
+    "j283udr5": {
+        "next": "29374819",
+        "type": "TextFormatter",
+        "data": {
+            "operation": "uppercase",
+            "inputText": "${user_firstname}",
+            "saveOutputAs": "new_user_firstname"
+        },
+        "saveUserInputAs": null,
+        "usedVariables": [
+            "user_firstname"
+        ]
     },
     "29374819": {
         "next": "19375629",
@@ -22,11 +35,12 @@
     "19375629": {
         "next": "97304308",
         "type": "Message",
-        "text": "hello ${user_firstname} ${user_last_name}",
+        "text": "hello ${user_firstname} ${user_last_name} your name in uppercase is ${new_user_firstname}",
         "saveUserInputAs": null,
         "usedVariables": [
             "user_firstname",
-            "user_last_name"
+            "user_last_name",
+            "new_user_firstname"
         ]
     },
     "97304308": {
@@ -67,11 +81,28 @@
         "usedVariables": null
     },
     "79b2c254": {
+        "next": "7eudf8r3",
+        "type": "FlowInvoker",
+        "data": {
+            "url": "https://api.ubilityai.com/api/webhook?u_id=2&file=SubFlow-6c4cff7c-8014-48dd-b77a-d9206eda3f4c",
+            "authentication": {
+                "type": "Bearer",
+                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzQ5NDg0NDc4LCJleHAiOjE3NDk0ODc0Nzh9.aI2RqjcbweUNfVgv_MuiMAd9iASk7YbtnnQzisHWoe4"
+            },
+            "body": {
+                "name": "${user_firstname}"
+            },
+            "saveOutputAs": "api_result"
+        },
+        "saveUserInputAs": null,
+        "usedVariables": ["user_firstname"]
+    },
+    "7eudf8r3": {
         "next": "67345894",
         "type": "Message",
-        "text": "please don't type !!!!!!!!!!!!!",
+        "text": "hi ${name} from webhook the len is ${len}",
         "saveUserInputAs": null,
-        "usedVariables": null
+        "usedVariables": ["name","len"]
     },
     "7bb0cd1d": {
         "type": "Router",
@@ -80,7 +111,7 @@
                 "dataType": "string",
                 "operation": "equal",
                 "firstOperator": "${user_firstname}",
-                "secondOperator": "kahled",
+                "secondOperator": "Mohamad",
                 "next": "198s73j9k"
             },
             {
@@ -91,11 +122,13 @@
                 "next": "ma82je7g"
             },
             {
-                "next":"67345894"
+                "next": "67345894"
             }
         ],
         "saveUserInputAs": null,
-        "usedVariables": null
+        "usedVariables": [
+            "user_firstname"
+        ]
     },
     "198s73j9k": {
         "next": "67345894",

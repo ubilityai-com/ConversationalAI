@@ -1,9 +1,11 @@
 const Message = require('./elements/message');
 const MultipleChoice = require('./elements/multipleChoice');
 const Router = require('./elements/router');
+const TextFormatter = require('./elements/textFormatter');
+const FlowInvoker = require('./elements/flowInvoker');
 
 
-function executeProcess(socket, conversationId, session, dialogue) {
+async function executeProcess(socket, conversationId, session, dialogue) {
     let element_type = '';
     let text = null
 
@@ -51,10 +53,15 @@ function executeProcess(socket, conversationId, session, dialogue) {
             choice_obj.send(socket);
             break;
         case 'Handler':
-            return handleRouting(socket, conversation,conversationId, session, dialogue, current_dialogue);
+            return handleRouting(socket, conversation, conversationId, session, dialogue, current_dialogue);
         case 'Router':
-            return handleRouter(socket,conversation, conversationId, session, dialogue, current_dialogue);
-
+            return handleRouter(socket, conversation, conversationId, session, dialogue, current_dialogue);
+        case 'TextFormatter':
+            handleTextFormatter(conversation, current_dialogue);
+            break;
+        case 'FlowInvoker':
+            await handleFlowInvoker(conversation, current_dialogue);
+            break;
         default:
             console.warn('Invalid element type:', element_type);
     }
@@ -115,7 +122,7 @@ function replaceVariables(template, json_variables, array_variables) {
 }
 
 
-function handleRouting(socket, conversation,conversationId, session, dialogue, current_dialogue) {
+function handleRouting(socket, conversation, conversationId, session, dialogue, current_dialogue) {
     const usedVariables = current_dialogue['usedVariables'][0];
     const caseValue = conversation.variables[usedVariables];
 
@@ -137,15 +144,56 @@ function handleRouting(socket, conversation,conversationId, session, dialogue, c
 }
 
 
-function handleRouter(socket,conversation, conversationId, session, dialogue, current_dialogue) {
-    const router = new Router(current_dialogue.conditions);
+function handleRouter(socket, conversation, conversationId, session, dialogue, current_dialogue) {
+    const router = new Router(
+        current_dialogue.conditions,
+        current_dialogue.usedVariables
+    );
     const nextStep = router.findNextStep(conversation.variables);
-    
+
     if (nextStep) {
         conversation.current_step = nextStep;
         executeProcess(socket, conversationId, session, dialogue);
     } else {
         console.error('No valid condition found in Router');
+    }
+}
+
+function handleTextFormatter(conversation, current_dialogue) {
+    const formatter = new TextFormatter(
+        current_dialogue.data,
+        current_dialogue.usedVariables
+    );
+    const result = formatter.process(conversation.variables);
+
+    // Save result to session variables
+    conversation.variables[current_dialogue.data.saveOutputAs] = result;
+}
+
+
+async function handleFlowInvoker(conversation, current_dialogue) {
+    const invoker = new FlowInvoker(
+        current_dialogue.data,
+        current_dialogue.usedVariables
+    );
+    
+    try {
+        let result = await invoker.makeRequest(conversation.variables);
+        
+        result = JSON.parse(result)
+        // Save nested End object properties as individual variables
+        if (result && result.End && typeof result.End === 'object') {
+            for (const [key, value] of Object.entries(result.End)) {
+                conversation.variables[key] = value;
+            }
+        }
+        else{
+            console.log("/////////////")
+            console.error(result);
+        }
+
+    } catch (error) {
+        console.error('FlowInvoker failed:', error);
     }
 }
 
