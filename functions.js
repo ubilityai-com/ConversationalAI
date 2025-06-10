@@ -3,6 +3,7 @@ const MultipleChoice = require('./elements/multipleChoice');
 const Router = require('./elements/router');
 const TextFormatter = require('./elements/textFormatter');
 const FlowInvoker = require('./elements/flowInvoker');
+const VariableManager = require('./elements/variableManager');
 
 
 async function executeProcess(socket, conversationId, session, dialogue) {
@@ -61,6 +62,9 @@ async function executeProcess(socket, conversationId, session, dialogue) {
             break;
         case 'FlowInvoker':
             await handleFlowInvoker(conversation, current_dialogue);
+            break;
+        case 'VariableManager':
+            handleVariableManager(conversation, current_dialogue);
             break;
         default:
             console.warn('Invalid element type:', element_type);
@@ -176,10 +180,10 @@ async function handleFlowInvoker(conversation, current_dialogue) {
         current_dialogue.data,
         current_dialogue.usedVariables
     );
-    
+
     try {
         let result = await invoker.makeRequest(conversation.variables);
-        
+
         result = JSON.parse(result)
         // Save nested End object properties as individual variables
         if (result && result.End && typeof result.End === 'object') {
@@ -187,14 +191,25 @@ async function handleFlowInvoker(conversation, current_dialogue) {
                 conversation.variables[key] = value;
             }
         }
-        else{
-            console.log("/////////////")
+        else {
             console.error(result);
         }
 
     } catch (error) {
         console.error('FlowInvoker failed:', error);
     }
+}
+
+function handleVariableManager(conversation, current_dialogue) {
+    const manager = new VariableManager(
+        current_dialogue.data,
+        current_dialogue.usedVariables
+    );
+    
+    const result = manager.process(conversation.variables);
+    
+    // Update the session variable
+    conversation.variables[result.variable] = result.value;
 }
 
 module.exports = { executeProcess, saveUserInput };
