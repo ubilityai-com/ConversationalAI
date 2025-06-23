@@ -1,0 +1,65 @@
+"""
+credentials_view.py
+-------------------
+Flask route handlers for managing credentials.
+"""
+
+from app import http_app
+from pydantic import BaseModel
+from models.credentials import create_credential, list_credentials, delete_credential
+from fastapi import HTTPException
+
+
+class CredentialCreateRequest(BaseModel):
+    name: str
+    data: dict
+
+
+@http_app.post('/credentials')
+def create_credential_view(payload: CredentialCreateRequest):
+    """
+    Create a new credential.
+
+    Args:
+        payload (CredentialCreateRequest): The request body.
+
+    Returns:
+        dict: Success message.
+    """
+    try:
+        create_credential(payload.name, payload.data)
+        return {"message": "Credential created"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error creating credential: {str(e)}")
+
+
+@http_app.get('/credentials')
+def list_credentials_view():
+    """
+    List all credentials.
+
+    Returns:
+        list: A list of credentials.
+    """
+    try:
+        return list_credentials()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error listing credentials: {str(e)}")
+
+
+@http_app.delete('/credentials/{id}')
+def delete_credential_view(id: int):
+    """
+    Delete a credential by ID.
+
+    Args:
+        id (int): The credential ID.
+
+    Returns:
+        dict: Success message.
+    """
+    try:
+        delete_credential(id)
+        return {"message": "Credential deleted"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error deleting credential: {str(e)}")

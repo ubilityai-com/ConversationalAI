@@ -4,6 +4,9 @@ from datetime import datetime
 from elements.message import Message
 from functions import execute_process, save_user_input
 import uvicorn
+from fastapi import FastAPI, Request
+
+DB_FILE = 'database.db'
 
 # Memory session store
 session = {}
@@ -13,8 +16,17 @@ CANCELLATION_PHRASES = ['bye', 'quit', 'cancel', 'exit', 'stop', 'end']
 with open('demo.json') as f:
     dialogue = json.load(f)
 
+#Create the FastAPI app for HTTP routes
+http_app = FastAPI()
+
+from routes.credentials_view import *
+
+
+
 sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi')
-app = socketio.ASGIApp(sio)
+app = socketio.ASGIApp(sio, other_asgi_app=http_app)
+
+
 
 @sio.event
 async def connect(sid, environ):
@@ -98,6 +110,8 @@ async def disconnect(sid):
             print(f'conversation disconnected: {conversation_id}')
             del session[conversation_id]
             break
+
+
 
 if __name__ == '__main__':
    
