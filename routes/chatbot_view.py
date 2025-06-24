@@ -9,7 +9,8 @@ This module defines the HTTP endpoints for creating, listing, and deleting chatb
 from fastapi import HTTPException
 from pydantic import BaseModel
 from app import http_app
-from models.chatbot import create_chatbot, list_chatbots, delete_chatbot
+from models.chatbot import create_chatbot, list_chatbots, delete_chatbot, update_chatbot
+from typing import Optional
 
 
 class ChatbotCreateRequest(BaseModel):
@@ -17,6 +18,12 @@ class ChatbotCreateRequest(BaseModel):
     dialogue: dict
     ui_json: dict
     status: str
+
+
+class ChatbotUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    dialogue: Optional[dict] = None
+    ui_json: Optional[dict] = None
 
 
 @http_app.post('/chatbots')
@@ -67,3 +74,23 @@ def delete_chatbots_view(id: int):
         return {"message": "Chatbot deleted"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting chatbot: {str(e)}")
+
+
+
+@http_app.put('/chatbots/{id}')
+def update_chatbot_view(id: int, payload: ChatbotUpdateRequest):
+    """
+    Update a chatbot by ID with only the fields provided.
+
+    Args:
+        id (int): The chatbot ID.
+        payload (ChatbotUpdateRequest): The fields to update.
+
+    Returns:
+        dict: Success message.
+    """
+    try:
+        update_chatbot(id, payload.dict(exclude_unset=True))
+        return {"message": "Chatbot updated"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error updating chatbot: {str(e)}")

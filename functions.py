@@ -17,6 +17,7 @@ from elements.router import Router
 from elements.text_formatter import TextFormatter
 from elements.flow_invoker import FlowInvoker
 from elements.variable_manager import VariableManager
+from models.credentials import get_credential
 
 
 async def execute_process(sio, sid, conversation_id, session, dialogue):
@@ -79,6 +80,8 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
     elif element_type == 'FlowInvoker':
         await handle_flow_invoker(conversation, current_dialogue)
 
+    elif element_type == 'VariableManager':
+        handle_variable_manager(conversation, current_dialogue)
     elif element_type == 'VariableManager':
         handle_variable_manager(conversation, current_dialogue)
 
@@ -212,3 +215,10 @@ def handle_variable_manager(conversation: dict, current_dialogue: dict):
     )
     result = manager.process(conversation['variables'])
     conversation['variables'][result['variable']] = result['value']
+
+
+
+def get_credential_value(name: str):
+    """
+    Get Credentials value based on given name.
+    """
