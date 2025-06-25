@@ -8,6 +8,7 @@ def create_tables():
     CREATE TABLE IF NOT EXISTS credentials (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
+        type TEXT NOT NULL,
         data TEXT NOT NULL,
         created_at TEXT NOT NULL
     );

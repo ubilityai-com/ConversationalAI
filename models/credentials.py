@@ -51,3 +51,22 @@ def delete_credential(id: int) -> None:
     """
     with sqlite3.connect(DB_FILE) as conn:
         conn.execute("DELETE FROM credentials WHERE id = ?", (id,))
+
+
+def get_credential(identifier) -> Dict:
+    """
+    Retrieve a credential by ID (int) or name (str).
+
+    Args:
+        identifier (int | str): The credential ID or name.
+
+    Returns:
+        Dict: The credential entry, or None if not found.
+    """
+    with sqlite3.connect(DB_FILE) as conn:
+        if isinstance(identifier, int):
+            cursor = conn.execute("SELECT * FROM credentials WHERE id = ?", (identifier,))
+        else:
+            cursor = conn.execute("SELECT * FROM credentials WHERE name = ?", (identifier,))
+        row = cursor.fetchone()
+        return dict(zip([column[0] for column in cursor.description], row)) if row else None
