@@ -16,6 +16,7 @@ from datetime import datetime
 from fastapi import FastAPI
 from elements.message import Message
 from functions import execute_process, save_user_input
+from logger import elastic_logger
 
 # Constants
 DB_FILE = 'database.db'
@@ -77,7 +78,15 @@ async def connect(sid, environ):
         'current_step': 'firstElementId',
         'wait_for_user_input': None
     }
-
+    elastic_logger.log_element_event(
+        conversation_id=conversation_id,
+        client_id=sid,
+        node_name="Connection",
+        node_status="connected",
+        message_content="New connection established",
+        message_direction="system",
+        message_type="connection"
+    )
     conversation = session[conversation_id]
     current_step = conversation['current_step']
 
@@ -118,6 +127,15 @@ async def message(sid, data):
         return
 
     # Save input and continue process
+    elastic_logger.log_element_event(
+        conversation_id=conversation_id,
+        client_id=sid,
+        node_name='message',
+        node_status="received",
+        message_content=user_message,
+        message_direction="inbound",
+        message_type="userMessage"
+    )
     save_user_input(conversation, user_input)
     await execute_process(sio, sid, conversation_id, session, dialogue)
 
@@ -131,6 +149,15 @@ async def disconnect(sid):
         if conv['sid'] == sid:
             print(f'[Disconnected] Conversation ended: {conversation_id}')
             del session[conversation_id]
+            elastic_logger.log_element_event(
+                conversation_id=conversation_id,
+                client_id=sid,
+                node_name="Connection",
+                node_status="disconnected",
+                message_content="Client disconnected",
+                message_direction="system",
+                message_type="disconnection"
+            )
             break
 
 # ---------------------------
