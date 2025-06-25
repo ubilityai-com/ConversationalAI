@@ -63,10 +63,10 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
 
     # Element processing
     if element_type == 'Greet':
-        await Message(current_dialogue['greet']).send(sio, sid, conversation_id)
+        await Message(current_dialogue['greet']).send(sio, sid)
 
     elif element_type == 'Message':
-        await Message(text or current_dialogue['text']).send(sio, sid, conversation_id)
+        await Message(text or current_dialogue['text']).send(sio, sid)
 
     elif element_type == "LC_RAG":
         await RAG(current_dialogue['data']).stream(sio, sid)
@@ -81,7 +81,7 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
             current_dialogue['message'],
             current_dialogue['choices'],
             current_dialogue.get('usedVariables', [])
-        ).send(sio, sid, conversation_id)
+        ).send(sio, sid)
 
     elif element_type == 'Handler':
         await handle_routing(sio, sid, conversation_id, session, dialogue, current_dialogue)
