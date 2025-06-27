@@ -11,12 +11,15 @@ Includes:
 """
 
 import json
+from typing import Union
 from elements.message import Message
 from elements.multiple_choice import MultipleChoice
 from elements.router import Router
 from elements.text_formatter import TextFormatter
 from elements.flow_invoker import FlowInvoker
 from elements.variable_manager import VariableManager
+from elements.rag import RAG
+from elements.basic_llm import BasicLLM
 from models.credentials import get_credential
 
 
@@ -51,6 +54,12 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
             conversation['variables'],
             used_vars
         )
+    if 'LC' in element_type and 'usedVariables' in current_dialogue:
+        current_dialogue['data'] = replace_variables(
+            current_dialogue['data'],
+            conversation['variables'],
+            current_dialogue.get('usedVariables', [])
+        )
 
     # Element processing
     if element_type == 'Greet':
@@ -58,6 +67,14 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
 
     elif element_type == 'Message':
         await Message(text or current_dialogue['text']).send(sio, sid, conversation_id)
+
+    elif element_type == "LC_RAG":
+        await RAG(current_dialogue['data']).stream(sio, sid)
+        
+    elif element_type == "LC_BASIC_LLM":
+        result = await BasicLLM(current_dialogue['data']).stream(sio, sid)
+        if 'outputParser' in current_dialogue['data']['params'] and current_dialogue['data']['params']['outputParser']['type'] == 'StructuredOutputParser':
+            conversation = save_output_parser_vars(current_dialogue['data']['params']['outputParser'], conversation, result)
 
     elif element_type == 'MultipleChoice':
         await MultipleChoice(
@@ -116,23 +133,32 @@ def save_user_input(conversation: dict, input_object: dict):
         conversation['wait_for_user_input'] = None
 
 
-def replace_variables(template: str, variables: dict, used_variables: list) -> str:
+def replace_variables(template: Union[str, list, dict], variables: dict, used_variables: list) -> Union[str, list, dict]:
     """
-    Replace variable placeholders in a string template.
+    Recursively replace variable placeholders in a template of type str, list, or dict.
 
     Args:
-        template (str): Text with placeholders (e.g. "Hi ${name}")
+        template (Union[str, list, dict]): The template containing placeholders (e.g. "Hi ${name}")
         variables (dict): User variables to insert.
         used_variables (list): Variable names to use.
 
     Returns:
-        str: Final text with variables replaced.
+        Union[str, list, dict]: Template with all placeholders replaced.
     """
-    for key in used_variables or []:
-        placeholder = f"${{{key}}}"
-        value = variables.get(key, '')
-        template = template.replace(placeholder, str(value))
-    return template
+    def replace_in_string(text: str) -> str:
+        for key in used_variables or []:
+            placeholder = f"${{{key}}}"
+            value = variables.get(key, '')
+            text = text.replace(placeholder, str(value))
+        return text
+    if isinstance(template, str):
+        return replace_in_string(template)
+    elif isinstance(template, list):
+        return [replace_variables(item, variables, used_variables) for item in template]
+    elif isinstance(template, dict):
+        return {k: replace_variables(v, variables, used_variables) for k, v in template.items()}
+    else:
+        return template  # If template is an unexpected type, return it as-is
 
 
 async def handle_routing(sio, sid, conversation_id, session, dialogue, current_dialogue):
@@ -213,6 +239,15 @@ def handle_variable_manager(conversation: dict, current_dialogue: dict, conversa
     result = manager.process(conversation['variables'], conversation_id, sid)
     conversation['variables'][result['variable']] = result['value']
 
+def save_output_parser_vars(output_parser_data: dict, conversation: dict, result: dict):
+    """
+    Updates the conversation's variables with values from the result based on the output parser data.
+    """
+    for schema in output_parser_data["responseSchemas"]:
+        if schema['name'] in result:
+            conversation['variables'][schema['name']] = result[schema['name']]
+        
+    return conversation
 
 
 def get_credential_value(name: str):
