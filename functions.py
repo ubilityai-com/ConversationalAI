@@ -63,10 +63,10 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
 
     # Element processing
     if element_type == 'Greet':
-        await Message(current_dialogue['greet']).send(sio, sid, conversation_id)
+        await Message(current_dialogue['greet']).send(sio, sid)
 
     elif element_type == 'Message':
-        await Message(text or current_dialogue['text']).send(sio, sid, conversation_id)
+        await Message(text or current_dialogue['text']).send(sio, sid)
 
     elif element_type == "LC_RAG":
         await RAG(current_dialogue['data']).stream(sio, sid)
@@ -81,7 +81,7 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
             current_dialogue['message'],
             current_dialogue['choices'],
             current_dialogue.get('usedVariables', [])
-        ).send(sio, sid, conversation_id)
+        ).send(sio, sid)
 
     elif element_type == 'Handler':
         await handle_routing(sio, sid, conversation_id, session, dialogue, current_dialogue)
@@ -98,7 +98,7 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
         await handle_flow_invoker(conversation, current_dialogue)
 
     elif element_type == 'VariableManager':
-        handle_variable_manager(conversation, current_dialogue, conversation_id, sid)
+        handle_variable_manager(conversation, current_dialogue)
     else:
         print(f'[Warning] Invalid element type: {element_type}')
 
@@ -188,7 +188,7 @@ async def handle_router(sio, sid, conversation_id, session, dialogue, current_di
         current_dialogue['conditions'],
         current_dialogue.get('usedVariables', [])
     )
-    next_step = router.find_next_step(conversation['variables'], conversation_id, sid)
+    next_step = router.find_next_step(conversation['variables'])
 
     if next_step:
         conversation['current_step'] = next_step
@@ -228,7 +228,7 @@ async def handle_flow_invoker(conversation: dict, current_dialogue: dict):
         print(f'[FlowInvoker] Failed: {e}')
 
 
-def handle_variable_manager(conversation: dict, current_dialogue: dict, conversation_id: str, sid: str):
+def handle_variable_manager(conversation: dict, current_dialogue: dict):
     """
     Manage or mutate conversation variables based on defined logic.
     """
@@ -236,7 +236,7 @@ def handle_variable_manager(conversation: dict, current_dialogue: dict, conversa
         current_dialogue['data'],
         current_dialogue.get('usedVariables', [])
     )
-    result = manager.process(conversation['variables'], conversation_id, sid)
+    result = manager.process(conversation['variables'])
     conversation['variables'][result['variable']] = result['value']
 
 def save_output_parser_vars(output_parser_data: dict, conversation: dict, result: dict):
