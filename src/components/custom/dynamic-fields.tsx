@@ -486,12 +486,12 @@ const Dyn: React.FC<DynamicComponentProps> = (props) => {
                 json.fieldsArray.map((field, index) => (
                     <Fragment key={`field-${index}`}>
                         <div className="flex items-center justify-between px-2 py-1 border-l-2 border-gray-200 pl-2">
-                            <span className="text-sm font-medium ml-2">
+                         {json.type!=="accordion" &&   <span className="text-sm font-medium ml-2">
                                 {json.title.substring(0, json.title.length - 1) + " " + (index + 1)}
-                            </span>
+                            </span>}
 
                             <div className="flex items-center">
-                                {json.fieldsArray.length > 1 && (
+                                {json.type!=="accordion" && json.fieldsArray.length > 1 && (
                                     <TextOnlyTooltip
                                         title={"Remove " + json.title.substring(0, json.title.length - 1) + " " + (index + 1)}
                                         placement="left"
@@ -647,7 +647,7 @@ const Dyn: React.FC<DynamicComponentProps> = (props) => {
                     </Fragment>
                 ))}
 
-            {level === 0 && (
+            {json.type!=="accordion"  && (
                 <div className="mt-4">
                     <Label className="block text-xs font-normal mb-2">{`Add new ${json.title}`}</Label>
                     <Button
@@ -663,7 +663,7 @@ const Dyn: React.FC<DynamicComponentProps> = (props) => {
                 </div>
             )}
 
-            {level > 0 && json.fieldsArray.length === 0 && (
+            {json.type!=="accordion"  && json.fieldsArray.length === 0 && (
                 <div className="flex items-center justify-between px-2 py-1">
                     <span className="text-xs font-normal ml-2">{`Add new ${json.title}`}</span>
                     <TextOnlyTooltip title="Add Sub Condition" placement="left">

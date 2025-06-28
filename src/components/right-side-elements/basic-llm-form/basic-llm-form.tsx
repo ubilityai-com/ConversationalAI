@@ -1,51 +1,18 @@
+import { useNodesData } from "@xyflow/react"
+import { AlertCircle, Brain, Code2 } from "lucide-react"
 import { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card"
-import { AlertCircle, Brain, Code2, Play, Save } from "lucide-react"
-import { Badge } from "../../ui/badge"
+import { BasicLLMJson } from "../../../elements/langchain-elements/BasicLLMJson"
+import { useFlowStore } from "../../../store/flow-store"
+import { useRightDrawerStore } from "../../../store/right-drawer-store"
 import AutomationSimple from "../../custom/automation-v2"
 import { Alert, AlertDescription } from "../../ui/alert"
-import { Label } from "../../ui/label"
+import { Badge } from "../../ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card"
 import { Input } from "../../ui/input"
-import { Button } from "../../ui/button"
-import { Separator } from "../../ui/separator"
+import { Label } from "../../ui/label"
 
 
-// Mock JSON structure - replace with your actual BasicLLMJson
-const BasicLLMJson = {
-  rightSideData: {
-    json: [
-      {
-        type: "dropdown",
-        variableName: "promptType",
-        label: "Prompt Type",
-        value: "Prompt",
-        required: true,
-        list: [
-          { value: "Prompt", option: "Prompt" },
-          { value: "chatPrompt", option: "Chat Prompt" },
-        ],
-      },
-      {
-        type: "textfield",
-        variableName: "question",
-        label: "Question",
-        value: "",
-        required: true,
-        multiline: true,
-        placeholder: "Enter your question here...",
-      },
-      {
-        type: "textfield",
-        variableName: "template",
-        label: "Template",
-        value: "",
-        required: true,
-        multiline: true,
-        placeholder: "Enter your template with variables like {variable_name}...",
-      },
-    ],
-  },
-}
+
 
 // Extract variables from template string
 function extractWordsInBracesToObjects(inputString: string): Record<string, string> {
@@ -82,26 +49,29 @@ interface BasicLlmProps {
 export default function BasicLlmForm({ flowZoneSelectedElement }: BasicLlmProps) {
   // Mock Redux state - replace with actual Redux selectors
   const validate = true
-  const finaleObj = {
-    template: "",
-    question: "",
-    promptType: "Prompt",
-    messages: [],
-  }
+
   const isSaveClicked = false
   const authToken = "mock-token"
-
+  const reactflowinstance = useFlowStore(state => state.reactFlowInstance)
   const [json, setJson] = useState(flowZoneSelectedElement.data.rightSideData.json)
   const [nodesCanConnectWith] = useState(flowZoneSelectedElement.data.rightSideData.nodesCanConnectWith)
   const [outputData, setOutputData] = useState(flowZoneSelectedElement.data.rightSideData.outputData)
   const [isLoading, setIsLoading] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const isNodeValid = useRightDrawerStore(state => state.automation.validation[flowZoneSelectedElement.id]?.["json"]) || false
+  const filledData = useRightDrawerStore(state => state.automation.filledData[flowZoneSelectedElement.id]?.["json"]) || {}
+  const states = useRightDrawerStore(state => state)
 
   const jsonOutput = flowZoneSelectedElement.data.rightSideData.jsonOutput
+  const nodeData = useNodesData(flowZoneSelectedElement.id);
+  const ss = useNodesData("")
+  console.log({ ss, nodeData, json, isNodeValid, filledData,states });
+
+
   // Extract variables when template changes
   useEffect(() => {
-    if (finaleObj.template) {
-      const extractedVariables = extractWordsInBracesToObjects(finaleObj.template || "")
+    if (filledData.template) {
+      const extractedVariables = extractWordsInBracesToObjects(filledData.template || "")
       setOutputData((prev) => {
         const obj: Record<string, string> = {}
         Object.keys(extractedVariables).forEach((elm) => {
@@ -115,7 +85,7 @@ export default function BasicLlmForm({ flowZoneSelectedElement }: BasicLlmProps)
       })
       updateData()
     }
-  }, [finaleObj.template])
+  }, [filledData.template])
 
   const updateData = () => {
     const rightSideData = {
@@ -124,40 +94,40 @@ export default function BasicLlmForm({ flowZoneSelectedElement }: BasicLlmProps)
       jsonOutput: flowZoneSelectedElement.data.rightSideData.jsonOutput,
       outputData,
     }
-
+    reactflowinstance?.updateNodeData(flowZoneSelectedElement.id, rightSideData)
     // Mock dispatch calls - replace with actual Redux dispatches
-    console.log("Updating flow array data:", rightSideData)
+    console.log("Updating flow array data:", rightSideData, filledData)
     console.log("Updating validation status:", validateData())
   }
 
   const validateData = () => {
     if (validate) {
       let jsonToSend = {
-        query: finaleObj.question,
+        query: filledData.question,
         prompt: {
-          promptType: finaleObj.promptType,
+          promptType: filledData.promptType,
         },
       }
 
-      if (finaleObj.promptType === "Prompt") {
+      if (filledData.promptType === "Prompt") {
         jsonToSend = {
           ...jsonToSend,
           prompt: {
             ...jsonToSend.prompt,
-            // template: finaleObj.template,
+            // template: filledData.template,
             // inputVariables: Object.keys(outputData),
           },
           // promptInputs: outputData,
         }
-      } else if (finaleObj.promptType === "chatPrompt") {
+      } else if (filledData.promptType === "chatPrompt") {
         jsonToSend = {
           ...jsonToSend,
           prompt: {
             ...jsonToSend.prompt,
-            // template: finaleObj.template,
-            // messages: finaleObj.messages,
+            // template: filledData.template,
+            // messages: filledData.messages,
           },
-          query: finaleObj.question,
+          query: filledData.question,
         }
       }
 
@@ -179,22 +149,9 @@ export default function BasicLlmForm({ flowZoneSelectedElement }: BasicLlmProps)
       await new Promise((resolve) => setTimeout(resolve, 1000))
       updateData()
       setLastSaved(new Date())
-     
-    } catch (error) {
-     
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
-  const testConfiguration = async () => {
-    setIsLoading(true)
-    try {
-      // Mock test operation
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-      
     } catch (error) {
-     
+
     } finally {
       setIsLoading(false)
     }
@@ -243,7 +200,9 @@ export default function BasicLlmForm({ flowZoneSelectedElement }: BasicLlmProps)
         </CardHeader>
         <CardContent>
           <AutomationSimple
-            AllJson={BasicLLMJson.rightSideData.json}
+            filledDataName="json"
+            flowZoneSelectedId={flowZoneSelectedElement.id}
+            AllJson={BasicLLMJson.defaults.rightSideData.json}
             apiRes={json}
             setApiRes={setJson}
             flowZoneSelectedElement={flowZoneSelectedElement}
@@ -252,7 +211,7 @@ export default function BasicLlmForm({ flowZoneSelectedElement }: BasicLlmProps)
       </Card>
 
       {/* Template Variables */}
-      {finaleObj.promptType === "Prompt" && variableCount > 0 && (
+      {filledData.promptType === "Prompt" && variableCount > 0 && (
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -307,7 +266,7 @@ export default function BasicLlmForm({ flowZoneSelectedElement }: BasicLlmProps)
         </CardContent>
       </Card>
 
-   
+
     </div>
   )
 }

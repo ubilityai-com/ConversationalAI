@@ -399,7 +399,7 @@ export function ApiCaller({
                     } else valid = false
                 }
             })
-        }
+        }else valid=true
 
         return valid
     }
@@ -425,9 +425,12 @@ export function ApiCaller({
     
     // Effect for initial load
     useEffect(() => {
+        console.log({notFetchingAsFirstTime});
+        
         if (!notFetchingAsFirstTime) {
             const valid = validateDependencies()
-
+            console.log({valid});
+            
             if (valid && !isUsingAi) {
                 console.log("first", !apiJson.hasOwnProperty("credential"))
                 callDynamicAPI(apiJson.config, apiJson.res)
@@ -540,6 +543,9 @@ export function ApiCaller({
                 />
             ) : (
                 <SearchableSelect
+                    showRefresh
+                    loading={isLoadingList}
+                    onRefresh={()=>callDynamicAPI(apiJson.config, apiJson.res)}
                     name={apiJson.variableName}
                     value={apiJson.value}
                     onChange={handleChange}

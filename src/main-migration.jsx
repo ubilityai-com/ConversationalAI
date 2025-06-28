@@ -66,7 +66,7 @@ const Main = () => {
     Cookies.remove("botType")
 
     //next line is temporerly for testing issues
-    const newAuthToken = authToken ? authToken : process.env.REACT_APP_GET_CARDS_INETENTS_ENTITIES_TOKEN
+    const newAuthToken = authToken
     setAuthToken(newAuthToken)
     setBotType(botType ? botType : "Web")
     getDetailsOfUser(newAuthToken)
@@ -171,6 +171,29 @@ const Main = () => {
           newData.sort((a, b) =>
             a.name.toUpperCase() > b.name.toUpperCase() ? 1 : b.name.toUpperCase() > a.name.toUpperCase() ? -1 : 0,
           )
+          newData = newData.map(flow => {
+            const get = (droppedElement) => {
+              const rpaVariables = droppedElement.inputs
+                ? Object.entries(droppedElement.inputs).map(([key, val]) => ({
+                  [key]: val,
+                  asVariable: false,
+                }))
+                : [];
+
+              return {
+                label: droppedElement.name,
+                inputs: { ...droppedElement.inputs, None: "None" },
+                outputs: { ...droppedElement.outputs },
+                rpaOutputs: droppedElement.rpaoutputs?.length ? [...droppedElement.rpaoutputs] : [],
+                variables: { ...droppedElement.variables },
+                icon: "DeviceHub",
+                color: "#8f8f8f",
+                token: droppedElement.token,
+                rpaVariables,
+              };
+            }
+            return { ...flow, type: "RPA", defaults: get(flow) }
+          })
           setRpasList(newData)
         } else if (stateName === "cards") {
           newData.sort((a, b) =>
@@ -304,10 +327,11 @@ const Main = () => {
             isNode = false
           }
         }
-
+        console.log({ myRPADropdownVariables });
         if (myRPADropdownVariables && myRPADropdownVariables.length > 0) {
           newVariablesNamesOfEachRPA = { ...newVariablesNamesOfEachRPA, [RPAElement.id]: myRPADropdownVariables }
           setVariablesNamesOfEachRPA(newVariablesNamesOfEachRPA)
+          console.log({ newVariablesNamesOfEachRPA });
         }
       }
     })

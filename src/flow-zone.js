@@ -67,8 +67,8 @@ const FlowZone = () => {
         let defaults = droppedElement.defaults || {};
         if (defaults.automated) {
           defaults = { ...defaults, rightSideData: { ...defaults.rightSideData, json: setAutomationArray(defaults.rightSideData.json) } }
+          console.log({ sss: setAutomationArray(defaults.rightSideData.json) })
         }
-        console.log({ sss: setAutomationArray(defaults.rightSideData.json) })
         newData = {
           ...newData,
           color: droppedElement.color,

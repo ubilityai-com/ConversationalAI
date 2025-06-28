@@ -1,5 +1,5 @@
 import { TooltipContent } from "@radix-ui/react-tooltip"
-import { AlertTriangle, Plus, Sparkles } from "lucide-react"
+import { AlertTriangle, Minus, Plus, Sparkles } from "lucide-react"
 import React, { Fragment, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import { ApiResItem, cn } from "../../lib/utils"
@@ -11,6 +11,7 @@ import { Label } from "../ui/label"
 import { Separator } from "../ui/separator"
 import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 import AutomationSimple from "./automation-v2"
+import TextOnlyTooltip from "./text-tooltip"
 interface DynamicInputFieldsProps {
   json: {
     type: string
@@ -192,6 +193,7 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
   const fieldsArray = Array.isArray(json.fieldsArray) ? json.fieldsArray : []
   const hasRequiredError = json.required && fieldsArray.length === 0
   const hasRequiredSuccess = json.required && fieldsArray.length > 0
+  console.log({ json });
 
   return (
     <div className="space-y-4">
@@ -202,7 +204,8 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
           hasRequiredSuccess && "border-l-4 border-green-500 pl-3",
         )}
       >
-        {json.type !== "accordion" && (
+
+        {/* {json.type !== "accordion" && (
           <div className="flex items-center justify-between">
             <div className="flex-1">
               <DynamicFieldsLabel
@@ -215,7 +218,7 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
             </div>
             {UseAIIconHTML}
           </div>
-        )}
+        )} */}
 
         {/* Fields List */}
         {fieldsArray.length > 0 && (
@@ -227,15 +230,19 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
                     <Badge variant="secondary" className="text-xs">
                       {json.title} {index + 1}
                     </Badge>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="h-7 px-2 text-xs"
-                      onClick={() => onRemoveVariables(index)}
-                      disabled={disabled || isActive}
+                    <TextOnlyTooltip
+                      title={"Remove " + json.title.substring(0, json.title.length - 1) + " " + (index + 1)}
+                      placement="left"
                     >
-                      Remove
-                    </Button>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => onRemoveVariables(index)}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                    </TextOnlyTooltip>
                   </div>
 
                   <AutomationSimple
@@ -255,14 +262,30 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
             ))}
           </div>
         )}
+        {json.type !== "accordion" && (
+          <div className="mt-4">
+            <Label className="block text-xs font-normal mb-2">{`Add new ${json.title}`}</Label>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onAddVariables}
+              className="mt-2"
+            >
+
+              <Plus className="h-4 w-4 mr-2" /> ADD
+            </Button>
+          </div>
+        )}
+
 
         {/* Empty State */}
-        {fieldsArray.length === 0 && !hasRequiredError && (
+        {/* {fieldsArray.length === 0 && !hasRequiredError && (
           <div className="text-center py-8 text-gray-500 dark:text-gray-400">
             <div className="text-sm">No {json.title.toLowerCase()} added yet</div>
             <div className="text-xs mt-1">Click "Add" to create your first {json.title.toLowerCase()}</div>
           </div>
-        )}
+        )} */}
       </div>
 
       {/* Validation Error */}

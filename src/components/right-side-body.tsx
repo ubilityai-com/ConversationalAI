@@ -1,4 +1,4 @@
-import { Node } from '@xyflow/react';
+import { useNodesData } from '@xyflow/react';
 import { ComponentType, useEffect, useState } from 'react';
 import { useFlowStore } from '../store/flow-store';
 import { useRightDrawerStore } from '../store/right-drawer-store';
@@ -33,11 +33,11 @@ export default function RightSideBody() {
             console.log(
                 `./right-side-elements/${camelToDashCase(clickedElement.type)}-form/${camelToDashCase(clickedElement.type)}-form.tsx`
             );
-            
+
             // Dynamically import the component with TypeScript typing
             const module = await import(`./right-side-elements/${camelToDashCase(clickedElement.type)}-form/${camelToDashCase(clickedElement.type)}-form.tsx`);
-            console.log({module});
-            
+            console.log({ module });
+
             setComponent(() => module.default);
             setIsLoading(false)
         };
@@ -47,17 +47,16 @@ export default function RightSideBody() {
 
 
 
-    let ClickedElement
-    if (clickedElement)
-        ClickedElement = nodes.find((elt: Node) => elt.id === clickedElement.id);
-    else return <></>
+    const ClickedElement = useNodesData(clickedElement?.id)
+    if (!clickedElement)
+        return <></>
 
     return (
         <div className="p-4">
             {isLoading && <>Loading ........</>}
             {Component && Component.name === `${clickedElement.type}Form` && !isLoading &&
                 <Component
-                flowZoneSelectedElement={clickedElement}
+                    flowZoneSelectedElement={clickedElement}
                     handleRightDrawerAddCounters={handleRightDrawerAddCounters}
                     handleRightDrawerAddInnerCounters={handleRightDrawerAddInnerCounters}
                     handleRightDrawerAnyFormChange={handleRightDrawerAnyFormChange}

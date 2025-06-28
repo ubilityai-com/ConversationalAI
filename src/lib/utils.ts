@@ -433,3 +433,48 @@ export const validateArray = (apiRes: ApiResItem[]): boolean => {
 
   return valid;
 };
+
+
+export const getValueOptions = (apiRes: DropdownItem[], children: string[] = []): any => {
+  let ch: string[] = [...children];
+  let a: any = apiRes;
+
+  apiRes.every((item1: DropdownItem, index: number) => {
+    if (ch.length > 0) {
+      if (item1.type === "dropdown") {
+        if ((Array.isArray(ch) && ch.length > 1) || ch.length === 1) {
+          if (
+            item1.hasOwnProperty("options") &&
+            item1.options?.hasOwnProperty(ch[0])
+          ) {
+            const oldElt: string = ch[0];
+            ch = ch.slice(1);
+            if (item1.options && ch.length > 0) {
+              a = getValueOptions(item1.options[oldElt] as DropdownItem[], ch);
+            } else {
+              a = item1.options[oldElt];
+            }
+          } else {
+            a = [];
+          }
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
+  });
+  return a;
+};
+export function insertArrayAtIndex<T>(originalArray: T[], index: number, newArray: T[]): T[] {
+  // Create a new array by spreading the items before the index,
+  // then adding the items from the new array,
+  // and finally, spreading the items after the index.
+  const result: T[] = [
+    ...originalArray.slice(0, index),
+    ...newArray,
+    ...originalArray.slice(index),
+  ];
+
+  return result;
+}

@@ -1,6 +1,7 @@
 import { AlertCircle, Code, Settings, Trash2, Upload } from "lucide-react"
 import { Fragment, useEffect } from "react"
-import { cn } from "../../lib/utils"
+import { setAutomationArray } from "../../lib/automation-utils"
+import { cn, getValueOptions, insertArrayAtIndex } from "../../lib/utils"
 import { useRightDrawerStore } from "../../store/right-drawer-store"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion"
 import { Badge } from "../ui/badge"
@@ -13,7 +14,7 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
 import { Separator } from "../ui/separator"
 import { Textarea } from "../ui/textarea"
 import ApiCaller from "./async-dropdown"
-import DynamicFields from "./dynamic-fields"
+import DynamicFields from "./dynamic-fields-v2"
 import { SearchableSelect } from "./searchable-select"
 
 // Validation functions
@@ -194,9 +195,9 @@ const transformFunctions = {
     }
     return {}
   },
-  api: (item:any) => {
-    console.log({item});
-    
+  api: (item: any) => {
+    console.log({ item });
+
     if (item.value !== "None" && item.value !== "") {
       if (item.typeOfValue === "integer") {
         return { [item.variableName]: parseInt(item.value) || item.value };
@@ -226,17 +227,19 @@ export const objToReturnDynamic = (apiRes: any[]) => {
   const obj = {}
   apiRes.forEach((item) => {
     if (transformFunctions[item.type as keyof typeof transformFunctions]) {
-      console.log({obj});
-      
+      console.log({ obj });
+
       Object.assign(obj, transformFunctions[item.type as keyof typeof transformFunctions](item))
     }
   })
+  console.log({ obj });
+
   return obj
 }
 
 interface AutomationSimpleProps {
-  name?: string
-  id?: string
+  filledDataName?: string
+  flowZoneSelectedId?: string
   AllJson?: any[]
   setAllJson?: (json: any[]) => void
   apiRes: any[]
@@ -263,8 +266,8 @@ export default function AutomationSimple({
   filledArray = [],
   indexForDynamic = 0,
   disabled = false,
-  name,
-  id,
+  filledDataName,
+  flowZoneSelectedId,
   ...restProps
 }: AutomationSimpleProps) {
   const setValidationByKey = useRightDrawerStore(state => state.setValidationByKey)
@@ -273,9 +276,9 @@ export default function AutomationSimple({
     if (!InDynamic) {
       // Initialize validation and final object
       console.log("Initializing automation simple component")
-      if (id && name) {
-        setValidationByKey(id, name, validateArray(apiRes))
-        setNodeFilledDataByKey(id, name, objToReturnDynamic(apiRes))
+      if (flowZoneSelectedId && filledDataName) {
+        setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(apiRes))
+        setNodeFilledDataByKey(flowZoneSelectedId, filledDataName, objToReturnDynamic(apiRes))
       }
     }
   }, [InDynamic])
@@ -294,10 +297,10 @@ export default function AutomationSimple({
             [name]: newValue,
           }
         }
-        if (id) {
-          console.log({newApiRes});
-          setValidationByKey(id, name, validateArray(newApiRes))
-          setNodeFilledDataByKey(id, name, objToReturnDynamic(newApiRes))
+        if (flowZoneSelectedId && filledDataName) {
+          console.log({ newApiRes });
+          setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(newApiRes))
+          setNodeFilledDataByKey(flowZoneSelectedId, filledDataName, objToReturnDynamic(newApiRes))
         }
         return newApiRes
       })
@@ -322,7 +325,47 @@ export default function AutomationSimple({
       })
     }
   }
-
+  const onChangeDropdown = ({
+    name,
+    index,
+    children,
+    oldValue,
+    newValue,
+    variableName,
+  }: any) => {
+    const newArray = setAutomationArray(
+      getValueOptions(AllJson, [...children, newValue]),
+      [...children, newValue]
+    );
+    let indexToInsertAt = -1;
+    let newApiRes: any[] = [];
+    apiRes.forEach((item, ind) => {
+      if (
+        item.hasOwnProperty("child") &&
+        item.child.length > 0 &&
+        item.child.find((e: string) => e === oldValue)
+      ) {
+        if (indexToInsertAt === -1) indexToInsertAt = ind;
+      } else {
+        newApiRes.push(item);
+      }
+    });
+    newApiRes = insertArrayAtIndex(newApiRes, index + 1, newArray);
+    newApiRes[index] = { ...newApiRes[index], value: newValue };
+    if (!InDynamic && flowZoneSelectedId && filledDataName && setApiRes) {
+      console.log({ newApiRes });
+      setApiRes(newApiRes);
+      setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(newApiRes))
+      setNodeFilledDataByKey(flowZoneSelectedId, filledDataName, objToReturnDynamic(newApiRes))
+    } else
+      onChangeDynamicVariables?.({
+        index: indexForDynamic,
+        event: newApiRes,
+        innerIndex: index,
+        name: variableName,
+        keyToChange: name,
+      });
+  };
   const renderField = (item: any, index: number) => {
     const commonProps = {
       disabled: item.disabled || disabled,
@@ -391,13 +434,24 @@ export default function AutomationSimple({
             <SearchableSelect
               options={item.list?.map((opt: any) => ({ value: opt.value, label: opt.option })) || []}
               value={item.value || ""}
-              onChange={(value) =>
-                onChangeAutomationSimple({
-                  name: "value",
-                  index,
-                  newValue: value,
-                  variableName: item.variableName,
-                })
+              onChange={(value) => {
+                if (item.hasOwnProperty("noOpts"))
+                  onChangeAutomationSimple({
+                    name: "value",
+                    index: index,
+                    newValue: value,
+                    variableName: item.variableName,
+                  });
+                else
+                  onChangeDropdown({
+                    name: "value",
+                    index,
+                    children: item.child,
+                    oldValue: item.value,
+                    newValue: value,
+                    variableName: item.variableName,
+                  });
+              }
               }
               placeholder={`Select ${item.label?.toLowerCase()}`}
               className={cn(item.errorSpan && "border-red-500")}
@@ -683,16 +737,7 @@ export default function AutomationSimple({
             <span className="text-sm font-medium">
               {item.title} {indexForDynamic + 1}
             </span>
-            {item.removeButton && (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => onRemoveVariables?.(indexForDynamic)}
-                {...commonProps}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            )}
+            
           </div>
         )
 
