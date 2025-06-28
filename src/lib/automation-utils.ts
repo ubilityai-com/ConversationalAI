@@ -12,9 +12,11 @@ type AutomationItem = BaseAutomationItem & {
  */
 export const setAutomationArray = (apiRes: AutomationItem[], child?: string[]) => {
     const result: AutomationItem[] = []
+    console.log({ apiRes, child });
 
     apiRes.forEach((item) => {
         const childArray = Array.isArray(child) ? child : []
+        console.log({ item, childArray });
 
         switch (item.type) {
             case "dropdown": {
@@ -32,6 +34,8 @@ export const setAutomationArray = (apiRes: AutomationItem[], child?: string[]) =
                     // Process nested options based on current value
                     if (item.options && item.value && item.options[item.value]) {
                         const nestedItems = setAutomationArray(item.options[item.value], [...childArray, item.value])
+                        console.log({ nestedItems });
+
                         result.push(...nestedItems)
                     }
                 } else {
@@ -60,7 +64,7 @@ export const setAutomationArray = (apiRes: AutomationItem[], child?: string[]) =
                         child: childArray,
                         json: {
                             ...item.json,
-                            fieldsArray: item.json.fieldsArray.flatMap((field) =>
+                            fieldsArray: item.json.fieldsArray.map((field) =>
                                 setAutomationArray(Array.isArray(field) ? field : [field]),
                             ),
                         },
@@ -115,6 +119,7 @@ export const setAutomationArray = (apiRes: AutomationItem[], child?: string[]) =
             }
         }
     })
+    console.log({ result });
 
     return result
 }
@@ -134,36 +139,36 @@ export const cloneAutomationItem = (item: AutomationItem): AutomationItem => {
  * @param id - ID to search for
  * @returns Found automation item or undefined
  */
-export const findAutomationItemById = (items: AutomationItem[], id: string): AutomationItem | undefined => {
-    for (const item of items) {
-        if (item.id === id) {
-            return item
-        }
+// export const findAutomationItemById = (items: AutomationItem[], id: string): AutomationItem | undefined => {
+//     for (const item of items) {
+//         if (item.id === id) {
+//             return item
+//         }
 
-        // Search in nested structures
-        if (item.type === "dynamic") {
-            if ("json" in item && item.json?.fieldsArray) {
-                const found = findAutomationItemById(Array.isArray(item.json.fieldsArray) ? item.json.fieldsArray : [], id)
-                if (found) return found
-            }
-            if ("fieldsArray" in item && Array.isArray(item.fieldsArray)) {
-                for (const fieldArray of item.fieldsArray) {
-                    const found = findAutomationItemById(Array.isArray(fieldArray) ? fieldArray : [fieldArray], id)
-                    if (found) return found
-                }
-            }
-        }
+//         // Search in nested structures
+//         if (item.type === "dynamic") {
+//             if ("json" in item && item.json?.fieldsArray) {
+//                 const found = findAutomationItemById(Array.isArray(item.json.fieldsArray) ? item.json.fieldsArray : [], id)
+//                 if (found) return found
+//             }
+//             if ("fieldsArray" in item && Array.isArray(item.fieldsArray)) {
+//                 for (const fieldArray of item.fieldsArray) {
+//                     const found = findAutomationItemById(Array.isArray(fieldArray) ? fieldArray : [fieldArray], id)
+//                     if (found) return found
+//                 }
+//             }
+//         }
 
-        if (item.type === "accordion" && "fieldsArray" in item && Array.isArray(item.fieldsArray)) {
-            for (const fieldArray of item.fieldsArray) {
-                const found = findAutomationItemById(Array.isArray(fieldArray) ? fieldArray : [fieldArray], id)
-                if (found) return found
-            }
-        }
-    }
+//         if (item.type === "accordion" && "fieldsArray" in item && Array.isArray(item.fieldsArray)) {
+//             for (const fieldArray of item.fieldsArray) {
+//                 const found = findAutomationItemById(Array.isArray(fieldArray) ? fieldArray : [fieldArray], id)
+//                 if (found) return found
+//             }
+//         }
+//     }
 
-    return undefined
-}
+//     return undefined
+// }
 
 /**
  * Utility function to update an automation item by ID
@@ -296,8 +301,8 @@ export const validateAutomationArray = (
         if (item.type === "dynamic") {
             if ("json" in item && item.json?.fieldsArray) {
                 const fieldsArray = Array.isArray(item.json.fieldsArray) ? item.json.fieldsArray : []
-                fieldsArray.forEach((field, index) => {
-                    validateItem(field, `${path}.json.fieldsArray[${index}]`)
+                fieldsArray.forEach((fieldList, fieldListIndex) => {
+                    fieldList.map((field, index) => validateItem(field, `${path}.json.fieldsArray[${fieldListIndex}][${index}]`))
                 })
             }
             if ("fieldsArray" in item && Array.isArray(item.fieldsArray)) {
@@ -353,7 +358,7 @@ export const getVariableNames = (items: AutomationItem[]): string[] => {
         if (item.type === "dynamic") {
             if ("json" in item && item.json?.fieldsArray) {
                 const fieldsArray = Array.isArray(item.json.fieldsArray) ? item.json.fieldsArray : []
-                fieldsArray.forEach(extractVariableNames)
+                fieldsArray.forEach(fieldList => fieldList.forEach(extractVariableNames))
             }
             if ("fieldsArray" in item && Array.isArray(item.fieldsArray)) {
                 item.fieldsArray.forEach((fieldArray) => {

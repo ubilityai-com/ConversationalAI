@@ -195,7 +195,7 @@ export interface BaseAutomationItem {
     json?: {
       variableName: string
       title: string
-      fieldsArray: AutomationItem[]
+      fieldsArray: AutomationItem[][]
       required?: boolean
       minSize?: number
       innerButton?: boolean

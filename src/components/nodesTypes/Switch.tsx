@@ -1,21 +1,34 @@
 import { Handle, Position } from "@xyflow/react";
 import { AlertTriangle, GitBranch, Settings } from 'lucide-react';
 import { useState } from "react";
-import { ApiResItem, objToReturnDynamic } from "../../lib/utils";
 import TextOnlyTooltip from "../custom/text-tooltip";
 import TooltipWrapper from "./RootNode";
-interface OperatorObject {
-    operator_type: string;
-    first_operator: string;
-    operation: string;
-    second_operator: string;
+export interface SwitchCase {
+    id: string
+    operator: "equals" | "not_equals" | "greater_than" | "less_than" | "contains" | "starts_with" | "ends_with"
+    firstOperand: string
+    secondOperand: string
+    checkType: "string" | "number" | "boolean" | "variable"
+    label: string
+}
+function areOperatorsEmpty(obj: SwitchCase): boolean {
+    return obj.firstOperand === "" || obj.secondOperand === "";
 }
 
-function areOperatorsEmpty(obj: OperatorObject): boolean {
-    return obj.first_operator === "" || obj.second_operator === "";
-}
-
-const SwitchNode = ({ data }: { data: { json: ApiResItem[] } }) => {
+const SwitchNode = ({ data }: {
+    data: {
+        label: string
+        description: string
+        // Switch-specific data
+        rightSideData: {
+            cases: SwitchCase[]
+            defaultCase?: {
+                id: string
+                label: string
+            }
+        }
+    }
+}) => {
     const [isHovered, setIsHovered] = useState(false)
     const getConditionPreview = (condition: string) => {
         if (condition.length > 25) {
@@ -23,8 +36,7 @@ const SwitchNode = ({ data }: { data: { json: ApiResItem[] } }) => {
         }
         return condition;
     };
-    console.log({ data, cases: objToReturnDynamic(data.json) });
-    const cases = objToReturnDynamic(data.json)?.conditions
+    const cases = data.rightSideData.cases
     return (
         <TooltipWrapper>
 
@@ -62,7 +74,7 @@ const SwitchNode = ({ data }: { data: { json: ApiResItem[] } }) => {
                 </div>
 
                 <div className="p-3 space-y-2">
-                    {cases.map((caseItem: OperatorObject, index: number) => {
+                    {cases.map((caseItem: SwitchCase, index: number) => {
                         const isEmpty = areOperatorsEmpty(caseItem);
                         return (
                             <div key={index} className="relative group">
@@ -74,7 +86,7 @@ const SwitchNode = ({ data }: { data: { json: ApiResItem[] } }) => {
                                     className="w-3 h-3 bg-violet-500 border-2 border-white shadow-sm  group-hover:opacity-100 transition-opacity"
                                     style={{
                                         top: '50%',
-                                        right:"-6%",
+                                        right: "-6%",
                                         transform: 'translateY(-50%)',
                                         background: 'hsl(243.4 75.4% 58.6%)',
                                         borderRadius: "2px",
@@ -113,7 +125,7 @@ const SwitchNode = ({ data }: { data: { json: ApiResItem[] } }) => {
                                         </div>
                                     ) : (
                                         <div className="text-sm text-slate-700 dark:text-slate-200 font-mono bg-white dark:bg-zinc-900 px-2 py-1 rounded border border-slate-200 dark:border-zinc-700">
-                                            {getConditionPreview(`${caseItem.first_operator} ${caseItem.operation} ${caseItem.second_operator}`)}
+                                            {getConditionPreview(`${caseItem.firstOperand} ${caseItem.operator} ${caseItem.secondOperand}`)}
                                         </div>
                                     )}
                                 </div>
@@ -131,7 +143,7 @@ const SwitchNode = ({ data }: { data: { json: ApiResItem[] } }) => {
                             className="w-3 h-3 bg-violet-500 border-2 border-white shadow-sm  group-hover:opacity-100 transition-opacity"
                             style={{
                                 top: '50%',
-                                right:"-6%",
+                                right: "-6%",
                                 transform: 'translateY(-50%)',
                                 background: 'hsl(243.4 75.4% 58.6%)',
                                 borderRadius: "2px",

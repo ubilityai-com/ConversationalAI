@@ -3,25 +3,29 @@ import '@xyflow/react/dist/style.css';
 import { v4 as uuidv4 } from "uuid";
 import ButtonEdge from './components/edgeTypes/button-edge';
 import connectionLine from './components/edgeTypes/connection-line';
+import { ChoiceNode } from './components/nodes/choice-node';
+import { InputNode } from './components/nodes/input-node';
+import { MessageNode } from './components/nodes/message-node';
+import { RouterNode } from './components/nodes/router-node';
 import AgentNode from './components/nodesTypes/AgentNode';
 import Chain from './components/nodesTypes/Chain';
-import ChoiceNode from './components/nodesTypes/ChoiceNode';
-import MessageNode from './components/nodesTypes/Message';
 import RPANode from './components/nodesTypes/RPA';
-import StartNode from './components/nodesTypes/StartNode';
 import SwitchNode from './components/nodesTypes/Switch';
 import { setAutomationArray } from './lib/automation-utils';
 import { useFlowStore } from './store/flow-store';
+import { EndNode } from './components/nodes/end-node';
 
 const FlowZone = () => {
   const nodeTypes = {
-    Handler: StartNode,
+    Handler: InputNode,
     Message: MessageNode,
     ChoicePrompt: ChoiceNode,
     Agent: AgentNode,
     Switch: SwitchNode,
+    Router: RouterNode,
     RPA: RPANode,
-    BasicLlm: Chain
+    BasicLlm: Chain,
+    End:EndNode
   };
   const edgeTypes = {
     buttonEdge: ButtonEdge
@@ -42,8 +46,8 @@ const FlowZone = () => {
   const setZoomAndMoveValues = useFlowStore(state => state.setZoomAndMoveValues)
   const setIDOnSelectionContextMenu = useFlowStore(state => state.setIDOnSelectionContextMenu)
   const setDroppedElement = useFlowStore(state => state.setDroppedElement)
-  const limitArray = useFlowStore(state => state.limitArray)
-  const scoreArray = useFlowStore(state => state.scoreArray)
+  const addNodesValidation = useFlowStore(state => state.addNodesValidation)
+
   const mousePositionHandleMenu = useFlowStore(state => state.mousePositionHandleMenu)
 
 
@@ -52,7 +56,7 @@ const FlowZone = () => {
     console.log({ droppedElement, nodes });
     if (droppedElement) {
       const position = reactFlowInstance.screenToFlowPosition({ x: clientX, y: clientY });
-      const generateID = uuidv4();
+      const generateID = uuidv4() + "/" + droppedElement.type;
 
       let newElement = {
         id: generateID,
@@ -66,14 +70,15 @@ const FlowZone = () => {
       if (droppedElement.type !== "Card") {
         let defaults = droppedElement.defaults || {};
         if (defaults.automated) {
-          defaults = { ...defaults, rightSideData: { ...defaults.rightSideData, json: setAutomationArray(defaults.rightSideData.json) } }
-          console.log({ sss: setAutomationArray(defaults.rightSideData.json) })
+          console.log({ defaults });
+          defaults = { ...defaults, json: setAutomationArray(defaults.json) }
+          console.log({ defaults })
         }
         newData = {
           ...newData,
           color: droppedElement.color,
           icon: droppedElement.icon,
-          ...defaults,
+          rightSideData: defaults
         };
       } else if (droppedElement.type === "Card") {
         newData = {
@@ -90,6 +95,7 @@ const FlowZone = () => {
       newElement = { ...newElement, data: newData };
       setNodes((prevNodes) => [...prevNodes, newElement]);
       setDroppedElement(null);
+      addNodesValidation(generateID, droppedElement.defaultValid)
     }
 
   }

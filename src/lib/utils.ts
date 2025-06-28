@@ -39,7 +39,8 @@ export type ApiResItem = DropdownItem | DynamicItem | TextFieldItem;
 
 export const objToReturnDynamic = (apiRes: ApiResItem[]): Record<string, any> => {
   let obj: Record<string, any> = {};
-
+  console.log({apiRes});
+  
   apiRes.forEach((item1) => {
     if (item1.type === "dropdown") {
       if (item1.value !== "None") {

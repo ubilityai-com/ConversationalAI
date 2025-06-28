@@ -21,8 +21,8 @@ type DynamicDataHandler = {
 // Update the interface to include handleSnackBarMessageOpen
 interface RightDrawerStore {
     automation: { validation: Record<string, Record<string, boolean>>, filledData: Record<string, Record<string, Record<string, any>>> }
-    setValidationByKey: (id:string, key: string, status: boolean) => void
-    setNodeFilledDataByKey: (id:string, key: string, data: Record<string, any>) => void
+    setValidationByKey: (id: string, key: string, status: boolean) => void
+    setNodeFilledDataByKey: (id: string, key: string, data: Record<string, any>) => void
 
     handleSnackBarMessageOpen: (message: string, color: "default" | "destructive" | "success" | "warning" | "info", duration: number) => void
     // Rest of the interface remains the same
@@ -33,13 +33,10 @@ interface RightDrawerStore {
         innerIndex: number,
     ) => void
     handleRightDrawerAnyFormChange: (
-        event: FormEvent,
-        index: number,
-        innerIndex: number | string,
-        entityIndex: number,
-        isHandler: boolean,
+        event: { target: { name: string, value: any } },
+        id: string
     ) => void
-    handleRightDrawerCheckIfAINLPIsChosenInBefore: (dynamicDataHandlerObj: any) => boolean
+    updateNodeRightSideData: (id: string, value: any) => void,
     handleRightDrawerSubtractCounters: (
         event: React.MouseEvent | { preventDefault: () => void },
         index: number,
@@ -51,8 +48,6 @@ interface RightDrawerStore {
         innerIndex: number,
         entityIndex: number,
     ) => void
-    handleRightDrawerUploadIconClicked: (event: React.ChangeEvent<HTMLInputElement>) => void
-    handleRightDrawerSetIconNameInItsNode: (realName: string, name: string, index: string | number) => void
     handleRightDrawerCheckIfRemovedConditionIsConnectedWhenSubtractCounters: (
         element: any,
         isHandler: boolean,
@@ -76,33 +71,33 @@ export const useRightDrawerStore = create<RightDrawerStore>()(
             set((state) => ({
                 ...state,
                 automation: {
-                  ...state.automation,
-                  validation: {
-                    ...state.automation.validation,
-                    [id]: {
-                      ...state.automation.validation[id],
-                      [key]: valid
+                    ...state.automation,
+                    validation: {
+                        ...state.automation.validation,
+                        [id]: {
+                            ...state.automation.validation[id],
+                            [key]: valid
+                        }
                     }
-                  }
                 }
-              })),
-        setNodeFilledDataByKey: (id,key, data) =>
-            {
-                console.log({id,data,key});
-                
-                set((state) => ({
+            })),
+        setNodeFilledDataByKey: (id, key, data) => {
+            console.log({ id, data, key });
+
+            set((state) => ({
                 ...state,
                 automation: {
-                  ...state.automation,
-                  filledData: {
-                    ...state.automation.filledData,
-                    [id]: {
-                      ...state.automation.filledData[id],
-                      [key]: data
+                    ...state.automation,
+                    filledData: {
+                        ...state.automation.filledData,
+                        [id]: {
+                            ...state.automation.filledData[id],
+                            [key]: data
+                        }
                     }
-                  }
                 }
-              }))},
+            }))
+        },
 
         // Add the handleSnackBarMessageOpen function
         handleSnackBarMessageOpen: (message, color, duration) => {
@@ -111,148 +106,35 @@ export const useRightDrawerStore = create<RightDrawerStore>()(
         },
 
         // Now update the handleRightDrawerAnyFormChange function to handle the event.target properly
-        handleRightDrawerAnyFormChange: (event, index, innerIndex, entityIndex, isHandler) => {
-            const { nodes, setNodes, clickedElement, variablesNamesOfEachRPA, intents, operations } = useFlowStore.getState()
-            const { handleRightDrawerCheckIfRemovedConditionIsConnectedWhenSubtractCounters, handleSnackBarMessageOpen, } = get()
+        handleRightDrawerAnyFormChange: (event, id) => {
+            const { nodes, setNodes } = useFlowStore.getState()
+            let { name, value } = event.target
 
-            let { name, value, checked, type } = event.target
-            const elementsIndex = nodes.findIndex((element) => element.id === clickedElement.id)
-            console.log({ event, index, innerIndex, entityIndex, isHandler, elementsIndex, nodes, variablesNamesOfEachRPA });
+            const elementsIndex = nodes.findIndex((element) => element.id === id)
+            console.log({ elementsIndex, id });
 
             if (elementsIndex === -1) return
 
             const newArray = [...nodes]
             let newData = { ...newArray[elementsIndex].data }
+            console.log({ newData });
 
-            if (type === "checkbox") {
-                // Type is CheckBox or Switch
-                value = checked
-            } else {
-                // Type is TextField or Select
-                if (!Array.isArray(value)) {
-                    if (typeof value === "string" && !value.trim()) {
-                        // Prevent user from typing only space
-                        value = value.trim()
-                    }
-                }
-            }
-
-            if (index === -1) {
-                newData = { ...newData, [name]: value }
-            } else {
-                if (!isHandler) {
-                    if (nodes[elementsIndex].type === "RPA") {
-                        const newRPAVariables = [...newData.rpaVariables]
-
-                        if (innerIndex !== "asVariable") {
-                            newRPAVariables[index] = { ...newRPAVariables[index], [innerIndex]: value }
-                        } else {
-                            if (variablesNamesOfEachRPA[newArray[elementsIndex].id]) {
-                                newRPAVariables[index] = { ...newRPAVariables[index], [innerIndex]: value } // innerIndex is asVariable and value is true or false
-                                if (value === true) {
-                                    newRPAVariables[index] = {
-                                        ...newRPAVariables[index],
-                                        [Object.keys(newRPAVariables[index])[0]]: variablesNamesOfEachRPA[nodes[elementsIndex].id][0],
-                                    } // When innerIndex (asVariable) which is true switch to dropdown and select first element of variablesNamesOfEachRPA as default value
-                                } else {
-                                    newRPAVariables[index] = {
-                                        ...newRPAVariables[index],
-                                        [Object.keys(newRPAVariables[index])[0]]:
-                                            nodes[elementsIndex].data.inputs[Object.keys(newRPAVariables[index])[0]],
-                                    } // When innerIndex (asVariable) which is false switch to text input reset its value
-                                }
-                            } else {
-                                handleSnackBarMessageOpen("There is no existed variable related to this rpa !!", "destructive", 2000)
-                            }
-                        }
-
-                        newData = { ...newData, rpaVariables: newRPAVariables }
-                    } else {
-                        if (
-                            name === "urlSwitch" &&
-                            value === true &&
-                            handleRightDrawerCheckIfRemovedConditionIsConnectedWhenSubtractCounters(
-                                newArray[elementsIndex],
-                                false,
-                                index,
-                            )
-                        ) {
-                            handleSnackBarMessageOpen(
-                                "This Choice is connected, Please remove connection so you can enable URL",
-                                "destructive",
-                                2000,
-                            )
-                        } else {
-                            const newFormData = [...newData.formData]
-                            let newObject = { ...newFormData[index] }
-
-                            newObject = { ...newObject, [name]: value }
-                            newFormData[index] = newObject
-                            newData = { ...newData, formData: newFormData }
-                        }
-                    }
-                } else {
-                    if (typeof innerIndex === "number" && innerIndex > -1) {
-                        const newDynamicDataHandler = [...newData.dynamicDataHandler]
-                        const newDynamicDataHandlerObject = { ...newDynamicDataHandler[index] }
-                        const newInnerDynamicDataHandler = [...newDynamicDataHandlerObject.innerDynamicDataHandler]
-                        let newInnerDynamicDataHandlerObject = { ...newInnerDynamicDataHandler[innerIndex] }
-
-                        if (entityIndex > -1) {
-                            const newEntities = [...newInnerDynamicDataHandlerObject.entities]
-                            let newEntityObject = { ...newEntities[entityIndex] }
-
-                            newEntityObject = { ...newEntityObject, [name]: value }
-                            newEntities[entityIndex] = { ...newEntityObject }
-                            newInnerDynamicDataHandlerObject = {
-                                ...newInnerDynamicDataHandlerObject,
-                                entities: newEntities,
-                            }
-                            newInnerDynamicDataHandler[innerIndex] = { ...newInnerDynamicDataHandlerObject }
-                        } else {
-                            // For Handler, Message, ListCard, ChoicePrompt and WebListCard
-                            if (name === "choice" && value === "Keyword") {
-                                // If Choice changed to Keyword
-                                newInnerDynamicDataHandlerObject = { value: "", save: false, variableName: "" }
-                            } else if (name === "choice" && value === "AI NLP") {
-                                // If Choice changed to AI NLP
-                                newInnerDynamicDataHandlerObject = { intent: intents[0], entities: [] }
-                            } else if (name === "choice" && value === "Variable") {
-                                // If Choice changed to Variable
-                                newInnerDynamicDataHandlerObject = { value: "", operator: operations[0] }
-                            }
-                            newInnerDynamicDataHandlerObject = { ...newInnerDynamicDataHandlerObject, [name]: value }
-                        }
-                        newInnerDynamicDataHandler[innerIndex] = { ...newInnerDynamicDataHandlerObject }
-                        newDynamicDataHandler[index] = {
-                            ...newDynamicDataHandler[index],
-                            innerDynamicDataHandler: newInnerDynamicDataHandler,
-                        }
-                        newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-                    } else {
-                        // For Date Prompt and Number Prompt
-                        const newDynamicDataHandler = [...newData.dynamicDataHandler]
-                        const newDynamicDataHandlerObject = { ...newDynamicDataHandler[index] }
-
-                        newDynamicDataHandler[index] = { ...newDynamicDataHandlerObject, [name]: value }
-                        newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-                    }
-                }
-            }
-
+            newData = { ...newData, [name]: value }
             newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
-            console.log({ newArray });
 
             setNodes(newArray)
+        },
+        updateNodeRightSideData: (id, value) => {
+            const { reactFlowInstance } = useFlowStore.getState()
+            reactFlowInstance?.updateNodeData(id,value)
+
         },
 
         // Update the handleRightDrawerSubtractCounters function to use the local handleSnackBarMessageOpen
         handleRightDrawerSubtractCounters: (event, index, isHandler) => {
             const { nodes, clickedElement } = useFlowStore.getState()
             const {
-                handleRightDrawerCheckIfRemovedConditionIsConnectedWhenSubtractCounters,
                 handleRightDrawerAdjustConnectionsWhenSubtractCounters,
-                handleSnackBarMessageOpen,
             } = get()
 
             const elementsIndex = nodes.findIndex((element) => element.id === clickedElement.id)
@@ -261,142 +143,12 @@ export const useRightDrawerStore = create<RightDrawerStore>()(
 
             const newNodes = [...nodes]
             let newData = { ...newNodes[elementsIndex].data }
+            const newFormData = [...newData.formData]
+            newFormData.splice(index, 1)
+            newData = { ...newData, formData: newFormData }
 
-            if (
-                handleRightDrawerCheckIfRemovedConditionIsConnectedWhenSubtractCounters(
-                    { ...newNodes[elementsIndex] },
-                    isHandler,
-                    index,
-                )
-            ) {
-                let alertMessage = isHandler ? "Condition" : "Choice"
-                alertMessage = alertMessage + " is connected !! To remove it, Please remove connection first."
-
-                handleSnackBarMessageOpen(alertMessage, "destructive", 2000)
-            } else {
-                let newDynamicDataHandler = null
-
-                if (newNodes[elementsIndex].type === "Handler") {
-                    newDynamicDataHandler = [...newData.dynamicDataHandler]
-                    newDynamicDataHandler.splice(index, 1)
-                    newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-
-                    newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
-                    handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
-                } else if (newNodes[elementsIndex].type === "Message") {
-                    newDynamicDataHandler = [...newData.dynamicDataHandler]
-                    newDynamicDataHandler.splice(index, 1)
-                    newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-
-                    newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
-                    handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
-                } else if (newNodes[elementsIndex].type === "DatePrompt") {
-                    newDynamicDataHandler = [...newData.dynamicDataHandler]
-                    newDynamicDataHandler.splice(index, 1)
-                    newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-
-                    newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
-                    handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
-                } else if (newNodes[elementsIndex].type === "NumberPrompt") {
-                    newDynamicDataHandler = [...newData.dynamicDataHandler]
-                    newDynamicDataHandler.splice(index, 1)
-                    newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-
-                    newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
-                    handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
-                } else if (newNodes[elementsIndex].type === "ChoicePrompt") {
-                    if (!isHandler) {
-                        const newFormData = [...newData.formData]
-                        newFormData.splice(index, 1)
-                        newData = { ...newData, formData: newFormData }
-
-                        newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
-                        handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
-                    } else {
-                        newDynamicDataHandler = [...newData.dynamicDataHandler]
-                        newDynamicDataHandler.splice(index, 1)
-                        newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-
-                        newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
-                        handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, true, index)
-                    }
-                } else if (newNodes[elementsIndex].type === "WebListCard") {
-                    if (!isHandler) {
-                        const newFormData = [...newData.formData]
-                        newFormData.splice(index, 1)
-                        newData = { ...newData, formData: newFormData }
-
-                        newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
-                        handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
-                    } else {
-                        newDynamicDataHandler = [...newData.dynamicDataHandler]
-                        newDynamicDataHandler.splice(index, 1)
-                        newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-
-                        newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
-                        handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, true, index)
-                    }
-                } else if (newNodes[elementsIndex].type === "ListCard") {
-                    if (!isHandler) {
-                        const newFormData = [...newData.formData]
-                        newFormData.splice(index, 1)
-                        newData = { ...newData, formData: newFormData }
-
-                        newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
-                        handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
-                    } else {
-                        newDynamicDataHandler = [...newData.dynamicDataHandler]
-                        newDynamicDataHandler.splice(index, 1)
-                        newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-
-                        newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
-                        handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, true, index)
-                    }
-                }
-            }
-        },
-
-        // Update the handleRightDrawerUploadIconClicked function to use the local handleSnackBarMessageOpen
-        handleRightDrawerUploadIconClicked: (event) => {
-            const { authToken } = useFlowStore.getState()
-            const { handleRightDrawerSetIconNameInItsNode, handleSnackBarMessageOpen } = get()
-
-            const index = event.target.name
-            const file = event.target.files?.[0]
-
-            if (file && file.name) {
-                // Upload file to server
-                const formData = new FormData()
-
-                formData.append("file", file)
-                formData.append("name", file.name)
-
-                axios
-                    .post(process.env.REACT_APP_GET_CARDS_INETENTS_ENTITIES_URL + "images/api/uploads", formData, {
-                        headers: {
-                            Authorization: "Bearer " + authToken,
-                            "Content-Type": "multipart/form-data",
-                        },
-                    })
-                    .then((response) => {
-                        handleRightDrawerSetIconNameInItsNode(response.data.image_name, file.name, index)
-                        handleSnackBarMessageOpen("Icon Uploaded", "success", 1500)
-                    })
-                    .catch((error) => {
-                        const errorData =
-                            error.response && error.response.data && error.response.data.err ? error.response.data.err : false
-                        console.log("Upload Error errorData", error.response)
-
-                        if (errorData && errorData.includes("already exists")) {
-                            handleRightDrawerSetIconNameInItsNode(error.response.data.file_name, file.name, index)
-                            handleSnackBarMessageOpen("Icon Already Exists", "info", 1500)
-                        } else if (errorData && errorData.includes("Size")) {
-                            handleSnackBarMessageOpen("Failed Uploading Icon (Size greater than 20 MB)", "destructive", 2000)
-                        } else {
-                            handleSnackBarMessageOpen("Failed Uploading Icon !!", "destructive", 2000)
-                        }
-                    })
-            }
+            newNodes[elementsIndex] = { ...newNodes[elementsIndex], data: newData }
+            handleRightDrawerAdjustConnectionsWhenSubtractCounters(newNodes, newNodes[elementsIndex].id, false, index)
         },
 
         // Keep the rest of the functions as they are
@@ -409,68 +161,12 @@ export const useRightDrawerStore = create<RightDrawerStore>()(
             const newArray = [...nodes]
             let newData = { ...newArray[elementsIndex].data }
             let newFormData = null
-            let newDynamicDataHandler = null
 
-            if (newArray[elementsIndex].type === "Handler") {
-                newDynamicDataHandler = [...newData.dynamicDataHandler]
-                newDynamicDataHandler = newDynamicDataHandler.concat({
-                    innerDynamicDataHandler: [{ choice: "Keyword", value: "", save: false, variableName: "" }],
-                })
-                newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-            } else if (newArray[elementsIndex].type === "Message") {
-                newDynamicDataHandler = [...newData.dynamicDataHandler]
-                newDynamicDataHandler = newDynamicDataHandler.concat({
-                    innerDynamicDataHandler: [{ choice: "Keyword", value: "", save: false, variableName: "" }],
-                })
-                newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-            } else if (newArray[elementsIndex].type === "DatePrompt") {
-                newDynamicDataHandler = [...newData.dynamicDataHandler]
-                const { operations } = useFlowStore.getState()
-                newDynamicDataHandler = newDynamicDataHandler.concat({ value: "", operator: operations[0] })
-                newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-            } else if (newArray[elementsIndex].type === "NumberPrompt") {
-                newDynamicDataHandler = [...newData.dynamicDataHandler]
-                const { operations } = useFlowStore.getState()
-                newDynamicDataHandler = newDynamicDataHandler.concat({ value: "", operator: operations[0] })
-                newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-            } else if (newArray[elementsIndex].type === "ChoicePrompt") {
-                if (!isHandler) {
-                    newFormData = [...newData.formData]
-                    newFormData = newFormData.concat({ text: "" })
-                    newData = { ...newData, formData: newFormData }
-                } else {
-                    newDynamicDataHandler = [...newData.dynamicDataHandler]
-                    newDynamicDataHandler = newDynamicDataHandler.concat({
-                        innerDynamicDataHandler: [{ choice: "Keyword", value: "", save: false, variableName: "" }],
-                    })
-                    newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-                }
-            } else if (newArray[elementsIndex].type === "WebListCard") {
-                if (!isHandler) {
-                    newFormData = [...newData.formData]
-                    newFormData = newFormData.concat({ text: "" })
-                    newData = { ...newData, formData: newFormData }
-                } else {
-                    newDynamicDataHandler = [...newData.dynamicDataHandler]
-                    newDynamicDataHandler = newDynamicDataHandler.concat({
-                        innerDynamicDataHandler: [{ choice: "Keyword", value: "", save: false, variableName: "" }],
-                    })
-                    newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-                }
-            } else if (newArray[elementsIndex].type === "ListCard") {
-                if (!isHandler) {
-                    newFormData = [...newData.formData]
-                    newFormData = newFormData.concat({ text: "", urlSwitch: false, url: "" })
-                    newData = { ...newData, formData: newFormData }
-                } else {
-                    newDynamicDataHandler = [...newData.dynamicDataHandler]
-                    newDynamicDataHandler = newDynamicDataHandler.concat({
-                        innerDynamicDataHandler: [{ choice: "Keyword", value: "", save: false, variableName: "" }],
-                    })
-                    newData = { ...newData, dynamicDataHandler: newDynamicDataHandler }
-                }
+            if (newArray[elementsIndex].type === "ChoicePrompt") {
+                newFormData = [...newData.formData]
+                newFormData = newFormData.concat({ text: "" })
+                newData = { ...newData, formData: newFormData }
             }
-
             newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
             setNodes(newArray)
         },
@@ -522,18 +218,6 @@ export const useRightDrawerStore = create<RightDrawerStore>()(
             }
 
             setNodes(newArray)
-        },
-
-        handleRightDrawerCheckIfAINLPIsChosenInBefore: (dynamicDataHandlerObj) => {
-            let ainlpNotChosenYet = true
-
-            dynamicDataHandlerObj.innerDynamicDataHandler.forEach((innerDynamicDataHandlerObj: { choice: string }) => {
-                if (innerDynamicDataHandlerObj.choice === "AI NLP") {
-                    ainlpNotChosenYet = false
-                }
-            })
-
-            return ainlpNotChosenYet
         },
 
         handleRightDrawerCheckIfRemovedConditionIsConnectedWhenSubtractCounters: (element, isHandler, indexToCheck) => {
@@ -660,25 +344,6 @@ export const useRightDrawerStore = create<RightDrawerStore>()(
             setNodes(newArray)
         },
 
-        handleRightDrawerSetIconNameInItsNode: (realName, name, index) => {
-            const { nodes, setNodes, clickedElement } = useFlowStore.getState()
-            const elementsIndex = nodes.findIndex((element) => element.id === clickedElement.id)
-
-            if (elementsIndex === -1) return
-
-            const newArray = [...nodes]
-            let newData = { ...newArray[elementsIndex].data }
-            const newFormData = [...newData.formData]
-            let newObject = { ...newFormData[index as number] }
-            const fullURL = process.env.REACT_APP_UPLOAD_FILE_URL + "/img/" + realName
-
-            newObject = { ...newObject, icon: fullURL, virtualIcon: name }
-            newFormData[index as number] = newObject
-            newData = { ...newData, formData: newFormData }
-            newArray[elementsIndex] = { ...newArray[elementsIndex], data: newData }
-
-            setNodes(newArray)
-        },
         handleSaveFormDialogCheckIfAllRequiredDataAreFilledForEachElement: () => {
             let allInputsAreFilled = true
             const { nodes } = useFlowStore.getState()

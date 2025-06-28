@@ -13,19 +13,12 @@ export default function RightSideBody() {
 
     const [Component, setComponent] = useState<ComponentType<any> | null>(null);
     const clickedElement = useFlowStore(state => state.clickedElement)
-    const entities = useFlowStore(state => state.entities)
-    const intents = useFlowStore(state => state.intents)
-    const operations = useFlowStore(state => state.operations)
-    const nodes = useFlowStore(state => state.nodes)
-    const handleRightDrawerAddCounters = useRightDrawerStore(state => state.handleRightDrawerAddCounters)
-    const handleRightDrawerAddInnerCounters = useRightDrawerStore(state => state.handleRightDrawerAddInnerCounters)
-    const handleRightDrawerCheckIfAINLPIsChosenInBefore = useRightDrawerStore(state => state.handleRightDrawerCheckIfAINLPIsChosenInBefore)
-    const handleRightDrawerSubtractCounters = useRightDrawerStore(state => state.handleRightDrawerSubtractCounters)
-    const handleRightDrawerSubtractInnerCounters = useRightDrawerStore(state => state.handleRightDrawerSubtractInnerCounters)
-    const handleRightDrawerUploadIconClicked = useRightDrawerStore(state => state.handleRightDrawerUploadIconClicked)
-    const handleRightDrawerAnyFormChange = useRightDrawerStore(state => state.handleRightDrawerAnyFormChange)
+    const updateNodeRightSideData = useRightDrawerStore(state => state.updateNodeRightSideData)
 
 
+    const handleRightSideDataUpdate = (value: any) => {        
+        updateNodeRightSideData(clickedElement.id, { rightSideData: value })
+    }
 
     useEffect(() => {
         const loadComponent = async () => {
@@ -47,27 +40,20 @@ export default function RightSideBody() {
 
 
 
-    const ClickedElement = useNodesData(clickedElement?.id)
-    if (!clickedElement)
+    const selectedNode = useNodesData(clickedElement?.id)
+    console.log({ selectedNode });
+
+    if (!selectedNode)
         return <></>
 
     return (
-        <div className="p-4">
+        <div>
             {isLoading && <>Loading ........</>}
-            {Component && Component.name === `${clickedElement.type}Form` && !isLoading &&
+            {Component && Component.name === `${selectedNode.type}Form` && !isLoading &&
                 <Component
-                    flowZoneSelectedElement={clickedElement}
-                    handleRightDrawerAddCounters={handleRightDrawerAddCounters}
-                    handleRightDrawerAddInnerCounters={handleRightDrawerAddInnerCounters}
-                    handleRightDrawerAnyFormChange={handleRightDrawerAnyFormChange}
-                    handleRightDrawerCheckIfAINLPIsChosenInBefore={handleRightDrawerCheckIfAINLPIsChosenInBefore}
-                    handleRightDrawerSubtractCounters={handleRightDrawerSubtractCounters}
-                    handleRightDrawerSubtractInnerCounters={handleRightDrawerSubtractInnerCounters}
-                    handleRightDrawerUploadIconClicked={handleRightDrawerUploadIconClicked}
-                    operations={operations}
-                    clickedElement={ClickedElement}
-                    entities={entities}
-                    intents={intents} />
+                    selectedNode={selectedNode}
+                    handleRightSideDataUpdate={handleRightSideDataUpdate}
+                />
             }
         </div>
     );

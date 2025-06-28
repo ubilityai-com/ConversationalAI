@@ -1,7 +1,7 @@
 import { GripVertical } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useFlowStore } from '../store/flow-store';
-import RightSideBody from './right-side-body';
+import { PropertiesPanel } from './properties-panel';
 
 let isFirstTime = true;
 export default function RightSideDrawer() {
@@ -27,15 +27,15 @@ export default function RightSideDrawer() {
             setNewWidthRightDrawer(offsetRight + 10);
         }
     }
-    console.log({clickedElement});
-    
+    console.log({ clickedElement });
+
 
     return (
         <div
             ref={drawerRef}
-            data-open={!!clickedElement?"open":"closed"}
+            data-open={!!clickedElement ? "open" : "closed"}
             style={{ width: `${newWidthRightDrawer}px` }}
-            className={`fixed top-[70px] right-0 h-[calc(100%-70px)] min-h-[calc(100%-70px)] overflow-y-auto overflow-x-hidden group w-[${newWidthRightDrawer}px] bg-background shadow-2xl border-l border-border transform transition-transform duration-300 ease-in-out z-40 data-[open=closed]:translate-x-full data-[open=open]:translate-x-0`}
+            className={`fixed top-[61px] right-0 h-[calc(100%-61px)] min-h-[calc(100%-61px)] overflow-y-auto overflow-x-hidden group w-[${newWidthRightDrawer}px] bg-background shadow-2xl border-l border-border transform transition-transform duration-300 ease-in-out z-40 data-[open=closed]:translate-x-full data-[open=open]:translate-x-0`}
         >
             <div
                 className="absolute left-0 inset-y-0 w-1 cursor-ew-resize hover:bg-[#72afdd] hover:opacity-50 flex items-center"
@@ -47,7 +47,7 @@ export default function RightSideDrawer() {
                     <GripVertical className="h-4 w-4 text-white" />
                 </div>
             </div>
-            <RightSideBody />
+            <PropertiesPanel />
         </div>
     );
 }

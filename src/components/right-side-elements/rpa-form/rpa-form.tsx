@@ -128,10 +128,10 @@ export default function RPAForm({
                 </div>
             )}
 
-            <LoopFromForm
+            {/* <LoopFromForm
                 clickedElement={clickedElement}
                 handleRightDrawerAnyFormChange={handleRightDrawerAnyFormChange}
-            />
+            /> */}
         </div>
     )
 }

@@ -1,11 +1,11 @@
 
-import { ChevronDown, Edit, Home, Import, LogOut, Moon, Settings, Sun, Trash, User } from "lucide-react"
+import { ChevronDown, Download, Edit, Home, Import, LogOut, Moon, Play, Save, Settings, Square, Sun, Trash, Upload } from "lucide-react"
+
 import { memo, useState } from "react"
 import { createFlowObject } from "../lib/create-flow-object"
 import { handleFlowZoneCheckIfAllHandlesAreConnected } from "../lib/utils"
 import { useFlowStore } from "../store/flow-store"
 import { useRightDrawerStore } from "../store/right-drawer-store"
-import { Avatar, AvatarFallback } from "./ui/avatar"
 import { Button } from "./ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "./ui/navigation-menu"
@@ -149,17 +149,47 @@ export default memo(function Header() {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      <div className="flex justify-center items-center gap-10">
-        <Button size={"sm"} onClick={handlePublish}>Publish</Button>
+      <div className="flex items-center space-x-2">
+        <Button variant="outline" size="sm" onClick={() => { }}>
+          <Upload className="w-4 h-4 mr-2" />
+          Import
+        </Button>
+
+        <Button variant="outline" size="sm" onClick={() => { }}>
+          <Download className="w-4 h-4 mr-2" />
+          Export
+        </Button>
+
+        <Button variant="outline" size="sm" onClick={() => { }}>
+          <Save className="w-4 h-4 mr-2" />
+          Save
+        </Button>
+
+        <div className="w-px h-6 bg-gray-300 mx-2"></div>
+        <Button
+          variant={false ? "destructive" : "default"}
+          size="sm"
+        // onClick={handleRun}
+        // disabled={nodes.length === 0}
+        >
+          {false ? (
+            <>
+              <Square className="w-4 h-4 mr-2" />
+              Stop
+            </>
+          ) : (
+            <>
+              <Play className="w-4 h-4 mr-2" />
+              Run
+            </>
+          )}
+        </Button>
+
         {/* User avatar with dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="rounded-full p-0 w-10 h-10 hover:bg-muted transition-colors">
-              <Avatar className="h-10 w-10 border-2 border-border">
-                <AvatarFallback>
-                  <User size={20} className="text-muted-foreground" />
-                </AvatarFallback>
-              </Avatar>
+            <Button variant="outline" size="sm" onClick={() => { }}>
+              <Settings className="w-4 h-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>

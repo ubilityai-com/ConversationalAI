@@ -60,7 +60,7 @@ const extractValues = (json: any) => {
 }
 
 const Dyn: React.FC<DynamicComponentProps> = (props) => {
-    const { flowZoneSelectedElement, innerButton, json, onChange, level, index, filledArray, title, ...restProps } = props
+    const {  innerButton, json, onChange, level, index, filledArray, title, ...restProps } = props
 
     const [remove, setRemove] = useState(false)
 

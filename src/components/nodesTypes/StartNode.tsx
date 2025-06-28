@@ -1,5 +1,3 @@
-// GreenNode.tsx
-
 import { Handle, NodeProps, Position } from "@xyflow/react";
 import { PlayIcon } from "lucide-react";
 

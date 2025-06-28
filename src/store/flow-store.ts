@@ -1,7 +1,6 @@
 import { applyEdgeChanges, applyNodeChanges, Edge, getConnectedEdges, Node, type ReactFlowInstance } from "@xyflow/react"
 import { v4 } from "uuid"
 import { create } from "zustand"
-import { SwitchJson } from "../elements/switchJson"
 
 interface FlowState {
     // Flow instance
@@ -32,6 +31,14 @@ interface FlowState {
 
     edges: any[]
     setEdges: (value: Edge[] | ((prev: Edge[]) => Edge[])) => void
+
+    nodesValidation: { [key: string]: boolean }
+    addNodesValidation: (nodeId: string, valid: boolean) => void
+    setNodesValidation: (nodesValidation: { [key: string]: boolean }) => void
+    deleteNodesValidationById: (nodeId: string) => void
+    updateNodesValidationById: (nodeId: string, valid: boolean) => void
+
+
     applyEdgeChangesFunc: (changes: any) => void
     deleteNode: (id: string) => void
     duplicateNode: (id: string) => void
@@ -185,6 +192,26 @@ export const useFlowStore = create<FlowState>((set, get) => ({
                     ? valueOrUpdater(state.edges)
                     : valueOrUpdater,
         })),
+
+    nodesValidation: {},
+    setNodesValidation: (nodeId) => {
+        set((state) => ({
+        }))
+    },
+    addNodesValidation: (nodeId, valid) => {
+        set((state) => ({
+            nodesValidation: { ...state.nodesValidation, [nodeId]: valid },
+        }))
+    },
+    deleteNodesValidationById: (nodeId) => {
+        set((state) => ({
+        }))
+    },
+    updateNodesValidationById: (nodeId, valid) => {
+        set((state) => ({
+            nodesValidation: { ...state.nodesValidation, [nodeId]: valid },
+        }))
+    },
     applyEdgeChangesFunc: (changes) =>
         set((state) => ({
             edges: applyEdgeChanges(changes, state.edges),
@@ -358,6 +385,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
             type: "Message",
             icon: "QuestionAnswer",
             color: "#4b98ea",
+            defaultValid: false,
             defaults: {
                 botSays: "",
                 advanced: false,
@@ -365,7 +393,6 @@ export const useFlowStore = create<FlowState>((set, get) => ({
                 errorMessage: "",
                 save: false,
                 variableName: "",
-                dynamicDataHandler: [],
                 loopFromSwitch: false,
                 loopFromName: "",
             }
@@ -375,42 +402,12 @@ export const useFlowStore = create<FlowState>((set, get) => ({
             type: "ChoicePrompt",
             icon: "InsertComment",
             color: "#61b765",
+            defaultValid: false,
             defaults: {
                 botSays: "",
                 save: false,
                 variableName: "",
-                formData: [{ text: "" }],
-                dynamicDataHandler: [],
-                loopFromSwitch: false,
-                loopFromName: "",
-            }
-        },
-        {
-            name: "Web List Card",
-            type: "WebListCard",
-            icon: "LinearScale",
-            color: "#1b3d8c",
-            defaults: {
-                botSays: "",
-                save: false,
-                variableName: "",
-                formData: [{ text: "" }],
-                dynamicDataHandler: [],
-                loopFromSwitch: false,
-                loopFromName: "",
-            }
-        },
-        {
-            name: "List Card",
-            type: "ListCard",
-            icon: "LinearScale",
-            color: "#855DA1",
-            defaults: {
-                botSays: "",
-                save: false,
-                variableName: "",
-                formData: [{ text: "", urlSwitch: false, url: "" }],
-                dynamicDataHandler: [],
+                formData: [{ text: "", id: v4() }],
                 loopFromSwitch: false,
                 loopFromName: "",
             }
@@ -420,6 +417,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
             type: "End",
             icon: "Stop",
             color: "#E32212",
+            defaultValid: false,
             defaults: {
                 botSays: "",
                 loopFromSwitch: false,
@@ -431,8 +429,19 @@ export const useFlowStore = create<FlowState>((set, get) => ({
             type: "Switch",
             icon: "Switch",
             color: "#00AFB9",
+            defaultValid: false,
             defaults: {
-                json: SwitchJson,
+                cases: [
+                    {
+                        id: "case-1",
+                        operator: "equals",
+                        firstOperand: "status",
+                        secondOperand: "active",
+                        checkType: "string",
+                        label: "Active Status",
+                    },
+                ],
+                defaultCase: { id: "default", label: "Default Case" },
                 loopFromSwitch: false,
                 loopFromName: "",
             }

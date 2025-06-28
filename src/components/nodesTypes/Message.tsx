@@ -1,6 +1,6 @@
 // GreenNode.tsx
 
-import { Handle, Position, useNodeId } from "@xyflow/react";
+import { Handle, Position } from "@xyflow/react";
 import { AlertTriangle, MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { useFlowStore } from "../../store/flow-store";
@@ -11,89 +11,33 @@ function removeHTMLTags(htmlCode: string): string {
   return withoutHTMLTags.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 }
 
-interface Entity {
-  any?: boolean;
-  value?: string;
-}
-
-type Choice = 'Keyword' | 'AI NLP' | 'Variable';
-
-interface InnerDynamicDataHandler {
-  choice: Choice;
-  value?: string;
-  save?: boolean;
-  variableName?: string;
-  entities: Entity[];
-}
-
-interface DynamicDataHandler {
-  innerDynamicDataHandler: InnerDynamicDataHandler[];
-}
-
 interface Data {
-  botSays?: string;
-  advanced?: boolean;
-  regex?: boolean;
-  errorMessage?: string;
-  save?: boolean;
-  variableName?: string;
-  dynamicDataHandler: DynamicDataHandler[];
-}
-
-
-
-function checkIfAllRequiredDataIsFilled({ data }: { data?: Data }): boolean {
-  let allInputsAreFilled = true;
-
-  if (data) {
-    if (!removeHTMLTags(data.botSays || '')) {
-      allInputsAreFilled = false;
-    }
-
-    if (data.advanced) {
-      if (data.regex && !data.errorMessage) {
-        allInputsAreFilled = false;
-      }
-
-      if (data.save && !data.variableName) {
-        allInputsAreFilled = false;
-      }
-
-      data.dynamicDataHandler.forEach((dynamicDataHandlerObj) => {
-        dynamicDataHandlerObj.innerDynamicDataHandler.forEach((innerDynamicDataHandlerObj) => {
-          if (innerDynamicDataHandlerObj.choice === 'Keyword') {
-            if (
-              !innerDynamicDataHandlerObj.value ||
-              (innerDynamicDataHandlerObj.save && !innerDynamicDataHandlerObj.variableName)
-            ) {
-              allInputsAreFilled = false;
-            }
-          } else if (innerDynamicDataHandlerObj.choice === 'AI NLP') {
-            innerDynamicDataHandlerObj.entities.forEach((entity) => {
-              if (!entity.any && !entity.value) {
-                allInputsAreFilled = false;
-              }
-            });
-          } else if (innerDynamicDataHandlerObj.choice === 'Variable') {
-            if (!innerDynamicDataHandlerObj.value) {
-              allInputsAreFilled = false;
-            }
-          }
-        });
-      });
-    }
+  rightSideData: {
+    botSays?: string;
+    advanced?: boolean;
+    regex?: boolean;
+    errorMessage?: string;
+    save?: boolean;
+    variableName?: string;
   }
-  console.log({ allInputsAreFilled });
-
-  return allInputsAreFilled;
 }
 
-function MessageNode({ data }: { data: Data }) {
+export type MessageRightSideData = {
+  botSays?: string
+  advanced?: boolean
+  regex?: boolean
+  errorMessage?: string
+  save?: boolean
+  variableName?: string
+}
+
+function MessageNode({ data, id }: { data: Data, id: string }) {
   const [isHovered, setIsHovered] = useState(false);
   const clickedElement = useFlowStore(state => state.clickedElement)
+  const valid = useFlowStore(state => state.nodesValidation[id])
+
   console.log({ data });
-  const message = removeHTMLTags(data.botSays as string)
-  const id = useNodeId()
+  const message = removeHTMLTags(data.rightSideData.botSays as string)
   return (
     <TooltipWrapper>
       <div data-selected={clickedElement?.id === id} className={`bg-background shadow-lg text-foreground border border-border data-[selected=true]:border-violet-400 data-[selected=true]:border-2 p-3 pb-0 px-4 rounded-xl text-center min-w-[100px] w-72 h-auto flex justify-center items-center flex-col gap-2`}>
@@ -125,7 +69,7 @@ function MessageNode({ data }: { data: Data }) {
         <div className="bg-accent rounded-md w-full flex flex-col flex-wrap justify-start items-start px-2 py-1 overflow-hidden break-all  min-h-8 mb-1">
           <div className={`overflow-hidden break-words max-h-[500px] [display:-webkit-box] [white-space:normal] [text-overflow:ellipsis] [-webkit-line-clamp:100] [-webkit-box-orient:vertical] text-foreground text-sm ${message ? `text-gray-500` : `text-gray-400`} text-ellipsis truncate`}>{message ? message : "Enter Message"}</div>
         </div>
-        {!checkIfAllRequiredDataIsFilled({ data }) &&
+        {!valid &&
           <TextOnlyTooltip title="Please fill all inputs" placement="top">
             <AlertTriangle
               className={"h-4 w-4 text-red-500 absolute right-3 top-3"}

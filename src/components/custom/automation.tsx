@@ -85,7 +85,7 @@ export function Automation({ ClickedElement, handleRightDrawerAnyFormChange, dep
         }
     })
 
-    const newDepth =depth===0?depth: depth + 1
+    const newDepth = depth === 0 ? depth : depth + 1
 
     // Handle changes in the form
     const onChangeAutomationSimple = (args: any) => {
@@ -130,7 +130,7 @@ export function Automation({ ClickedElement, handleRightDrawerAnyFormChange, dep
             const newApiRes = [...apiRes]
             newApiRes[args[`index${0}`]] = rec(0, keys, newRes[args[`index${0}`]])
 
-            handleRightDrawerAnyFormChange({ target: { value: newApiRes, name: "json" } }, -1, -1, -1, false)
+            handleRightDrawerAnyFormChange("json", newApiRes)
         } else {
             if (restProps.onChange)
                 // Nested change, propagate up
@@ -221,7 +221,6 @@ export function Automation({ ClickedElement, handleRightDrawerAnyFormChange, dep
 
                     {item.type === "dynamic" && (
                         <DynamicFields
-                            flowZoneSelectedElement={ClickedElement}
                             allTheJson={item}
                             json={item}
                             onChange={({ name, val }: { name: string; val: any }) => {
@@ -251,13 +250,6 @@ export function Automation({ ClickedElement, handleRightDrawerAnyFormChange, dep
                     )}
                 </Fragment>
             ))}
-
-            {depth === 0 && (
-                <LoopFromForm
-                    clickedElement={ClickedElement}
-                    handleRightDrawerAnyFormChange={handleRightDrawerAnyFormChange}
-                />
-            )}
         </>
     )
 }

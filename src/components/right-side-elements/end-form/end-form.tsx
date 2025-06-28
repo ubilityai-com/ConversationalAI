@@ -1,25 +1,53 @@
+import { Node, NodeProps } from "@xyflow/react"
+import { useDebounceConfig } from "../../../hooks/use-debounced-config"
 import { useFlowStore } from "../../../store/flow-store"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
 import { Separator } from "../../ui/separator"
 import { Switch } from "../../ui/switch"
+
+interface EndConfigProps extends Record<string, unknown> {
+  /* node.data passed from <PropertiesPanel /> */
+  label: string
+  description: string
+  rightSideData: {
+    botSays: string,
+    save: boolean;
+    variableName: string;
+    loopFromSwitch: boolean;
+    loopFromName: string
+  }
+}
+
 interface EndFormProps {
-  clickedElement: any
-  handleRightDrawerAnyFormChange: (
-    event: any,
-    index: number,
-    innerIndex: number,
-    entityIndex: number,
-    isDynamicDataHandler: boolean,
+  selectedNode: NodeProps<Node<EndConfigProps>>
+  handleRightSideDataUpdate: (
+    value: any
   ) => void
 }
 
 export default function EndForm({
-  clickedElement,
-  handleRightDrawerAnyFormChange,
+  selectedNode,
+  handleRightSideDataUpdate,
 }: EndFormProps) {
   const endLoopFromNodesNames = useFlowStore(state => state.endLoopFromNodesNames)
+  const { localConfig, updateConfigField, updateNestedConfig } = useDebounceConfig<EndConfigProps["rightSideData"]>(
+    selectedNode.data.rightSideData,
+    {
+      delay: 300,
+      onSave: (savedConfig) => {
+        // Save label changes
+        handleRightSideDataUpdate(savedConfig)
+
+      },
+    },
+  )
+  const botSays = localConfig.botSays ?? ""
+  const save = localConfig.save ?? ""
+  const variableName = localConfig.variableName ?? ""
+  const loopFromName = localConfig.loopFromName ?? ""
+  const loopFromSwitch = localConfig.loopFromSwitch ?? false
   return (
     // Message and End Components
     <div className="mt-4">
@@ -27,16 +55,15 @@ export default function EndForm({
       <Input
         name="botSays"
         placeholder="Message"
-        value={clickedElement.data.botSays || ""}
-        onChange={(event) => handleRightDrawerAnyFormChange(event, -1, -1, -1, false)}
+        value={botSays || ""}
+        onChange={(event) => updateNestedConfig("botSays", event.target.value)}
       />
       <Separator orientation="horizontal" className="my-6" />
       <div className="flex items-center space-x-2 mx-2 mb-2">
         <Switch
-          checked={clickedElement.data.loopFromSwitch || false}
+          checked={loopFromSwitch || false}
           onCheckedChange={(checked) => {
-            const event = { target: { name: "loopFromSwitch", checked, type: "checkbox" } }
-            handleRightDrawerAnyFormChange(event, -1, -1, -1, false)
+            updateNestedConfig("loopFromSwitch", checked)
           }}
           id="loop-from-switch"
         />
@@ -44,24 +71,23 @@ export default function EndForm({
           Loop from node.
         </Label>
       </div>
-      {clickedElement.data.loopFromSwitch &&
-        endLoopFromNodesNames[clickedElement.id] &&
-        endLoopFromNodesNames[clickedElement.id] && (
+      {loopFromSwitch &&
+        endLoopFromNodesNames[selectedNode.id] &&
+        endLoopFromNodesNames[selectedNode.id] && (
           <>
             <Label className="block text-sm p-1 mb-1 font-normal">Loop from</Label>
             <Select
               name="loopFromName"
-              value={clickedElement.data.loopFromName || "None"}
+              value={loopFromName || "None"}
               onValueChange={(value) => {
-                const event = { target: { name: "loopFromName", value } }
-                handleRightDrawerAnyFormChange(event, -1, -1, -1, false)
+                updateNestedConfig("loopFromName", value)
               }}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a loop point" />
               </SelectTrigger>
               <SelectContent>
-                {endLoopFromNodesNames[clickedElement.id].map((option: string, index: number) => (
+                {endLoopFromNodesNames[selectedNode.id].map((option: string, index: number) => (
                   <SelectItem key={`mi-${index}-${option}`} value={option} className="text-xs">
                     {option}
                   </SelectItem>
