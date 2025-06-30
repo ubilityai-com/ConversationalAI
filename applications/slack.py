@@ -6,48 +6,6 @@ import base64
 import os
 
 
-def slack_dispatcher(operation_name, slack_credential, slack_content_json):
-    operations = {
-        'SEND_MESSAGE': slack_send_message,
-        'UPDATE_MSG': slack_update_message,
-        'DELETE_MSG': slack_delete_message,
-        'GET_PERMALINK': slack_get_permalink,
-        'GET_CHANNEL': slack_get_channel,
-        'GET_MANY_CHANNELS': slack_get_many_channels,
-        'CREATE_CHANNEL': slack_create_channel,
-        'ARCHIVE_CONVERSATION': slack_archive_conversation,
-        'UNARCHIVE_CONVERSATION': slack_unarchive_conversation,
-        'RENAME_CONVERSATION': slack_rename_conversation,
-        'GET_MEMBERS': slack_get_members,
-        'LEAVE_CONVERSATION': slack_leave_conversation,
-        'JOIN_CONVERSATION': slack_join_conversation,
-        'INVITE_USERS': slack_invite_users,
-        'GET_USER': slack_get_user,
-        'GET_MANY_USERS': slack_get_many_users,
-        'GET_USER_STATUS': slack_get_user_status,
-        'GET_FILE': slack_get_file,
-        'GET_MANY_FILES': slack_get_many_files,
-        'UPLOAD_FILE': slack_upload_file,
-        'CREATE_USER_GROUP': slack_create_userGroup,
-        'ENABLE_USER_GROUP': slack_enable_userGroup,
-        'DISABLE_USER_GROUP': slack_disable_userGroup,
-        'GET_USER_GROUPS': slack_get_userGroups,
-        'UPDATE_USER_GROUP': slack_update_userGroup,
-    }
-
-    func = operations.get(operation_name)
-    if func is None:
-        raise ValueError(f"Unknown Slack operation: {operation_name}")
-    
-    try:
-        return func(slack_credential, slack_content_json)
-    except Exception as e:
-        print(f"Error running {operation_name}: {e}")
-        return None
-
-
-
-
 # Message Actions
 
 def slack_send_message(creds,params):
@@ -993,3 +951,32 @@ def slack_disable_userGroup(creds,params):
             raise Exception("Missing input data")
     except Exception as e:
         raise Exception(e)
+    
+
+operations = {
+        'SEND_MESSAGE': slack_send_message,
+        'UPDATE_MSG': slack_update_message,
+        'DELETE_MSG': slack_delete_message,
+        'GET_PERMALINK': slack_get_permalink,
+        'GET_CHANNEL': slack_get_channel,
+        'GET_MANY_CHANNELS': slack_get_many_channels,
+        'CREATE_CHANNEL': slack_create_channel,
+        'ARCHIVE_CONVERSATION': slack_archive_conversation,
+        'UNARCHIVE_CONVERSATION': slack_unarchive_conversation,
+        'RENAME_CONVERSATION': slack_rename_conversation,
+        'GET_MEMBERS': slack_get_members,
+        'LEAVE_CONVERSATION': slack_leave_conversation,
+        'JOIN_CONVERSATION': slack_join_conversation,
+        'INVITE_USERS': slack_invite_users,
+        'GET_USER': slack_get_user,
+        'GET_MANY_USERS': slack_get_many_users,
+        'GET_USER_STATUS': slack_get_user_status,
+        'GET_FILE': slack_get_file,
+        'GET_MANY_FILES': slack_get_many_files,
+        'UPLOAD_FILE': slack_upload_file,
+        'CREATE_USER_GROUP': slack_create_userGroup,
+        'ENABLE_USER_GROUP': slack_enable_userGroup,
+        'DISABLE_USER_GROUP': slack_disable_userGroup,
+        'GET_USER_GROUPS': slack_get_userGroups,
+        'UPDATE_USER_GROUP': slack_update_userGroup
+        }

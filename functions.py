@@ -20,7 +20,7 @@ from elements.flow_invoker import FlowInvoker
 from elements.variable_manager import VariableManager
 from elements.rag import RAG
 from elements.basic_llm import BasicLLM
-from models.credentials import get_credential
+from elements.app_integration import AppIntegration
 
 
 async def execute_process(sio, sid, conversation_id, session, dialogue):
@@ -96,9 +96,13 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
 
     elif element_type == 'FlowInvoker':
         await handle_flow_invoker(conversation, current_dialogue)
+        return
 
     elif element_type == 'VariableManager':
-        handle_variable_manager(conversation, current_dialogue)
+        handle_variable_manager(conversation, current_dialogue, conversation_id, sid)
+    elif element_type == 'AppIntegration':
+        await handle_app_integration(sio, sid, conversation_id, session, dialogue,conversation, current_dialogue)
+        return
     else:
         print(f'[Warning] Invalid element type: {element_type}')
 
@@ -250,7 +254,45 @@ def save_output_parser_vars(output_parser_data: dict, conversation: dict, result
     return conversation
 
 
-def get_credential_value(name: str):
-    """
-    Get Credentials value based on given name.
-    """
+async def handle_app_integration(sio, sid, conversation_id, session, dialogue,conversation, current_dialogue):
+
+    # replace variables in the user payload input 
+    current_dialogue['payload'] = replace_variables(
+        current_dialogue['payload'],
+        conversation['variables'],
+        current_dialogue.get('usedVariables', [])
+    )
+
+    # execute app operation
+    app_type = current_dialogue['payload']['app']
+    credentials = current_dialogue['payload']['credentials']
+    operation = current_dialogue['payload']['operation']
+    content_json = current_dialogue['payload']['content_json']
+
+    result = AppIntegration(app_type,credentials,operation,content_json).run_process()
+    print(result)
+    # save result in a variable if user want to 
+    if current_dialogue['payload']['saveOutputAs']:
+        for element in current_dialogue['payload']['saveOutputAs']:
+            if not element['path']: # save all result in a variable 
+                conversation['variables'][element['name']] = result
+            else: # save specific key in result
+                value = get_value_from_path(result,element['path'])
+                conversation['variables'][element['name']] = value
+
+    # continue process execution
+    conversation['current_step'] = current_dialogue['next']
+    await execute_process(sio, sid, conversation_id, session, dialogue)
+
+
+def get_value_from_path(json_body, path, default=None):
+    keys = path.strip('.').split('.')
+    current = json_body
+    try:
+        for key in keys:
+            if isinstance(current, list):
+                key = int(key)  
+            current = current[key]
+        return current
+    except (KeyError, IndexError, ValueError, TypeError):
+        return default
