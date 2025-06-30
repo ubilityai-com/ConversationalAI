@@ -27,7 +27,7 @@ interface DynamicInputFieldsProps {
   }
   onChange: (args: { name: string; val: any }) => void
   disabled?: boolean
-  flowZoneSelectedElement?: any
+  flowZoneSelectedId?: string
   [key: string]: any
 }
 
@@ -92,7 +92,7 @@ const DynamicFieldsLabel: React.FC<{
 )
 
 const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
-  const { json, onChange, disabled, flowZoneSelectedElement } = props
+  const { json, onChange, disabled, flowZoneSelectedId } = props
 
   // Mock selector - replace with your actual Redux selector
   const selectedRPA = { status: "Inactive" } // useSelector((state) => state.updateRPA.selectedRPA)
@@ -252,7 +252,7 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
                     AllJson={json.structure}
                     onChangeDynamicVariables={onChangeVariables}
                     InDynamic={true}
-                    flowZoneSelectedElement={flowZoneSelectedElement}
+                    flowZoneSelectedId={flowZoneSelectedId}
                     onRemoveVariables={onRemoveVariables}
                   />
                 </div>

@@ -1,3 +1,4 @@
+import { useNodesData } from "@xyflow/react"
 import axios from "axios"
 import { Loader2, RefreshCw } from "lucide-react"
 import { useEffect, useRef } from "react"
@@ -83,7 +84,7 @@ function checkIfVariableInDropDown(value: string, options: string[], isCred: boo
 let backup: Record<string, any> = {}
 
 interface ApiCallerProps {
-    flowZoneSelectedElement: any
+    flowZoneSelectedId?: string
     apiJson: any
     onChange: (args: { name: string | string[]; val: any }) => void
     inDynamic?: boolean
@@ -92,7 +93,7 @@ interface ApiCallerProps {
 }
 
 export function ApiCaller({
-    flowZoneSelectedElement,
+    flowZoneSelectedId,
     apiJson,
     onChange,
     inDynamic,
@@ -100,9 +101,9 @@ export function ApiCaller({
     helperSpan,
 }: ApiCallerProps) {
     const { setListAndDropDownList, setIsLoadingList, setFetchList, setNotFetchingListAsFirstTime } = useApiStore()
-
+    const flowZoneSelectedElement = useNodesData(flowZoneSelectedId || "")
     const compName = getCompNameName({
-        id: flowZoneSelectedElement.id,
+        id: flowZoneSelectedElement?.id || "",
         variableName: apiJson.variableName,
         isCredential: apiJson.hasOwnProperty("credential"),
     })
@@ -110,7 +111,7 @@ export function ApiCaller({
     const { list: ListsForThisNode, isLoading: isLoadingList, notFetchingAsFirstTime } = useApiData(compName)
 
     // Get finale object from flow store or other source
-    const finaleObj = useRightDrawerStore(state => state.automation.filledData[flowZoneSelectedElement.id]?.["json"]) || {}
+    const finaleObj = useRightDrawerStore(state => state.automation.filledData[flowZoneSelectedId || ""]?.["json"]) || {}
     backup = { ...backup, [compName]: { ...backup[compName], ["1"]: finaleObj } };
 
     const isUsingAi = apiJson.hasAI && apiJson.value === "##AI##"
@@ -216,13 +217,6 @@ export function ApiCaller({
                             ...newData,
                             [d.key]: d.fun(finaleObj[d.condition]) ? finaleObj[d.yes] : finaleObj[d.no],
                         }
-                    } else if (d.fun && !d.finaleObj) {
-                        newData = {
-                            ...newData,
-                            [d.key]: d.fun(finaleObj[d.condition])
-                                ? flowZoneSelectedElement.data.rightSideData[d.yes]
-                                : flowZoneSelectedElement.data.rightSideData[d.no],
-                        }
                     }
                 } else if (d.obj) {
                     newData = { ...newData, [d.key]: getTheValueOfTheKey(d.obj) }
@@ -286,7 +280,7 @@ export function ApiCaller({
 
                     setListAndDropDownList({
                         id: compName,
-                        list: list.map(e=>({...e,label:e.option})),
+                        list: list.map(e => ({ ...e, label: e.option })),
                     })
                 }
 
@@ -344,8 +338,8 @@ export function ApiCaller({
         if (apiJson.hasOwnProperty("apiDependsOn") && apiJson.apiDependsOn.length > 0) {
             valid = true
             apiJson.apiDependsOn.map((elt: any) => {
-                console.log({elt,finaleObj,backup});
-                
+                console.log({ elt, finaleObj, backup });
+
                 if (elt.isAutomation === false) {
                     const valueInCompJson = getNestedPropertyValue(flowZoneSelectedElement, `data.rightSideData.${elt.name}`)
                     if (
@@ -356,11 +350,11 @@ export function ApiCaller({
                         valid = false
                     }
                 } else {
-                    console.log("outttttttttttttt",finaleObj);
-                    
+                    console.log("outttttttttttttt", finaleObj);
+
                     if (Object.keys(finaleObj).length > 0) {
                         console.log("innnnnnnnn");
-                        
+
                         if (
                             backup[compName]?.hasOwnProperty("b") &&
                             Object.keys(backup[compName]["b"]).length > 0 &&
@@ -399,7 +393,7 @@ export function ApiCaller({
                     } else valid = false
                 }
             })
-        }else valid=true
+        } else valid = true
 
         return valid
     }
@@ -421,16 +415,16 @@ export function ApiCaller({
             }
         }),
     ])
-    console.log({finaleObj});
-    
+    console.log({ finaleObj });
+
     // Effect for initial load
     useEffect(() => {
-        console.log({notFetchingAsFirstTime});
-        
+        console.log({ notFetchingAsFirstTime });
+
         if (!notFetchingAsFirstTime) {
             const valid = validateDependencies()
-            console.log({valid});
-            
+            console.log({ valid });
+
             if (valid && !isUsingAi) {
                 console.log("first", !apiJson.hasOwnProperty("credential"))
                 callDynamicAPI(apiJson.config, apiJson.res)
@@ -502,8 +496,8 @@ export function ApiCaller({
     const finalList = getList(ListsForThisNode, apiJson.credential, apiJson.credType, apiJson.multiselect)
 
     const handleChange = (value: any) => {
-        console.log({value});
-        
+        console.log({ value });
+
         onChange({ name: "value", val: value })
 
     }
@@ -545,7 +539,7 @@ export function ApiCaller({
                 <SearchableSelect
                     showRefresh
                     loading={isLoadingList}
-                    onRefresh={()=>callDynamicAPI(apiJson.config, apiJson.res)}
+                    onRefresh={() => callDynamicAPI(apiJson.config, apiJson.res)}
                     name={apiJson.variableName}
                     value={apiJson.value}
                     onChange={handleChange}

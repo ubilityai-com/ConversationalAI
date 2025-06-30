@@ -57,7 +57,6 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
             },
         },
     )
-    console.log({ localConfig });
 
     const choices: Choice[] = localConfig.choices ?? []
     const botSays = localConfig.botSays ?? ""

@@ -31,7 +31,7 @@ function extractWordsInBracesToObjects(inputString: string): Record<string, stri
 }
 
 interface BasicLlmProps {
-  flowZoneSelectedElement: {
+  selectedNode: {
     id: string
     type: string
     data: {
@@ -46,24 +46,24 @@ interface BasicLlmProps {
   }
 }
 
-export default function BasicLlmForm({ flowZoneSelectedElement }: BasicLlmProps) {
+export default function BasicLlmForm({ selectedNode }: BasicLlmProps) {
   // Mock Redux state - replace with actual Redux selectors
   const validate = true
 
   const isSaveClicked = false
   const authToken = "mock-token"
   const reactflowinstance = useFlowStore(state => state.reactFlowInstance)
-  const [json, setJson] = useState(flowZoneSelectedElement.data.rightSideData.json)
-  const [nodesCanConnectWith] = useState(flowZoneSelectedElement.data.rightSideData.nodesCanConnectWith)
-  const [outputData, setOutputData] = useState(flowZoneSelectedElement.data.rightSideData.outputData)
+  const [json, setJson] = useState(selectedNode.data.rightSideData.json)
+  const [nodesCanConnectWith] = useState(selectedNode.data.rightSideData.nodesCanConnectWith)
+  const [outputData, setOutputData] = useState(selectedNode.data.rightSideData.outputData)
   const [isLoading, setIsLoading] = useState(false)
   const [lastSaved, setLastSaved] = useState<Date | null>(null)
-  const isNodeValid = useRightDrawerStore(state => state.automation.validation[flowZoneSelectedElement.id]?.["json"]) || false
-  const filledData = useRightDrawerStore(state => state.automation.filledData[flowZoneSelectedElement.id]?.["json"]) || {}
+  const isNodeValid = useRightDrawerStore(state => state.automation.validation[selectedNode.id]?.["json"]) || false
+  const filledData = useRightDrawerStore(state => state.automation.filledData[selectedNode.id]?.["json"]) || {}
   const states = useRightDrawerStore(state => state)
 
-  const jsonOutput = flowZoneSelectedElement.data.rightSideData.jsonOutput
-  const nodeData = useNodesData(flowZoneSelectedElement.id);
+  const jsonOutput = selectedNode.data.rightSideData.jsonOutput
+  const nodeData = useNodesData(selectedNode.id);
   const ss = useNodesData("")
   console.log({ ss, nodeData, json, isNodeValid, filledData,states });
 
@@ -91,10 +91,10 @@ export default function BasicLlmForm({ flowZoneSelectedElement }: BasicLlmProps)
     const rightSideData = {
       json,
       nodesCanConnectWith,
-      jsonOutput: flowZoneSelectedElement.data.rightSideData.jsonOutput,
+      jsonOutput: selectedNode.data.rightSideData.jsonOutput,
       outputData,
     }
-    reactflowinstance?.updateNodeData(flowZoneSelectedElement.id, rightSideData)
+    reactflowinstance?.updateNodeData(selectedNode.id, rightSideData)
     // Mock dispatch calls - replace with actual Redux dispatches
     console.log("Updating flow array data:", rightSideData, filledData)
     console.log("Updating validation status:", validateData())
@@ -132,9 +132,9 @@ export default function BasicLlmForm({ flowZoneSelectedElement }: BasicLlmProps)
       }
 
       const allFlowRunDataForThisNode = {
-        [`LANGCHAIN_BASIC_LLM_CONTENT_JSON_${flowZoneSelectedElement.data.counter + 1}`]: jsonToSend,
-        [`LANGCHAIN_BASIC_LLM_OUTPUT_${flowZoneSelectedElement.data.counter + 1}`]:
-          flowZoneSelectedElement.type + flowZoneSelectedElement.data.counter,
+        [`LANGCHAIN_BASIC_LLM_CONTENT_JSON_${selectedNode.data.counter + 1}`]: jsonToSend,
+        [`LANGCHAIN_BASIC_LLM_OUTPUT_${selectedNode.data.counter + 1}`]:
+          selectedNode.type + selectedNode.data.counter,
       }
 
       return { nodeName: "LANGCHAIN_BASIC_LLM", allFlowRunDataForThisNode }
@@ -201,11 +201,12 @@ export default function BasicLlmForm({ flowZoneSelectedElement }: BasicLlmProps)
         <CardContent>
           <AutomationSimple
             filledDataName="json"
-            flowZoneSelectedId={flowZoneSelectedElement.id}
-            AllJson={BasicLLMJson.defaults.rightSideData.json}
+            flowZoneSelectedId={selectedNode.id}
+            flowZoneSelectedElement={selectedNode}
+            AllJson={BasicLLMJson.defaults.json}
             apiRes={json}
             setApiRes={setJson}
-            flowZoneSelectedElement={flowZoneSelectedElement}
+            selectedNode={selectedNode}
           />
         </CardContent>
       </Card>

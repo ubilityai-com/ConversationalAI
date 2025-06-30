@@ -1,29 +1,66 @@
-"use client"
-
+import { Node, NodeProps } from "@xyflow/react"
 import axios from "axios"
 import type * as React from "react"
 import { useState } from "react"
+import { useDebounceConfig } from "../../../hooks/use-debounced-config"
 import { SearchableSelect } from "../../custom/searchable-select"
 import { Alert, AlertDescription } from "../../ui/alert"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
 import { Separator } from "../../ui/separator"
 import { Switch } from "../../ui/switch"
-
+interface RightSideData {
+  replyType?: "any" | "button" | "text";
+  inactivity?: boolean;
+  type?: "text" | "handover";
+  delay?: string | number;
+  text?: string;
+  listOfQueues?: string[];
+  queueName?: string;
+  replyToText?: string;
+  accessToken?: string;
+  listOfTemplates?: Array<{
+    value: string;
+    option: string;
+    template: {
+      content: {
+        components: Array<{
+          type: string;
+          buttons?: Array<{
+            type: string;
+            text: string;
+          }>;
+        }>;
+      };
+    };
+  }>;
+  templateId?: string;
+  templateButton?: string;
+  templateButtonList?: Array<{
+    type: string;
+    text: string;
+  }>;
+  templateData?: Record<string, any>;
+  greet?: string;
+  restart?: string;
+  thankYou?: string;
+  cancel?: string;
+  bye?: string;
+}
+interface HandlerConfigProps extends Record<string, unknown> {
+  /* node.data passed from <PropertiesPanel /> */
+  label: string
+  description: string
+  rightSideData: RightSideData
+}
 interface HandlerFormProps {
-  selectedNode: any
+  selectedNode: NodeProps<Node<HandlerConfigProps>>
   handleRightSideDataUpdate: (
-    id: string,
     value: any
   ) => void
-  proxyUrl: string
-  operations: string[]
-  intents: string[]
-  entities: string[]
 }
 
 let templateTimeOutId: NodeJS.Timeout
-let debounceTimeoutId: NodeJS.Timeout
 
 const fetchTemplates = async (
   accessToken: string,
@@ -59,31 +96,23 @@ const fetchTemplates = async (
   }
 }
 
-export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, proxyUrl }: HandlerFormProps) {
+export default function HandlerForm({ selectedNode, handleRightSideDataUpdate }: HandlerFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(false)
   const [isLoadingQueues, setIsLoadingQueues] = useState(false)
   const [errorQueues, setErrorQueues] = useState(false)
+  const { localConfig, updateConfigField, updateNestedConfig } = useDebounceConfig<HandlerConfigProps["rightSideData"]>(
+    selectedNode.data.rightSideData,
+    {
+      delay: 300,
+      onSave: (savedConfig) => {
+        // Save label changes
+        handleRightSideDataUpdate(savedConfig)
 
-  // Local state for form data
-  const [localstateAttachment, setLocalstateAttachment] = useState(selectedNode.data.rightSideData || {})
-
-  // Debounced function to update parent state
-  const debounceStoreUpdate = (newFormData: any) => {
-    if (debounceTimeoutId) clearTimeout(debounceTimeoutId)
-    debounceTimeoutId = setTimeout(() => {
-      handleRightSideDataUpdate(
-        selectedNode.id,
-        newFormData,
-      )
-    }, 500)
-  }
-  const updateLocalState = (name: string, value: any) => {
-    const newFormData = { ...localstateAttachment, [name]: value }
-    setLocalstateAttachment(newFormData)
-    debounceStoreUpdate(newFormData)
-  }
-
+      },
+    },
+  )
+  const proxyUrl = ""
   function fetchQueues() {
     setIsLoadingQueues(true)
     axios({
@@ -93,7 +122,7 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
       .then((res) => {
         setErrorQueues(false)
         const queues = ["None", ...res.data.queues]
-        updateLocalState("listOfQueues", queues)
+        updateNestedConfig("listOfQueues", queues)
       })
       .catch(() => {
         setErrorQueues(true)
@@ -114,9 +143,9 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
             { value: "button", label: "Button (template)" },
             { value: "text", label: "Text" },
           ]}
-          value={localstateAttachment.replyType || "any"}
+          value={localConfig.replyType || "any"}
           onChange={(value) => {
-            updateLocalState("replyType", value)
+            updateNestedConfig("replyType", value)
           }}
           placeholder="Select reply type"
           className="w-[93%] mx-2 mb-2 h-9 text-xs"
@@ -125,9 +154,9 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
 
       <div className="flex items-center space-x-2 mx-2 mb-2">
         <Switch
-          checked={localstateAttachment.inactivity || false}
+          checked={localConfig.inactivity || false}
           onCheckedChange={(checked) => {
-            updateLocalState("inactivity", checked)
+            updateNestedConfig("inactivity", checked)
           }}
           id="inactivity-switch"
         />
@@ -136,7 +165,7 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
         </Label>
       </div>
 
-      {localstateAttachment.inactivity && (
+      {localConfig.inactivity && (
         <>
           <div>
             <Label className="block text-sm mb-2 font-normal">Type</Label>
@@ -146,10 +175,10 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
                 { value: "text", label: "Text" },
                 { value: "handover", label: "Handover" },
               ]}
-              value={localstateAttachment.type || "text"}
+              value={localConfig.type || "text"}
               onChange={(value) => {
-                updateLocalState("type", value)
-                if (localstateAttachment.listOfQueues && localstateAttachment.listOfQueues.length < 2) {
+                updateNestedConfig("type", value)
+                if (localConfig.listOfQueues && localConfig.listOfQueues.length < 2) {
                   fetchQueues()
                 }
               }}
@@ -164,24 +193,24 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
               type="number"
               name="delay"
               placeholder="Delay in minutes"
-              value={localstateAttachment.delay || ""}
-              onChange={(event) => updateLocalState("delay", event.target.value)}
+              value={localConfig.delay || ""}
+              onChange={(event) => updateNestedConfig("delay", event.target.value)}
             />
           </div>
 
-          {localstateAttachment.type === "text" && (
+          {localConfig.type === "text" && (
             <div>
               <Label className="block text-sm mb-2 font-normal">Text</Label>
               <Input
                 name="text"
                 placeholder="Text"
-                value={localstateAttachment.text || ""}
-                onChange={(event) => updateLocalState("text", event.target.value)}
+                value={localConfig.text || ""}
+                onChange={(event) => updateNestedConfig("text", event.target.value)}
               />
             </div>
           )}
 
-          {localstateAttachment.type === "handover" && (
+          {localConfig.type === "handover" && (
             <div>
               <Label className="block text-sm mb-2 font-normal">Queues</Label>
               <SearchableSelect
@@ -190,16 +219,16 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
                 onRefresh={fetchQueues}
                 name="queueName"
                 options={
-                  localstateAttachment.listOfQueues?.length === 0
+                  localConfig.listOfQueues?.length === 0
                     ? [{ value: "None", label: "None" }]
-                    : localstateAttachment.listOfQueues?.map((item: string) => ({
+                    : localConfig.listOfQueues?.map((item: string) => ({
                       value: item,
                       label: item,
                     })) || []
                 }
-                value={localstateAttachment.queueName || "None"}
+                value={localConfig.queueName || "None"}
                 onChange={(value) => {
-                  updateLocalState("queueName", value)
+                  updateNestedConfig("queueName", value)
                 }}
                 placeholder="Select queue"
                 className="w-[93%] mx-2 mb-2 h-9 text-xs"
@@ -216,19 +245,19 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
         </>
       )}
 
-      {localstateAttachment.replyType === "text" && (
+      {localConfig.replyType === "text" && (
         <div>
           <Label className="block text-sm mb-2 font-normal">Text To Reply</Label>
           <Input
             name="replyToText"
             placeholder="Text To Reply"
-            value={localstateAttachment.replyToText || ""}
-            onChange={(event) => updateLocalState("replyToText", event.target.value)}
+            value={localConfig.replyToText || ""}
+            onChange={(event) => updateNestedConfig("replyToText", event.target.value)}
           />
         </div>
       )}
 
-      {localstateAttachment.replyType === "button" && (
+      {localConfig.replyType === "button" && (
         <>
           <div>
             <Label className="block text-sm mb-2 font-normal">Access Token</Label>
@@ -236,14 +265,14 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
               name="accessToken"
               placeholder="Access Token"
               type="password"
-              value={localstateAttachment.accessToken || ""}
+              value={localConfig.accessToken || ""}
               onChange={(event) => {
                 const newValue = event.target.value
-                updateLocalState("accessToken", newValue)
+                updateNestedConfig("accessToken", newValue)
 
                 clearTimeout(templateTimeOutId)
                 templateTimeOutId = setTimeout(() => {
-                  fetchTemplates(newValue, (value, name) => updateLocalState(name, value), setIsLoading, setError)
+                  fetchTemplates(newValue, (value, name) => updateNestedConfig(name, value), setIsLoading, setError)
                 }, 200)
               }}
             />
@@ -255,57 +284,61 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
             <SearchableSelect
               showRefresh
               loading={isLoading}
-              onRefresh={() =>
-                fetchTemplates(
-                  localstateAttachment.accessToken,
-                  (value, name) => {
-                    updateLocalState(name, value)
-                  },
-                  setIsLoading,
-                  setError,
-                )
+              onRefresh={() => {
+                if (localConfig.accessToken)
+                  fetchTemplates(
+                    localConfig.accessToken,
+                    (value, name) => {
+                      updateNestedConfig(name, value)
+                    },
+                    setIsLoading,
+                    setError,
+                  )
+              }
               }
               name="templateId"
               options={
-                localstateAttachment.listOfTemplates?.length === 0
+                localConfig.listOfTemplates?.length === 0
                   ? [{ value: "None", label: "None" }]
-                  : localstateAttachment.listOfTemplates?.map((item: any) => ({
+                  : localConfig.listOfTemplates?.map((item: any) => ({
                     value: item.value,
                     label: item.option,
                   })) || []
               }
-              value={localstateAttachment.templateId || "None"}
+              value={localConfig.templateId || "None"}
               onChange={(value) => {
-                const template = localstateAttachment.listOfTemplates?.find(
+                const template = localConfig.listOfTemplates?.find(
                   (temp: any) => temp.value === value,
                 )?.template
                 const hasButtontype =
                   template && template.content.components.find((comp: any) => comp.type === "BUTTONS")
 
                 if (value === "None" || !hasButtontype) {
-                  updateLocalState("templateId", value)
+                  updateNestedConfig("templateId", value)
                   setTimeout(() => {
-                    updateLocalState("templateButton", "None")
+                    updateNestedConfig("templateButton", "None")
                   }, 50)
                   setTimeout(() => {
-                    updateLocalState("templateData", {})
-                    updateLocalState("templateButtonList", [])
+                    updateNestedConfig("templateData", {})
+                    updateNestedConfig("templateButtonList", [])
                   }, 100)
                   return
                 }
 
-                updateLocalState("templateId", value)
+                updateNestedConfig("templateId", value)
                 setTimeout(() => {
-                  updateLocalState("templateButtonList", [{ type: "None", text: "None" }, ...hasButtontype.buttons])
-                  updateLocalState("templateData", template)
+                  if (hasButtontype.buttons) {
+                    updateNestedConfig("templateButtonList", [{ type: "None", text: "None" }, ...hasButtontype.buttons])
+                    updateNestedConfig("templateData", template)
+                  }
                 }, 100)
               }}
               placeholder="Select template"
               className="w-[93%] mx-2 mb-2 h-9 text-xs"
-              disabled={!localstateAttachment.accessToken}
+              disabled={!localConfig.accessToken}
             />
 
-            {localstateAttachment.templateButtonList?.length === 0 && localstateAttachment.templateId !== "None" && (
+            {localConfig.templateButtonList?.length === 0 && localConfig.templateId !== "None" && (
               <p className="text-xs text-red-500 mx-2 mb-2">
                 The current template does not support button type. Please choose another one.
               </p>
@@ -318,22 +351,22 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
             )}
           </div>
 
-          {localstateAttachment.templateButtonList?.length > 0 && (
+          {localConfig.templateButtonList && localConfig.templateButtonList?.length > 0 && (
             <div>
               <Label className="block text-sm mb-2 font-normal">Template button</Label>
               <SearchableSelect
                 name="templateButton"
                 options={
-                  localstateAttachment.templateButtonList?.length === 0
+                  localConfig.templateButtonList?.length === 0
                     ? [{ value: "None", label: "None" }]
-                    : localstateAttachment.templateButtonList?.map((item: any) => ({
+                    : localConfig.templateButtonList?.map((item: any) => ({
                       value: item.text,
                       label: item.text,
                     })) || []
                 }
-                value={localstateAttachment.templateButton || "None"}
+                value={localConfig.templateButton || "None"}
                 onChange={(value) => {
-                  updateLocalState("templateButton", value)
+                  updateNestedConfig("templateButton", value)
                 }}
                 placeholder="Select button"
                 className="w-[93%] mx-2 mb-2 h-9 text-xs"
@@ -348,8 +381,8 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
         <Input
           name="greet"
           placeholder="Welcome message"
-          value={localstateAttachment.greet || ""}
-          onChange={(event) => updateLocalState("greet", event.target.value)}
+          value={localConfig.greet || ""}
+          onChange={(event) => updateNestedConfig("greet", event.target.value)}
         />
       </div>
 
@@ -358,8 +391,8 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
         <Input
           name="restart"
           placeholder="Message displayed when bot restarts"
-          value={localstateAttachment.restart || ""}
-          onChange={(event) => updateLocalState("restart", event.target.value)}
+          value={localConfig.restart || ""}
+          onChange={(event) => updateNestedConfig("restart", event.target.value)}
         />
       </div>
 
@@ -368,8 +401,8 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
         <Input
           name="thankYou"
           placeholder="Message displayed when user thanks the bot"
-          value={localstateAttachment.thankYou || ""}
-          onChange={(event) => updateLocalState("thankYou", event.target.value)}
+          value={localConfig.thankYou || ""}
+          onChange={(event) => updateNestedConfig("thankYou", event.target.value)}
         />
       </div>
 
@@ -378,8 +411,8 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
         <Input
           name="cancel"
           placeholder="Message displayed when user cancels conversation"
-          value={localstateAttachment.cancel || ""}
-          onChange={(event) => updateLocalState("cancel", event.target.value)}
+          value={localConfig.cancel || ""}
+          onChange={(event) => updateNestedConfig("cancel", event.target.value)}
         />
       </div>
 
@@ -388,8 +421,8 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate, p
         <Input
           name="bye"
           placeholder="Message displayed when user says bye"
-          value={localstateAttachment.bye || ""}
-          onChange={(event) => updateLocalState("bye", event.target.value)}
+          value={localConfig.bye || ""}
+          onChange={(event) => updateNestedConfig("bye", event.target.value)}
         />
       </div>
 

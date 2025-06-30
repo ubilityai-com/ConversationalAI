@@ -1,9 +1,8 @@
-import { Node, NodeProps } from "@xyflow/react"
-import { Plus } from "lucide-react"
+import { Node, NodeProps, Position } from "@xyflow/react"
 import React, { useState } from "react"
+import { cn } from "../../lib/utils"
 import { useFlowStore } from "../../store/flow-store"
-import { AgentPaletteDialog } from "../agent-palette-dialog"
-import { Button } from "../ui/button"
+import { NodeHandle } from "../handles/handle"
 
 export type BaseNodeData<T = Record<string, any>> = {
   label: string
@@ -18,6 +17,7 @@ export type BaseNodeProps = NodeProps<Node<BaseNodeData>> & {
   backgroundColor: string
   children?: React.ReactNode
   header?: React.ReactNode
+  handles?: React.ReactNode
   bodyWidth?: string
 }
 
@@ -28,52 +28,22 @@ export function BaseNode({
   backgroundColor,
   children,
   header,
+  handles,
   type,
-  bodyWidth = "w-64"
+  data,
+  bodyWidth = "w-64",
+  positionAbsoluteX,
+  positionAbsoluteY
 }: BaseNodeProps) {
-  const [isHovered, setIsHovered] = useState(false)
   const [isRunning, setIsRunning] = useState(false)
-  const [showPaletteDialog, setShowPaletteDialog] = useState(false)
-  // const { deleteNode, selectNode, selectedNode, isRunning: workflowRunning, addNode,  } = useWorkflow()
-  const edges = useFlowStore(state => state.edges)
   const clickedElement = useFlowStore(state => state.clickedElement)
+  const nodesValidation = useFlowStore(state => state.nodesValidation)
   const workflowRunning = false
   const isSelected = clickedElement?.id === id
-  const isStartNode = type === "handler"
+  const isStartNode = type === "Handler"
+  const isEndNode = type === "End"
 
-  // Check if this node has any outgoing connections
-  const hasOutgoingConnection = edges.some((connection) => connection.source === id)
 
-  const handleDelete = (e: React.MouseEvent) => {
-    // e.stopPropagation()
-    // if (!isStartNode) {
-    //   deleteNode(id)
-    // }
-  }
-
-  const handleAddNode = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setShowPaletteDialog(true)
-  }
-
-  const handleNodeSelection = (agentType: any) => {
-    // const newPosition = {
-    //   x: xPos,
-    //   y: yPos + 150,
-    // }
-
-    // addNode({
-    //   type: agentType.type,
-    //   position: newPosition,
-    //   data: {
-    //     label: agentType.label,
-    //     description: agentType.description,
-    //     config: {},
-    //   },
-    // })
-
-    // setShowPaletteDialog(false)
-  }
 
   // Simulate node execution during workflow run
   React.useEffect(() => {
@@ -91,9 +61,24 @@ export function BaseNode({
     <>
       <div
         className={`relative ${isSelected ? "z-20" : "z-10"}`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
+        {/* Input handle - hide for start node */}
+        {!isStartNode && <NodeHandle
+          type="target"
+          position={Position.Left}
+          className={cn("w-4 h-4 bg-gray-400 border-2 border-white hover:bg-gray-500 transition-colors")}
+
+
+        />}
+        {/* Output handle */}
+        {handles ??
+          (!isEndNode && <NodeHandle
+            type="source"
+            position={Position.Right}
+            className={cn("w-4 h-4 bg-gray-400 border-2 border-white hover:bg-gray-500 transition-colors")}
+          />)
+        }
+
 
         {/* Node body */}
         <div
@@ -141,12 +126,6 @@ export function BaseNode({
         </div>
       </div>
 
-      {/* Agent Palette Dialog */}
-      {/* <AgentPaletteDialog
-        open={showPaletteDialog}
-        onOpenChange={setShowPaletteDialog}
-        onSelectAgent={handleNodeSelection}
-      /> */}
     </>
   )
 }

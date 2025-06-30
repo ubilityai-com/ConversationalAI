@@ -2,15 +2,11 @@ export const BasicLLMJson = {
   type: "BasicLlm",
   color: "#72797b",
   label: "Basic LLM Chain",
+  description:"sasaasa",
+  defaultValid: false,
+  icon:null,
+  category:"AI",
   defaults: {
-    nodeType: "langchain",
-    automated:true,
-    normalHandle: ["regular", "basic", "automationTools", "langchain"],
-    nodesCanConnectWith: {
-      "1": { nodeType: "model", title: "Chat Model", required: true },
-      "3": { nodeType: "outputParser", title: "Output Parser" },
-    },
-    "rightSideData": {
       outputData: {},
       "allSlackUsers": [],
       "userID": "None",
@@ -3960,5 +3956,4 @@ export const BasicLLMJson = {
         }
       ]
     }
-  }
 };

@@ -1,5 +1,5 @@
 import { AlertCircle, Code, Settings, Trash2, Upload } from "lucide-react"
-import { Fragment, useEffect } from "react"
+import { Dispatch, Fragment, SetStateAction, useEffect } from "react"
 import { setAutomationArray } from "../../lib/automation-utils"
 import { cn, getValueOptions, insertArrayAtIndex } from "../../lib/utils"
 import { useRightDrawerStore } from "../../store/right-drawer-store"
@@ -243,8 +243,7 @@ interface AutomationSimpleProps {
   AllJson?: any[]
   setAllJson?: (json: any[]) => void
   apiRes: any[]
-  setApiRes?: (value: any[] | ((prev: any[]) => any[])) => void
-  flowZoneSelectedElement?: any
+  setApiRes?:Dispatch<SetStateAction<any[]>>
   onRemoveVariables?: (index: number) => void
   InDynamic?: boolean
   onChangeDynamicVariables?: (args: any) => void
@@ -259,7 +258,6 @@ export default function AutomationSimple({
   setAllJson,
   apiRes,
   setApiRes,
-  flowZoneSelectedElement,
   onRemoveVariables,
   InDynamic = false,
   onChangeDynamicVariables,
@@ -480,7 +478,7 @@ export default function AutomationSimple({
                 variableName: item.variableName,
               });
             }}
-            flowZoneSelectedElement={flowZoneSelectedElement}
+            flowZoneSelectedId={flowZoneSelectedId}
             helperSpan={item.helperSpan}
           />
         )
@@ -663,7 +661,7 @@ export default function AutomationSimple({
               }
               level={0}
               filledArray={item.hasOwnProperty("json") ? item.json.fieldsArray : item.fieldsArray}
-              flowZoneSelectedElement={flowZoneSelectedElement}
+              flowZoneSelectedId={flowZoneSelectedId}
               {...commonProps}
             />
           </div>
@@ -688,7 +686,7 @@ export default function AutomationSimple({
                   level={0}
                   filledArray={item.fieldsArray}
                   title={item.variableName}
-                  flowZoneSelectedElement={flowZoneSelectedElement}
+                  flowZoneSelectedId={flowZoneSelectedId}
                   {...commonProps}
                 />
               </AccordionContent>

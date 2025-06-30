@@ -1,29 +1,42 @@
-import { useRef, useState } from "react"
 
 
 // Dynamically import ReactQuill to avoid SSR issues
+import { Node, NodeProps } from "@xyflow/react"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
-import { useFlowStore } from "../../../store/flow-store"
+import { useDebounceConfig } from "../../../hooks/use-debounced-config"
 import { LoopFromForm } from "../../common/loop-from-end"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
 import { Switch } from "../../ui/switch"
-interface Data {
-  rightSideData: {
-    botSays?: string;
-    advanced?: boolean;
-    regex?: boolean;
-    errorMessage?: string;
-    save?: boolean;
-    variableName?: string;
-  }
+
+interface RightSideData {
+  botSays?: string;
+  advanced?: boolean;
+  regex?: boolean;
+  errorMessage?: string;
+  save?: boolean;
+  variableName: string;
+  loopFromSwitch: boolean;
+  loopFromName: string
+}
+interface MessageConfigProps extends Record<string, unknown> {
+  /* node.data passed from <PropertiesPanel /> */
+  label: string
+  description: string
+  rightSideData: RightSideData
+}
+interface MessageFormProps {
+  selectedNode: NodeProps<Node<MessageConfigProps>>
+  handleRightSideDataUpdate: (
+    value: any
+  ) => void
 }
 function removeHTMLTags(htmlCode: string): string {
   const withoutHTMLTags = htmlCode.replace(/<[^>]*>/g, '');
   return withoutHTMLTags.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 }
-function checkIfAllRequiredDataIsFilled({ data }: { data?: Data["rightSideData"] }): boolean {
+function checkIfAllRequiredDataIsFilled({ data }: { data?: RightSideData }): boolean {
   let allInputsAreFilled = true;
   if (data) {
     if (!removeHTMLTags(data.botSays || '')) {
@@ -35,14 +48,6 @@ function checkIfAllRequiredDataIsFilled({ data }: { data?: Data["rightSideData"]
 
   }
   return allInputsAreFilled;
-}
-
-interface MessageFormProps {
-  selectedNode: { data: Data, id: string }
-  handleRightSideDataUpdate: (
-    id: string,
-    value: any
-  ) => void
 }
 
 // Quill editor formats and modules
@@ -75,32 +80,17 @@ export default function MessageForm({
   handleRightSideDataUpdate,
 }: MessageFormProps) {
 
-  // Init local form data once
-  const [formData, setFormData] = useState(() => selectedNode.data.rightSideData || {})
-  const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
+  const { localConfig, updateConfigField, updateNestedConfig } = useDebounceConfig<MessageConfigProps["rightSideData"]>(
+    selectedNode.data.rightSideData,
+    {
+      delay: 300,
+      onSave: (savedConfig) => {
+        // Save label changes
+        handleRightSideDataUpdate(savedConfig)
 
-  // Store debounce timer
-  const debounceRef = useRef<NodeJS.Timeout | null>(null)
-
-  const debounceStoreUpdate = (newFormData: any) => {
-    if (debounceRef.current) clearTimeout(debounceRef.current)
-    debounceRef.current = setTimeout(() => {
-      handleRightSideDataUpdate(
-        selectedNode.id,
-        newFormData
-      )
-      updateNodesValidationById(selectedNode.id, checkIfAllRequiredDataIsFilled({ data: newFormData }))
-    }, 500) // Adjust debounce time as needed
-  }
-
-  const handleLocalChange = (name: string, value: any) => {
-    const newFormData = { ...formData, [name]: value }
-    console.log({ name, value, newFormData });
-
-    setFormData(newFormData)
-    debounceStoreUpdate(newFormData)
-
-  }
+      },
+    },
+  )
   return (
     <div className="space-y-4">
       <div>
@@ -109,8 +99,8 @@ export default function MessageForm({
 
           <ReactQuill
             theme="snow"
-            value={formData.botSays || ""}
-            onChange={(value) => handleLocalChange("botSays", value)}
+            value={localConfig.botSays || ""}
+            onChange={(value) => updateNestedConfig("botSays", value)}
             formats={formats}
             modules={modules}
             className="my-4 text-foreground dark:border-border rounded-md dark:text-foreground"
@@ -121,8 +111,8 @@ export default function MessageForm({
 
       <div className="flex items-center space-x-2 mx-2 mb-2">
         <Switch
-          checked={formData.save || false}
-          onCheckedChange={(checked) => handleLocalChange("save", checked)}
+          checked={localConfig.save || false}
+          onCheckedChange={(checked) => updateNestedConfig("save", checked)}
           id="save-switch"
         />
         <Label htmlFor="save-switch" className="text-xs font-normal">
@@ -130,24 +120,25 @@ export default function MessageForm({
         </Label>
       </div>
 
-      {formData.save && (
+      {localConfig.save && (
         <div>
           <Label className="block text-sm mb-1 font-normal">Variable Name</Label>
           <Input
             name="variableName"
             placeholder="Variable Name"
-            value={formData.variableName || ""}
-            onChange={(e) => handleLocalChange("variableName", e.target.value)}
+            value={localConfig.variableName || ""}
+            onChange={(e) => updateNestedConfig("variableName", e.target.value)}
           />
         </div>
       )}
 
       <Label className="block text-sm mb-1 font-normal">Enable the bot to handle user messages.</Label>
-{/* 
+
       <LoopFromForm
-        data={formData}
-        handleChange={handleLocalChange}
-      /> */}
+        loopFromName={localConfig.loopFromName}
+        loopFromSwitch={localConfig.loopFromSwitch}
+        handleChange={updateNestedConfig}
+      />
     </div>
   )
 }

@@ -1,13 +1,18 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card"
+import { FileJson, Plus, Trash2 } from "lucide-react"
+import { useState } from "react"
+import { OutputParsersElements } from "../../../elements/output-parsers-elements"
+import { setAutomationArray } from "../../../lib/automation-utils"
+import { AutomationItem } from "../../../types/automation-types"
 import { Button } from "../../ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
-import { Textarea } from "../../ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
 import { Switch } from "../../ui/switch"
-import { FileJson, Plus, Trash2 } from "lucide-react"
+import { Textarea } from "../../ui/textarea"
+import AutomationSimple from "../../custom/automation-v2"
 
 interface JsonField {
   id: string
@@ -18,13 +23,18 @@ interface JsonField {
 
 interface OutputParserSectionProps {
   config: any
-  onConfigUpdate: (key: string, value: any) => void
+  onConfigUpdate: (key: string, value: any) => void,
+  id: string
 }
 
-export function OutputParserSection({ config, onConfigUpdate }: OutputParserSectionProps) {
+export function OutputParserSection({ config, onConfigUpdate, id }: OutputParserSectionProps) {
   const outputParserEnabled = config.outputParserEnabled === true
-  const outputParser = config.outputParser || "json"
+  const outputParser = config.outputParser || "StructuredOutputParser"
   const jsonFields = config.jsonFields || []
+  const [json, setJson] = useState<AutomationItem[]>([])
+  const [schema, setSchema] = useState<any>()
+
+
 
   // JSON Fields management for LLM output parser
   const addJsonField = () => {
@@ -51,6 +61,7 @@ export function OutputParserSection({ config, onConfigUpdate }: OutputParserSect
     const updatedFields = currentFields.filter((field: JsonField) => field.id !== fieldId)
     onConfigUpdate("jsonFields", updatedFields)
   }
+  console.log({ schema });
 
   return (
     <Card>
@@ -73,17 +84,29 @@ export function OutputParserSection({ config, onConfigUpdate }: OutputParserSect
           <>
             <div>
               <Label htmlFor="outputParser">Parser Type</Label>
-              <Select value={outputParser} onValueChange={(value) => onConfigUpdate("outputParser", value)}>
+              <Select value={outputParser} onValueChange={(value) => {
+                const op = (OutputParsersElements.find(o => o.type === value) as any)
+                setSchema(op)
+                setJson(setAutomationArray((op?.rightSideData?.json)))
+                console.log({ value });
+
+                onConfigUpdate("outputParser", value)
+              }}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select parser type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="json">JSON</SelectItem>
-                  <SelectItem value="comma">Comma Separated</SelectItem>
+                  {OutputParsersElements.map(op => (<SelectItem value={op.type}>{op.label}</SelectItem>))}
                 </SelectContent>
               </Select>
             </div>
-
+            {schema && <AutomationSimple
+              filledDataName="json"
+              flowZoneSelectedId={id}
+              AllJson={schema?.rightSideData?.json}
+              apiRes={json}
+              setApiRes={setJson}
+            />}
             {outputParser === "json" && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

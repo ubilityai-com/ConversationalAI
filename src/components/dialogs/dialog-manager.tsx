@@ -1,5 +1,6 @@
 // dialogs/index.tsx
 import { useFlowStore } from "../../store/flow-store";
+import { AgentPaletteDialog } from "../agent-palette-dialog";
 import { ChangeNameDialog } from "./change-name-dialog";
 import { ItemsListDialog } from "./langchain-dialog";
 import { PublishDialog } from "./save-dialog";
@@ -9,7 +10,8 @@ export const dialogRegistry: Record<string, React.FC<any>> = {
     publish: PublishDialog,
     validation: ValidationDialog,
     changeName: ChangeNameDialog,
-    langchain: ItemsListDialog
+    langchain: ItemsListDialog,
+    addNode: AgentPaletteDialog
 };
 export default function DialogManager() {
     const { isFormDialogOpen, formDialogStatus, dialogProps, setIsFormDialogOpen } = useFlowStore();

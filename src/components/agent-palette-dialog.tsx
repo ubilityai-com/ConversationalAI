@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 
+import { MarkerType } from "@xyflow/react"
 import {
   Bot,
   CheckSquare,
@@ -19,15 +20,18 @@ import { Badge } from "./ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
 import { Input } from "./ui/input"
 import { ScrollArea } from "./ui/scroll-area"
+import { BasicLLMJson } from "../elements/langchain-elements/BasicLLMJson"
 
 const agentTypes = [
+  BasicLLMJson,
   {
-    type: "llm",
+    type: "Llm",
     label: "LLM Agent",
     description: "Large Language Model for text processing",
     icon: Bot,
     category: "AI",
     color: "bg-purple-500",
+    defaults:{}
   },
   {
     type: "tool",
@@ -133,7 +137,7 @@ const agentTypes = [
       botSays: "",
       loopFromSwitch: false,
       loopFromName: "None",
-  }
+    }
   },
 ]
 
@@ -142,13 +146,21 @@ const categories = ["All", "AI", "Integration", "Logic", "IO", "Control", "Commu
 interface AgentPaletteDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
+  x: number,
+  y: number,
+  source: string,
+  sourceHandle: string
+
 }
 
-export function AgentPaletteDialog({ open, onOpenChange }: AgentPaletteDialogProps) {
+export function AgentPaletteDialog({ open, onOpenChange, x, y, source, sourceHandle }: AgentPaletteDialogProps) {
   const reactFlowInstance = useFlowStore(state => state.reactFlowInstance)
   const nodes = useFlowStore(state => state.nodes)
   const droppedElement = useFlowStore(state => state.droppedElement)
   const setNodes = useFlowStore(state => state.setNodes)
+  const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
+  const addNodesValidation = useFlowStore(state => state.addNodesValidation)
+
 
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
@@ -162,25 +174,26 @@ export function AgentPaletteDialog({ open, onOpenChange }: AgentPaletteDialogPro
   })
 
   const handleAgentSelect = (agent: any) => {
-    console.log({ agent });
+    console.log({ agent, x, y });
 
-    addNewElementToFlowZone(agent, 21, 32)
+    addNewElementToFlowZone(agent, x + 500, y)
     // Reset filters when closing
     setSearchTerm("")
     setSelectedCategory("All")
   }
   // Add new element to the flow
   const addNewElementToFlowZone = (element: any, clientX: number, clientY: number) => {
-    console.log({ element });
 
     if (element && reactFlowInstance) {
-      const position = reactFlowInstance.screenToFlowPosition({ x: clientX, y: clientY });
-      const generateID = uuidv4() + "/" + element.type;
+      const sourceNode = reactFlowInstance.getNode(source)
+      console.log({element});
+      
+      const generateID = uuidv4()
 
       let newElement = {
         id: generateID,
         type: element.type,
-        position,
+        position: { x: (sourceNode?.position.x || 0) + 500, y: (sourceNode?.position.y || 0) },
         data: {
           label: element.label,
           description: element.description,
@@ -191,8 +204,21 @@ export function AgentPaletteDialog({ open, onOpenChange }: AgentPaletteDialogPro
       console.log(newElement);
 
       reactFlowInstance.addNodes(newElement)
-      // setDroppedElement(null);
-      // addNodesValidation(generateID, droppedElement.defaultValid)
+      const edge = {
+        source,
+        target: generateID,
+        arrowHeadType: "arrowclosed",
+        sourceHandle,
+        targetHandle: null,
+        type: "buttonEdge",
+        markerEnd: { type: MarkerType.ArrowClosed },
+        animated: false,
+        style: { stroke: "#afafb5", strokeWidth: 2 },
+        id: `xy-edge__${source}${sourceHandle}-${generateID}${null}`
+      }
+      reactFlowInstance.addEdges(edge)
+      addNodesValidation(generateID, element.defaultValid)
+      setIsFormDialogOpen(false)
     }
 
   }

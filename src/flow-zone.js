@@ -14,6 +14,7 @@ import SwitchNode from './components/nodesTypes/Switch';
 import { setAutomationArray } from './lib/automation-utils';
 import { useFlowStore } from './store/flow-store';
 import { EndNode } from './components/nodes/end-node';
+import { LlmNode } from './components/nodes/llm-node';
 
 const FlowZone = () => {
   const nodeTypes = {
@@ -25,7 +26,8 @@ const FlowZone = () => {
     Router: RouterNode,
     RPA: RPANode,
     BasicLlm: Chain,
-    End:EndNode
+    End:EndNode,
+    Llm:LlmNode
   };
   const edgeTypes = {
     buttonEdge: ButtonEdge
@@ -131,6 +133,7 @@ const FlowZone = () => {
     setShowSnackBarMessage({ open: true, message: message, color: color, duration: duration })
   }
   const onConnect = (params) => {
+    console.log({params});
     if (params.source === params.target) {
       handleSnackBarMessageOpen("Couldn't connect component with itself !", "#ce3a32", 3000)
     } else {
@@ -218,7 +221,7 @@ const FlowZone = () => {
   const onPaneClick = () => {
     handleRightDrawerClose()
   };
-
+  console.log({edges,nodes});
   return (
 
     <ReactFlow
