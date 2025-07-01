@@ -42,9 +42,7 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
 
     current_dialogue = dialogue.get(current_step, {})
     wait_for_user = current_dialogue.get('saveUserInputAs')
-
     element_type = 'Greet' if current_step == 'firstElementId' else current_dialogue.get('type')
-
     # Pre-formatting for Message type with variables
     text = None
     if element_type == 'Message' and 'usedVariables' in current_dialogue:
@@ -96,12 +94,11 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
 
     elif element_type == 'FlowInvoker':
         await handle_flow_invoker(conversation, current_dialogue)
-        return
 
     elif element_type == 'VariableManager':
         handle_variable_manager(conversation, current_dialogue, conversation_id, sid)
     elif element_type == 'AppIntegration':
-        await handle_app_integration(sio, sid, conversation_id, session, dialogue,conversation, current_dialogue)
+        await handle_app_integration(sio, sid, conversation_id, session, dialogue, current_dialogue)
         return
     else:
         print(f'[Warning] Invalid element type: {element_type}')
@@ -224,10 +221,10 @@ async def handle_flow_invoker(conversation: dict, current_dialogue: dict):
     try:
         result = await invoker.make_request(conversation['variables'])
         result_data = json.loads(result)
-
         if isinstance(result_data.get('End'), dict):
             for key, value in result_data['End'].items():
                 conversation['variables'][key] = value
+
     except Exception as e:
         print(f'[FlowInvoker] Failed: {e}')
 
@@ -254,26 +251,25 @@ def save_output_parser_vars(output_parser_data: dict, conversation: dict, result
     return conversation
 
 
-async def handle_app_integration(sio, sid, conversation_id, session, dialogue,conversation, current_dialogue):
-
+async def handle_app_integration(sio, sid, conversation_id, session, dialogue, current_dialogue):
+    conversation = session[conversation_id]
     # replace variables in the user payload input 
-    current_dialogue['payload'] = replace_variables(
+    app_content_json = replace_variables(
         current_dialogue['payload'],
         conversation['variables'],
         current_dialogue.get('usedVariables', [])
     )
 
     # execute app operation
-    app_type = current_dialogue['payload']['app']
-    credentials = current_dialogue['payload']['credentials']
-    operation = current_dialogue['payload']['operation']
-    content_json = current_dialogue['payload']['content_json']
+    app_type = app_content_json['app']
+    credentials = app_content_json['credentials']
+    operation = app_content_json['operation']
+    content_json = app_content_json['content_json']
 
     result = AppIntegration(app_type,credentials,operation,content_json).run_process()
-    print(result)
     # save result in a variable if user want to 
-    if current_dialogue['payload']['saveOutputAs']:
-        for element in current_dialogue['payload']['saveOutputAs']:
+    if app_content_json['saveOutputAs']:
+        for element in app_content_json['saveOutputAs']:
             if not element['path']: # save all result in a variable 
                 conversation['variables'][element['name']] = result
             else: # save specific key in result
