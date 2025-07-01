@@ -1,0 +1,54 @@
+2025-07-01 Tuesday 16:44:33 logger_config:INFO:A new client connected with conversation ID: conv-dbhmh1obn
+2025-07-01 Tuesday 16:44:33 logger_config:INFO:Ubility bot will send greet message on connection
+2025-07-01 Tuesday 16:44:33 logger_config:INFO:Starting the execute_process function
+2025-07-01 Tuesday 16:44:33 logger_config:INFO:Element type : MultipleChoice
+2025-07-01 Tuesday 16:44:33 logger_config:INFO:Waiting for user input ...
+2025-07-01 Tuesday 17:02:06 logger_config:INFO:New Message Event received
+2025-07-01 Tuesday 17:02:06 logger_config:INFO:Save user's input to conversation variables
+2025-07-01 Tuesday 17:02:06 logger_config:INFO:Starting the execute_process function
+2025-07-01 Tuesday 17:02:06 logger_config:INFO:Element type : Handler
+2025-07-01 Tuesday 17:02:06 logger_config:INFO:Starting the execute_process function
+2025-07-01 Tuesday 17:02:06 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:06 logger_config:INFO:Element type : Message
+2025-07-01 Tuesday 17:02:06 logger_config:INFO:Waiting for user input ...
+2025-07-01 Tuesday 17:02:10 logger_config:INFO:New Message Event received
+2025-07-01 Tuesday 17:02:10 logger_config:INFO:Save user's input to conversation variables
+2025-07-01 Tuesday 17:02:10 logger_config:INFO:Starting the execute_process function
+2025-07-01 Tuesday 17:02:10 logger_config:INFO:Element type : TextFormatter
+2025-07-01 Tuesday 17:02:10 logger_config:INFO:Starting the execute_process function
+2025-07-01 Tuesday 17:02:10 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:10 logger_config:INFO:Element type : Message
+2025-07-01 Tuesday 17:02:10 logger_config:INFO:Waiting for user input ...
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:New Message Event received
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Save user's input to conversation variables
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the execute_process function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Element type : AppIntegration
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:13 logger_config:INFO:Executing slack operation (SEND_MESSAGE)
+2025-07-01 Tuesday 17:02:19 logger_config:INFO:Save slack output in variables
+2025-07-01 Tuesday 17:02:19 logger_config:INFO:Starting the execute_process function
+2025-07-01 Tuesday 17:02:19 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:19 logger_config:INFO:Element type : Message
+2025-07-01 Tuesday 17:02:19 logger_config:INFO:Starting the execute_process function
+2025-07-01 Tuesday 17:02:19 logger_config:INFO:Starting the replace_variables function
+2025-07-01 Tuesday 17:02:19 logger_config:INFO:Element type : Message
+2025-07-01 Tuesday 17:02:19 logger_config:INFO:Waiting for user input ...

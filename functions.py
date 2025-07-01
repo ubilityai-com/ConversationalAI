@@ -9,7 +9,7 @@ Includes:
 - Element processing
 - Dynamic routing and formatting
 """
-
+from logger_config import logger
 import json
 from typing import Union
 from elements.message import Message
@@ -34,6 +34,7 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
         session (dict): In-memory session store.
         dialogue (dict): The dialogue configuration loaded from JSON.
     """
+    logger.info("Starting the execute_process function")
     conversation = session[conversation_id]
     current_step = conversation.get('current_step')
 
@@ -47,6 +48,7 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
     text = None
     if element_type == 'Message' and 'usedVariables' in current_dialogue:
         used_vars = current_dialogue.get('usedVariables') or []
+        logger.info("Starting the replace_variables function")
         text = replace_variables(
             current_dialogue["content"]['text'],
             conversation['variables'],
@@ -59,6 +61,7 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
             current_dialogue.get('usedVariables', [])
         )
 
+    logger.info(f"Element type : {element_type}")
     # Element processing
     if element_type == 'Greet':
         await Message(current_dialogue['greet']).send(sio, sid)
@@ -117,6 +120,7 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
         conversation['current_step'] = next_step
         await execute_process(sio, sid, conversation_id, session, dialogue)
     else:
+        logger.info("Waiting for user input ...")
         conversation['wait_for_user_input'] = wait_for_user
         conversation['current_step'] = current_dialogue.get('next')
 
@@ -129,9 +133,9 @@ def save_user_input(conversation: dict, input_object: dict):
         conversation (dict): The current conversation.
         input_object (dict): The message input object containing 'value'.
     """
-    if conversation.get('wait_for_user_input'):
-        conversation['variables'][conversation['wait_for_user_input']] = input_object.get('value')
-        conversation['wait_for_user_input'] = None
+    logger.info("Save user's input to conversation variables")
+    conversation['variables'][conversation['wait_for_user_input']] = input_object.get('value')
+    conversation['wait_for_user_input'] = None
 
 
 def replace_variables(template: Union[str, list, dict], variables: dict, used_variables: list) -> Union[str, list, dict]:
@@ -146,6 +150,7 @@ def replace_variables(template: Union[str, list, dict], variables: dict, used_va
     Returns:
         Union[str, list, dict]: Template with all placeholders replaced.
     """
+    
     def replace_in_string(text: str) -> str:
         for key in used_variables or []:
             placeholder = f"${{{key}}}"
@@ -219,6 +224,7 @@ async def handle_flow_invoker(conversation: dict, current_dialogue: dict):
         current_dialogue.get('usedVariables', [])
     )
     try:
+        logger.info("Calling webhook event")
         result = await invoker.make_request(conversation['variables'])
         result_data = json.loads(result)
         if isinstance(result_data.get('End'), dict):
@@ -253,6 +259,7 @@ def save_output_parser_vars(output_parser_data: dict, conversation: dict, result
 
 async def handle_app_integration(sio, sid, conversation_id, session, dialogue, current_dialogue):
     conversation = session[conversation_id]
+
     # replace variables in the user payload input 
     app_content_json = replace_variables(
         current_dialogue["content"],
@@ -266,8 +273,11 @@ async def handle_app_integration(sio, sid, conversation_id, session, dialogue, c
     operation = app_content_json['operation']
     content_json = app_content_json['content_json']
 
+    logger.info(f"Executing {app_type} operation ({operation})")
     result = AppIntegration(app_type,credentials,operation,content_json).run_process()
+
     # save result in a variable if user want to 
+    logger.info(f"Save {app_type} output in variables")
     if app_content_json['saveOutputAs']:
         for element in app_content_json['saveOutputAs']:
             if not element['path']: # save all result in a variable 
