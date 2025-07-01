@@ -27,7 +27,7 @@ session = {}
 # Load dialogue definition from JSON
 with open('demo.json') as f:
     dialogue_json = json.load(f)
-    dialogue = dialogue_json['conversation']
+    dialogue = dialogue_json['bot']
 
 # FastAPI instance for HTTP routes
 http_app = FastAPI()
