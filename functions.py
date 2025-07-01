@@ -48,7 +48,7 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
     if element_type == 'Message' and 'usedVariables' in current_dialogue:
         used_vars = current_dialogue.get('usedVariables') or []
         text = replace_variables(
-            current_dialogue['text'],
+            current_dialogue["content"]['text'],
             conversation['variables'],
             used_vars
         )
@@ -64,7 +64,7 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
         await Message(current_dialogue['greet']).send(sio, sid)
 
     elif element_type == 'Message':
-        await Message(text or current_dialogue['text']).send(sio, sid)
+        await Message(text or current_dialogue["content"]['text']).send(sio, sid)
 
     elif element_type == "LC_RAG":
         await RAG(current_dialogue['data']).stream(sio, sid)
@@ -76,8 +76,8 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
 
     elif element_type == 'MultipleChoice':
         await MultipleChoice(
-            current_dialogue['message'],
-            current_dialogue['choices'],
+            current_dialogue["content"]['message'],
+            current_dialogue["content"]['choices'],
             current_dialogue.get('usedVariables', [])
         ).send(sio, sid)
 
@@ -170,12 +170,12 @@ async def handle_routing(sio, sid, conversation_id, session, dialogue, current_d
     used_variable = current_dialogue['usedVariables'][0]
     case_value = conversation['variables'].get(used_variable, '')
 
-    valid_cases = [k for k in current_dialogue['cases'].keys() if k != 'Other']
+    valid_cases = [k for k in current_dialogue["content"]['cases'].keys() if k != 'Other']
 
     if case_value in valid_cases:
-        conversation['current_step'] = current_dialogue['cases'][case_value]
+        conversation['current_step'] = current_dialogue["content"]['cases'][case_value]
     else:
-        conversation['current_step'] = current_dialogue['cases'].get('Other')
+        conversation['current_step'] = current_dialogue["content"]['cases'].get('Other')
 
     await execute_process(sio, sid, conversation_id, session, dialogue)
 
@@ -186,7 +186,7 @@ async def handle_router(sio, sid, conversation_id, session, dialogue, current_di
     """
     conversation = session[conversation_id]
     router = Router(
-        current_dialogue['conditions'],
+        current_dialogue["content"]['conditions'],
         current_dialogue.get('usedVariables', [])
     )
     next_step = router.find_next_step(conversation['variables'])
@@ -203,11 +203,11 @@ def handle_text_formatter(conversation: dict, current_dialogue: dict):
     Process text formatting logic and save result to a variable.
     """
     formatter = TextFormatter(
-        current_dialogue['data'],
+        current_dialogue["content"],
         current_dialogue.get('usedVariables', [])
     )
     result = formatter.process(conversation['variables'])
-    conversation['variables'][current_dialogue['data']['saveOutputAs']] = result
+    conversation['variables'][current_dialogue["content"]['saveOutputAs']] = result
 
 
 async def handle_flow_invoker(conversation: dict, current_dialogue: dict):
@@ -215,7 +215,7 @@ async def handle_flow_invoker(conversation: dict, current_dialogue: dict):
     Invoke an external flow (API call) and save results to variables.
     """
     invoker = FlowInvoker(
-        current_dialogue['data'],
+        current_dialogue["content"],
         current_dialogue.get('usedVariables', [])
     )
     try:
@@ -234,7 +234,7 @@ def handle_variable_manager(conversation: dict, current_dialogue: dict):
     Manage or mutate conversation variables based on defined logic.
     """
     manager = VariableManager(
-        current_dialogue['data'],
+        current_dialogue["content"],
         current_dialogue.get('usedVariables', [])
     )
     result = manager.process(conversation['variables'])
@@ -255,7 +255,7 @@ async def handle_app_integration(sio, sid, conversation_id, session, dialogue, c
     conversation = session[conversation_id]
     # replace variables in the user payload input 
     app_content_json = replace_variables(
-        current_dialogue['payload'],
+        current_dialogue["content"],
         conversation['variables'],
         current_dialogue.get('usedVariables', [])
     )
