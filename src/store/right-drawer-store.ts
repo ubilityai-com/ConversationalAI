@@ -37,6 +37,8 @@ interface RightDrawerStore {
         id: string
     ) => void
     updateNodeRightSideData: (id: string, value: any) => void,
+    updateNodeRightSideDataNestedKey: (id: string, value: any) => void,
+
     handleRightDrawerSubtractCounters: (
         event: React.MouseEvent | { preventDefault: () => void },
         index: number,
@@ -126,8 +128,21 @@ export const useRightDrawerStore = create<RightDrawerStore>()(
         },
         updateNodeRightSideData: (id, value) => {
             const { reactFlowInstance } = useFlowStore.getState()
-            reactFlowInstance?.updateNodeData(id,value)
+            reactFlowInstance?.updateNodeData(id, value)
 
+        },
+        updateNodeRightSideDataNestedKey: (id, value) => {
+            const { nodes } = useFlowStore.getState()
+            const elementsIndex = nodes.findIndex((element) => element.id === id)
+
+            if (elementsIndex === -1) return
+
+            const newArray = [...nodes]
+            let newRightSideData = { ...newArray[elementsIndex].data.rightSideData }
+
+            newRightSideData = { ...newRightSideData, ...value }
+            const { reactFlowInstance } = useFlowStore.getState()
+            reactFlowInstance?.updateNodeData(id, newRightSideData)
         },
 
         // Update the handleRightDrawerSubtractCounters function to use the local handleSnackBarMessageOpen

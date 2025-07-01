@@ -32,8 +32,6 @@ export function BaseNode({
   type,
   data,
   bodyWidth = "w-64",
-  positionAbsoluteX,
-  positionAbsoluteY
 }: BaseNodeProps) {
   const [isRunning, setIsRunning] = useState(false)
   const clickedElement = useFlowStore(state => state.clickedElement)
@@ -42,6 +40,7 @@ export function BaseNode({
   const isSelected = clickedElement?.id === id
   const isStartNode = type === "Handler"
   const isEndNode = type === "End"
+  const isNodeValid = nodesValidation[id]
 
 
 
@@ -115,11 +114,11 @@ export function BaseNode({
             {/* Status indicator */}
             <div className="flex items-center mt-3">
               <div
-                className={`w-2 h-2 rounded-full mr-2 ${isRunning ? "bg-green-500 animate-pulse" : workflowRunning ? "bg-yellow-500" : "bg-gray-300"
+                className={`w-2 h-2 rounded-full mr-2 ${isNodeValid?"bg-red-400":isRunning ? "bg-green-500 animate-pulse" : workflowRunning ? "bg-yellow-500" : "bg-gray-300"
                   }`}
               ></div>
               <span className="text-xs text-gray-500 font-medium">
-                {isRunning ? "Running" : workflowRunning ? "Waiting" : "Ready"}
+                {isNodeValid?"Missing config":isRunning ? "Running" : workflowRunning ? "Waiting" : "Ready"}
               </span>
             </div>
           </div>

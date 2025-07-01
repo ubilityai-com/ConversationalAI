@@ -1,199 +1,230 @@
-import { AlertCircle, Code, Settings, Trash2, Upload } from "lucide-react"
-import { Dispatch, Fragment, SetStateAction, useEffect } from "react"
-import { setAutomationArray } from "../../lib/automation-utils"
-import { cn, getValueOptions, insertArrayAtIndex } from "../../lib/utils"
-import { useRightDrawerStore } from "../../store/right-drawer-store"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion"
-import { Badge } from "../ui/badge"
-import { Button } from "../ui/button"
-import { Card, CardContent } from "../ui/card"
-import { Checkbox } from "../ui/checkbox"
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
-import { Separator } from "../ui/separator"
-import { Textarea } from "../ui/textarea"
-import ApiCaller from "./async-dropdown"
-import DynamicFields from "./dynamic-fields-v2"
-import { SearchableSelect } from "./searchable-select"
+import { AlertCircle, Code, Settings, Upload } from "lucide-react";
+import { Dispatch, Fragment, SetStateAction, useEffect } from "react";
+import { useDebounceConfig } from "../../hooks/use-debounced-config";
+import { setAutomationArray } from "../../lib/automation-utils";
+import { cn, getValueOptions, insertArrayAtIndex, objToReturnDynamic } from "../../lib/utils";
+import { useRightDrawerStore } from "../../store/right-drawer-store";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Checkbox } from "../ui/checkbox";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Separator } from "../ui/separator";
+import { Textarea } from "../ui/textarea";
+import ApiCaller from "./async-dropdown";
+import DynamicFields from "./dynamic-fields-v2";
+import { SearchableSelect } from "./searchable-select";
 
 // Validation functions
 const validateNumberGreaterThanZero = (value: string) => {
-  const number = Number.parseFloat(value)
+  const number = Number.parseFloat(value);
   if (isNaN(number) || number < 1) {
-    return "Number should be greater than zero"
+    return "Number should be greater than zero";
   }
-  return null
-}
+  return null;
+};
 
 const validateRequiredWords = (value: string, requiredWords: string[]) => {
   for (const word of requiredWords) {
-    if (!value.includes(word)) return `${word} is required`
+    if (!value.includes(word)) return `${word} is required`;
   }
-  return null
-}
+  return null;
+};
 
 const validationConditionFunctions = {
   validateNumberGreaterThanZero,
   validateRequiredWords,
-}
+};
 
 // Validation functions for different field types
 const validationFunctions = {
   dropdown: (item: any) => {
-    if ((item.value === "None" && item.required) || (item.required && item.multiselect && item.value.length === 0)) {
-      return false
+    if (
+      (item.value === "None" && item.required) ||
+      (item.required && item.multiselect && item.value.length === 0)
+    ) {
+      return false;
     }
-    return true
+    return true;
   },
   api: (item: any) => {
     if (
       ((item.value === "None" || item.value === "") && item.required) ||
       (item.required && item.multiselect && item.value.length === 0)
     ) {
-      return false
+      return false;
     }
-    return true
+    return true;
   },
   textfield: (item: any) => {
     if (item.required) {
       if (item.value.toString().trim()) {
         if (item.validation) {
-          return !validationConditionFunctions[item.validation as keyof typeof validationConditionFunctions](
-            item.value,
-            item.requiredWords,
-          )
+          return !validationConditionFunctions[
+            item.validation as keyof typeof validationConditionFunctions
+          ](item.value, item.requiredWords);
         } else {
-          return true
+          return true;
         }
       } else {
-        return false
+        return false;
       }
     } else {
       if (item.value.toString().trim()) {
         if (item.validation) {
-          return !validationConditionFunctions[item.validation as keyof typeof validationConditionFunctions](
-            item.value,
-            item.requiredWords,
-          )
+          return !validationConditionFunctions[
+            item.validation as keyof typeof validationConditionFunctions
+          ](item.value, item.requiredWords);
         } else {
-          return true
+          return true;
         }
       } else {
-        return true
+        return true;
       }
     }
   },
   textFormatter: (item: any) => {
-    return !(!item.value.toString().trim() && item.required)
+    return !(!item.value.toString().trim() && item.required);
   },
   multiselect: (item: any) => {
-    return !(item.value.length < 1 && item.required)
+    return !(item.value.length < 1 && item.required);
   },
   editor: (item: any) => {
     return (
-      (item.value.length >= 1 && (item.defaultLanguage === "json" ? isJsonString(item.value) : true)) ||
+      (item.value.length >= 1 &&
+        (item.defaultLanguage === "json" ? isJsonString(item.value) : true)) ||
       (item.value.length < 1 && !item.required)
-    )
+    );
   },
   array: (item: any) => {
-    return !(item.value.length < 1 && item.required)
+    return !(item.value.length < 1 && item.required);
   },
   json: (item: any) => {
-    return !(Object.keys(item.value).length < 1 && item.required)
+    return !(Object.keys(item.value).length < 1 && item.required);
   },
   radiobutton: () => true,
   dynamic: (item: any) => {
     if (item.hasOwnProperty("json")) {
       if (
         item.json.required &&
-        (item.json.minSize ? item.json.minSize > item.json.fieldsArray.length : item.json.fieldsArray.length < 1)
+        (item.json.minSize
+          ? item.json.minSize > item.json.fieldsArray.length
+          : item.json.fieldsArray.length < 1)
       ) {
-        return false
+        return false;
       } else {
-        return item.json.fieldsArray.every((field: any) => validateArray(field))
+        return item.json.fieldsArray.every((field: any) =>
+          validateArray(field)
+        );
       }
     } else {
-      if (item.fieldsArray === "##AI##") return true
+      if (item.fieldsArray === "##AI##") return true;
       if (
         item.required &&
-        (item.hasOwnProperty("minSize") ? item.minSize > item.fieldsArray.length : item.fieldsArray.length < 1)
+        (item.hasOwnProperty("minSize")
+          ? item.minSize > item.fieldsArray.length
+          : item.fieldsArray.length < 1)
       ) {
-        return false
+        return false;
       } else {
-        return item.fieldsArray.every((field: any) => validateArray(field))
+        return item.fieldsArray.every((field: any) => validateArray(field));
       }
     }
   },
   accordion: (item: any) => {
     return item.fieldsArray.every((field: any) => {
-      return field.every((f: any) => validationFunctions[f.type as keyof typeof validationFunctions](f))
-    })
+      return field.every((f: any) =>
+        validationFunctions[f.type as keyof typeof validationFunctions](f)
+      );
+    });
   },
   color: (item: any) => {
-    return !(item.required && !item.value.trim())
+    return !(item.required && !item.value.trim());
   },
   file: (item: any) => {
-    return !(item.required && !item.value?.file)
+    return !(item.required && !item.value?.file);
   },
   checkbox: () => true,
   outputJson: () => true,
-}
+};
 
 // Helper functions
 const isJsonString = (str: string) => {
   try {
-    JSON.parse(str)
-    return true
+    JSON.parse(str);
+    return true;
   } catch (e) {
-    return false
+    return false;
   }
-}
+};
 
 export const validateArray = (apiRes: any[]) => {
-  let valid = true
+  let valid = true;
   apiRes.forEach((item) => {
     if (validationFunctions[item.type as keyof typeof validationFunctions]) {
-      valid = validationFunctions[item.type as keyof typeof validationFunctions](item) && valid
+      valid =
+        validationFunctions[item.type as keyof typeof validationFunctions](
+          item
+        ) && valid;
     }
-  })
-  return valid
-}
+  });
+  return valid;
+};
 
 const hexToRgb = (hex: string) => {
-  hex = hex.replace(/^#/, "")
-  const bigint = Number.parseInt(hex, 16)
-  const r = (bigint >> 16) & 255
-  const g = (bigint >> 8) & 255
-  const b = bigint & 255
-  return { r, g, b }
-}
+  hex = hex.replace(/^#/, "");
+  const bigint = Number.parseInt(hex, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return { r, g, b };
+};
 
 // Transform functions for different field types
 const transformFunctions = {
   dropdown: (item: any) => {
     if (item.value !== "None") {
       if (item.typeOfValue === "integer") {
-        return { [item.variableName]: Number.parseInt(item.value) || item.value }
+        return {
+          [item.variableName]: Number.parseInt(item.value) || item.value,
+        };
       } else if (item.typeOfValue === "array") {
-        return { [item.variableName]: [item.value] }
+        return { [item.variableName]: [item.value] };
       } else {
-        return { [item.variableName]: item.value }
+        return { [item.variableName]: item.value };
       }
     }
-    return {}
+    return {};
   },
   textfield: (item: any) => {
     if (item.value.toString().trim()) {
       if (item.typeOfValue === "integer") {
-        return { [item.variableName]: Number.parseInt(item.value) || item.value }
+        return {
+          [item.variableName]: Number.parseInt(item.value) || item.value,
+        };
       } else if (item.typeOfValue === "float") {
-        return { [item.variableName]: Number.parseFloat(item.value) }
+        return { [item.variableName]: Number.parseFloat(item.value) };
       } else {
-        return { [item.variableName]: item.value }
+        return { [item.variableName]: item.value };
       }
     }
-    return {}
+    return {};
+  },
+  dynamic: (item: any) => {
+    return {
+      [item.hasOwnProperty("json")
+        ? item.json.variableName
+        : item.variableName]: item.hasOwnProperty("json")
+          ? item.json.fieldsArray.map((arr: any) => objToReturnDynamic(arr))
+          : item.fieldsArray === "##AI##" ? item.fieldsArray : item.fieldsArray.map((arr: any) => objToReturnDynamic(arr)),
+    };
   },
   api: (item: any) => {
     console.log({ item });
@@ -211,46 +242,36 @@ const transformFunctions = {
   },
   checkbox: (item: any) => {
     return {
-      [item.variableName]: item.typeOfValue === "string" ? item.value.toString() : item.value,
-    }
+      [item.variableName]:
+        item.typeOfValue === "string" ? item.value.toString() : item.value,
+    };
   },
   color: (item: any) => {
     if (item.value.trim()) {
-      return { [item.variableName]: hexToRgb(item.value) }
+      return { [item.variableName]: hexToRgb(item.value) };
     }
-    return {}
+    return {};
   },
   // Add other transform functions as needed
-}
+};
 
-export const objToReturnDynamic = (apiRes: any[]) => {
-  const obj = {}
-  apiRes.forEach((item) => {
-    if (transformFunctions[item.type as keyof typeof transformFunctions]) {
-      console.log({ obj });
 
-      Object.assign(obj, transformFunctions[item.type as keyof typeof transformFunctions](item))
-    }
-  })
-  console.log({ obj });
-
-  return obj
-}
 
 interface AutomationSimpleProps {
-  filledDataName?: string
-  flowZoneSelectedId?: string
-  AllJson?: any[]
-  setAllJson?: (json: any[]) => void
-  apiRes: any[]
-  setApiRes?:Dispatch<SetStateAction<any[]>>
-  onRemoveVariables?: (index: number) => void
-  InDynamic?: boolean
-  onChangeDynamicVariables?: (args: any) => void
-  filledArray?: any[]
-  indexForDynamic?: number
-  disabled?: boolean,
-  [key: string]: any
+  filledDataName?: string;
+  flowZoneSelectedId: string;
+  AllJson?: any[];
+  setAllJson?: (json: any[]) => void;
+  apiRes: any[];
+  setApiRes?: Dispatch<SetStateAction<any[]>>;
+  onRemoveVariables?: (index: number) => void;
+  InDynamic?: boolean;
+  onChangeDynamicVariables?: (args: any) => void;
+  filledArray?: any[];
+  indexForDynamic?: number;
+  disabled?: boolean;
+  config?:any
+  [key: string]: any;
 }
 
 export default function AutomationSimple({
@@ -266,63 +287,111 @@ export default function AutomationSimple({
   disabled = false,
   filledDataName,
   flowZoneSelectedId,
+  config,
   ...restProps
 }: AutomationSimpleProps) {
-  const setValidationByKey = useRightDrawerStore(state => state.setValidationByKey)
-  const setNodeFilledDataByKey = useRightDrawerStore(state => state.setNodeFilledDataByKey)
+  const { localConfig, updateNestedConfig,setLocalConfig } = useDebounceConfig(
+    config,
+    {
+      delay: 300,
+      onSave: (savedConfig) => {
+        // Save label changes
+        updateNodeRightSideDataNestedKey(flowZoneSelectedId, { [filledDataName || ""]: savedConfig })
+
+      },
+    },
+  )
+  console.log({ localConfig,apiRes,filledDataName });
+
+  const setValidationByKey = useRightDrawerStore(
+    (state) => state.setValidationByKey
+  );
+  const setNodeFilledDataByKey = useRightDrawerStore(
+    (state) => state.setNodeFilledDataByKey
+  );
+  const updateNodeRightSideDataNestedKey = useRightDrawerStore(
+    (state) => state.updateNodeRightSideDataNestedKey
+  );
   useEffect(() => {
     if (!InDynamic) {
       // Initialize validation and final object
-      console.log("Initializing automation simple component")
+      console.log("Initializing automation simple component");
       if (flowZoneSelectedId && filledDataName) {
-        setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(apiRes))
-        setNodeFilledDataByKey(flowZoneSelectedId, filledDataName, objToReturnDynamic(apiRes))
+        setValidationByKey(
+          flowZoneSelectedId,
+          filledDataName,
+          validateArray(apiRes)
+        );
+        setNodeFilledDataByKey(
+          flowZoneSelectedId,
+          filledDataName,
+          objToReturnDynamic(apiRes)
+        );
       }
     }
-  }, [InDynamic])
+  }, [InDynamic]);
 
-  const onChangeAutomationSimple = ({ index, newValue, name, variableName }: any) => {
+  const onChangeAutomationSimple = ({
+    index,
+    newValue,
+    name,
+    variableName,
+  }: any) => {
     if (!InDynamic && setApiRes) {
       setApiRes((prev) => {
-        const newApiRes = [...prev]
+        const newApiRes = [...prev];
         if (Array.isArray(name)) {
           name.forEach((n: string, i: number) => {
-            newApiRes[index] = { ...newApiRes[index], [n]: newValue[i] }
-          })
+            newApiRes[index] = { ...newApiRes[index], [n]: newValue[i] };
+          });
         } else {
           newApiRes[index] = {
             ...newApiRes[index],
             [name]: newValue,
-          }
+          };
         }
         if (flowZoneSelectedId && filledDataName) {
-          console.log({ newApiRes });
-          setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(newApiRes))
-          setNodeFilledDataByKey(flowZoneSelectedId, filledDataName, objToReturnDynamic(newApiRes))
+          console.log({ newApiRes, oooo: objToReturnDynamic(newApiRes) });
+          setValidationByKey(
+            flowZoneSelectedId,
+            filledDataName,
+            validateArray(newApiRes)
+          );
+          setLocalConfig(objToReturnDynamic(newApiRes))
+          setNodeFilledDataByKey(
+            flowZoneSelectedId,
+            filledDataName,
+            objToReturnDynamic(newApiRes)
+          );
         }
-        return newApiRes
-      })
+        console.log({newApiRes});
+        
+        return newApiRes;
+      });
     } else {
-      const newApiRes = [...apiRes]
+      const newApiRes = [...apiRes];
       if (Array.isArray(name)) {
         name.forEach((n: string, i: number) => {
-          newApiRes[index] = { ...newApiRes[index], [n]: newValue[i] }
-        })
+          newApiRes[index] = { ...newApiRes[index], [n]: newValue[i] };
+        });
       } else {
         newApiRes[index] = {
           ...newApiRes[index],
           [name]: newValue,
-        }
+        };
       }
+      console.log({ newApiRes });
+
       onChangeDynamicVariables?.({
         index: indexForDynamic,
         event: newApiRes,
         innerIndex: index,
         name: variableName,
         keyToChange: name,
-      })
+      });
+
     }
-  }
+  };
   const onChangeDropdown = ({
     name,
     index,
@@ -353,8 +422,17 @@ export default function AutomationSimple({
     if (!InDynamic && flowZoneSelectedId && filledDataName && setApiRes) {
       console.log({ newApiRes });
       setApiRes(newApiRes);
-      setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(newApiRes))
-      setNodeFilledDataByKey(flowZoneSelectedId, filledDataName, objToReturnDynamic(newApiRes))
+      setLocalConfig(objToReturnDynamic(newApiRes))
+      setValidationByKey(
+        flowZoneSelectedId,
+        filledDataName,
+        validateArray(newApiRes)
+      );
+      setNodeFilledDataByKey(
+        flowZoneSelectedId,
+        filledDataName,
+        objToReturnDynamic(newApiRes)
+      );
     } else
       onChangeDynamicVariables?.({
         index: indexForDynamic,
@@ -364,12 +442,13 @@ export default function AutomationSimple({
         keyToChange: name,
       });
   };
-  const renderField = (item: any, index: number) => {
+  const renderField = (item: any, index: number, value: any) => {
     const commonProps = {
       disabled: item.disabled || disabled,
       required: item.required,
-      name: item.variableName
-    }
+      name: item.variableName,
+    };
+    console.log({ value, item });
 
     switch (item.type) {
       case "textfield":
@@ -382,7 +461,7 @@ export default function AutomationSimple({
             {item.multiline ? (
               <Textarea
                 placeholder={item.placeholder}
-                value={item.value || ""}
+                value={value || ""}
                 onChange={(e) =>
                   onChangeAutomationSimple({
                     name: "value",
@@ -391,14 +470,25 @@ export default function AutomationSimple({
                     variableName: item.variableName,
                   })
                 }
-                className={cn("min-h-[80px]", item.errorSpan && "border-red-500")}
+                className={cn(
+                  "min-h-[80px]",
+                  item.errorSpan && "border-red-500"
+                )}
                 {...commonProps}
               />
             ) : (
               <Input
-                type={item.password ? "password" : item.numberField ? "number" : item.date ? "date" : "text"}
+                type={
+                  item.password
+                    ? "password"
+                    : item.numberField
+                      ? "number"
+                      : item.date
+                        ? "date"
+                        : "text"
+                }
                 placeholder={item.placeholder}
-                value={item.value || ""}
+                value={value || ""}
                 onChange={(e) =>
                   onChangeAutomationSimple({
                     name: "value",
@@ -412,7 +502,9 @@ export default function AutomationSimple({
                 {...commonProps}
               />
             )}
-            {item.helperSpan && <p className="text-xs text-muted-foreground">{item.helperSpan}</p>}
+            {item.helperSpan && (
+              <p className="text-xs text-muted-foreground">{item.helperSpan}</p>
+            )}
             {item.errorSpan && (
               <p className="text-xs text-red-500 flex items-center gap-1">
                 <AlertCircle className="h-3 w-3" />
@@ -420,7 +512,7 @@ export default function AutomationSimple({
               </p>
             )}
           </div>
-        )
+        );
 
       case "dropdown":
         return (
@@ -430,8 +522,13 @@ export default function AutomationSimple({
               {item.required && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <SearchableSelect
-              options={item.list?.map((opt: any) => ({ value: opt.value, label: opt.option })) || []}
-              value={item.value || ""}
+              options={
+                item.list?.map((opt: any) => ({
+                  value: opt.value,
+                  label: opt.option,
+                })) || []
+              }
+              value={value || ""}
               onChange={(value) => {
                 if (item.hasOwnProperty("noOpts"))
                   onChangeAutomationSimple({
@@ -445,17 +542,18 @@ export default function AutomationSimple({
                     name: "value",
                     index,
                     children: item.child,
-                    oldValue: item.value,
+                    oldValue: value,
                     newValue: value,
                     variableName: item.variableName,
                   });
-              }
-              }
+              }}
               placeholder={`Select ${item.label?.toLowerCase()}`}
               className={cn(item.errorSpan && "border-red-500")}
               {...commonProps}
             />
-            {item.helperSpan && <p className="text-xs text-muted-foreground">{item.helperSpan}</p>}
+            {item.helperSpan && (
+              <p className="text-xs text-muted-foreground">{item.helperSpan}</p>
+            )}
             {item.errorSpan && (
               <p className="text-xs text-red-500 flex items-center gap-1">
                 <AlertCircle className="h-3 w-3" />
@@ -463,13 +561,16 @@ export default function AutomationSimple({
               </p>
             )}
           </div>
-        )
+        );
       case "api":
         return (
           <ApiCaller
-            inDynamic={InDynamic ? indexForDynamic === 0 ? true : false : undefined}
+            inDynamic={
+              InDynamic ? (indexForDynamic === 0 ? true : false) : undefined
+            }
             disabled={disabled}
             apiJson={item}
+            value={value}
             onChange={({ val, name }) => {
               onChangeAutomationSimple({
                 name: name,
@@ -481,13 +582,13 @@ export default function AutomationSimple({
             flowZoneSelectedId={flowZoneSelectedId}
             helperSpan={item.helperSpan}
           />
-        )
+        );
       case "checkbox":
         return (
           <div className="flex items-center space-x-2">
             <Checkbox
               id={`checkbox-${index}`}
-              checked={item.value || false}
+              checked={value || false}
               onCheckedChange={(checked) =>
                 onChangeAutomationSimple({
                   name: "value",
@@ -498,12 +599,15 @@ export default function AutomationSimple({
               }
               {...commonProps}
             />
-            <Label htmlFor={`checkbox-${index}`} className="text-sm font-medium">
+            <Label
+              htmlFor={`checkbox-${index}`}
+              className="text-sm font-medium"
+            >
               {item.label || item.innerLabel}
               {item.required && <span className="text-red-500 ml-1">*</span>}
             </Label>
           </div>
-        )
+        );
 
       case "radiobutton":
         return (
@@ -513,7 +617,7 @@ export default function AutomationSimple({
               {item.required && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <RadioGroup
-              value={item.value || ""}
+              value={value || ""}
               onValueChange={(value) =>
                 onChangeAutomationSimple({
                   name: "value",
@@ -526,15 +630,21 @@ export default function AutomationSimple({
             >
               {item.list?.map((option: any, optIndex: number) => (
                 <div key={optIndex} className="flex items-center space-x-2">
-                  <RadioGroupItem value={option.value} id={`radio-${index}-${optIndex}`} />
-                  <Label htmlFor={`radio-${index}-${optIndex}`} className="text-sm">
+                  <RadioGroupItem
+                    value={option.value}
+                    id={`radio-${index}-${optIndex}`}
+                  />
+                  <Label
+                    htmlFor={`radio-${index}-${optIndex}`}
+                    className="text-sm"
+                  >
                     {option.option}
                   </Label>
                 </div>
               ))}
             </RadioGroup>
           </div>
-        )
+        );
 
       case "multiselect":
         return (
@@ -544,7 +654,7 @@ export default function AutomationSimple({
               {item.required && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <div className="flex flex-wrap gap-2">
-              {item.value?.map((val: string, valIndex: number) => (
+              {value?.map((val: string, valIndex: number) => (
                 <Badge key={valIndex} variant="secondary" className="text-xs">
                   {val}
                   <Button
@@ -552,13 +662,15 @@ export default function AutomationSimple({
                     size="sm"
                     className="h-4 w-4 p-0 ml-1"
                     onClick={() => {
-                      const newValue = item.value.filter((_: any, i: number) => i !== valIndex)
+                      const newValue = value.filter(
+                        (_: any, i: number) => i !== valIndex
+                      );
                       onChangeAutomationSimple({
                         name: "value",
                         index,
                         newValue,
                         variableName: item.variableName,
-                      })
+                      });
                     }}
                   >
                     ×
@@ -567,24 +679,29 @@ export default function AutomationSimple({
               ))}
             </div>
             <SearchableSelect
-              options={item.list?.map((opt: any) => ({ value: opt.value, label: opt.option })) || []}
+              options={
+                item.list?.map((opt: any) => ({
+                  value: opt.value,
+                  label: opt.option,
+                })) || []
+              }
               value=""
               onChange={(value) => {
-                if (value && !item.value?.includes(value)) {
-                  const newValue = [...(item.value || []), value]
+                if (value && !(value as string)?.includes(value)) {
+                  const newValue = [...(value || []), value];
                   onChangeAutomationSimple({
                     name: "value",
                     index,
                     newValue,
                     variableName: item.variableName,
-                  })
+                  });
                 }
               }}
               placeholder="Add option..."
               {...commonProps}
             />
           </div>
-        )
+        );
 
       case "color":
         return (
@@ -596,7 +713,7 @@ export default function AutomationSimple({
             <div className="flex items-center space-x-2">
               <Input
                 type="color"
-                value={item.value || "#000000"}
+                value={value || "#000000"}
                 onChange={(e) =>
                   onChangeAutomationSimple({
                     name: "value",
@@ -610,7 +727,7 @@ export default function AutomationSimple({
               />
               <Input
                 type="text"
-                value={item.value || ""}
+                value={value || ""}
                 onChange={(e) =>
                   onChangeAutomationSimple({
                     name: "value",
@@ -625,7 +742,7 @@ export default function AutomationSimple({
               />
             </div>
           </div>
-        )
+        );
 
       case "file":
         return (
@@ -644,37 +761,47 @@ export default function AutomationSimple({
               <p className="mt-2 text-xs text-gray-500">Upload a file</p>
             </div>
           </div>
-        )
+        );
 
       case "dynamic":
         return (
           <div className="space-y-2">
             <DynamicFields
               json={item.hasOwnProperty("json") ? item.json : item}
+              value={value}
               onChange={({ name, val }: any) =>
                 onChangeAutomationSimple({
                   name: item.hasOwnProperty("json") ? "json" : name,
                   index,
-                  newValue: item.hasOwnProperty("json") ? { ...item.json, fieldsArray: val } : val,
+                  newValue: item.hasOwnProperty("json")
+                    ? { ...item.json, fieldsArray: val }
+                    : val,
                   variableName: item.variableName,
                 })
               }
               level={0}
-              filledArray={item.hasOwnProperty("json") ? item.json.fieldsArray : item.fieldsArray}
+              filledArray={
+                item.hasOwnProperty("json")
+                  ? item.json.fieldsArray
+                  : item.fieldsArray
+              }
               flowZoneSelectedId={flowZoneSelectedId}
               {...commonProps}
             />
           </div>
-        )
+        );
 
       case "accordion":
         return (
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value={`item-${index}`}>
-              <AccordionTrigger className="text-sm font-medium">{item.accTitle || item.title}</AccordionTrigger>
+              <AccordionTrigger className="text-sm font-medium">
+                {item.accTitle || item.title}
+              </AccordionTrigger>
               <AccordionContent>
                 <DynamicFields
                   json={item}
+                  value={value}
                   onChange={({ name, val }: any) =>
                     onChangeAutomationSimple({
                       name,
@@ -692,7 +819,7 @@ export default function AutomationSimple({
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-        )
+        );
 
       case "editor":
         return (
@@ -705,14 +832,16 @@ export default function AutomationSimple({
               <div className="flex items-center justify-between p-2 border-b bg-muted">
                 <div className="flex items-center space-x-2">
                   <Code className="h-4 w-4" />
-                  <span className="text-xs font-medium">{item.defaultLanguage || "text"}</span>
+                  <span className="text-xs font-medium">
+                    {item.defaultLanguage || "text"}
+                  </span>
                 </div>
                 <Button variant="ghost" size="sm">
                   <Settings className="h-4 w-4" />
                 </Button>
               </div>
               <Textarea
-                value={item.value || ""}
+                value={value || ""}
                 onChange={(e) =>
                   onChangeAutomationSimple({
                     name: "value",
@@ -727,49 +856,46 @@ export default function AutomationSimple({
               />
             </div>
           </div>
-        )
+        );
 
       case "row":
-        return (
-          <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-            <span className="text-sm font-medium">
-              {item.title} {indexForDynamic + 1}
-            </span>
-            
-          </div>
-        )
+        return <></>;
 
       default:
         return (
           <div className="p-4 border border-dashed border-gray-300 rounded-lg">
-            <p className="text-sm text-gray-500">Unsupported field type: {item.type}</p>
+            <p className="text-sm text-gray-500">
+              Unsupported field type: {item.type}
+            </p>
           </div>
-        )
+        );
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
       {apiRes.map((item, index) => (
         <Fragment key={item.id || index}>
-          {item.title && !InDynamic && (
+          {item.title && item.type !== "dynamic" && !InDynamic && (
             <div className="space-y-1">
-              <h3 className="text-sm font-semibold bg-muted px-3 py-2 rounded-md">{item.title}</h3>
+              <h3 className="text-sm font-semibold bg-muted px-3 py-2 rounded-md">
+                {item.title}
+              </h3>
               {item.topDivider && <Separator />}
             </div>
           )}
 
           {item.subTitle && (
             <div className="space-y-1">
-              <h4 className="text-sm font-medium text-muted-foreground">{item.subTitle}</h4>
+              <h4 className="text-sm font-medium text-muted-foreground">
+                {item.subTitle}
+              </h4>
             </div>
           )}
 
-          <Card className="p-4">
-            <CardContent className="p-0">{renderField(item, index)}</CardContent>
-          </Card>
+          {renderField(item, index, localConfig[item.variableName])}
         </Fragment>
       ))}
     </div>
-  )
+  );
 }

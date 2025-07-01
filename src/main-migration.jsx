@@ -12,6 +12,7 @@ const Main = () => {
     nodes,
     setNodes,
     edges,
+    nodesValidation,
     setEdges,
     setUserData,
     setAuthToken,
@@ -28,7 +29,7 @@ const Main = () => {
     setIntents,
     setEntities,
   } = useFlowStore()
-
+  console.log({nodes,edges,nodesValidation});
 
   // Component Did Mount equivalent
   useEffect(() => {

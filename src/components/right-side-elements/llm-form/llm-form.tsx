@@ -3,6 +3,8 @@
 import { Node, NodeProps } from "@xyflow/react"
 import { useDebounceConfig } from "../../../hooks/use-debounced-config"
 import { OutputParserSection } from "../../properties/shared/output-parser-section"
+import { useFlowStore } from "../../../store/flow-store"
+import { useRightDrawerStore } from "../../../store/right-drawer-store"
 
 
 
@@ -20,7 +22,9 @@ interface LlmFormProps {
 
 export default function LlmForm({ selectedNode, handleRightSideDataUpdate }: LlmFormProps) {
     const data = selectedNode.data
-
+    const s= useRightDrawerStore(state=>state)
+    console.log({s});
+    
     const { localConfig, updateConfigField, updateNestedConfig } = useDebounceConfig<LLMConfigProps["rightSideData"]>(
         selectedNode.data.rightSideData,
         {

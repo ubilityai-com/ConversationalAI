@@ -31,7 +31,11 @@ const agentTypes = [
     icon: Bot,
     category: "AI",
     color: "bg-purple-500",
-    defaults:{}
+    defaults:{
+      outputParser:"",
+      outputParserEnabled:false,
+      outputParserData:{}
+    }
   },
   {
     type: "tool",

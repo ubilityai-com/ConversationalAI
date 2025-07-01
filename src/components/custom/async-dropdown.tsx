@@ -90,6 +90,7 @@ interface ApiCallerProps {
     inDynamic?: boolean
     disabled?: boolean
     helperSpan?: string
+    value:string
 }
 
 export function ApiCaller({
@@ -99,6 +100,7 @@ export function ApiCaller({
     inDynamic,
     disabled,
     helperSpan,
+    value
 }: ApiCallerProps) {
     const { setListAndDropDownList, setIsLoadingList, setFetchList, setNotFetchingListAsFirstTime } = useApiStore()
     const flowZoneSelectedElement = useNodesData(flowZoneSelectedId || "")
@@ -114,7 +116,7 @@ export function ApiCaller({
     const finaleObj = useRightDrawerStore(state => state.automation.filledData[flowZoneSelectedId || ""]?.["json"]) || {}
     backup = { ...backup, [compName]: { ...backup[compName], ["1"]: finaleObj } };
 
-    const isUsingAi = apiJson.hasAI && apiJson.value === "##AI##"
+    const isUsingAi = apiJson.hasAI && value === "##AI##"
     const prevVariableRef = useRef(null)
     const controllerRef = useRef<AbortController>(null)
 
@@ -141,9 +143,9 @@ export function ApiCaller({
         setTimeout(() => {
             if (!isUsingAi && notFetchingAsFirstTime !== undefined && !apiJson.multiselect && !isLoadingList) {
                 if (
-                    !isUsingVariable(apiJson.value) &&
-                    apiJson.value !== "None" &&
-                    !ListsForThisNode.find((elt) => elt.value === apiJson.value)
+                    !isUsingVariable(value) &&
+                    value !== "None" &&
+                    !ListsForThisNode.find((elt) => elt.value === value)
                 ) {
                     if (inDynamic === undefined || inDynamic) {
                         onChange({
@@ -286,10 +288,10 @@ export function ApiCaller({
 
                 if (
                     !apiJson.multiselect &&
-                    apiJson.value !== "None" &&
-                    !isUsingVariable(apiJson.value) &&
+                    value !== "None" &&
+                    !isUsingVariable(value) &&
                     !checkIfVariableInDropDown(
-                        apiJson.value,
+                        value,
                         list?.map((c) => c.value),
                         false,
                         false,
@@ -431,7 +433,7 @@ export function ApiCaller({
             }
         }
     }, [
-        apiJson.value,
+        value,
         notFetchingAsFirstTime,
         ...apiJson.apiDependsOn.map((e: any) => {
             if (e.isAutomation === false) {
@@ -479,12 +481,12 @@ export function ApiCaller({
     })
 
     if (isDisabled && isLoadingList === false) {
-        if (!apiJson.multiselect && apiJson.value !== "None") {
+        if (!apiJson.multiselect && value !== "None") {
             onChange({
                 name: "value",
                 val: "None",
             })
-        } else if (apiJson.multiselect && apiJson.value.length > 0) {
+        } else if (apiJson.multiselect && value.length > 0) {
             onChange({
                 name: "value",
                 val: [],
@@ -529,7 +531,7 @@ export function ApiCaller({
                 <SearchableSelect
                     name={apiJson.variableName}
                     placeholder={apiJson.placeholder}
-                    value={apiJson.value}
+                    value={value}
                     onChange={handleChange}
                     options={finalList}
                     disabled={disable}
@@ -541,7 +543,7 @@ export function ApiCaller({
                     loading={isLoadingList}
                     onRefresh={() => callDynamicAPI(apiJson.config, apiJson.res)}
                     name={apiJson.variableName}
-                    value={apiJson.value}
+                    value={value}
                     onChange={handleChange}
                     options={finalList}
                     disabled={disable}
@@ -550,7 +552,7 @@ export function ApiCaller({
                 />
             )}
 
-            {errorMessage && !isUsingVariable(apiJson.value) && !isUsingAi && (
+            {errorMessage && !isUsingVariable(value) && !isUsingAi && (
                 <p className="text-xs text-destructive">{errorMessage}</p>
             )}
 
