@@ -2,7 +2,12 @@ import { AlertCircle, Code, Settings, Upload } from "lucide-react";
 import { Dispatch, Fragment, SetStateAction, useEffect } from "react";
 import { useDebounceConfig } from "../../hooks/use-debounced-config";
 import { setAutomationArray } from "../../lib/automation-utils";
-import { cn, getValueOptions, insertArrayAtIndex, objToReturnDynamic } from "../../lib/utils";
+import {
+  cn,
+  getValueOptions,
+  insertArrayAtIndex,
+  objToReturnDynamic,
+} from "../../lib/utils";
 import { useRightDrawerStore } from "../../store/right-drawer-store";
 import {
   Accordion,
@@ -222,8 +227,10 @@ const transformFunctions = {
       [item.hasOwnProperty("json")
         ? item.json.variableName
         : item.variableName]: item.hasOwnProperty("json")
-          ? item.json.fieldsArray.map((arr: any) => objToReturnDynamic(arr))
-          : item.fieldsArray === "##AI##" ? item.fieldsArray : item.fieldsArray.map((arr: any) => objToReturnDynamic(arr)),
+        ? item.json.fieldsArray.map((arr: any) => objToReturnDynamic(arr))
+        : item.fieldsArray === "##AI##"
+        ? item.fieldsArray
+        : item.fieldsArray.map((arr: any) => objToReturnDynamic(arr)),
     };
   },
   api: (item: any) => {
@@ -255,8 +262,6 @@ const transformFunctions = {
   // Add other transform functions as needed
 };
 
-
-
 interface AutomationSimpleProps {
   filledDataName?: string;
   flowZoneSelectedId: string;
@@ -270,7 +275,7 @@ interface AutomationSimpleProps {
   filledArray?: any[];
   indexForDynamic?: number;
   disabled?: boolean;
-  config?:any
+  config?: any;
   [key: string]: any;
 }
 
@@ -288,21 +293,9 @@ export default function AutomationSimple({
   filledDataName,
   flowZoneSelectedId,
   config,
+  onUpdate,
   ...restProps
 }: AutomationSimpleProps) {
-  const { localConfig, updateNestedConfig,setLocalConfig } = useDebounceConfig(
-    config,
-    {
-      delay: 300,
-      onSave: (savedConfig) => {
-        // Save label changes
-        updateNodeRightSideDataNestedKey(flowZoneSelectedId, { [filledDataName || ""]: savedConfig })
-
-      },
-    },
-  )
-  console.log({ localConfig,apiRes,filledDataName });
-
   const setValidationByKey = useRightDrawerStore(
     (state) => state.setValidationByKey
   );
@@ -337,9 +330,13 @@ export default function AutomationSimple({
     name,
     variableName,
   }: any) => {
+    console.log({ index, newValue, name, variableName, InDynamic });
+
     if (!InDynamic && setApiRes) {
       setApiRes((prev) => {
-        const newApiRes = [...prev];
+        const newApiRes = [...apiRes];
+        console.log({ newApiRes });
+
         if (Array.isArray(name)) {
           name.forEach((n: string, i: number) => {
             newApiRes[index] = { ...newApiRes[index], [n]: newValue[i] };
@@ -357,15 +354,14 @@ export default function AutomationSimple({
             filledDataName,
             validateArray(newApiRes)
           );
-          setLocalConfig(objToReturnDynamic(newApiRes))
           setNodeFilledDataByKey(
             flowZoneSelectedId,
             filledDataName,
             objToReturnDynamic(newApiRes)
           );
         }
-        console.log({newApiRes});
-        
+        console.log({ newApiRes });
+        onUpdate(filledDataName, newApiRes);
         return newApiRes;
       });
     } else {
@@ -389,7 +385,6 @@ export default function AutomationSimple({
         name: variableName,
         keyToChange: name,
       });
-
     }
   };
   const onChangeDropdown = ({
@@ -422,7 +417,8 @@ export default function AutomationSimple({
     if (!InDynamic && flowZoneSelectedId && filledDataName && setApiRes) {
       console.log({ newApiRes });
       setApiRes(newApiRes);
-      setLocalConfig(objToReturnDynamic(newApiRes))
+      onUpdate(filledDataName, newApiRes);
+
       setValidationByKey(
         flowZoneSelectedId,
         filledDataName,
@@ -442,13 +438,13 @@ export default function AutomationSimple({
         keyToChange: name,
       });
   };
-  const renderField = (item: any, index: number, value: any) => {
+  const renderField = (item: any, index: number) => {
     const commonProps = {
       disabled: item.disabled || disabled,
       required: item.required,
       name: item.variableName,
     };
-    console.log({ value, item });
+    console.log({ item });
 
     switch (item.type) {
       case "textfield":
@@ -461,7 +457,7 @@ export default function AutomationSimple({
             {item.multiline ? (
               <Textarea
                 placeholder={item.placeholder}
-                value={value || ""}
+                value={item.value || ""}
                 onChange={(e) =>
                   onChangeAutomationSimple({
                     name: "value",
@@ -482,13 +478,13 @@ export default function AutomationSimple({
                   item.password
                     ? "password"
                     : item.numberField
-                      ? "number"
-                      : item.date
-                        ? "date"
-                        : "text"
+                    ? "number"
+                    : item.date
+                    ? "date"
+                    : "text"
                 }
                 placeholder={item.placeholder}
-                value={value || ""}
+                value={item.value || ""}
                 onChange={(e) =>
                   onChangeAutomationSimple({
                     name: "value",
@@ -528,7 +524,7 @@ export default function AutomationSimple({
                   label: opt.option,
                 })) || []
               }
-              value={value || ""}
+              value={item.value || ""}
               onChange={(value) => {
                 if (item.hasOwnProperty("noOpts"))
                   onChangeAutomationSimple({
@@ -570,7 +566,7 @@ export default function AutomationSimple({
             }
             disabled={disabled}
             apiJson={item}
-            value={value}
+            value={item.value}
             onChange={({ val, name }) => {
               onChangeAutomationSimple({
                 name: name,
@@ -588,7 +584,7 @@ export default function AutomationSimple({
           <div className="flex items-center space-x-2">
             <Checkbox
               id={`checkbox-${index}`}
-              checked={value || false}
+              checked={item.value || false}
               onCheckedChange={(checked) =>
                 onChangeAutomationSimple({
                   name: "value",
@@ -617,7 +613,7 @@ export default function AutomationSimple({
               {item.required && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <RadioGroup
-              value={value || ""}
+              value={item.value || ""}
               onValueChange={(value) =>
                 onChangeAutomationSimple({
                   name: "value",
@@ -654,7 +650,7 @@ export default function AutomationSimple({
               {item.required && <span className="text-red-500 ml-1">*</span>}
             </Label>
             <div className="flex flex-wrap gap-2">
-              {value?.map((val: string, valIndex: number) => (
+              {item.value?.map((val: string, valIndex: number) => (
                 <Badge key={valIndex} variant="secondary" className="text-xs">
                   {val}
                   <Button
@@ -662,7 +658,7 @@ export default function AutomationSimple({
                     size="sm"
                     className="h-4 w-4 p-0 ml-1"
                     onClick={() => {
-                      const newValue = value.filter(
+                      const newValue = item.value.filter(
                         (_: any, i: number) => i !== valIndex
                       );
                       onChangeAutomationSimple({
@@ -713,7 +709,7 @@ export default function AutomationSimple({
             <div className="flex items-center space-x-2">
               <Input
                 type="color"
-                value={value || "#000000"}
+                value={item.value || "#000000"}
                 onChange={(e) =>
                   onChangeAutomationSimple({
                     name: "value",
@@ -727,7 +723,7 @@ export default function AutomationSimple({
               />
               <Input
                 type="text"
-                value={value || ""}
+                value={item.value || ""}
                 onChange={(e) =>
                   onChangeAutomationSimple({
                     name: "value",
@@ -768,7 +764,6 @@ export default function AutomationSimple({
           <div className="space-y-2">
             <DynamicFields
               json={item.hasOwnProperty("json") ? item.json : item}
-              value={value}
               onChange={({ name, val }: any) =>
                 onChangeAutomationSimple({
                   name: item.hasOwnProperty("json") ? "json" : name,
@@ -801,7 +796,6 @@ export default function AutomationSimple({
               <AccordionContent>
                 <DynamicFields
                   json={item}
-                  value={value}
                   onChange={({ name, val }: any) =>
                     onChangeAutomationSimple({
                       name,
@@ -841,7 +835,7 @@ export default function AutomationSimple({
                 </Button>
               </div>
               <Textarea
-                value={value || ""}
+                value={item.value || ""}
                 onChange={(e) =>
                   onChangeAutomationSimple({
                     name: "value",
@@ -893,7 +887,7 @@ export default function AutomationSimple({
             </div>
           )}
 
-          {renderField(item, index, localConfig[item.variableName])}
+          {renderField(item, index)}
         </Fragment>
       ))}
     </div>

@@ -1,76 +1,65 @@
-"use client"
+"use client";
 
-import { FileJson } from "lucide-react"
-import { useEffect, useState } from "react"
-import { OutputParsersElements } from "../../../elements/output-parsers-elements"
-import { setAutomationArray } from "../../../lib/automation-utils"
-import { ApiResItem, objToReturnDynamic } from "../../../lib/utils"
-import { AutomationItem } from "../../../types/automation-types"
-import AutomationSimple from "../../custom/automation-v2"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card"
-import { Label } from "../../ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
-import { Switch } from "../../ui/switch"
+import { FileJson } from "lucide-react";
+import { useEffect, useState } from "react";
+import { OutputParsersElements } from "../../../elements/output-parsers-elements";
+import { setAutomationArray } from "../../../lib/automation-utils";
+import { ApiResItem, objToReturnDynamic } from "../../../lib/utils";
+import { AutomationItem } from "../../../types/automation-types";
+import AutomationSimple from "../../custom/automation-v2";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../../ui/card";
+import { Label } from "../../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../ui/select";
+import { Switch } from "../../ui/switch";
 
 interface JsonField {
-  id: string
-  name: string
-  value: string
-  description: string
+  id: string;
+  name: string;
+  value: string;
+  description: string;
 }
 
 interface OutputParserSectionProps {
-  config: any
-  onConfigUpdate: (key: string, value: any) => void,
-  id: string
+  config: any;
+  onConfigUpdate: (key: string, value: any) => void;
+  id: string;
 }
 
-export function OutputParserSection({ config, onConfigUpdate, id }: OutputParserSectionProps) {
-  const outputParserEnabled = config.outputParserEnabled === true
-  const outputParser = config.outputParser || "StructuredOutputParser"
-  const jsonFields = config.jsonFields || []
-  const [json, setJson] = useState<AutomationItem[]>([])
-  const [schema, setSchema] = useState<any>()
+export function OutputParserSection({
+  config,
+  onConfigUpdate,
+  id,
+}: OutputParserSectionProps) {
+  const outputParserEnabled = config.outputParserEnabled === true;
+  const outputParser = config.outputParser || "StructuredOutputParser";
+  const outputParserData = config.outputParserData || [];
+  const [json, setJson] = useState<AutomationItem[]>([]);
+  const [schema, setSchema] = useState<any>();
 
-
-
-  // JSON Fields management for LLM output parser
-  const addJsonField = () => {
-    const currentFields = jsonFields
-    const newField: JsonField = {
-      id: `field-${Date.now()}`,
-      name: "",
-      value: "",
-      description: "",
-    }
-    onConfigUpdate("jsonFields", [...currentFields, newField])
-  }
-
-  const updateJsonField = (fieldId: string, updates: Partial<JsonField>) => {
-    const currentFields = jsonFields
-    const updatedFields = currentFields.map((field: JsonField) =>
-      field.id === fieldId ? { ...field, ...updates } : field,
-    )
-    onConfigUpdate("jsonFields", updatedFields)
-  }
-
-  const removeJsonField = (fieldId: string) => {
-    const currentFields = jsonFields
-    const updatedFields = currentFields.filter((field: JsonField) => field.id !== fieldId)
-    onConfigUpdate("jsonFields", updatedFields)
-  }
   console.log({ schema, config });
   useEffect(() => {
     if (outputParser) {
       console.log("mountttttttttttttt");
-      
-      const op = (OutputParsersElements.find(o => o.type === outputParser) as any)
-      console.log({ op });
-      const automationItems = setAutomationArray((op?.rightSideData?.json))
-      setSchema(op)
-      setJson(automationItems)
+
+      const op = OutputParsersElements.find(
+        (o) => o.type === outputParser
+      ) as any;
+      console.log({ op, config });
+      setSchema(op);
     }
-  }, [])
+  }, []);
 
   return (
     <Card>
@@ -83,55 +72,70 @@ export function OutputParserSection({ config, onConfigUpdate, id }: OutputParser
           <Switch
             checked={outputParserEnabled}
             onCheckedChange={(checked) => {
-              const op = (OutputParsersElements.find(o => o.type === "StructuredOutputParser") as any)
+              const op = OutputParsersElements.find(
+                (o) => o.type === "StructuredOutputParser"
+              ) as any;
               console.log({ op });
-              const automationItems = setAutomationArray((op?.rightSideData?.json))
-              setSchema(op)
-              setJson(setAutomationArray((op?.rightSideData?.json)))
-              onConfigUpdate("outputParserData", objToReturnDynamic((automationItems) as ApiResItem[]))
-              onConfigUpdate("outputParser", "StructuredOutputParser")
-              onConfigUpdate("outputParserEnabled", checked)
+              const automationItems = setAutomationArray(
+                op?.rightSideData?.json
+              );
+              setSchema(op);
+              setJson(setAutomationArray(op?.rightSideData?.json));
+              onConfigUpdate("outputParserData", automationItems);
+              onConfigUpdate("outputParser", "StructuredOutputParser");
+              onConfigUpdate("outputParserEnabled", checked);
             }}
             aria-label="Enable output parser"
           />
         </div>
-        <CardDescription>Configure how the LLM output should be parsed</CardDescription>
+        <CardDescription>
+          Configure how the LLM output should be parsed
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {outputParserEnabled && (
           <>
             <div>
               <Label htmlFor="outputParser">Parser Type</Label>
-              <Select value={outputParser} onValueChange={(value) => {
-                const op = (OutputParsersElements.find(o => o.type === value) as any)
-                setSchema(op)
-                const automationItems = setAutomationArray((op?.rightSideData?.json))
-                setJson(automationItems)
-                onConfigUpdate("outputParser", value)
-                onConfigUpdate("outputParserData", objToReturnDynamic((automationItems) as ApiResItem[]))
-              }}>
+              <Select
+                value={outputParser}
+                onValueChange={(value) => {
+                  const op = OutputParsersElements.find(
+                    (o) => o.type === value
+                  ) as any;
+                  setSchema(op);
+                  const automationItems = setAutomationArray(
+                    op?.rightSideData?.json
+                  );
+                  setJson(automationItems);
+                  onConfigUpdate("outputParser", value);
+                  onConfigUpdate("outputParserData", automationItems);
+                }}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select parser type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {OutputParsersElements.map(op => (<SelectItem value={op.type}>{op.label}</SelectItem>))}
+                  {OutputParsersElements.map((op) => (
+                    <SelectItem value={op.type}>{op.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
-            {schema &&
+            {schema && (
               <AutomationSimple
-                filledDataName="outputParser"
+                filledDataName="outputParserData"
                 flowZoneSelectedId={id}
                 AllJson={schema?.rightSideData?.json}
-                apiRes={json}
+                apiRes={outputParserData}
+                onUpdate={onConfigUpdate}
                 config={config.outputParserData}
                 setApiRes={setJson}
               />
-            }
-
+            )}
           </>
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
