@@ -516,15 +516,6 @@ export function ApiCaller({
                     {apiJson.label}
                     {apiJson.required && <span className="text-destructive ml-1">*</span>}
                 </Label>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => callDynamicAPI(apiJson.config, apiJson.res)}
-                    disabled={disable}
-                    className="h-8 w-8 p-0"
-                >
-                    {isLoadingList ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-                </Button>
             </div>
 
             {apiJson.multiselect ? (

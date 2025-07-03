@@ -13,6 +13,7 @@ const Main = () => {
     setNodes,
     edges,
     nodesValidation,
+    addNodesValidation,
     setEdges,
     setUserData,
     setAuthToken,
@@ -129,9 +130,10 @@ const Main = () => {
   }
 
   const initializeAllDroppedElementsByHandler = () => {
+    const id=uuidv4()
     setNodes([
       {
-        id: uuidv4(),
+        id: id,
         type: "Handler",
         data: {
           color: "#68b04b",
@@ -149,6 +151,7 @@ const Main = () => {
         position: { x: 400, y: 40 },
       },
     ])
+    addNodesValidation(id,false)
   }
 
   // Get Cards, Intents and Entities from DB and save them in state variables

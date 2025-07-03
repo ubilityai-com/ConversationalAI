@@ -867,7 +867,7 @@ export default function AutomationSimple({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {apiRes.map((item, index) => (
         <Fragment key={item.id || index}>
           {item.title && item.type !== "dynamic" && !InDynamic && (
