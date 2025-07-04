@@ -4,18 +4,17 @@ import aiohttp
 import asyncio
 
 class FlowInvoker:
-    def __init__(self, data, used_variables):
+    def __init__(self, data):
         self.data = data
-        self.used_variables = used_variables
         self.max_retries = 30
         self.retry_delay = 2
     
-    async def make_request(self, variables):
-        url = self._replace_variables(self.data['url'], variables)
+    async def make_request(self):
+        url = self.data['url']
         body = None
         
         if 'body' in self.data:
-            body = self._replace_variables_in_object(self.data['body'], variables)
+            body = self.data['body']
         
         # Make initial request
         initial_response = await self._make_http_request(url, body)
@@ -48,11 +47,11 @@ class FlowInvoker:
         if 'authentication' in self.data:
             auth = self.data['authentication']
             if auth['type'] == 'Bearer':
-                token = self._replace_variables(auth['token'], {})
+                token = auth['token']
                 headers['Authorization'] = f'Bearer {token}'
             elif auth['type'] == 'Basic':
-                username = self._replace_variables(auth['username'], {})
-                password = self._replace_variables(auth['password'], {})
+                username = auth['username']
+                password = auth['password']
                 import base64
                 credentials = base64.b64encode(f'{username}:{password}'.encode()).decode()
                 headers['Authorization'] = f'Basic {credentials}'
@@ -67,22 +66,22 @@ class FlowInvoker:
                 response.raise_for_status()
                 return await response.text()
     
-    def _replace_variables(self, template, variables):
-        if not isinstance(template, str):
-            return template
+    # def _replace_variables(self, template, variables):
+    #     if not isinstance(template, str):
+    #         return template
         
-        for var_name in self.used_variables:
-            placeholder = f'${{{var_name}}}'
-            if placeholder in template:
-                value = str(variables.get(var_name, ''))
-                template = template.replace(placeholder, value)
-        return template
+    #     for var_name in self.used_variables:
+    #         placeholder = f'${{{var_name}}}'
+    #         if placeholder in template:
+    #             value = str(variables.get(var_name, ''))
+    #             template = template.replace(placeholder, value)
+    #     return template
     
-    def _replace_variables_in_object(self, obj, variables):
-        if isinstance(obj, dict):
-            return {k: self._replace_variables_in_object(v, variables) for k, v in obj.items()}
-        elif isinstance(obj, list):
-            return [self._replace_variables_in_object(item, variables) for item in obj]
-        elif isinstance(obj, str):
-            return self._replace_variables(obj, variables)
-        return obj
+    # def _replace_variables_in_object(self, obj, variables):
+    #     if isinstance(obj, dict):
+    #         return {k: self._replace_variables_in_object(v, variables) for k, v in obj.items()}
+    #     elif isinstance(obj, list):
+    #         return [self._replace_variables_in_object(item, variables) for item in obj]
+    #     elif isinstance(obj, str):
+    #         return self._replace_variables(obj, variables)
+    #     return obj

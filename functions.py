@@ -88,17 +88,17 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
         return
 
     elif element_type == 'Router':
-        await handle_router(sio, sid, conversation_id, session, dialogue, current_dialogue,content)
+        await handle_router(sio, sid, conversation_id, session, dialogue,content)
         return
 
     elif element_type == 'TextFormatter':
-        handle_text_formatter(conversation, current_dialogue,content)
+        handle_text_formatter(conversation,content)
 
     elif element_type == 'FlowInvoker':
-        await handle_flow_invoker(conversation, current_dialogue,content)
+        await handle_flow_invoker(conversation,content)
 
     elif element_type == 'VariableManager':
-        handle_variable_manager(conversation, current_dialogue, conversation_id, sid,content)
+        handle_variable_manager(conversation,content)
     elif element_type == 'AppIntegration':
         await handle_app_integration(sio, sid, conversation_id, session, dialogue, current_dialogue,content)
         return
@@ -184,16 +184,13 @@ async def handle_routing(sio, sid, conversation_id, session, dialogue, current_d
     await execute_process(sio, sid, conversation_id, session, dialogue)
 
 
-async def handle_router(sio, sid, conversation_id, session, dialogue, current_dialogue,content):
+async def handle_router(sio, sid, conversation_id, session, dialogue,content):
     """
     Handle advanced conditional logic with Router elements.
     """
     conversation = session[conversation_id]
-    router = Router(
-        content["data"]['conditions'],
-        current_dialogue.get('usedVariables', [])
-    )
-    next_step = router.find_next_step(conversation['variables'])
+    router = Router(content["data"]['conditions'])
+    next_step = router.find_next_step()
 
     if next_step:
         conversation['current_step'] = next_step
@@ -202,29 +199,23 @@ async def handle_router(sio, sid, conversation_id, session, dialogue, current_di
         print('[Router] No valid condition matched.')
 
 
-def handle_text_formatter(conversation: dict, current_dialogue: dict,content):
+def handle_text_formatter(conversation,content):
     """
     Process text formatting logic and save result to a variable.
     """
-    formatter = TextFormatter(
-        content["data"],
-        current_dialogue.get('usedVariables', [])
-    )
-    result = formatter.process(conversation['variables'])
+    formatter = TextFormatter(content["data"])
+    result = formatter.process()
     conversation['variables'][content["data"]['saveOutputAs']] = result
 
 
-async def handle_flow_invoker(conversation: dict, current_dialogue: dict,content):
+async def handle_flow_invoker(conversation,content):
     """
     Invoke an external flow (API call) and save results to variables.
     """
-    invoker = FlowInvoker(
-        content["data"],
-        current_dialogue.get('usedVariables', [])
-    )
+    invoker = FlowInvoker(content["data"])
     try:
         logger.info("Calling webhook event")
-        result = await invoker.make_request(conversation['variables'])
+        result = await invoker.make_request()
         result_data = json.loads(result)
         if isinstance(result_data.get('End'), dict):
             for key, value in result_data['End'].items():
@@ -234,15 +225,12 @@ async def handle_flow_invoker(conversation: dict, current_dialogue: dict,content
         print(f'[FlowInvoker] Failed: {e}')
 
 
-def handle_variable_manager(conversation: dict, current_dialogue: dict,content):
+def handle_variable_manager(conversation,content):
     """
     Manage or mutate conversation variables based on defined logic.
     """
-    manager = VariableManager(
-        content["data"],
-        current_dialogue.get('usedVariables', [])
-    )
-    result = manager.process(conversation['variables'])
+    manager = VariableManager(content["data"])
+    result = manager.process()
     conversation['variables'][result['variable']] = result['value']
 
 def save_output_parser_vars(output_parser_data: dict, conversation: dict, result: dict):
@@ -259,12 +247,7 @@ def save_output_parser_vars(output_parser_data: dict, conversation: dict, result
 async def handle_app_integration(sio, sid, conversation_id, session, dialogue, current_dialogue,content):
     conversation = session[conversation_id]
 
-    # replace variables in the user payload input 
-    app_content_json = replace_variables(
-        content["data"],
-        conversation['variables'],
-        current_dialogue.get('usedVariables', [])
-    )
+    app_content_json = content["data"]
 
     # execute app operation
     app_type = app_content_json['app']

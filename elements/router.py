@@ -1,15 +1,15 @@
 # router.py
 class Router:
-    def __init__(self, conditions, used_variables):
+    def __init__(self, conditions):
         self.conditions = conditions
-        self.used_variables = used_variables
+
     
-    def evaluate_condition(self, condition, variables):
+    def evaluate_condition(self, condition):
         if 'operation' not in condition:
             return True
         
-        left = self._get_value(condition['firstOperator'], variables)
-        right = self._get_value(condition['secondOperator'], variables)
+        left = condition['firstOperator']
+        right = condition['secondOperator']
         
         # Convert types
         data_type = condition.get('dataType', 'string')
@@ -40,15 +40,15 @@ class Router:
             return left <= right
         return False
     
-    def _get_value(self, value, variables):
-        if isinstance(value, str) and value.startswith('${') and value.endswith('}'):
-            var_name = value[2:-1]
-            if var_name in self.used_variables:
-                return variables.get(var_name, '')
-        return value
+    # def _get_value(self, value, variables):
+    #     if isinstance(value, str) and value.startswith('${') and value.endswith('}'):
+    #         var_name = value[2:-1]
+    #         if var_name in self.used_variables:
+    #             return variables.get(var_name, '')
+    #     return value
     
-    def find_next_step(self, variables):
+    def find_next_step(self):
         for condition in self.conditions:
-            if self.evaluate_condition(condition, variables):
+            if self.evaluate_condition(condition):
                 return condition['next']
         return None

@@ -1,11 +1,10 @@
 # text_formatter.py
 class TextFormatter:
-    def __init__(self, data, used_variables):
+    def __init__(self, data):
         self.data = data
-        self.used_variables = used_variables
     
-    def process(self, variables):
-        input_text = self._replace_variables(self.data['inputText'], variables)
+    def process(self):
+        input_text = self.data['inputText']
         operation = self.data['operation']
         
         if operation == 'capitalize':
@@ -19,19 +18,19 @@ class TextFormatter:
         elif operation == 'length':
             return str(len(input_text))
         elif operation == 'find':
-            text_to_find = self._replace_variables(self.data['textToFind'], variables)
+            text_to_find = self.data['textToFind']
             return str(input_text.find(text_to_find))
         else:
             print(f'Unknown text formatter operation: {operation}')
             return input_text
     
-    def _replace_variables(self, template, variables):
-        if not isinstance(template, str):
-            return template
+    # def _replace_variables(self, template, variables):
+    #     if not isinstance(template, str):
+    #         return template
         
-        for var_name in self.used_variables:
-            placeholder = f'${{{var_name}}}'
-            if placeholder in template:
-                value = str(variables.get(var_name, ''))
-                template = template.replace(placeholder, value)
-        return template
+    #     for var_name in self.used_variables:
+    #         placeholder = f'${{{var_name}}}'
+    #         if placeholder in template:
+    #             value = str(variables.get(var_name, ''))
+    #             template = template.replace(placeholder, value)
+    #     return template
