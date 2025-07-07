@@ -16,7 +16,7 @@ export const setAutomationArray = (
 ) => {
   const result: AutomationItem[] = [];
   console.log({ apiRes, child });
-
+console.trace("innn")
   apiRes.forEach((item) => {
     const childArray = Array.isArray(child) ? child : [];
     console.log({ item, childArray });
@@ -85,7 +85,7 @@ export const setAutomationArray = (
             ...item,
             id: uuidv4(),
             child: childArray,
-            fieldsArray: item.fieldsArray.flatMap((field) =>
+            fieldsArray: item.fieldsArray.map((field) =>
               setAutomationArray(Array.isArray(field) ? field : [field])
             ),
           });
@@ -135,7 +135,142 @@ export const setAutomationArray = (
 
   return result;
 };
+export const setAutomationArrayV2 = (
+  apiRes: AutomationItem[],
+  filledValues: { [key: string]: any },
+  child?: string[]
+) => {
+  const result: AutomationItem[] = [];
+  // console.log({ apiRes, child, filledValues });
+  for (const item of apiRes) {
+    const childArray = Array.isArray(child) ? child : [];
+    // console.log({ item, childArray });
+    if (!filledValues.hasOwnProperty(item.variableName)) {
+      result.push({
+        ...item,
+        child: childArray,
+        id: uuidv4(),
+      });
+      continue
+    }
+    switch (item.type) {
+      case "dropdown": {
+        if (item.options && "options" in item) {
+          // Handle dropdown with options
+          const clonedItem = { ...item };
+          delete (clonedItem as any).options;
 
+          result.push({
+            ...clonedItem,
+            value: filledValues[item.variableName],
+            child: childArray,
+            id: uuidv4(),
+          });
+
+          // Process nested options based on current value
+          if (item.options && filledValues[item.variableName] && item.options[filledValues[item.variableName]]) {
+            const nestedItems = setAutomationArrayV2(item.options[filledValues[item.variableName]], filledValues, [
+              ...childArray,
+              filledValues[item.variableName],
+            ]);
+            // console.log({ nestedItems });
+
+            result.push(...nestedItems);
+          }
+        } else {
+          // Handle simple dropdown without options
+          result.push({
+            ...item,
+            child: childArray,
+            id: uuidv4(),
+            noOpts: true,
+          });
+        }
+        break;
+      }
+
+      case "dynamic": {
+        if (
+          "json" in item &&
+          item.json?.fieldsArray &&
+          Array.isArray(item.json.fieldsArray) &&
+          item.json.fieldsArray.length > 0
+        ) {
+          // Handle dynamic item with json structure
+          result.push({
+            ...item,
+            id: uuidv4(),
+            child: childArray,
+            json: {
+              ...item.json,
+              fieldsArray: (filledValues[item.variableName] as AutomationItem[][]).map((field, index) =>
+                setAutomationArrayV2(Array.isArray(field) ? field : [field], filledValues[item.variableName][index])
+              ),
+            },
+          });
+        } else if (
+          "fieldsArray" in item &&
+          Array.isArray(item.fieldsArray) &&
+          item.fieldsArray.length > 0
+        ) {
+          // Handle dynamic item with direct fieldsArray
+          result.push({
+            ...item,
+            id: uuidv4(),
+            child: childArray,
+            fieldsArray: (filledValues[item.variableName] as AutomationItem[][]).map((field, index) =>
+              setAutomationArrayV2(Array.isArray(field) ? field : [field], filledValues[item.variableName][index])
+            ),
+          });
+        } else {
+          // Handle empty dynamic item
+          result.push({
+            ...item,
+            value: filledValues[item.variableName],
+            id: uuidv4(),
+            child: childArray,
+          });
+        }
+        break;
+      }
+
+      case "accordion": {
+        if ("fieldsArray" in item && Array.isArray(item.fieldsArray)) {
+          result.push({
+            ...item,
+            id: uuidv4(),
+            child: childArray,
+            fieldsArray: (filledValues[item.variableName] as AutomationItem[][]).map((field, index) =>
+              setAutomationArrayV2(Array.isArray(field) ? field : [field], filledValues[item.variableName][index])
+            ),
+          });
+        } else {
+          result.push({
+            ...item,
+            id: uuidv4(),
+            value: filledValues[item.variableName],
+            child: childArray,
+          });
+        }
+        break;
+      }
+
+      default: {
+        // Handle all other item types
+        result.push({
+          ...item,
+          value: filledValues[item.variableName],
+          child: childArray,
+          id: uuidv4(),
+        });
+        break;
+      }
+    }
+  }
+  // console.log({ result });
+
+  return result;
+};
 /**
  * Utility function to safely clone an automation item
  * @param item - The automation item to clone
@@ -419,3 +554,127 @@ export const getVariableNames = (items: AutomationItem[]): string[] => {
   items.forEach(extractVariableNames);
   return [...new Set(variableNames)]; // Remove duplicates
 };
+
+
+
+type FieldItem = {
+  type: string;
+  value?: any;
+  variableName?: string;
+  typeOfValue?: string;
+  credential?: boolean;
+  list?: { option: string; cred: string }[];
+  options?: Record<string, FieldItem[]>;
+  fieldsArray?: FieldItem[][];
+  json?: {
+    variableName: string;
+    fieldsArray: FieldItem[][];
+  };
+  custom?: boolean;
+  formats?: Record<string, string>;
+};
+
+type ApiResponse = FieldItem[];
+
+export function objToReturnDynamicv2(apiRes: ApiResponse): Record<string, any> {
+  let obj: Record<string, any> = {};
+
+  apiRes.forEach((item) => {
+    const {
+      type,
+      value,
+      variableName,
+      typeOfValue,
+      credential,
+      list,
+      options,
+      fieldsArray,
+      json,
+    } = item;
+
+    const hasValue = value !== undefined && value !== null;
+
+    const processValue = (val: any): any => {
+      if (typeOfValue === "integer") {
+        return parseInt(val) || val;
+      }
+      if (typeOfValue === "float") {
+        return parseFloat(val);
+      }
+      if (typeOfValue === "array") {
+        return [val];
+      }
+      return val;
+    };
+
+    const mergeOptionFields = () => {
+      if (options && value && options[value]) {
+        obj = { ...obj, ...objToReturnDynamicv2(options[value]) };
+      }
+    };
+
+    if (["dropdown", "api"].includes(type) && value !== "None") {
+      if (credential && list) {
+        obj[variableName!] =
+          list.length > 1
+            ? list.find((c) => c.option === value)?.cred ?? ""
+            : "";
+      } else {
+        obj[variableName!] = processValue(value);
+      }
+      mergeOptionFields();
+    }
+
+    if (type === "textfield" || type === "editor") {
+      if (value?.toString().trim()) {
+        obj[variableName!] = processValue(value);
+      }
+    }
+
+    if (type === "textFormatter" && value?.trim()) {
+      obj[variableName!] = value
+        
+        
+    }
+
+    if (type === "multiselect" && Array.isArray(value) && value.length > 0) {
+      obj[variableName!] = value;
+    }
+
+    if (type === "array" && Array.isArray(value) && value.length > 0) {
+      obj[variableName!] = value;
+    }
+
+    if (type === "json" && value && Object.keys(value).length > 0) {
+      obj[variableName!] = value;
+    }
+
+    if (type === "checkbox") {
+      obj[variableName!] =
+        typeOfValue === "string" ? value?.toString() : value;
+    }
+
+    if (type === "radiobutton") {
+      obj[variableName!] = value;
+      mergeOptionFields();
+    }
+
+    if (type === "color" && value?.trim()) {
+      obj[variableName!] = value;
+    }
+
+    if (type === "accordion" && fieldsArray?.[0]) {
+      obj[variableName!] = objToReturnDynamicv2(fieldsArray[0]);
+    }
+
+    if (type === "dynamic") {
+      const target = json ?? item;
+      const arrayData = target.fieldsArray?.map((arr) =>
+        objToReturnDynamicv2(arr)
+      );
+      obj[target.variableName!] = arrayData ?? [];
+    }
+  });
+
+  return obj;
+}

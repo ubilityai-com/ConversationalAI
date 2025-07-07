@@ -59,9 +59,7 @@ export function ToolsSection({
 }: ToolsSectionProps) {
   const toolsEnabled = config.toolsEnabled === true;
   const tools = config.tools || [];
-  const outputParserEnabled = config.outputParserEnabled === true;
   const tool = config.tool || "CustomTool";
-  const outputParserData = config.outputParserData || [];
   const [json, setJson] = useState<AutomationItem[]>([]);
   const [schema, setSchema] = useState<any>();
 
@@ -253,11 +251,6 @@ export function ToolsSection({
             </p>
           </div>
         )}
-        <OutputParserSection
-          config={config}
-          onConfigUpdate={onConfigUpdate}
-          id={id}
-        />
       </CardContent>
     </Card>
   );

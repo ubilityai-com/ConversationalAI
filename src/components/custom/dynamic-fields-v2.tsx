@@ -1,11 +1,12 @@
 import { TooltipContent } from "@radix-ui/react-tooltip";
-import { AlertTriangle, Minus, Plus, Sparkles } from "lucide-react";
+import { AlertTriangle, ListChecks, Minus, Plus, Sparkles, Trash2 } from "lucide-react";
 import React, { Fragment, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { ApiResItem, cn } from "../../lib/utils";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
@@ -225,97 +226,61 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
     <div className="space-y-4">
       <div
         className={cn(
-          "rounded-l-md",
-          hasRequiredError && "border-l-4 border-red-500 pl-3",
-          hasRequiredSuccess && "border-l-4 border-green-500 pl-3"
+          "rounded-l-md"
         )}
       >
-        {/* {json.type !== "accordion" && (
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <DynamicFieldsLabel
-                label={fieldsArray.length > 0 ? `${json.title} (${fieldsArray.length})` : `No ${json.title}`}
-                tooltipTitle={`Add ${json.title}`}
-                onClick={onAddVariables}
-                rightSideInput={true}
-                disabled={disabled}
-              />
-            </div>
-            {UseAIIconHTML}
-          </div>
-        )} */}
 
-        {/* Fields List */}
-        {fieldsArray.length > 0 && (
-          <div className="space-y-4">
-            {fieldsArray.map((field, index) => (
-              <Fragment key={`${index}-${remove}`}>
-                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center justify-between mb-3">
-                    <Badge variant="secondary" className="text-xs">
-                      {json.title} {index + 1}
-                    </Badge>
-                    <TextOnlyTooltip
-                      title={
-                        "Remove " +
-                        json.title.substring(0, json.title.length - 1) +
-                        " " +
-                        (index + 1)
-                      }
-                      placement="left"
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center">
+              <ListChecks className="w-4 h-4 mr-2" />
+              {json.title}&nbsp;
+              <span className="text-muted-foreground">({fieldsArray.length})</span>
+            </CardTitle>
+            <CardDescription>Add options users can select. Every choice gets its own output handle.</CardDescription>
+          </CardHeader>
+
+          <CardContent className="space-y-4">
+            {fieldsArray.length === 0 && <p className="text-xs text-gray-500">No {json.title} yet. Click “Add {json.title}".</p>}
+
+            {fieldsArray.map((fieldSet, fieldSetInd) => (
+              <Card key={fieldSetInd} className="border border-gray-200">
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-sm">{json.title} {fieldSetInd + 1}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                      onClick={() => onRemoveVariables(fieldSetInd)}
                     >
-                      <Button
-                        variant="destructive"
-                        size="icon"
-                        className="h-6 w-6"
-                        onClick={() => onRemoveVariables(index)}
-                      >
-                        <Minus className="h-4 w-4" />
-                      </Button>
-                    </TextOnlyTooltip>
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
                   </div>
 
-                  <AutomationSimple
-                    disabled={disabled || isActive}
-                    indexForDynamic={index}
-                    apiRes={field as ApiResItem[]}
-                    AllJson={json.structure}
-                    onChangeDynamicVariables={onChangeVariables}
-                    InDynamic={true}
-                    flowZoneSelectedId={flowZoneSelectedId}
-                    onRemoveVariables={onRemoveVariables}
-                  />
-                </div>
-
-                {index < fieldsArray.length - 1 && (
-                  <Separator className="my-4" />
-                )}
-              </Fragment>
+                  <div>
+                    <AutomationSimple
+                      disabled={disabled || isActive}
+                      indexForDynamic={fieldSetInd}
+                      apiRes={fieldSet as ApiResItem[]}
+                      AllJson={json.structure}
+                      onChangeDynamicVariables={onChangeVariables}
+                      InDynamic={true}
+                      flowZoneSelectedId={flowZoneSelectedId}
+                      onRemoveVariables={onRemoveVariables}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
             ))}
-          </div>
-        )}
-        {json.type !== "accordion" && (
-          <div className="mt-4">
-            <Label className="block text-xs font-normal mb-2">{`Add new ${json.title}`}</Label>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={onAddVariables}
-              className="mt-2"
-            >
-              <Plus className="h-4 w-4 mr-2" /> ADD
-            </Button>
-          </div>
-        )}
 
-        {/* Empty State */}
-        {/* {fieldsArray.length === 0 && !hasRequiredError && (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-            <div className="text-sm">No {json.title.toLowerCase()} added yet</div>
-            <div className="text-xs mt-1">Click "Add" to create your first {json.title.toLowerCase()}</div>
-          </div>
-        )} */}
+            <Button variant="outline" size="sm" onClick={onAddVariables} className="h-8 w-full">
+              <Plus className="w-3 h-3 mr-1" />
+              Add {json.title}
+            </Button>
+          </CardContent>
+        </Card>
+
       </div>
 
       {/* Validation Error */}

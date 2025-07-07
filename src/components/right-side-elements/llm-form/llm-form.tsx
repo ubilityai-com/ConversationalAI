@@ -1,11 +1,13 @@
 "use client";
 
 import { Node, NodeProps } from "@xyflow/react";
+import { useState } from "react";
+import { BasicLLMJson } from "../../../elements/langchain-elements/BasicLLMJson";
+import ModelsElements from "../../../elements/model-elements";
 import { useDebounceConfig } from "../../../hooks/use-debounced-config";
+import AutomationSimple from "../../custom/automation-v4";
 import { OutputParserSection } from "../../properties/shared/output-parser-section";
-import { useFlowStore } from "../../../store/flow-store";
-import { useRightDrawerStore } from "../../../store/right-drawer-store";
-import { ToolsSection } from "../../properties/shared/tools-section";
+import { SharedSection } from "../../properties/shared/shared-section";
 
 interface LLMConfigProps extends Record<string, any> {
   label: string;
@@ -21,11 +23,9 @@ export default function LlmForm({
   selectedNode,
   handleRightSideDataUpdate,
 }: LlmFormProps) {
-  const data = selectedNode.data;
-  const s = useRightDrawerStore((state) => state);
-  console.log({ s });
-
-  const { localConfig, updateConfigField, updateNestedConfig } =
+  const [schema, setSchema] = useState<any[]>(BasicLLMJson.defaults.json
+  );
+  const { localConfig, updateNestedConfig } =
     useDebounceConfig<LLMConfigProps["rightSideData"]>(
       selectedNode.data.rightSideData,
       {
@@ -38,26 +38,37 @@ export default function LlmForm({
         },
       }
     );
-  const handleDynamicUpdate = (
-    key: string,
-    dynamicValue: string | undefined
-  ) => {
-    handleRightSideDataUpdate(dynamicValue);
-  };
-  console.log({ selectedNode, localConfig });
-
   return (
     <div className="space-y-6">
+      <AutomationSimple
+        filledDataName="json"
+        schema={schema}
+        fieldValues={localConfig.json}
+        setSchema={setSchema}
+        flowZoneSelectedId={selectedNode.id}
+        onFieldChange={({ path, value }) => {
+          console.log({ path, value });
+          updateNestedConfig(`${"json"}.${path}`, value)
+
+        }}
+      />
+
+
       <OutputParserSection
-        config={localConfig}
+        config={localConfig.extras.outputParser}
         onConfigUpdate={updateNestedConfig}
         id={selectedNode.id}
       />
-      <ToolsSection
-        config={localConfig}
-        onConfigUpdate={updateNestedConfig}
+      <SharedSection
+        config={localConfig.extras.model}
+        defaultType="OpenAIModel"
+        description="Select the model that fits your use case"
+        elements={ModelsElements}
         id={selectedNode.id}
-      />
+        title="LLM Model"
+        variableName="model"
+        onConfigUpdate={updateNestedConfig} />
+
     </div>
   );
 }

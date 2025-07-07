@@ -54,6 +54,7 @@ export function RouterNode(props: NodeProps<Node<RouterConfig>>) {
         <div key={index} className="text-xs bg-cyan-50 rounded-lg p-3">
           <div className="absolute right-0 mt-7">
             <NodeHandle
+              variant="branch"
               key={`branch-${branch.id}`}
               type="source"
               position={Position.Right}
@@ -86,6 +87,7 @@ export function RouterNode(props: NodeProps<Node<RouterConfig>>) {
       <div className="text-xs bg-gray-50 rounded-lg p-3">
         <div className="absolute right-0 mt-4">
           <NodeHandle
+            variant="branch"
             key={`branch-default`}
             type="source"
             position={Position.Right}

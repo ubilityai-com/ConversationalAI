@@ -15,26 +15,63 @@ import {
   Workflow,
 } from "lucide-react"
 import { v4 as uuidv4, v4 } from "uuid"
+import { BasicLLMJson } from "../elements/langchain-elements/BasicLLMJson"
+import { setAutomationArray } from "../lib/automation-utils"
+import { ApiResItem, objToReturnDynamic } from "../lib/utils"
 import { useFlowStore } from "../store/flow-store"
 import { Badge } from "./ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
 import { Input } from "./ui/input"
 import { ScrollArea } from "./ui/scroll-area"
-import { BasicLLMJson } from "../elements/langchain-elements/BasicLLMJson"
 
 const agentTypes = [
   BasicLLMJson,
   {
-    type: "Llm",
-    label: "LLM Agent",
+    type: "ReactAgent",
+    label: "React Agent",
     description: "Large Language Model for text processing",
     icon: Bot,
     category: "AI",
     color: "bg-purple-500",
-    defaults:{
-      outputParser:"",
-      outputParserEnabled:false,
-      outputParserData:{}
+    automated: "json",
+    defaults: {
+      extras: {
+        "tool": {
+          multiple:true,
+          enabled: false,
+          type: "CustomTool",
+          list: []
+        },
+        "model": {
+          enabled: false,
+          type: "OpenAIModel",
+          content: {}
+        }
+      },
+      "json": [
+        {
+          type: "textfield",
+          label: "Query",
+          required: true,
+          multiline: true,
+          minRows: 4,
+          variableName: "query",
+          chatbotQuestion: true,
+          value: "",
+          placeholder: "e.g Whats going on your mind ?",
+          hasDynamicVariable: true,
+        },
+        {
+          type: "outputJson",
+          value: {
+            Output: {
+              "answer": ""
+            },
+            Error: "",
+            Status: "",
+          },
+        },
+      ]
     }
   },
   {
@@ -187,13 +224,19 @@ export function AgentPaletteDialog({ open, onOpenChange, x, y, source, sourceHan
   }
   // Add new element to the flow
   const addNewElementToFlowZone = (element: any, clientX: number, clientY: number) => {
+    console.log({ element, reactFlowInstance });
 
     if (element && reactFlowInstance) {
       const sourceNode = reactFlowInstance.getNode(source)
-      console.log({element});
-      
-      const generateID = uuidv4()
+      console.log({ element });
 
+      const generateID = uuidv4()
+      let newDefaults = { ...element.defaults }
+      if (element.automated) {
+        console.log({ sss: objToReturnDynamic(setAutomationArray(element.defaults[element.automated]) as ApiResItem[]) });
+
+        newDefaults = { ...newDefaults, [element.automated]: objToReturnDynamic(setAutomationArray(element.defaults[element.automated]) as ApiResItem[]) }
+      }
       let newElement = {
         id: generateID,
         type: element.type,
@@ -202,7 +245,7 @@ export function AgentPaletteDialog({ open, onOpenChange, x, y, source, sourceHan
           label: element.label,
           description: element.description,
           nodeType: element.category,
-          rightSideData: element.defaults
+          rightSideData: newDefaults
         }
       }
       console.log(newElement);

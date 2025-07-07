@@ -27,7 +27,7 @@ const FlowZone = () => {
     RPA: RPANode,
     BasicLlm: Chain,
     End:EndNode,
-    Llm:LlmNode
+    ReactAgent:LlmNode
   };
   const edgeTypes = {
     buttonEdge: ButtonEdge

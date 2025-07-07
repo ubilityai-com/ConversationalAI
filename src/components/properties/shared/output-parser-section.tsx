@@ -4,9 +4,8 @@ import { FileJson } from "lucide-react";
 import { useEffect, useState } from "react";
 import { OutputParsersElements } from "../../../elements/output-parsers-elements";
 import { setAutomationArray } from "../../../lib/automation-utils";
-import { ApiResItem, objToReturnDynamic } from "../../../lib/utils";
 import { AutomationItem } from "../../../types/automation-types";
-import AutomationSimple from "../../custom/automation-v2";
+import AutomationSimple from "../../custom/automation-v4";
 import {
   Card,
   CardContent,
@@ -42,25 +41,23 @@ export function OutputParserSection({
   onConfigUpdate,
   id,
 }: OutputParserSectionProps) {
-  const outputParserEnabled = config.outputParserEnabled === true;
-  const outputParser = config.outputParser || "StructuredOutputParser";
-  const outputParserData = config.outputParserData || [];
+  console.log({ config });
+
+  const outputParserEnabled = config.enabled === true;
+  const outputParser = config.type || "StructuredOutputParser";
+  const outputParserData = config.content || [];
   const [json, setJson] = useState<AutomationItem[]>([]);
   const [schema, setSchema] = useState<any>();
 
-  console.log({ schema, config });
+  console.log({ schema, config, outputParserData, json });
   useEffect(() => {
     if (outputParser) {
-      console.log("mountttttttttttttt");
-
       const op = OutputParsersElements.find(
-        (o) => o.type === outputParser
+        (o) => o.type === "StructuredOutputParser"
       ) as any;
-      console.log({ op, config });
       setSchema(op);
     }
-  }, []);
-
+  }, [])
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -75,15 +72,10 @@ export function OutputParserSection({
               const op = OutputParsersElements.find(
                 (o) => o.type === "StructuredOutputParser"
               ) as any;
-              console.log({ op });
-              const automationItems = setAutomationArray(
-                op?.rightSideData?.json
-              );
               setSchema(op);
               setJson(setAutomationArray(op?.rightSideData?.json));
-              onConfigUpdate("outputParserData", automationItems);
-              onConfigUpdate("outputParser", "StructuredOutputParser");
-              onConfigUpdate("outputParserEnabled", checked);
+              onConfigUpdate("extras.outputParser.type", "StructuredOutputParser");
+              onConfigUpdate("extras.outputParser.enabled", checked);
             }}
             aria-label="Enable output parser"
           />
@@ -108,8 +100,7 @@ export function OutputParserSection({
                     op?.rightSideData?.json
                   );
                   setJson(automationItems);
-                  onConfigUpdate("outputParser", value);
-                  onConfigUpdate("outputParserData", automationItems);
+                  onConfigUpdate("extras.outputParser.type", value);
                 }}
               >
                 <SelectTrigger>
@@ -124,13 +115,17 @@ export function OutputParserSection({
             </div>
             {schema && (
               <AutomationSimple
-                filledDataName="outputParserData"
+                filledDataName="extras.outputParser.content"
+                schema={schema?.rightSideData?.json}
+                setSchema={setSchema}
                 flowZoneSelectedId={id}
                 AllJson={schema?.rightSideData?.json}
-                apiRes={outputParserData}
-                onUpdate={onConfigUpdate}
-                config={config.outputParserData}
-                setApiRes={setJson}
+                fieldValues={outputParserData}
+                onFieldChange={({ path, value }) => {
+                  console.log({ path, value });
+                  onConfigUpdate(`extras.outputParser.content.${path}`, value)
+
+                }}
               />
             )}
           </>

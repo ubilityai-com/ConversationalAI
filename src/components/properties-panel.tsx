@@ -30,8 +30,6 @@ export function PropertiesPanel() {
     if (!selectedNode)
         return <></>
     const selectedNodeData = selectedNode ? nodes.find((n) => n.id === selectedNode.id) : null
-    console.log(JSON.stringify(selectedNode))
-    console.log("hiii")
 
 
     const handleConfigUpdate = (key: string, value: any) => {

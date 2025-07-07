@@ -187,7 +187,7 @@ export interface BaseAutomationItem {
   // Dynamic fields specific properties
   export interface DynamicItem extends BaseAutomationItem {
     type: "dynamic"
-    fieldsArray: AutomationItem[] | string // Can be "##AI##" for AI mode
+    fieldsArray: AutomationItem[][] | string // Can be "##AI##" for AI mode
     structure: AutomationItem[]
     minSize?: number
     maxLength?: number

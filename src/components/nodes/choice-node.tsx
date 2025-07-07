@@ -29,6 +29,7 @@ export function ChoiceNode(props: NodeProps<Node<FormNodeData>>) {
     <>
       {(data.rightSideData.choices || []).map((choice: any, index: number) => (
         <NodeHandle
+        variant="choice"
           key={`choice-${choice.id}`}
           type="source"
           position={Position.Right}

@@ -15,7 +15,7 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
 import { Separator } from "../ui/separator"
 import { Textarea } from "../ui/textarea"
 import ApiCaller from "./async-dropdown"
-import DynamicFields from "./dynamic-fields-v2"
+import DynamicFields from "./dynamic-fields-v3"
 import { SearchableSelect } from "./searchable-select"
 
 // Validation functions
@@ -311,19 +311,7 @@ export default function AutomationSimple({
     console.log({ index, newValue, name, variableName, InDynamic })
 
     // If using external field values, call the external handler
-    if (fieldValues && onFieldChange && variableName) {
-      if (name === "value") {
-        onFieldChange(variableName, newValue)
-      } else if (name === "json" || name === "fieldsArray") {
-        // For dynamic fields, handle the fieldsArray specifically
-        if (name === "json" && newValue.fieldsArray !== undefined) {
-          onFieldChange(variableName, newValue.fieldsArray)
-        } else if (name === "fieldsArray") {
-          onFieldChange(variableName, newValue)
-        }
-      }
-      return
-    }
+    
 
     if (!InDynamic && setApiRes) {
       setApiRes((prev) => {
@@ -346,7 +334,19 @@ export default function AutomationSimple({
           setNodeFilledDataByKey(flowZoneSelectedId, filledDataName, objToReturnDynamic(newApiRes))
         }
         console.log({ newApiRes })
-        onUpdate?.(filledDataName, newApiRes)
+        onUpdate?.(filledDataName, objToReturnDynamic(newApiRes))
+        if (fieldValues && onFieldChange && variableName) {
+          if (name === "value") {
+            onFieldChange(variableName, newValue)
+          } else if (name === "json" || name === "fieldsArray") {
+            // For dynamic fields, handle the fieldsArray specifically
+            if (name === "json" && newValue.fieldsArray !== undefined) {
+              onFieldChange(variableName, newValue.fieldsArray)
+            } else if (name === "fieldsArray") {
+              onFieldChange(variableName, newValue)
+            }
+          }
+        }
         return newApiRes
       })
     } else {
@@ -396,12 +396,13 @@ export default function AutomationSimple({
     // Handle external field values
     if (fieldValues && onFieldChange && variableName) {
       onFieldChange(variableName, newValue)
-      return
+      
     }
 
     if (!InDynamic && flowZoneSelectedId && filledDataName && setApiRes) {
       setApiRes(newApiRes)
-      onUpdate?.(filledDataName, newApiRes)
+      alert(true)
+      onUpdate?.(filledDataName, objToReturnDynamic(newApiRes))
 
       setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(newApiRes))
       setNodeFilledDataByKey(flowZoneSelectedId, filledDataName, objToReturnDynamic(newApiRes))
