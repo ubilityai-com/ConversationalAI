@@ -1,0 +1,7 @@
+__pycache__/
+/logs
+/routes/__pycache__/
+/models/__pycache__/
+/applications/__pycache__/
+/dialogues/__pycache__/
+/elements/__pycache__/
