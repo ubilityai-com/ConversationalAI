@@ -70,3 +70,25 @@ def get_credential(identifier) -> Dict:
             cursor = conn.execute("SELECT * FROM credentials WHERE name = ?", (identifier,))
         row = cursor.fetchone()
         return dict(zip([column[0] for column in cursor.description], row)) if row else None
+
+
+def get_credentials_by_names(names: List[str]) -> Dict[str, dict]:
+    """
+    Retrieve multiple credentials by their names.
+
+    Args:
+        names (List[str]): A list of credential names.
+
+    Returns:
+        Dict[str, dict]: A dictionary mapping each name to its credential data.
+    """
+    if not names:
+        return {}
+    
+    placeholders = ','.join(['?'] * len(names))
+    query = f"SELECT name, data FROM credentials WHERE name IN ({placeholders})"
+    
+    with sqlite3.connect(DB_FILE) as conn:
+        cursor = conn.execute(query, names)
+        rows = cursor.fetchall()
+        return {name: json.loads(data) for name, data in rows}
