@@ -6,6 +6,7 @@ import { ReactAgentJson } from "../../../elements/langchain-elements/ReactAgentJ
 import ModelsElements from "../../../elements/model-elements";
 import { ToolsElements } from "../../../elements/tools-elements";
 import { useDebounceConfig } from "../../../hooks/use-debounced-config";
+import { useRightDrawerStore } from "../../../store/right-drawer-store";
 import AutomationSimple from "../../custom/automation-v4";
 import { SharedSection } from "../../properties/shared/shared-section";
 import { SharedListSection } from "../../properties/shared/shared-section-list";
@@ -26,6 +27,9 @@ export default function ReactAgentForm({
 }: LlmFormProps) {
     const [schema, setSchema] = useState<any[]>(ReactAgentJson.rightSideData.json
     );
+    const validation = useRightDrawerStore(state => state.automation.validation[selectedNode.id])
+    console.log({validation});
+    
     const { localConfig, updateNestedConfig } =
         useDebounceConfig<LLMConfigProps["rightSideData"]>(
             selectedNode.data.rightSideData,

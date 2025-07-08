@@ -53,57 +53,9 @@ const FlowZone = () => {
   const mousePositionHandleMenu = useFlowStore(state => state.mousePositionHandleMenu)
 
 
-  // Add new element to the flow
-  const addNewElementToFlowZone = (clientX, clientY) => {
-    console.log({ droppedElement, nodes });
-    if (droppedElement) {
-      const position = reactFlowInstance.screenToFlowPosition({ x: clientX, y: clientY });
-      const generateID = uuidv4() + "/" + droppedElement.type;
 
-      let newElement = {
-        id: generateID,
-        type: droppedElement.type,
-        data: { label: droppedElement.name },
-        position,
-      };
-
-      let newData = { ...newElement.data };
-
-      if (droppedElement.type !== "Card") {
-        let defaults = droppedElement.defaults || {};
-        if (defaults.automated) {
-          console.log({ defaults });
-          defaults = { ...defaults, json: setAutomationArray(defaults.json) }
-          console.log({ defaults })
-        }
-        newData = {
-          ...newData,
-          color: droppedElement.color,
-          icon: droppedElement.icon,
-          rightSideData: defaults
-        };
-      } else if (droppedElement.type === "Card") {
-        newData = {
-          label: "Card",
-          name: droppedElement.cardname,
-          payload: droppedElement.cardDetails,
-          color: "#607D8B",
-          icon: "InsertDriveFile",
-          variables: droppedElement.variables,
-          mousePositionHandleMenu,
-        };
-      }
-
-      newElement = { ...newElement, data: newData };
-      setNodes((prevNodes) => [...prevNodes, newElement]);
-      setDroppedElement(null);
-      addNodesValidation(generateID, droppedElement.defaultValid)
-    }
-
-  }
 
   const theme = useFlowStore(state => state.theme)
-  console.log({ theme });
 
 
   const onDragOver = (event, node) => {
@@ -115,7 +67,6 @@ const FlowZone = () => {
     setIsRightOpen(false)
   }
   const onDrop = (event, node) => {
-    addNewElementToFlowZone(event.clientX, event.clientY)
     event.preventDefault()
     handleRightDrawerClose()
   }
@@ -221,7 +172,6 @@ const FlowZone = () => {
   const onPaneClick = () => {
     handleRightDrawerClose()
   };
-  console.log({edges,nodes});
   return (
 
     <ReactFlow

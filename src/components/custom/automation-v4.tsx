@@ -2,7 +2,7 @@
 
 import { AlertCircle, Code, Settings, Upload } from "lucide-react"
 import { type Dispatch, Fragment, type SetStateAction, useEffect } from "react"
-import { cn, objToReturnDynamic } from "../../lib/utils"
+import { cn, objToReturnDynamic, validateArray } from "../../lib/utils"
 import { useRightDrawerStore } from "../../store/right-drawer-store"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion"
 import { Badge } from "../ui/badge"
@@ -38,107 +38,7 @@ const validationConditionFunctions = {
     validateRequiredWords,
 }
 
-// Validation functions for different field types
-const validationFunctions = {
-    dropdown: (item: any) => {
-        if ((item.value === "None" && item.required) || (item.required && item.multiselect && item.value.length === 0)) {
-            return false
-        }
-        return true
-    },
-    api: (item: any) => {
-        if (
-            ((item.value === "None" || item.value === "") && item.required) ||
-            (item.required && item.multiselect && item.value.length === 0)
-        ) {
-            return false
-        }
-        return true
-    },
-    textfield: (item: any) => {
-        if (item.required) {
-            if (item.value.toString().trim()) {
-                if (item.validation) {
-                    return !validationConditionFunctions[item.validation as keyof typeof validationConditionFunctions](
-                        item.value,
-                        item.requiredWords,
-                    )
-                } else {
-                    return true
-                }
-            } else {
-                return false
-            }
-        } else {
-            if (item.value.toString().trim()) {
-                if (item.validation) {
-                    return !validationConditionFunctions[item.validation as keyof typeof validationConditionFunctions](
-                        item.value,
-                        item.requiredWords,
-                    )
-                } else {
-                    return true
-                }
-            } else {
-                return true
-            }
-        }
-    },
-    textFormatter: (item: any) => {
-        return !(!item.value.toString().trim() && item.required)
-    },
-    multiselect: (item: any) => {
-        return !(item.value.length < 1 && item.required)
-    },
-    editor: (item: any) => {
-        return (
-            (item.value.length >= 1 && (item.defaultLanguage === "json" ? isJsonString(item.value) : true)) ||
-            (item.value.length < 1 && !item.required)
-        )
-    },
-    array: (item: any) => {
-        return !(item.value.length < 1 && item.required)
-    },
-    json: (item: any) => {
-        return !(Object.keys(item.value).length < 1 && item.required)
-    },
-    radiobutton: () => true,
-    dynamic: (item: any) => {
-        if (item.hasOwnProperty("json")) {
-            if (
-                item.json.required &&
-                (item.json.minSize ? item.json.minSize > item.json.fieldsArray.length : item.json.fieldsArray.length < 1)
-            ) {
-                return false
-            } else {
-                return item.json.fieldsArray.every((field: any) => validateArray(field))
-            }
-        } else {
-            if (item.fieldsArray === "##AI##") return true
-            if (
-                item.required &&
-                (item.hasOwnProperty("minSize") ? item.minSize > item.fieldsArray.length : item.fieldsArray.length < 1)
-            ) {
-                return false
-            } else {
-                return item.fieldsArray.every((field: any) => validateArray(field))
-            }
-        }
-    },
-    accordion: (item: any) => {
-        return item.fieldsArray.every((field: any) => {
-            return field.every((f: any) => validationFunctions[f.type as keyof typeof validationFunctions](f))
-        })
-    },
-    color: (item: any) => {
-        return !(item.required && !item.value.trim())
-    },
-    file: (item: any) => {
-        return !(item.required && !item.value?.file)
-    },
-    checkbox: () => true,
-    outputJson: () => true,
-}
+
 
 // Helper functions
 const isJsonString = (str: string) => {
@@ -150,15 +50,6 @@ const isJsonString = (str: string) => {
     }
 }
 
-export const validateArray = (schema: any[]) => {
-    let valid = true
-    schema.forEach((item) => {
-        if (validationFunctions[item.type as keyof typeof validationFunctions]) {
-            valid = validationFunctions[item.type as keyof typeof validationFunctions](item) && valid
-        }
-    })
-    return valid
-}
 
 const hexToRgb = (hex: string) => {
     hex = hex.replace(/^#/, "")
@@ -169,72 +60,7 @@ const hexToRgb = (hex: string) => {
     return { r, g, b }
 }
 
-// Transform functions for different field types
-const transformFunctions = {
-    dropdown: (item: any) => {
-        if (item.value !== "None") {
-            if (item.typeOfValue === "integer") {
-                return {
-                    [item.variableName]: Number.parseInt(item.value) || item.value,
-                }
-            } else if (item.typeOfValue === "array") {
-                return { [item.variableName]: [item.value] }
-            } else {
-                return { [item.variableName]: item.value }
-            }
-        }
-        return {}
-    },
-    textfield: (item: any) => {
-        if (item.value.toString().trim()) {
-            if (item.typeOfValue === "integer") {
-                return {
-                    [item.variableName]: Number.parseInt(item.value) || item.value,
-                }
-            } else if (item.typeOfValue === "float") {
-                return { [item.variableName]: Number.parseFloat(item.value) }
-            } else {
-                return { [item.variableName]: item.value }
-            }
-        }
-        return {}
-    },
-    dynamic: (item: any) => {
-        return {
-            [item.hasOwnProperty("json") ? item.json.variableName : item.variableName]: item.hasOwnProperty("json")
-                ? item.json.fieldsArray.map((arr: any) => objToReturnDynamic(arr))
-                : item.fieldsArray === "##AI##"
-                    ? item.fieldsArray
-                    : item.fieldsArray.map((arr: any) => objToReturnDynamic(arr)),
-        }
-    },
-    api: (item: any) => {
-        console.log({ item })
 
-        if (item.value !== "None" && item.value !== "") {
-            if (item.typeOfValue === "integer") {
-                return { [item.variableName]: Number.parseInt(item.value) || item.value }
-            } else if (item.typeOfValue === "array") {
-                return { [item.variableName]: [item.value] }
-            } else {
-                return { [item.variableName]: item.value }
-            }
-        }
-        return {}
-    },
-    checkbox: (item: any) => {
-        return {
-            [item.variableName]: item.typeOfValue === "string" ? item.value.toString() : item.value,
-        }
-    },
-    color: (item: any) => {
-        if (item.value.trim()) {
-            return { [item.variableName]: hexToRgb(item.value) }
-        }
-        return {}
-    },
-    // Add other transform functions as needed
-}
 
 interface AutomationSimpleProps {
     filledDataName?: string
@@ -295,13 +121,16 @@ export default function AutomationSimple({
             // Initialize validation and final object
             console.log("Initializing automation simple component")
             if (flowZoneSelectedId && filledDataName) {
-                setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(schema))
+                setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(schema, fieldValues))
                 setNodeFilledDataByKey(flowZoneSelectedId, filledDataName, objToReturnDynamic(schema))
             }
         }
     }, [InDynamic])
 
     const onChangeAutomationSimple = ({ newValue, variableName }: any) => {
+        const newFieldsValue={...fieldValues,[variableName]:newValue}        
+        if (filledDataName)
+            setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(schema, newFieldsValue))
         onFieldChange?.({ path: variableName, value: newValue })
     }
 
@@ -376,32 +205,6 @@ export default function AutomationSimple({
                             }
                             value={getFieldValue(item) || ""}
                             onChange={(newValue) => {
-                                // if (item.options && item.options[newValue] && setSchema) {
-                                //     setSchema(prev => {
-                                //         const newConfig = { ...prev };
-                                //         console.log({ prev, path, newValue });
-
-                                //         const keys = path.split(".");
-                                //         let current: any = newConfig;
-
-                                //         for (let i = 0; i < keys.length - 1; i++) {
-                                //           const key = keys[i];
-                                //           const nextKey = keys[i + 1];
-                                //           const isNextIndex = !isNaN(Number(nextKey));
-
-                                //           if (!(key in current)) {
-                                //             current[key] = isNextIndex ? [] : {};
-                                //           }
-
-                                //           current = current[key];
-                                //         }
-                                //         console.log({ current });
-
-                                //         const lastKey = keys[keys.length - 1];
-                                //         current[lastKey] = value;
-                                //         return newConfig;
-                                //     })
-                                // }
                                 onChangeAutomationSimple({
                                     newValue: newValue,
                                     variableName: item.variableName,
@@ -649,8 +452,8 @@ export default function AutomationSimple({
 
             case "accordion":
                 const dynamicValuee = getDynamicFieldValue(item)
-                console.log({dynamicValuee});
-                
+                console.log({ dynamicValuee });
+
                 return (
                     <Accordion type="single" collapsible className="w-full">
                         <AccordionItem value={`item-${index}`}>

@@ -31,7 +31,6 @@ export function useDebounceConfig<T>(
 
       timeoutRef.current = setTimeout(() => {
         if (onSave) {
-          console.log({ config });
 
           onSave(config);
         }
@@ -47,7 +46,6 @@ export function useDebounceConfig<T>(
           typeof updates === "function"
             ? updates(prev)
             : { ...prev, ...updates };
-        console.log({ newConfig });
 
         debouncedSave(newConfig);
         return newConfig;
@@ -67,7 +65,6 @@ export function useDebounceConfig<T>(
     (path: string, value: any) => {
       updateConfig((prev) => {
         const newConfig = { ...prev };
-        console.log({ prev, path, value });
 
         const keys = path.split(".");
         let current: any = newConfig;
@@ -83,7 +80,6 @@ export function useDebounceConfig<T>(
 
           current = current[key];
         }
-        console.log({ current });
 
         const lastKey = keys[keys.length - 1];
         current[lastKey] = value;

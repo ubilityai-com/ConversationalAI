@@ -1,5 +1,5 @@
 import { FileJson } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AutomationSimple from "../../custom/automation-v4";
 import {
     Card,
@@ -17,6 +17,8 @@ import {
     SelectValue,
 } from "../../ui/select";
 import { Switch } from "../../ui/switch";
+import { validateArray } from "../../../lib/utils";
+import { useRightDrawerStore } from "../../../store/right-drawer-store";
 
 interface SectionProps {
     config: any;
@@ -28,7 +30,11 @@ interface SectionProps {
     description: string
     elements: any[]
 }
-
+function getSchema(type: string, elements: any[]) {
+    return elements.find(
+        (o) => o.type === type
+    ) as any
+}
 export function SharedSection({
     config,
     defaultType,
@@ -39,22 +45,13 @@ export function SharedSection({
     variableName,
     elements
 }: SectionProps) {
-    console.log({ config });
 
     const enabled = config.enabled === true;
     const type = config.type || defaultType;
     const content = config.content || [];
-    const [schema, setSchema] = useState<any>();
+    const [schema, setSchema] = useState<any>(getSchema(type, elements));
+    const setValidationByKey = useRightDrawerStore((state) => state.setValidationByKey)
 
-    console.log({ schema, config, content, elements, type });
-    useEffect(() => {
-        if (type) {
-            const op = elements.find(
-                (o) => o.type === defaultType
-            ) as any;
-            setSchema(op);
-        }
-    }, [])
     return (
         <Card>
             <CardHeader className="pb-3">
@@ -93,6 +90,8 @@ export function SharedSection({
                                     ) as any;
                                     setSchema(op);
                                     onConfigUpdate(`extras.${variableName}.type`, value);
+                                    setValidationByKey(id, variableName, validateArray(schema, {}))
+
                                 }}
                             >
                                 <SelectTrigger>
@@ -107,14 +106,13 @@ export function SharedSection({
                         </div>
                         {schema && (
                             <AutomationSimple
-                                filledDataName={`extras.${variableName}.content`}
+                                filledDataName={`${variableName}`}
                                 schema={schema?.rightSideData?.json}
                                 setSchema={setSchema}
                                 flowZoneSelectedId={id}
                                 AllJson={schema?.rightSideData?.json}
                                 fieldValues={content}
                                 onFieldChange={({ path, value }) => {
-                                    console.log({ path, value });
                                     onConfigUpdate(`extras.${variableName}.content.${path}`, value)
 
                                 }}

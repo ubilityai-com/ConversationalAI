@@ -46,6 +46,11 @@ const agentTypes = [
           enabled: false,
           type: "OpenAIModel",
           content: {}
+        },
+        "memory": {
+          enabled: false,
+          type: "ConversationalBufferMemory",
+          content: {}
         }
       },
       "json": [

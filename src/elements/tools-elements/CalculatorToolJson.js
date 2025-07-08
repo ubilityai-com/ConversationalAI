@@ -1,7 +1,7 @@
 
 export const CalculatorToolJson = {
     "nodeType": "tool",
-    type: "CalculatorTool",
+    type: "Calculator",
     label: "Calculator",
     defaultValid:true,
     color: "#72797b",

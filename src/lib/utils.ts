@@ -380,60 +380,7 @@ export function handleFlowZoneCheckIfAllHandlesAreConnected() {
 declare function checkLength(value: string, maxLength: number): boolean;
 declare function removeHTMLTags(html: string): string;
 
-export const validateArray = (apiRes: ApiResItem[]): boolean => {
-  let valid = true;
 
-  apiRes.forEach((item1) => {
-    if (!valid) return; // Early exit if already invalid
-
-    if (item1.type === "dropdown") {
-      if (item1.value === "None") {
-        valid = false;
-      } else if (item1.options) {
-        Object.keys(item1.options).forEach((item20) => {
-          if (item1.options && item1.value === item20) {
-            valid = validateArray(item1.options[item1.value]);
-          }
-        });
-      }
-    }
-    else if (item1.type === "textfield") {
-      const textField = item1 as TextFieldItem;
-      if (textField.required && !textField.value.toString().trim()) {
-        valid = false;
-      }
-      if (textField.maxLength !== undefined && checkLength(textField.value.toString(), textField.maxLength)) {
-        valid = false;
-      }
-    }
-    else if (item1.type === "textFormatter") {
-      const textFormatter = item1 as TextFieldItem;
-      const textFormatterValue = removeHTMLTags(textFormatter.value);
-      if (textFormatter.required && !textFormatterValue.trim()) {
-        valid = false;
-      }
-      if (textFormatter.maxLength !== undefined && checkLength(textFormatter.value, textFormatter.maxLength)) {
-        valid = false;
-      }
-    }
-    else if (item1.type === "dynamic") {
-      const dynamicItem = item1 as DynamicItem;
-      const fieldsArray = dynamicItem.json?.fieldsArray || dynamicItem.fieldsArray;
-
-      if (fieldsArray.length < 1) {
-        valid = false;
-      } else {
-        fieldsArray.forEach((field) => {
-          if (valid) {
-            valid = validateArray(field);
-          }
-        });
-      }
-    }
-  });
-
-  return valid;
-};
 
 
 export const getValueOptions = (apiRes: DropdownItem[], children: string[] = []): any => {
@@ -479,3 +426,94 @@ export function insertArrayAtIndex<T>(originalArray: T[], index: number, newArra
 
   return result;
 }
+export function keyBy<T extends Record<string, any>, K extends keyof T>(
+  list: T[],
+  key: K
+): Record<string, T> {
+  return list.reduce((acc, item) => {
+    const mapKey = String(item[key]);
+    acc[mapKey] = item;
+    return acc;
+  }, {} as Record<string, T>);
+}
+export function isPlainObject<T extends any>(value:T){
+  return typeof (value) === "object" && !Array.isArray(value)
+}
+
+
+type OptionMap = Record<string, FormItem[]>;
+
+interface FormItem {
+  type: string;
+  variableName: string;
+  required?: boolean;
+  multiselect?: boolean;
+  options?: OptionMap;
+  json?: {
+    required?: boolean;
+    fieldsArray: FormItem[];
+  };
+  fieldsArray?: FormItem[];
+}
+
+type FormValues = Record<string, any>;
+
+export const validateArray = (items: FormItem[], values: FormValues): boolean => {
+  for (const item of items) {
+    const { type, variableName, required, multiselect, options, json, fieldsArray } = item;
+    const value = values[variableName];
+    console.log({item,value,values});
+    
+    switch (type) {
+      case "dropdown":
+      case "api":
+        if ((required && value === "None") || (required && multiselect && Array.isArray(value) && value.length === 0)) {
+          return false;
+        }
+        if (options && typeof value === "string" && options[value]) {
+          if (!validateArray(options[value], values)) return false;
+        }
+        break;
+
+      case "textfield":
+      case "textFormatter":
+      case "editor":
+        if (required && (!value || !value.toString().trim())) return false;
+        break;
+
+      case "multiselect":
+      case "array":
+        if (required && (!Array.isArray(value) || value.length < 1)) return false;
+        break;
+
+      case "json":
+        if (required && (!value || typeof value !== "object" || Object.keys(value).length < 1)) return false;
+        break;
+
+      case "radiobutton":
+        if (options && typeof value === "string" && options[value]) {
+          if (!validateArray(options[value], values)) return false;
+        }
+        break;
+
+      case "dynamic":
+        if (json) {
+          if (json.required && json.fieldsArray.length < 1) return false;
+          if (!validateArray(json.fieldsArray, values)) return false;
+        } else {
+          if (required && (!fieldsArray || fieldsArray.length < 1)) return false;
+          if (!validateArray(fieldsArray!, values)) return false;
+        }
+        break;
+
+      case "color":
+        if (required && (!value || !value.toString().trim())) return false;
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  return true;
+};

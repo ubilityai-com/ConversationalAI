@@ -1,8 +1,7 @@
 import { FileJson, PenToolIcon, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { objToReturnDynamicv2 } from "../../../lib/automation-utils";
-import { ApiResItem } from "../../../lib/utils";
-import AutomationSimple from "../../custom/automation-v4";
+import { ApiResItem, keyBy } from "../../../lib/utils";
 import { Button } from "../../ui/button";
 import {
     Card,
@@ -20,6 +19,7 @@ import {
     SelectValue,
 } from "../../ui/select";
 import { Switch } from "../../ui/switch";
+import { SharedListItemSection } from "./shared-section-list-tem";
 
 interface SectionProps {
     config: any;
@@ -47,17 +47,16 @@ export function SharedListSection({
     const enabled = config.enabled === true;
     const type = config.type || defaultType;
     const list = config.list || [];
-    const [schema, setSchema] = useState<any>();
+    const [schemas, setSchemas] = useState<any>();
     const addTool = () => {
         const currentTools = list;
-        const op = elements.find((o) => o.type === defaultType) as any;
-        console.log({ op });
-        const newTool = objToReturnDynamicv2(op?.rightSideData?.json as ApiResItem[]);
-        console.log({newTool});
-        
+        const newTool = elements.find((o) => o.type === defaultType) as any;
+        const newToolDefaultInputs = objToReturnDynamicv2(newTool?.rightSideData?.json as ApiResItem[]);
+        console.log({ ss: { ...newTool.rightSideData, json: newToolDefaultInputs } });
+
         onConfigUpdate(`extras.${variableName}.list`, [
             ...currentTools,
-            { content: newTool, type: "CustomTool" },
+            { content: { ...newTool.rightSideData, json: newToolDefaultInputs }, type: "CustomTool" },
         ]);
     };
 
@@ -70,13 +69,9 @@ export function SharedListSection({
     };
 
     useEffect(() => {
-        if (type) {
-            const op = elements.find(
-                (o) => o.type === defaultType
-            ) as any;
-            setSchema(op);
-        }
+        setSchemas(keyBy(elements, "type"))
     }, [])
+
     return (
         <Card>
             <CardHeader className="pb-3">
@@ -91,7 +86,6 @@ export function SharedListSection({
                             const op = elements.find(
                                 (o) => o.type === defaultType
                             ) as any;
-                            setSchema(op);
                             onConfigUpdate(`extras.${variableName}.type`, defaultType);
                             onConfigUpdate(`extras.${variableName}.enabled`, checked);
                         }}
@@ -134,9 +128,7 @@ export function SharedListSection({
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center space-x-2">
                                                     <PenToolIcon className="w-4 h-4 text-gray-500" />
-                                                    <span className="text-xs font-medium text-gray-600">
-                                                        {tool.name}
-                                                    </span>
+
                                                 </div>
                                                 <div className="flex items-center space-x-2">
                                                     <Button
@@ -159,21 +151,21 @@ export function SharedListSection({
                                                 <Select
                                                     value={tool.type}
                                                     onValueChange={(value) => {
-                                                        const op = elements.find(
-                                                            (o) => o.type === value
-                                                        ) as any;
+                                                        console.log({ value });
+
                                                         const currentTools = list;
                                                         const updatedTools = currentTools.map(
                                                             (tool: any, index: number) =>
                                                                 toolIndex === index
                                                                     ? {
                                                                         type: value,
-                                                                        toolData: "",
+                                                                        content: {},
                                                                     }
                                                                     : tool
                                                         );
+                                                        console.log({ updatedTools });
 
-                                                        onConfigUpdate("list", updatedTools);
+                                                        onConfigUpdate(`extras.${variableName}.list`, updatedTools);
                                                     }}
                                                 >
                                                     <SelectTrigger
@@ -191,20 +183,16 @@ export function SharedListSection({
                                                     </SelectContent>
                                                 </Select>
                                             </div>
-
-                                            <AutomationSimple
-                                                filledDataName={`extras.${variableName}.content`}
-                                                schema={schema?.rightSideData?.json}
-                                                setSchema={setSchema}
-                                                flowZoneSelectedId={id}
-                                                AllJson={schema?.rightSideData?.json}
-                                                fieldValues={tool.content}
-                                                onFieldChange={({ path, value }) => {
-                                                    console.log({ path, value });
-                                                    onConfigUpdate(`extras.${variableName}.list.${toolIndex}.${path}`, value)
-
-                                                }}
-                                            />
+                                            {schemas && <SharedListItemSection
+                                                key={toolIndex}
+                                                content={tool.content}
+                                                id={id}
+                                                onConfigUpdate={onConfigUpdate}
+                                                path={`extras.${variableName}.list.${toolIndex}.content`}
+                                                schema={schemas[tool.type].rightSideData.json}
+                                                type={tool.type}
+                                                counter={toolIndex}
+                                            />}
                                         </CardContent>
                                     </Card>
                                 ))}

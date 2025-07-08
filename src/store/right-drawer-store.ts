@@ -360,96 +360,9 @@ export const useRightDrawerStore = create<RightDrawerStore>()(
         },
 
         handleSaveFormDialogCheckIfAllRequiredDataAreFilledForEachElement: () => {
-            let allInputsAreFilled = true
-            const { nodes } = useFlowStore.getState()
-            nodes.forEach((element) => {
-                if (element.type === "Handler") {
-                    if (
-                        !element.data.greet ||
-                        !element.data.restart ||
-                        !element.data.thankYou ||
-                        !element.data.cancel ||
-                        !element.data.bye
-                    ) {
-                        allInputsAreFilled = false
-                    }
+          
 
-                    element.data.dynamicDataHandler.forEach((dynamicDataHandlerObj: any) => {
-                        dynamicDataHandlerObj.innerDynamicDataHandler.forEach((innerDynamicDataHandlerObj: DynamicDataHandler) => {
-                            if (innerDynamicDataHandlerObj.choice === "Keyword") {
-                                if (
-                                    !innerDynamicDataHandlerObj.value ||
-                                    (innerDynamicDataHandlerObj.save && !innerDynamicDataHandlerObj.variableName)
-                                ) {
-                                    allInputsAreFilled = false
-                                }
-                            } else if (innerDynamicDataHandlerObj.choice === "AI NLP") {
-                                innerDynamicDataHandlerObj.entities.forEach((entity) => {
-                                    if (!entity.any && !entity.value) {
-                                        allInputsAreFilled = false
-                                    }
-                                })
-                            } else if (innerDynamicDataHandlerObj.choice === "Variable") {
-                                if (!innerDynamicDataHandlerObj.value) {
-                                    allInputsAreFilled = false
-                                }
-                            }
-                        })
-                    })
-                } else if (element.type === "Message") {
-                    if (!element.data.botSays) {
-                        allInputsAreFilled = false
-                    }
-
-                    if (element.data.advanced) {
-                        if (element.data.regex && !element.data.errorMessage) {
-                            allInputsAreFilled = false
-                        }
-
-                        if (element.data.save && !element.data.variableName) {
-                            allInputsAreFilled = false
-                        }
-
-                        element.data.dynamicDataHandler.forEach((dynamicDataHandlerObj: any) => {
-                            dynamicDataHandlerObj.innerDynamicDataHandler.forEach((innerDynamicDataHandlerObj: DynamicDataHandler) => {
-                                if (innerDynamicDataHandlerObj.choice === "Keyword") {
-                                    if (
-                                        !innerDynamicDataHandlerObj.value ||
-                                        (innerDynamicDataHandlerObj.save && !innerDynamicDataHandlerObj.variableName)
-                                    ) {
-                                        allInputsAreFilled = false
-                                    }
-                                } else if (innerDynamicDataHandlerObj.choice === "AI NLP") {
-                                    innerDynamicDataHandlerObj.entities.forEach((entity) => {
-                                        if (!entity.any && !entity.value) {
-                                            allInputsAreFilled = false
-                                        }
-                                    })
-                                } else if (innerDynamicDataHandlerObj.choice === "Variable") {
-                                    if (!innerDynamicDataHandlerObj.value) {
-                                        allInputsAreFilled = false
-                                    }
-                                }
-                            })
-                        })
-                    }
-                } else if (element.type === 'ConfirmPrompt') {
-                    if (!element.data.botSays || !element.data.errorMessage || (element.data.save && !element.data.variableName)) {
-                        allInputsAreFilled = false
-                    }
-                }
-                else if (element.type === 'Switch') {
-                    if (!validateArray(element.data.json))
-                        allInputsAreFilled = false
-                    if (element.data.loopFromSwitch && element.data.loopFromName.trim().length === 0) {
-                        allInputsAreFilled = false
-                    }
-                }
-                // Additional element type checks omitted for brevity
-                // The full implementation would include all the checks from the original component
-            })
-
-            return allInputsAreFilled
+            return true
         },
         handleSaveFormDialogApplyClicked: (event) => {
             const {
