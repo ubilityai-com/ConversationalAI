@@ -33,6 +33,7 @@ http_app = FastAPI()
 # Import HTTP route modules
 from routes.credentials_view import *
 from routes.chatbot_view import *
+from routes.functions import *
 
 # Socket.IO ASGI server
 sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi')

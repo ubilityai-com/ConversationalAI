@@ -3,6 +3,11 @@
 import json
 import os
 from dialogues.dialogues import active_dialogues
+from fastapi import HTTPException
+from pydantic import BaseModel
+from app import http_app
+from models.credentials import get_credential
+from elements.app_integration import AppIntegration
 
 def load_dialogue(dialogue_id):
     file_path = os.path.join("dialogues", f"{dialogue_id}.json")
@@ -18,3 +23,20 @@ def load_dialogue(dialogue_id):
     except json.JSONDecodeError as e:
         print(f"[ERROR] Failed to decode JSON: {e}")
         return None
+
+
+class TestNodeRequest(BaseModel):
+    app_type: str
+    credential: str
+    operation: str
+    content_json: dict
+
+
+@http_app.post('/test_node')
+def test_node(payload: TestNodeRequest):
+    try:
+        credential_obj = get_credential(payload.credential)
+        result = AppIntegration(payload.app_type,json.loads(credential_obj['data']),payload.operation,payload.content_json).run_process()
+        return {"output": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error test node: {str(e)}")
