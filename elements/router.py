@@ -24,19 +24,19 @@ class Router:
         op = condition['operation']
         if op == 'equal':
             return left == right
-        elif op == 'not equal':
+        elif op == 'not_equal':
             return left != right
-        elif op == 'contain':
+        elif op == 'contains':
             return str(right) in str(left)
-        elif op == 'does not contain':
+        elif op == 'not_contains':
             return str(right) not in str(left)
-        elif op == 'greaterThan':
+        elif op == 'greater_than':
             return left > right
-        elif op == 'greaterThanOrEqual':
+        elif op == 'greater_equal':
             return left >= right
-        elif op == 'lessThan':
+        elif op == 'less_than':
             return left < right
-        elif op == 'lessThanOrEqual':
+        elif op == 'less_equal':
             return left <= right
         return False
     

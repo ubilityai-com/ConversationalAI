@@ -23,10 +23,9 @@ CANCELLATION_PHRASES = ['bye', 'quit', 'cancel', 'exit', 'stop', 'end']
 # In-memory session store
 session = {}
 
-# Load dialogue definition from JSON
-with open('demo.json') as f:
-    dialogue_json = json.load(f)
-    dialogue = dialogue_json['bot']
+# All active dialogues
+from dialogues.dialogues import active_dialogues
+
 
 # FastAPI instance for HTTP routes
 http_app = FastAPI()
@@ -44,7 +43,7 @@ app = socketio.ASGIApp(sio, other_asgi_app=http_app)
 # ---------------------------
 
 @sio.event
-async def connect(sid, environ):
+async def connect(sid, environ, auth=None):
     """
     Handle a new client connection.
 
@@ -55,12 +54,13 @@ async def connect(sid, environ):
     query = environ.get('QUERY_STRING', '')
     params = dict(p.split('=') for p in query.split('&') if '=' in p)
     conversation_id = params.get('conversationId')
+    dialogue_id = params.get('dialogueId')
 
-    logger.info(f"A new client connected with conversation ID: {conversation_id}")
-
-    if not conversation_id:
+    if not conversation_id or not dialogue_id or dialogue_id not in active_dialogues:
         await sio.disconnect(sid)
         return
+
+    logger.info(f"A new client connected with conversation ID: {conversation_id} to the dialogue ID : {dialogue_id}")
 
     # Disconnect existing session
     if conversation_id in session:
@@ -77,11 +77,13 @@ async def connect(sid, environ):
         'last_reply_at': now,
         'variables': {},
         'current_step': 'firstElementId',
-        'wait_for_user_input': None
+        'wait_for_user_input': None,
+        'dialogue_id': dialogue_id
     }
 
     conversation = session[conversation_id]
     current_step = conversation['current_step']
+    dialogue = active_dialogues[dialogue_id]['bot']
 
     # Greet the user if the current step is configured to do so
     if dialogue[current_step].get('start'):
@@ -99,12 +101,17 @@ async def message(sid, data):
     Includes cancellation detection and input processing.
     """
     logger.info("New Message Event received")
+
+    
+
     # Identify conversation ID based on sid
     conversation_id = next((cid for cid, conv in session.items() if conv['sid'] == sid), None)
     if not conversation_id:
         return
 
     conversation = session[conversation_id]
+    dialogue_id = conversation['dialogue_id']
+    dialogue = active_dialogues[dialogue_id]['bot']
     conversation['last_reply_at'] = datetime.now().isoformat()
 
     user_input = json.loads(data)

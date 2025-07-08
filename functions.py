@@ -21,6 +21,7 @@ from elements.variable_manager import VariableManager
 from elements.rag import RAG
 from elements.basic_llm import BasicLLM
 from elements.app_integration import AppIntegration
+from dialogues.dialogues import active_dialogues
 
 
 async def execute_process(sio, sid, conversation_id, session, dialogue):
@@ -251,12 +252,13 @@ async def handle_app_integration(sio, sid, conversation_id, session, dialogue, c
 
     # execute app operation
     app_type = app_content_json['app']
-    credentials = app_content_json['credentials']
+    credential_name = app_content_json['credentials']
+    credential = active_dialogues[conversation['dialogue_id']]["credentials"][credential_name]
     operation = app_content_json['operation']
     content_json = app_content_json['content_json']
 
     logger.info(f"Executing {app_type} operation ({operation})")
-    result = AppIntegration(app_type,credentials,operation,content_json).run_process()
+    result = AppIntegration(app_type,credential,operation,content_json).run_process()
 
     # save result in a variable if user want to 
     logger.info(f"Save {app_type} output in variables")
