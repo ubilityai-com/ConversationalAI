@@ -177,7 +177,9 @@
             if (message) {
                 const messageObj = {
                     type: "Message",
-                    value: message
+                    value: message,
+                    dialogueId: dialogueId,
+                    conversationId: conversationId
                 };
                 
                 // Log outgoing message to console
@@ -194,7 +196,9 @@
         function sendChoice(choice) {
             const messageObj = {
                 type: "Message",
-                value: choice
+                value: choice,
+                dialogueId: dialogueId,
+                conversationId: conversationId
             };
             
             // Log outgoing choice to console

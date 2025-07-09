@@ -11,6 +11,7 @@ from fastapi import FastAPI
 from elements.message import Message
 from functions import execute_process, save_user_input
 from logger_config import logger, setup_logger
+from collections import defaultdict
 
 # Initialize logging
 setup_logger()
@@ -21,7 +22,7 @@ DB_FILE = 'database.db'
 CANCELLATION_PHRASES = ['bye', 'quit', 'cancel', 'exit', 'stop', 'end']
 
 # In-memory session store
-session = {}
+session = defaultdict(dict)
 
 # All active dialogues
 from dialogues.dialogues import active_dialogues
@@ -64,25 +65,25 @@ async def connect(sid, environ, auth=None):
     logger.info(f"A new client connected with conversation ID: {conversation_id} to the dialogue ID : {dialogue_id}")
 
     # Disconnect existing session
-    if conversation_id in session:
+    if dialogue_id in session and conversation_id in session[dialogue_id]:
         logger.warning("The session was terminated due to a new login")
-        old_sid = session[conversation_id]['sid']
+        old_sid = session[dialogue_id][conversation_id]['sid']
         await sio.emit('force_disconnect', 'A new connection caused this session to end', room=old_sid)
         await sio.disconnect(old_sid)
 
     # Start a new session
     now = datetime.now().isoformat()
-    session[conversation_id] = {
+    session[dialogue_id][conversation_id] = {
         'sid': sid,
         'created_at': now,
         'last_reply_at': now,
         'variables': {},
         'current_step': 'firstElementId',
         'wait_for_user_input': None,
-        'dialogue_id': dialogue_id
+        'dialogue_id':dialogue_id
     }
 
-    conversation = session[conversation_id]
+    conversation = session[dialogue_id][conversation_id]
     current_step = conversation['current_step']
     dialogue = active_dialogues[dialogue_id]['bot']
 
@@ -92,7 +93,7 @@ async def connect(sid, environ, auth=None):
         greet_message = Message(dialogue[current_step]['greet'])
         await greet_message.send(sio, sid)
         conversation['current_step'] = dialogue[current_step]['next']
-        await execute_process(sio, sid, conversation_id, session, dialogue)
+        await execute_process(sio, sid, conversation, dialogue)
 
 
 @sio.event
@@ -103,20 +104,23 @@ async def message(sid, data):
     """
     logger.info("New Message Event received")
 
-    
+    user_input = json.loads(data) if isinstance(data, str) else data
+    user_message = user_input.get('value', '').lower().strip()
+    dialogue_id = user_input.get('dialogueId')
 
-    # Identify conversation ID based on sid
-    conversation_id = next((cid for cid, conv in session.items() if conv['sid'] == sid), None)
-    if not conversation_id:
+    if not dialogue_id:
+        logger.warning("No dialogue_id provided.")
         return
 
-    conversation = session[conversation_id]
-    dialogue_id = conversation['dialogue_id']
-    dialogue = active_dialogues[dialogue_id]['bot']
+    conversation_id = get_conversation_id_from_sid(dialogue_id, sid)
+    if not conversation_id:
+        logger.warning(f"No conversation found for sid={sid} under dialogue_id={dialogue_id}")
+        return
+
+    conversation = session[dialogue_id][conversation_id]
     conversation['last_reply_at'] = datetime.now().isoformat()
 
-    user_input = json.loads(data)
-    user_message = user_input.get('value', '').lower().strip()
+    dialogue = active_dialogues[dialogue_id]['bot']
 
     # Handle cancellation
     if user_message in CANCELLATION_PHRASES:
@@ -133,19 +137,30 @@ async def message(sid, data):
     # Save input and continue process
     if conversation.get('wait_for_user_input'):
         save_user_input(conversation, user_input)
-    await execute_process(sio, sid, conversation_id, session, dialogue)
+    await execute_process(sio, sid, conversation, dialogue)
 
+def get_conversation_id_from_sid(dialogue_id, sid):
+    dialogue_sessions = session.get(dialogue_id, {})
+    for conv_id, conv in dialogue_sessions.items():
+        if conv.get('sid') == sid:
+            return conv_id
+    return None
 
 @sio.event
 async def disconnect(sid):
     """
     Handle client disconnection and clean up session state.
     """
-    for conversation_id, conv in list(session.items()):
-        if conv['sid'] == sid:
-            print(f'[Disconnected] Conversation ended: {conversation_id}')
-            del session[conversation_id]
-            break
+    for dialogue_id, conversations in list(session.items()):
+        for conversation_id, conv in list(conversations.items()):
+            if conv.get('sid') == sid:
+                print(f'[Disconnected] Conversation ended: {conversation_id} in dialogue {dialogue_id}')
+                del session[dialogue_id][conversation_id]
+
+                # Optionally, delete dialogue if no conversations left
+                if not session[dialogue_id]:
+                    del session[dialogue_id]
+                return  # exit after first match
 
 # ---------------------------
 # Uvicorn Entry Point

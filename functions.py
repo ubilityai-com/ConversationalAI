@@ -24,7 +24,7 @@ from elements.app_integration import AppIntegration
 from dialogues.dialogues import active_dialogues
 
 
-async def execute_process(sio, sid, conversation_id, session, dialogue):
+async def execute_process(sio, sid, conversation, dialogue):
     """
     Core processing engine for executing a conversation step.
 
@@ -36,7 +36,6 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
         dialogue (dict): The dialogue configuration loaded from JSON.
     """
     logger.info("Starting the execute_process function")
-    conversation = session[conversation_id]
     current_step = conversation.get('current_step')
 
     if not current_step:
@@ -85,11 +84,11 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
         ).send(sio, sid)
 
     elif element_type == 'Handler':
-        await handle_routing(sio, sid, conversation_id, session, dialogue, current_dialogue,content)
+        await handle_routing(sio, sid, conversation, dialogue, current_dialogue,content)
         return
 
     elif element_type == 'Router':
-        await handle_router(sio, sid, conversation_id, session, dialogue,content)
+        await handle_router(sio, sid, conversation, dialogue,content)
         return
 
     elif element_type == 'TextFormatter':
@@ -101,7 +100,7 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
     elif element_type == 'VariableManager':
         handle_variable_manager(conversation,content)
     elif element_type == 'AppIntegration':
-        await handle_app_integration(sio, sid, conversation_id, session, dialogue, current_dialogue,content)
+        await handle_app_integration(sio, sid, conversation, dialogue, current_dialogue,content)
         return
     else:
         print(f'[Warning] Invalid element type: {element_type}')
@@ -118,7 +117,7 @@ async def execute_process(sio, sid, conversation_id, session, dialogue):
             return
 
         conversation['current_step'] = next_step
-        await execute_process(sio, sid, conversation_id, session, dialogue)
+        await execute_process(sio, sid, conversation, dialogue)
     else:
         logger.info("Waiting for user input ...")
         conversation['wait_for_user_input'] = wait_for_user
@@ -167,11 +166,11 @@ def replace_variables(template: Union[str, list, dict], variables: dict, used_va
         return template  # If template is an unexpected type, return it as-is
 
 
-async def handle_routing(sio, sid, conversation_id, session, dialogue, current_dialogue,content):
+async def handle_routing(sio, sid, conversation, dialogue, current_dialogue,content):
     """
     Handle conditional branching logic with Handler elements.
     """
-    conversation = session[conversation_id]
+    
     used_variable = current_dialogue['usedVariables'][0]
     case_value = conversation['variables'].get(used_variable, '')
 
@@ -182,20 +181,20 @@ async def handle_routing(sio, sid, conversation_id, session, dialogue, current_d
     else:
         conversation['current_step'] = content["data"]['cases'].get('Other')
 
-    await execute_process(sio, sid, conversation_id, session, dialogue)
+    await execute_process(sio, sid, conversation, dialogue)
 
 
-async def handle_router(sio, sid, conversation_id, session, dialogue,content):
+async def handle_router(sio, sid, conversation, dialogue,content):
     """
     Handle advanced conditional logic with Router elements.
     """
-    conversation = session[conversation_id]
+
     router = Router(content["data"]['conditions'])
     next_step = router.find_next_step()
 
     if next_step:
         conversation['current_step'] = next_step
-        await execute_process(sio, sid, conversation_id, session, dialogue)
+        await execute_process(sio, sid, conversation, dialogue)
     else:
         print('[Router] No valid condition matched.')
 
@@ -245,8 +244,8 @@ def save_output_parser_vars(output_parser_data: dict, conversation: dict, result
     return conversation
 
 
-async def handle_app_integration(sio, sid, conversation_id, session, dialogue, current_dialogue,content):
-    conversation = session[conversation_id]
+async def handle_app_integration(sio, sid, conversation, dialogue, current_dialogue,content):
+
 
     app_content_json = content["data"]
 
@@ -272,7 +271,7 @@ async def handle_app_integration(sio, sid, conversation_id, session, dialogue, c
 
     # continue process execution
     conversation['current_step'] = current_dialogue['next']
-    await execute_process(sio, sid, conversation_id, session, dialogue)
+    await execute_process(sio, sid, conversation, dialogue)
 
 
 def get_value_from_path(json_body, path, default=None):
