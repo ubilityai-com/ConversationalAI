@@ -119,7 +119,7 @@ export default function AutomationSimple({
     useEffect(() => {
         if (!InDynamic) {
             // Initialize validation and final object
-            console.log("Initializing automation simple component")
+            console.log("Initializing automation  component")
             if (flowZoneSelectedId && filledDataName) {
                 setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(schema, fieldValues))
                 setNodeFilledDataByKey(flowZoneSelectedId, filledDataName, objToReturnDynamic(schema))
@@ -128,7 +128,7 @@ export default function AutomationSimple({
     }, [InDynamic])
 
     const onChangeAutomationSimple = ({ newValue, variableName }: any) => {
-        const newFieldsValue={...fieldValues,[variableName]:newValue}        
+        const newFieldsValue = { ...fieldValues, [variableName]: newValue }
         if (filledDataName)
             setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(schema, newFieldsValue))
         onFieldChange?.({ path: variableName, value: newValue })
@@ -433,10 +433,8 @@ export default function AutomationSimple({
                                     }
                             }
                             onFieldChange={({ path, value }: any) => {
-                                console.log({ path, value });
 
                                 if (fieldValues && item.variableName) {
-                                    console.log({ path: `${item.variableName}`, value: value });
 
                                     // For external field values, directly update the fieldsArray
                                     onFieldChange({ path: `${path}`, value: value })
@@ -452,7 +450,6 @@ export default function AutomationSimple({
 
             case "accordion":
                 const dynamicValuee = getDynamicFieldValue(item)
-                console.log({ dynamicValuee });
 
                 return (
                     <Accordion type="single" collapsible className="w-full">
@@ -470,10 +467,8 @@ export default function AutomationSimple({
                                             }
                                     }
                                     onFieldChange={({ path, value }: any) => {
-                                        console.log({ path, value });
 
                                         if (fieldValues && item.variableName) {
-                                            console.log({ path: `${item.variableName}`, value: value });
 
                                             // For external field values, directly update the fieldsArray
                                             onFieldChange({ path: `${path}`, value: value })

@@ -32,9 +32,7 @@ const FlowZone = () => {
   const edgeTypes = {
     buttonEdge: ButtonEdge
   }
-  const reactFlowInstance = useReactFlow()
   const nodes = useFlowStore(state => state.nodes)
-  const droppedElement = useFlowStore(state => state.droppedElement)
   const setNodes = useFlowStore(state => state.setNodes)
   const edges = useFlowStore(state => state.edges)
   const setEdges = useFlowStore(state => state.setEdges)
@@ -47,10 +45,7 @@ const FlowZone = () => {
   const setMousePositionManySelectedElementMenu = useFlowStore(state => state.setMousePositionManySelectedElementMenu)
   const setZoomAndMoveValues = useFlowStore(state => state.setZoomAndMoveValues)
   const setIDOnSelectionContextMenu = useFlowStore(state => state.setIDOnSelectionContextMenu)
-  const setDroppedElement = useFlowStore(state => state.setDroppedElement)
-  const addNodesValidation = useFlowStore(state => state.addNodesValidation)
 
-  const mousePositionHandleMenu = useFlowStore(state => state.mousePositionHandleMenu)
 
 
 

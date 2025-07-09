@@ -1,5 +1,5 @@
 import { ComponentType, useEffect, useState } from "react";
-import { useRightDrawerStore } from "../../../store/right-drawer-store";
+import { useFlowStore } from "../../../store/flow-store";
 
 interface SectionProps {
     content: any;
@@ -8,7 +8,7 @@ interface SectionProps {
     type: string;
     schema: any[]
     path: string
-    counter: number
+    parentId: string
 }
 function camelToDashCase(str: string) {
     return str
@@ -23,19 +23,18 @@ export function SharedListItemSection({
     id,
     schema,
     path,
-    counter
+    parentId
 }: SectionProps) {
     const [isLoading, setIsLoading] = useState(false);
-    const setValidationByKey = useRightDrawerStore((state) => state.setValidationByKey)
+    const updateSubNodeValidationById = useFlowStore((s) => s.updateSubNodeValidationById);
 
     const [Component, setComponent] = useState<ComponentType<any> | null>(null);
     const onContentUpdate = (value: any) => {
         onConfigUpdate(`${path}`, value)
     }
     const validate = (valid: boolean) => {
-        setValidationByKey(id, `${type}_${counter}`, valid)
+        updateSubNodeValidationById(parentId, id, valid)
     }
-    console.log({ type, counter });
 
     useEffect(() => {
         const loadComponent = async () => {
@@ -75,7 +74,6 @@ export function SharedListItemSection({
                         schema={schema}
                         content={content}
                         onContentUpdate={onContentUpdate}
-                        counter={counter}
                         validate={validate}
                     />
                 )}

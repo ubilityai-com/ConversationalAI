@@ -6,6 +6,7 @@ import { ReactAgentJson } from "../../../elements/langchain-elements/ReactAgentJ
 import ModelsElements from "../../../elements/model-elements";
 import { ToolsElements } from "../../../elements/tools-elements";
 import { useDebounceConfig } from "../../../hooks/use-debounced-config";
+import { useFlowStore } from "../../../store/flow-store";
 import { useRightDrawerStore } from "../../../store/right-drawer-store";
 import AutomationSimple from "../../custom/automation-v4";
 import { SharedSection } from "../../properties/shared/shared-section";
@@ -27,18 +28,20 @@ export default function ReactAgentForm({
 }: LlmFormProps) {
     const [schema, setSchema] = useState<any[]>(ReactAgentJson.rightSideData.json
     );
-    const validation = useRightDrawerStore(state => state.automation.validation[selectedNode.id])
-    console.log({validation});
-    
+    const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
+
+
     const { localConfig, updateNestedConfig } =
         useDebounceConfig<LLMConfigProps["rightSideData"]>(
             selectedNode.data.rightSideData,
             {
                 delay: 300,
                 onSave: (savedConfig) => {
-                    // Save label changes
-                    console.log({ savedConfig });
-
+                    // Save label changes   
+                    const nodeValid = useRightDrawerStore.getState().automation.validation[selectedNode.id].json
+                    const subNodesValidation = useFlowStore.getState().subNodesValidation
+                    const subsValid = subNodesValidation[selectedNode.id]?.valid
+                    updateNodesValidationById(selectedNode.id, nodeValid && subsValid)
                     handleRightSideDataUpdate(savedConfig);
                 },
             }

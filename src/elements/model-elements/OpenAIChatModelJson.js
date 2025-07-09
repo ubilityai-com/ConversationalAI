@@ -3,7 +3,8 @@ export const OpenAIChatModelJson = {
   type: "OpenAIChatModel",
   label: "OpenAI Chat Model",
   color: "#72797b",
-  description: "For advanced usage with an AI chain" ,
+  description: "For advanced usage with an AI chain",
+  defaultValid: false,
   rightSideData: {
     json: [
       {

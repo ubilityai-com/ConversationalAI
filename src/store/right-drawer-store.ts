@@ -2,22 +2,8 @@ import axios from "axios"
 import type React from "react"
 import { create } from "zustand"
 import { immer } from 'zustand/middleware/immer'
-import { validateArray } from "../lib/utils"
 import { useFlowStore } from "./flow-store"
 
-// Add a type for form events that can handle both value and checked properties
-type FormEvent = {
-    target: {
-        name: string
-        value?: any
-        checked?: boolean
-        type?: string
-    }
-    preventDefault: () => void
-}
-type DynamicDataHandler = {
-    choice: 'Keyword' | "AI NLP" | "Variable", value: string, save: boolean, variableName: string, entities: any[]
-}
 // Update the interface to include handleSnackBarMessageOpen
 interface RightDrawerStore {
     automation: { validation: Record<string, Record<string, boolean>>, filledData: Record<string, Record<string, Record<string, any>>> }

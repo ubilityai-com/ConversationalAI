@@ -5,9 +5,10 @@ export const CustomToolJson = {
     label: "Custom Tool",
     color: "#72797b",
     description: "Uses another ubility workflow as a tool.",
+    defaultValid: false,
     rightSideData: {
-        inputsDescription:null,
-        webhookActive:"None",
+        inputsDescription: null,
+        webhookActive: "None",
         json: [
             {
                 type: "textfield",
@@ -23,7 +24,7 @@ export const CustomToolJson = {
                 type: "textfield",
                 label: "Description",
                 multiline: true,
-                required:true,
+                required: true,
                 minRows: 3,
                 variableName: "description",
                 value: "",

@@ -1,7 +1,9 @@
 import { FileJson, PenToolIcon, Plus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { v4 } from "uuid";
 import { objToReturnDynamicv2 } from "../../../lib/automation-utils";
 import { ApiResItem, keyBy } from "../../../lib/utils";
+import { useFlowStore } from "../../../store/flow-store";
 import { Button } from "../../ui/button";
 import {
     Card,
@@ -45,32 +47,37 @@ export function SharedListSection({
     console.log({ config });
 
     const enabled = config.enabled === true;
-    const type = config.type || defaultType;
     const list = config.list || [];
-    const [schemas, setSchemas] = useState<any>();
+    const [schemas] = useState<any>(keyBy(elements, "type"));
+    const add = useFlowStore((s) => s.addSubNodeValidation);
+    const del = useFlowStore((s) => s.deleteSubNodeById);
+    const updateSubNodeValidationById = useFlowStore((s) => s.updateSubNodeValidationById);
+
+
     const addTool = () => {
         const currentTools = list;
         const newTool = elements.find((o) => o.type === defaultType) as any;
         const newToolDefaultInputs = objToReturnDynamicv2(newTool?.rightSideData?.json as ApiResItem[]);
-        console.log({ ss: { ...newTool.rightSideData, json: newToolDefaultInputs } });
-
+        console.log({ ss: { ...newTool.rightSideData, json: newToolDefaultInputs }, newTool });
+        const newToolId = v4()
+        add(id, newToolId, newTool.defaultValid)
         onConfigUpdate(`extras.${variableName}.list`, [
             ...currentTools,
-            { content: { ...newTool.rightSideData, json: newToolDefaultInputs }, type: "CustomTool" },
+            { content: { ...newTool.rightSideData, json: newToolDefaultInputs }, type: "CustomTool", id: newToolId },
         ]);
+
+
     };
 
-    const removeTool = (indexToRemove: number) => {
+    const removeTool = (toolId: string) => {
         const currentTools = list;
         const updatedTools = currentTools.filter(
-            (tool: any, index: number) => index !== indexToRemove
+            (tool: any, index: number) => tool.id !== toolId
         );
         onConfigUpdate(`extras.${variableName}.list`, updatedTools);
+        del(id, toolId)
     };
 
-    useEffect(() => {
-        setSchemas(keyBy(elements, "type"))
-    }, [])
 
     return (
         <Card>
@@ -134,7 +141,7 @@ export function SharedListSection({
                                                     <Button
                                                         variant="ghost"
                                                         size="sm"
-                                                        onClick={() => removeTool(toolIndex)}
+                                                        onClick={() => removeTool(tool.id)}
                                                         className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
                                                     >
                                                         <Trash2 className="w-3 h-3" />
@@ -164,8 +171,11 @@ export function SharedListSection({
                                                                     : tool
                                                         );
                                                         console.log({ updatedTools });
+                                                        const selectedOption = elements.find(opt => opt.type === value)
 
                                                         onConfigUpdate(`extras.${variableName}.list`, updatedTools);
+                                                        updateSubNodeValidationById(id, tool.id, selectedOption.defaultValid)
+
                                                     }}
                                                 >
                                                     <SelectTrigger
@@ -183,16 +193,17 @@ export function SharedListSection({
                                                     </SelectContent>
                                                 </Select>
                                             </div>
-                                            {schemas && <SharedListItemSection
-                                                key={toolIndex}
-                                                content={tool.content}
-                                                id={id}
-                                                onConfigUpdate={onConfigUpdate}
-                                                path={`extras.${variableName}.list.${toolIndex}.content`}
-                                                schema={schemas[tool.type].rightSideData.json}
-                                                type={tool.type}
-                                                counter={toolIndex}
-                                            />}
+                                            {schemas &&
+                                                <SharedListItemSection
+                                                    key={toolIndex}
+                                                    content={tool.content}
+                                                    parentId={id}
+                                                    id={tool.id}
+                                                    onConfigUpdate={onConfigUpdate}
+                                                    path={`extras.${variableName}.list.${toolIndex}.content`}
+                                                    schema={schemas[tool.type].rightSideData.json}
+                                                    type={tool.type}
+                                                />}
                                         </CardContent>
                                     </Card>
                                 ))}
