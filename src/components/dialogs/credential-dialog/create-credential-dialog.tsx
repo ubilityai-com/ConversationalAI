@@ -153,7 +153,7 @@ const ServiceSelector: React.FC<{
 }
 
 // Main Component
-const defaultCred = serviceFields.find(cred => cred.service === "Google");
+const defaultCred: CredentialInfo = serviceFields.find(cred => cred.service === "Google") || serviceFields[0];
 const credsThatHaveConsentScreenList = [
     { name: "Google", function: oauthSignIn },
     { name: "SalesForce", function: SalesForceSignIn },
@@ -187,7 +187,7 @@ export function CreateCredentialDialog({
 }: CredentialModalProps) {
     const [searchText, setSearchText] = useState("Google")
     const [autoCompleteList, setAutoCompleteList] = useState<AutoCompleteItem[]>(credsWithImagesList(serviceFields))
-    const [credInfo, setCredInfo] = useState<CredentialInfo>(serviceFields[0])
+    const [credInfo, setCredInfo] = useState<CredentialInfo>(defaultCred)
     const [error, setError] = useState<string | boolean>("")
     const [isLoadingApi, setIsLoadingApi] = useState(false)
     const [isCurrentCredOauth2, setIsCurrentCredOauth2] = useState(defaultCred?.defaultRedirectUri)
@@ -198,7 +198,6 @@ export function CreateCredentialDialog({
     }, [open])
 
     const resetCredInfo = () => {
-        const defaultCred = serviceFields[0]
         setCredInfo(defaultCred)
         setError("")
         setSearchText(defaultCred.service)
