@@ -31,10 +31,10 @@ const agentTypes = [
     icon: Bot,
     category: "AI",
     color: "bg-purple-500",
-    defaults:{
-      outputParser:"",
-      outputParserEnabled:false,
-      outputParserData:{}
+    defaults: {
+      outputParser: "",
+      outputParserEnabled: false,
+      outputParserData: {}
     }
   },
   {
@@ -80,9 +80,9 @@ const agentTypes = [
     color: "bg-pink-500",
     defaults: {
       botSays: "Hello please choose a choice",
-      save: false,
+      save: true,
       variableName: "",
-      choices: [{ label: "Choice 1", id: v4() }],
+      choices: [{ label: "Choice 1", id: `choice-${Date.now()}` }],
       loopFromSwitch: false,
       loopFromName: "",
     }
@@ -190,8 +190,8 @@ export function AgentPaletteDialog({ open, onOpenChange, x, y, source, sourceHan
 
     if (element && reactFlowInstance) {
       const sourceNode = reactFlowInstance.getNode(source)
-      console.log({element});
-      
+      console.log({ element });
+
       const generateID = uuidv4()
 
       let newElement = {

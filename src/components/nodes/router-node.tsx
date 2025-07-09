@@ -11,23 +11,18 @@ export interface RouterBranch {
   id: string
   name: string
   description: string
-  operatorType: "value" | "variable" | "expression"
+  operatorType: "number" | "string"
   firstOperator: string
   secondOperator: string
   checkType:
-  | "equals"
-  | "not_equals"
+  | "equal"
+  | "not_equal"
   | "greater_than"
   | "less_than"
   | "greater_equal"
   | "less_equal"
   | "contains"
   | "not_contains"
-  | "starts_with"
-  | "ends_with"
-  | "regex"
-  | "is_empty"
-  | "is_not_empty"
 }
 export interface RouterConfig extends Record<string, unknown> {
   label: string
@@ -57,7 +52,7 @@ export function RouterNode(props: NodeProps<Node<RouterConfig>>) {
               key={`branch-${branch.id}`}
               type="source"
               position={Position.Right}
-              id={`branch-${branch.id}`}
+              id={branch.id}
               className="w-3 h-3 bg-cyan-400 border-2 border-white hover:bg-cyan-500 transition-colors"
             // style={{ top: `${150 + index * 100}px` }}
             />

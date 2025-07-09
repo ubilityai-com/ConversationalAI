@@ -5,14 +5,12 @@ export function Toaster() {
     const showSnackBarMessage = useFlowStore(state => state.showSnackBarMessage)
     const setShowSnackBarMessage = useFlowStore(state => state.setShowSnackBarMessage)
 
-    console.log({ showSnackBarMessage });
 
     return (
         <>
             {showSnackBarMessage.open === true && <ToastProvider duration={showSnackBarMessage.duration}>
 
                 <Toast variant={showSnackBarMessage.color} onOpenChange={(open) => {
-                    console.log({ open });
                     setShowSnackBarMessage({ open: false })
 
                 }}>

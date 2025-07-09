@@ -6,10 +6,8 @@ import { useState } from "react";
 import { useFlowStore } from "../../store/flow-store";
 import TextOnlyTooltip from "../custom/text-tooltip";
 import TooltipWrapper from "./RootNode";
-function removeHTMLTags(htmlCode: string): string {
-    const withoutHTMLTags = htmlCode.replace(/<[^>]*>/g, '');
-    return withoutHTMLTags.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-}
+import { removeHTMLTags } from "../../lib/utils";
+
 
 interface Entity {
     any?: boolean;
@@ -126,7 +124,7 @@ function AgentNode({ data }: { data: Data }) {
                     <div className={`overflow-hidden break-words max-h-[500px] [display:-webkit-box] [white-space:normal] [text-overflow:ellipsis] [-webkit-line-clamp:100] [-webkit-box-orient:vertical] text-foreground text-sm ${message ? `text-gray-500` : `text-gray-400`} text-ellipsis truncate`}>{message ? message : "Select an Agent"}</div>
                 </div> */}
                 <div className="bg-accent rounded-md w-full flex flex-col flex-wrap justify-start items-start px-2 py-1 overflow-hidden break-all  min-h-8 mb-1 truncate">
-                        <h2>Customer support agent</h2>
+                    <h2>Customer support agent</h2>
                     <div className={`overflow-hidden break-words max-h-[200px] [display:-webkit-box] [white-space:normal] [text-overflow:ellipsis] [-webkit-line-clamp:100] [-webkit-box-orient:vertical] text-foreground text-sm ${message ? `text-gray-500` : `text-gray-400`} text-ellipsis truncate`}>
                         <p className="text-xs truncate">
                             # Customer Service & Support Agent Prompt

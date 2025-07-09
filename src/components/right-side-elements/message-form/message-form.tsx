@@ -1,5 +1,3 @@
-
-
 // Dynamically import ReactQuill to avoid SSR issues
 import { Node, NodeProps } from "@xyflow/react"
 import ReactQuill from "react-quill"
@@ -9,6 +7,9 @@ import { LoopFromForm } from "../../common/loop-from-end"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
 import { Switch } from "../../ui/switch"
+import { useFlowStore } from "../../../store/flow-store"
+import { removeHTMLTags } from "../../../lib/utils"
+import getContent from "./get-content"
 
 interface RightSideData {
   botSays?: string;
@@ -32,11 +33,8 @@ interface MessageFormProps {
     value: any
   ) => void
 }
-function removeHTMLTags(htmlCode: string): string {
-  const withoutHTMLTags = htmlCode.replace(/<[^>]*>/g, '');
-  return withoutHTMLTags.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-}
-function checkIfAllRequiredDataIsFilled({ data }: { data?: RightSideData }): boolean {
+
+function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
   let allInputsAreFilled = true;
   if (data) {
     if (!removeHTMLTags(data.botSays || '')) {
@@ -79,18 +77,21 @@ export default function MessageForm({
   selectedNode,
   handleRightSideDataUpdate,
 }: MessageFormProps) {
-
+  const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
   const { localConfig, updateConfigField, updateNestedConfig } = useDebounceConfig<MessageConfigProps["rightSideData"]>(
     selectedNode.data.rightSideData,
     {
       delay: 300,
       onSave: (savedConfig) => {
         // Save label changes
+        updateNodesValidationById(selectedNode.id, checkIfAllRequiredDataIsFilled(savedConfig))
         handleRightSideDataUpdate(savedConfig)
 
       },
     },
   )
+  console.log({ message: getContent(selectedNode) });
+
   return (
     <div className="space-y-4">
       <div>

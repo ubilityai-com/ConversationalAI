@@ -1,0 +1,437 @@
+{
+    "credentials": ["mySLackCred"],
+    "bot": {
+        "firstElementId": {
+            "next": "lang_choice",
+            "start": true,
+            "greet": "Hello! I'm your medical appointment assistant. مرحباً! أنا مساعدك الطبي",
+            "cancel": "Conversation is canceled have a good day !"
+        },
+        "lang_choice": {
+            "type": "MultipleChoice",
+            "content": {
+                "type": "data",
+                "data": {
+                    "choices": [
+                        "English",
+                        "العربية"
+                    ],
+                    "message": "Please choose the language الرجاء اختيار اللغة"
+                }
+            },
+            "next": "lang_handler",
+            "saveUserInputAs": "language",
+            "usedVariables": null
+        },
+        "lang_handler": {
+            "type": "Handler",
+            "usedVariables": [
+                "language"
+            ],
+            "content": {
+                "type": "data",
+                "data": {
+                    "cases": {
+                        "English": "ask_first_name_en",
+                        "العربية": "ask_first_name_ar",
+                        "Other": "unsupported_lang"
+                    }
+                }
+            },
+            "saveUserInputAs": null
+        },
+        "ask_first_name_en": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "What is your first name?"
+                }
+            },
+            "saveUserInputAs": "user_firstname",
+            "next": "uppercase_name_en",
+            "usedVariables": null
+        },
+        "ask_first_name_ar": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "ما هو اسمك الأول؟"
+                }
+            },
+            "saveUserInputAs": "user_firstname",
+            "next": "uppercase_name_ar",
+            "usedVariables": null
+        },
+        "uppercase_name_en": {
+            "type": "TextFormatter",
+            "content": {
+                "type": "data",
+                "data": {
+                    "operation": "uppercase",
+                    "inputText": "${user_firstname}",
+                    "saveOutputAs": "user_firstname_upper"
+                }
+            },
+            "usedVariables": [
+                "user_firstname"
+            ],
+            "next": "ask_last_name_en",
+            "saveUserInputAs": null
+        },
+        "uppercase_name_ar": {
+            "type": "TextFormatter",
+            "content": {
+                "type": "data",
+                "data": {
+                    "operation": "uppercase",
+                    "inputText": "${user_firstname}",
+                    "saveOutputAs": "user_firstname_upper"
+                }
+            },
+            "usedVariables": [
+                "user_firstname"
+            ],
+            "next": "ask_last_name_ar",
+            "saveUserInputAs": null
+        },
+        "ask_last_name_en": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "Great, now what is your last name?"
+                }
+            },
+            "saveUserInputAs": "user_lastname",
+            "next": "send_slack_message_en",
+            "usedVariables": null
+        },
+        "ask_last_name_ar": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "رائع، ما هو اسم عائلتك؟"
+                }
+            },
+            "saveUserInputAs": "user_lastname",
+            "next": "send_slack_message_ar",
+            "usedVariables": null
+        },
+        "send_slack_message_en": {
+            "type": "AppIntegration",
+            "content": {
+                "type": "data",
+                "data": {
+                    "content_json": {
+                        "as_user": false,
+                        "channel": "U04C5HENURG",
+                        "link_names": false,
+                        "mrkdwn": true,
+                        "text": "hello ${user_firstname} ${user_lastname}\\n",
+                        "unfurl_links": true,
+                        "unfurl_media": true
+                    },
+                    "credentials":  "mySLackCred",
+                    "operation": "SEND_MESSAGE",
+                    "app": "slack",
+                    "saveOutputAs": [
+                        {
+                            "name": "slack_output",
+                            "path": ".message.text"
+                        },
+                        {
+                            "name": "slack_message",
+                            "path": ".message.bot_profile.name"
+                        }
+                    ]
+                }
+            },
+            "saveUserInputAs": null,
+            "next": "confirm_name_en",
+            "usedVariables": [
+                "user_lastname",
+                "user_firstname"
+            ]
+        },
+        "send_slack_message_ar": {
+            "type": "AppIntegration",
+            "content": {
+                "type": "data",
+                "data": {
+                    "content_json": {
+                        "as_user": false,
+                        "channel": "U04C5HENURG",
+                        "link_names": false,
+                        "mrkdwn": true,
+                        "text": "مرحبا ${user_firstname} ${user_lastname}\\n",
+                        "unfurl_links": true,
+                        "unfurl_media": true
+                    },
+                    "credentials": {
+                        "accessToken": "mySLackCred"
+                    },
+                    "operation": "SEND_MESSAGE",
+                    "app": "slack",
+                    "saveOutputAs": [
+                        {
+                            "name": "slack_output",
+                            "path": ".message.text"
+                        },
+                        {
+                            "name": "slack_message",
+                            "path": ".message.bot_profile.name"
+                        }
+                    ]
+                }
+            },
+            "saveUserInputAs": null,
+            "next": "confirm_name_ar",
+            "usedVariables": [
+                "user_lastname",
+                "user_firstname"
+            ]
+        },
+        "confirm_name_en": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "Hello ${user_firstname_upper} ${user_lastname}, that's noted your slack msg is ${slack_output}."
+                }
+            },
+            "usedVariables": [
+                "user_firstname_upper",
+                "user_lastname",
+                "slack_output"
+            ],
+            "next": "ask_age_en",
+            "saveUserInputAs": null
+        },
+        "confirm_name_ar": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "مرحباً ${user_firstname_upper} ${user_lastname}، تم تسجيل الاسم."
+                }
+            },
+            "usedVariables": [
+                "user_firstname_upper",
+                "user_lastname"
+            ],
+            "next": "ask_age_ar",
+            "saveUserInputAs": null
+        },
+        "ask_age_en": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "How old are you?"
+                }
+            },
+            "saveUserInputAs": "user_age",
+            "next": "age_router_en",
+            "usedVariables": null
+        },
+        "ask_age_ar": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "كم عمرك؟"
+                }
+            },
+            "saveUserInputAs": "user_age",
+            "next": "age_router_ar",
+            "usedVariables": null
+        },
+        "age_router_en": {
+            "type": "Router",
+            "usedVariables": [
+                "user_age"
+            ],
+            "content": {
+                "type": "data",
+                "data": {
+                    "conditions": [
+                        {
+                            "dataType": "number",
+                            "operation": "lessThan",
+                            "firstOperator": "${user_age}",
+                            "secondOperator": 18,
+                            "next": "underage_notice_en"
+                        },
+                        {
+                            "dataType": "number",
+                            "operation": "greaterThanOrEqual",
+                            "firstOperator": "${user_age}",
+                            "secondOperator": 18,
+                            "next": "schedule_flow_en"
+                        }
+                    ]
+                }
+            }
+        },
+        "age_router_ar": {
+            "type": "Router",
+            "usedVariables": [
+                "user_age"
+            ],
+            "content": {
+                "type": "data",
+                "data": {
+                    "conditions": [
+                        {
+                            "dataType": "number",
+                            "operation": "lessThan",
+                            "firstOperator": "${user_age}",
+                            "secondOperator": 18,
+                            "next": "underage_notice_ar"
+                        },
+                        {
+                            "dataType": "number",
+                            "operation": "greaterThanOrEqual",
+                            "firstOperator": "${user_age}",
+                            "secondOperator": 18,
+                            "next": "schedule_flow_ar"
+                        }
+                    ]
+                }
+            }
+        },
+        "underage_notice_en": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "You must be at least 18 to book an appointment online."
+                }
+            },
+            "next": "end_convo_en",
+            "usedVariables": null,
+            "saveUserInputAs": null
+        },
+        "underage_notice_ar": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "يجب أن يكون عمرك 18 سنة على الأقل لحجز موعد عبر الإنترنت."
+                }
+            },
+            "next": "end_convo_ar",
+            "usedVariables": null,
+            "saveUserInputAs": null
+        },
+        "schedule_flow_ar": {
+            "type": "FlowInvoker",
+            "content": {
+                "type": "data",
+                "data": {
+                    "url": "https://api.ubilityai.com/api/webhook?u_id=2&file=SubFlow-a4bbff03-7aab-47ee-a993-530d6cdb8fef",
+                    "body": {
+                        "firstName": "${user_firstname}",
+                        "lastName": "${user_lastname}",
+                        "age": "${user_age}"
+                    }
+                }
+            },
+            "usedVariables": [
+                "user_firstname",
+                "user_lastname",
+                "user_age"
+            ],
+            "next": "show_result_ar",
+            "saveUserInputAs": null
+        },
+        "schedule_flow_en": {
+            "type": "FlowInvoker",
+            "content": {
+                "type": "data",
+                "data": {
+                    "url": "https://api.ubilityai.com/api/webhook?u_id=2&file=SubFlow-a4bbff03-7aab-47ee-a993-530d6cdb8fef",
+                    "body": {
+                        "firstName": "${user_firstname}",
+                        "lastName": "${user_lastname}",
+                        "age": "${user_age}"
+                    }
+                }
+            },
+            "usedVariables": [
+                "user_firstname",
+                "user_lastname",
+                "user_age"
+            ],
+            "next": "show_result_en",
+            "saveUserInputAs": null
+        },
+        "show_result_en": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "Your appointment is booked! Confirmation: ${confirmationNumber}"
+                }
+            },
+            "usedVariables": [
+                "confirmationNumber"
+            ],
+            "next": "end_convo_en",
+            "saveUserInputAs": null
+        },
+        "show_result_ar": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "تم حجز الموعد! رقم التأكيد: ${confirmationNumber}"
+                }
+            },
+            "usedVariables": [
+                "confirmationNumber"
+            ],
+            "next": "end_convo_ar",
+            "saveUserInputAs": null
+        },
+        "end_convo_en": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "Thank you for using our service. Goodbye!"
+                }
+            },
+            "next": null,
+            "usedVariables": null,
+            "saveUserInputAs": null
+        },
+        "end_convo_ar": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "شكراً لاستخدامك خدمتنا. مع السلامة!"
+                }
+            },
+            "next": null,
+            "usedVariables": null,
+            "saveUserInputAs": null
+        },
+        "unsupported_lang": {
+            "type": "Message",
+            "content": {
+                "type": "data",
+                "data": {
+                    "text": "Sorry, we don't support that language yet."
+                }
+            },
+            "next": null,
+            "usedVariables": null,
+            "saveUserInputAs": null
+        }
+    }
+}

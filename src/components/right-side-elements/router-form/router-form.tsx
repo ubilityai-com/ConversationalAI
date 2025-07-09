@@ -9,43 +9,23 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
-export interface RouterDefaultBranch {
-  name: string
-  description: string
-}
-export interface RouterBranch {
-  id: string
-  name: string
-  description: string
-  operatorType: "value" | "variable" | "expression"
-  firstOperator: string
-  secondOperator: string
-  checkType:
-  | "equals"
-  | "not_equals"
-  | "greater_than"
-  | "less_than"
-  | "greater_equal"
-  | "less_equal"
-  | "contains"
-  | "not_contains"
-  | "starts_with"
-  | "ends_with"
-  | "regex"
-  | "is_empty"
-  | "is_not_empty"
+import { validateArray } from "../../../lib/utils";
+import { useFlowStore } from "../../../store/flow-store";
+import getContent from "./get-content";
+import { RouterBranch, RouterDefaultBranch } from "../../nodes/router-node";
+
+interface RightSideData {
+  branches: RouterBranch[]
+  defaultBranch: RouterDefaultBranch
+  save: boolean;
+  variableName: string;
+  loopFromSwitch: boolean;
+  loopFromName: string
 }
 export interface RouterConfig extends Record<string, unknown> {
   label: string
   description: string
-  rightSideData: {
-    branches: RouterBranch[]
-    defaultBranch: RouterDefaultBranch
-    save: boolean;
-    variableName: string;
-    loopFromSwitch: boolean;
-    loopFromName: string
-  }
+  rightSideData: RightSideData
 }
 
 interface RouterConfigFormProps {
@@ -54,13 +34,38 @@ interface RouterConfigFormProps {
     value: any
   ) => void
 }
+
+
+function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
+  if (!data) return false;
+
+  if (data.loopFromSwitch && data.loopFromName.trim().length === 0) {
+    return false;
+  }
+
+  for (const item of data.branches) {
+    if (
+      !item.name || item.name.trim() === '' ||
+      !item.firstOperator || item.firstOperator.trim() === '' ||
+      !item.secondOperator || item.secondOperator.trim() === ''
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: RouterConfigFormProps) {
+  const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
+
   const { localConfig, updateConfigField, updateNestedConfig } = useDebounceConfig(
     selectedNode.data.rightSideData,
     {
       delay: 300,
       onSave: (savedConfig) => {
         // Save the entire config at once
+        updateNodesValidationById(selectedNode.id, checkIfAllRequiredDataIsFilled(savedConfig))
         handleRightSideDataUpdate(savedConfig)
       },
     },
@@ -73,10 +78,10 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
       id: `branch-${Date.now()}`,
       name: `Branch ${branches.length + 1}`,
       description: "",
-      operatorType: "value",
+      operatorType: "number",
       firstOperator: "",
       secondOperator: "",
-      checkType: "equals",
+      checkType: "equal",
     }
     updateNestedConfig("branches", [...branches, newBranch])
   }
@@ -91,6 +96,10 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
     const updatedBranches = branches.filter((_: any, i: number) => i !== index)
     updateNestedConfig("branches", updatedBranches)
   }
+  const edges = useFlowStore(state => state.edges)
+  const nodes = useFlowStore(state => state.nodes)
+
+  console.log({ router: getContent(selectedNode, edges, nodes), data: selectedNode.data.rightSideData, edges, nodes });
 
   return (
     <div className="space-y-4">
@@ -170,16 +179,19 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
                           Operator Type
                         </Label>
                         <Select
-                          value={branch.operatorType || "value"}
-                          onValueChange={(value) => updateBranch(index, { operatorType: value })}
+                          value={branch.operatorType || "number"}
+                          onValueChange={(value) => {
+                            updateBranch(index, { operatorType: value })
+                            updateBranch(index, { checkType: "equal" })
+                          }
+                          }
                         >
                           <SelectTrigger className="h-8 text-xs">
                             <SelectValue placeholder="Type" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="value">Value</SelectItem>
-                            <SelectItem value="variable">Variable</SelectItem>
-                            <SelectItem value="expression">Expression</SelectItem>
+                            <SelectItem value="number">number</SelectItem>
+                            <SelectItem value="string">string</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -215,26 +227,26 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
                           Check Type
                         </Label>
                         <Select
-                          value={branch.checkType || "equals"}
+                          value={branch.checkType || "equal"}
                           onValueChange={(value) => updateBranch(index, { checkType: value })}
                         >
                           <SelectTrigger className="h-8 text-xs">
                             <SelectValue placeholder="Check type" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="equals">Equals (==)</SelectItem>
-                            <SelectItem value="not_equals">Not Equals (!=)</SelectItem>
-                            <SelectItem value="greater_than">Greater Than (&gt;)</SelectItem>
-                            <SelectItem value="less_than">Less Than (&lt;)</SelectItem>
-                            <SelectItem value="greater_equal">Greater or Equal (&gt;=)</SelectItem>
-                            <SelectItem value="less_equal">Less or Equal (&lt;=)</SelectItem>
-                            <SelectItem value="contains">Contains</SelectItem>
-                            <SelectItem value="not_contains">Not Contains</SelectItem>
-                            <SelectItem value="starts_with">Starts With</SelectItem>
-                            <SelectItem value="ends_with">Ends With</SelectItem>
-                            <SelectItem value="regex">Regex Match</SelectItem>
-                            <SelectItem value="is_empty">Is Empty</SelectItem>
-                            <SelectItem value="is_not_empty">Is Not Empty</SelectItem>
+                            <SelectItem value="equal">Equal (==)</SelectItem>
+                            <SelectItem value="not_equal">Not Equal (!=)</SelectItem>
+                            {branch.operatorType === "number" && <>
+
+                              <SelectItem value="greater_than">Greater Than (&gt;)</SelectItem>
+                              <SelectItem value="less_than">Less Than (&lt;)</SelectItem>
+                              <SelectItem value="greater_equal">Greater or Equal (&gt;=)</SelectItem>
+                              <SelectItem value="less_equal">Less or Equal (&lt;=)</SelectItem>
+                            </>}
+                            {branch.operatorType === "string" && <>
+                              <SelectItem value="contains">Contains</SelectItem>
+                              <SelectItem value="not_contains">Not Contains</SelectItem></>
+                            }
                           </SelectContent>
                         </Select>
                       </div>
@@ -244,7 +256,7 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
                     <div className="bg-gray-50 rounded-lg p-3">
                       <Label className="text-xs font-medium text-gray-600">Condition Preview</Label>
                       <div className="text-xs font-mono text-gray-700 mt-1">
-                        {branch.firstOperator || "[first]"} {branch.checkType?.replace("_", " ") || "equals"}{" "}
+                        {branch.firstOperator || "[first]"} {branch.checkType?.replace("_", " ") || "equal"}{" "}
                         {branch.secondOperator || "[second]"}
                       </div>
                     </div>

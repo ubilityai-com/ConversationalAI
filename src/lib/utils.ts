@@ -1,12 +1,13 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useFlowStore } from "../store/flow-store";
+import { Edge, Node } from "@xyflow/react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 interface DropdownItem {
-  id:string
+  id: string
   type: "dropdown";
   value: string;
   typeOfValue?: "integer" | "array" | string;
@@ -15,7 +16,7 @@ interface DropdownItem {
 }
 
 interface DynamicItem {
-  id:string
+  id: string
   type: "dynamic";
   variableName: string;
   fieldsArray: ApiResItem[][];
@@ -26,7 +27,7 @@ interface DynamicItem {
 }
 
 interface TextFieldItem {
-  id:string
+  id: string
   type: "textfield" | "textFormatter";
   value: string;
   typeOfValue?: "integer" | "float" | string;
@@ -39,8 +40,8 @@ export type ApiResItem = DropdownItem | DynamicItem | TextFieldItem;
 
 export const objToReturnDynamic = (apiRes: ApiResItem[]): Record<string, any> => {
   let obj: Record<string, any> = {};
-  console.log({apiRes});
-  
+  console.log({ apiRes });
+
   apiRes.forEach((item1) => {
     if (item1.type === "dropdown") {
       if (item1.value !== "None") {
@@ -378,7 +379,7 @@ export function handleFlowZoneCheckIfAllHandlesAreConnected() {
 
 // Assuming these helper functions exist (you should also type these)
 declare function checkLength(value: string, maxLength: number): boolean;
-declare function removeHTMLTags(html: string): string;
+// declare function removeHTMLTags(html: string): string;
 
 export const validateArray = (apiRes: ApiResItem[]): boolean => {
   let valid = true;
@@ -479,3 +480,41 @@ export function insertArrayAtIndex<T>(originalArray: T[], index: number, newArra
 
   return result;
 }
+export function removeHTMLTags(htmlCode: string): string {
+  const withoutHTMLTags = htmlCode.replace(/<[^>]*>/g, '');
+  return withoutHTMLTags.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+}
+
+export function getNextNodeId(
+  nodeId: string,
+  edges: Edge[],
+  nodes: Node[],
+  handleId?: string
+): string | null {
+  const foundEdge = edges.find(
+    edge => edge.source === nodeId && (!handleId || edge.sourceHandle === handleId)
+  );
+
+  if (!foundEdge) return null;
+
+  const nextNode = nodes.find(node => node.id === foundEdge.target);
+
+  return nextNode?.type === "End" ? null : foundEdge.target;
+}
+
+
+export function stringifyAndExtractVariables(json: unknown): string[] | null {
+  const jsonString = JSON.stringify(json, null, 2);
+
+  const regex = /\$\{([^}]+)\}/g;
+  const variables = new Set<string>();
+  let match: RegExpExecArray | null;
+
+  while ((match = regex.exec(jsonString)) !== null) {
+    variables.add(match[1]);
+  }
+
+  const result = Array.from(variables);
+  return result.length === 0 ? null : result;
+}
+

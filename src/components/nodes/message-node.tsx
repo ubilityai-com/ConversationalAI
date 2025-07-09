@@ -1,12 +1,13 @@
 import { Node, NodeProps } from "@xyflow/react"
 import { MessageCircle } from "lucide-react"
 import { BaseNode } from "./base-node"
+import { removeHTMLTags } from "../../lib/utils"
 interface Data extends Record<string, unknown> {
   label: string
   description: string
   nodeType: string
   rightSideData: {
-    botSays?: string;
+    botSays: string;
     advanced?: boolean;
     regex?: boolean;
     errorMessage?: string;
@@ -24,7 +25,7 @@ export function MessageNode(props: NodeProps<Node<Data>>) {
             {data.label}
           </h3>
         </div>
-        <p className="text-sm text-gray-600 mt-1 leading-relaxed truncate">{data.rightSideData.botSays}</p>
+        <p className="text-sm text-gray-600 mt-1 leading-relaxed truncate">{removeHTMLTags(data.rightSideData.botSays)}</p>
       </div>} >
 
     </BaseNode>)

@@ -1,9 +1,16 @@
-import { Download, Play, Save, Square, Upload, Variable } from "lucide-react"
+import { Download, Key, Play, Save, Square, Upload, Variable } from "lucide-react"
 import { Button } from "./ui/button"
+import { useFlowStore } from "../store/flow-store"
+import { useCredentialStore } from "../store/credentials-store"
+import { createFlowObject } from "../lib/build-json"
 
 
 export function Toolbar() {
   const isRunning = false
+  const setFormDialogStatus = useFlowStore(state => state.setFormDialogStatus)
+  const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
+  const { createCred, loading, error, success } = useCredentialStore()
+
 
   return (
     <>
@@ -18,6 +25,16 @@ export function Toolbar() {
         </div>
 
         <div className="flex items-center space-x-2">
+
+          <Button variant="outline" size="sm" onClick={() => {
+            setFormDialogStatus("createCred")
+            setIsFormDialogOpen(true)
+            // fetchCreds()
+          }
+          }>
+            <Key className="w-4 h-4 mr-2" />
+            Create Cred
+          </Button>
           <Button variant="outline" size="sm" onClick={() => { }}>
             <Upload className="w-4 h-4 mr-2" />
             Import
@@ -36,12 +53,16 @@ export function Toolbar() {
           <div className="w-px h-6 bg-gray-300 mx-2"></div>
 
 
-          <Button variant="outline" size="sm" onClick={() => { }}>
+          <Button variant="outline" size="sm" onClick={() => {
+          }}>
             <Variable className="w-4 h-4 mr-2" />
             Variables
           </Button>
 
           <Button
+            onClick={() => {
+              createFlowObject()
+            }}
             variant={isRunning ? "destructive" : "default"}
             size="sm"
           >
