@@ -115,7 +115,7 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
         <div className="space-y-4">
             {/* ── basic node meta ──────────────────────────────────────────────── */}
             <div>
-                <Label htmlFor="botSays">Node Name</Label>
+                <Label htmlFor="botSays">Bot says</Label>
                 <Input id="botSays" value={botSays} onChange={(e) => updateNestedConfig("botSays", e.target.value)} />
             </div>
 
@@ -178,7 +178,6 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
             <div className="flex items-center space-x-2 mx-2 mb-2">
                 <Switch
                     checked={save || false}
-                    disabled
                     onCheckedChange={(checked) => {
                         updateNestedConfig("save", checked)
                     }}

@@ -32,10 +32,10 @@ export function createFlowObject() {
         }
 
         if (element.type === "Handler") {
-            const { greet, cancel } = element.data.rightSideData;
+            const { greet, cancel, start } = element.data.rightSideData;
             flow.bot.firstElementId = {
                 next: getNextNodeId(element.id, edges, nodes, null),
-                start: true,
+                start: !start,
                 greet,
                 cancel,
             };
@@ -66,7 +66,7 @@ export function createFlowObject() {
             };
             flow.bot[`${element.id}-handler`] = {
                 type: "Handler",
-                usedVariables: saveUserInputAs,
+                usedVariables: saveUserInputAs ? [saveUserInputAs] : [element.id + "-var"],
                 saveUserInputAs: null,
                 content: {
                     type: "data",

@@ -3,10 +3,11 @@ import { useDebounceConfig } from "../../../hooks/use-debounced-config"
 import { useFlowStore } from "../../../store/flow-store"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
+import { Switch } from "../../ui/switch"
 interface RightSideData {
-
   greet?: string;
   cancel?: string;
+  start: boolean;
 }
 interface HandlerConfigProps extends Record<string, unknown> {
   /* node.data passed from <PropertiesPanel /> */
@@ -71,6 +72,17 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate }:
           value={localConfig.cancel || ""}
           onChange={(event) => updateNestedConfig("cancel", event.target.value)}
         />
+      </div>
+
+      <div className="flex items-center space-x-2 mx-2 mb-2">
+        <Switch
+          checked={localConfig.start || false}
+          onCheckedChange={(checked) => updateNestedConfig("start", checked)}
+          id="start-switch"
+        />
+        <Label htmlFor="start-switch" className="text-xs font-normal">
+          Let the use start the diaolg
+        </Label>
       </div>
 
     </div>

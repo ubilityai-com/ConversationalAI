@@ -80,7 +80,7 @@ const agentTypes = [
     color: "bg-pink-500",
     defaults: {
       botSays: "Hello please choose a choice",
-      save: true,
+      save: false,
       variableName: "",
       choices: [{ label: "Choice 1", id: `choice-${Date.now()}` }],
       loopFromSwitch: false,

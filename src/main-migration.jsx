@@ -30,7 +30,7 @@ const Main = () => {
     setIntents,
     setEntities,
   } = useFlowStore()
-  console.log({nodes,edges,nodesValidation});
+  console.log({ nodes, edges, nodesValidation });
 
   // Component Did Mount equivalent
   useEffect(() => {
@@ -130,7 +130,7 @@ const Main = () => {
   }
 
   const initializeAllDroppedElementsByHandler = () => {
-    const id=uuidv4()
+    const id = uuidv4()
     setNodes([
       {
         id: id,
@@ -138,20 +138,21 @@ const Main = () => {
         data: {
           color: "#68b04b",
           label: "Start Dialog",
-          description:"Begin your Chatbot journey",
+          description: "Begin your Chatbot journey",
           icon: "PlayArrow",
           rightSideData: {
             greet: "",
             restart: "",
             thankYou: "",
             cancel: "",
+            start: true,
             bye: "",
           },
         },
         position: { x: 400, y: 40 },
       },
     ])
-    addNodesValidation(id,false)
+    addNodesValidation(id, false)
   }
 
   // Get Cards, Intents and Entities from DB and save them in state variables
