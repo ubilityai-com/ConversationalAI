@@ -2,6 +2,7 @@ import Cookies from "js-cookie"
 import axios, { type AxiosRequestConfig } from "axios"
 import { useFlowStore } from "../../../store/flow-store"
 import { OAuth2ServiceTypes } from "./OAuth2FlowServicesList"
+import { useCredentialStore } from "../../../store/credentials-store"
 // import { useFlowStore, type AddCredentialPayload } from "./flow-store"
 
 // Type definitions
@@ -227,58 +228,58 @@ export const automateOAuth2 = async ({
         } else {
             values = response.data
         }
+        const credentialPayload = {
+            type: credType || "",
+            name: cookieName || "",
+            data: fieldsToAdd.reduce((acc, field) => {
+                const fieldInfo = field.split("::");
 
-        console.log({ values })
+                let credentialName = "";
+                let credentialValue: string = "";
 
-        // const credentialPayload: AddCredentialPayload = {
-        //   credType: credType || "",
-        //   credInfo: {
-        //     Service_name: cookieName || "",
-        //     service: credType || "",
-        //     cred: fieldsToAdd.map((field) => {
-        //       const fieldInfo = field.split("::")
+                if (field.trim().includes("::")) {
+                    if (fieldInfo[1]?.trim().includes("=>")) {
+                        const fieldPathAndFunction = fieldInfo[1].trim().split("=>");
+                        credentialName = reformatName(fieldInfo[0]);
+                        credentialValue = getFieldValue({
+                            name: fieldInfo[0],
+                            apiRes: values,
+                            functionName: fieldPathAndFunction[1],
+                            path: fieldPathAndFunction[0],
+                            isApiResJson: !!response_path,
+                        });
+                    } else {
+                        credentialName = reformatName(fieldInfo[0]);
+                        credentialValue = getFieldValue({
+                            name: fieldInfo[0],
+                            apiRes: values,
+                            path: fieldInfo[1],
+                            isApiResJson: !!response_path,
+                        });
+                    }
+                } else if (field.toLowerCase() === "redirecturi") {
+                    credentialName = field;
+                    credentialValue = (process.env.NEXT_PUBLIC_DOMAIN || "") + "/dashboard/credentials";
+                } else {
+                    credentialName = reformatName(field);
+                    credentialValue = Cookies.get(field) || "";
+                }
 
-        //       if (field.trim().includes("::")) {
-        //         if (fieldInfo[1]?.trim().includes("=>")) {
-        //           const fieldPathAndFunction = fieldInfo[1].trim().split("=>")
-        //           return {
-        //             Credential_name: reformatName(fieldInfo[0]),
-        //             Credential_value: getFieldValue({
-        //               name: fieldInfo[0],
-        //               apiRes: values,
-        //               functionName: fieldPathAndFunction[1],
-        //               path: fieldPathAndFunction[0],
-        //               isApiResJson: !!response_path,
-        //             }),
-        //           }
-        //         } else {
-        //           return {
-        //             Credential_name: reformatName(fieldInfo[0]),
-        //             Credential_value: getFieldValue({
-        //               name: fieldInfo[0],
-        //               apiRes: values,
-        //               path: fieldInfo[1],
-        //               isApiResJson: !!response_path,
-        //             }),
-        //           }
-        //         }
-        //       } else if (field.toLowerCase() === "redirecturi") {
-        //         return {
-        //           Credential_name: field,
-        //           Credential_value: (process.env.NEXT_PUBLIC_DOMAIN || "") + "/dashboard/credentials",
-        //         }
-        //       } else {
-        //         return {
-        //           Credential_name: reformatName(field),
-        //           Credential_value: Cookies.get(field) || "",
-        //         }
-        //       }
-        //     }),
-        //   },
-        // }
+                // Skip if credential_name is "type" OR credential_value is empty after trim
+                if (
+                    credentialName.toLowerCase() !== "type" &&
+                    credentialValue.trim() !== ""
+                ) {
+                    acc[credentialName] = credentialValue;
+                }
+
+                return acc;
+            }, {} as Record<string, string>),
+
+        }
 
         // // Use Zustand store instead of dispatch
-        // useFlowStore.getState().addCredential(credentialPayload)
+        useCredentialStore.getState().createCred(credentialPayload)
     } catch (error) {
         openNotificationWithIcon("error", "Failed Creating Credential", "Please Make sure you filled correct Credentials")
         console.log({ error })
@@ -287,9 +288,7 @@ export const automateOAuth2 = async ({
             Cookies.remove(key.trim().split("::")[0])
         }
         Cookies.remove("new_user")
-        Cookies.remove("isEditting")
         Cookies.remove("name")
-        Cookies.remove("oldCred")
         Cookies.remove("random_nb")
         Cookies.remove("type")
 
@@ -316,9 +315,10 @@ export const OAuth2AuthenticationFlow = async (): Promise<void> => {
     const cookieType = Cookies.get("type")
     const isOneClick = Cookies.get("isOneClick")
 
-    if (code && cookieType && isOneClick) {
-        alert("in")
-    } else if (code && cookieType) {
+    // if (code && cookieType && isOneClick) {
+    //     alert("in")
+    // } else
+    if (code && cookieType) {
         await StartOAuth2Flow()
     } else if (Cookies.get("type") && !Cookies.get("continueProcess")) {
         setTimeout(() => {

@@ -9,7 +9,8 @@ export const OAuth2ServiceTypes = {
                 client_secret: "{{clientSecret}}",
                 code: "{{code::params}}",
                 grant_type: "authorization_code",
-                redirect_uri: (process.env.APP_PUBLIC_DOMAIN || "") + "/dashboard/credentials",
+                // redirect_uri: (process.env.APP_PUBLIC_DOMAIN || "") + "/dashboard/credentials",
+                redirect_uri: "http://localhost:3000",
             },
             response_path: "data",
             fieldsToAdd: [

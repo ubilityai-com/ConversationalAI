@@ -5,6 +5,7 @@ import { useEffect } from "react"
 import { v4 as uuidv4 } from "uuid"
 import MainLayout from "./MainLayout"
 import { useFlowStore } from "./store/flow-store"
+import { OAuth2AuthenticationFlow } from "./components/dialogs/credential-dialog/credOAuth2"
 
 const Main = () => {
   // Get state and actions from Zustand stores
@@ -59,7 +60,9 @@ const Main = () => {
     assignVariablesNamesToEachRPA()
     assignNodeNamesToEachEnd()
   }, [nodes])
-
+  useEffect(() => {
+    OAuth2AuthenticationFlow()
+  }, [])
   const checkAuthenticationTokenAndBotID = () => {
     const authToken = Cookies.get("token")
     const botID = Cookies.get("botID")

@@ -1,21 +1,21 @@
-"use client"
-
-import type React from "react"
-import { useState, useEffect, Fragment } from "react"
+import Cookies from "js-cookie"
 import { Copy, Eye, EyeOff, Plus, Trash2 } from "lucide-react"
-import { Label } from "../../ui/label"
+import type React from "react"
+import { Fragment, useEffect, useState } from "react"
+import { useCredentialStore } from "../../../store/credentials-store"
+import { AutoCompleteItem, CopyField, CredentialField, CredentialInfo, CredentialModalProps } from "../../../types/credentials-types"
 import { Alert, AlertDescription } from "../../ui/alert"
-import { Input } from "../../ui/input"
+import { Badge } from "../../ui/badge"
 import { Button } from "../../ui/button"
 import { Card } from "../../ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
-import { Badge } from "../../ui/badge"
-import { Switch } from "../../ui/switch"
-import { RadioGroup, RadioGroupItem } from "../../ui/radio-group"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../../ui/dialog"
+import { Input } from "../../ui/input"
+import { Label } from "../../ui/label"
+import { RadioGroup, RadioGroupItem } from "../../ui/radio-group"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
+import { Switch } from "../../ui/switch"
 import { ClickUpSignIn, containsOnlyLettersAndNumbers, credsThatNeedRedirects, DropboxSignIn, FacebookSignIn, HubSpotSignIn, InstagramSignIn, JiraSignIn, LinkedInSignIn, MailChimpSignIn, MicrosoftSignIn, oauthSignIn, PipeDriveSignIn, QuickBooksSignIn, RedditSignIn, SalesForceSignIn, serviceFields, ServiceNowSignIn, setCredOnOneLevel, SlackSignIn, SnowflakeSignIn, XeroSignIn, XSignIn, ZendeskSignIn, ZohoSignIn, ZoomSignIn } from "./credentialsData"
-import { AutoCompleteItem, CopyField, CredentialField, CredentialInfo, CredentialModalProps } from "../../../types/credentials-types"
-import Cookies from "js-cookie"
+import { CircularLoader } from "../../ui/CircularLoader"
 
 
 
@@ -58,14 +58,6 @@ const CopyFields: React.FC<{ field: CopyField }> = ({ field }) => {
     )
 }
 
-const ConnectButton: React.FC<{ imgSrc?: string; onClick: () => void }> = ({ imgSrc, onClick }) => {
-    return (
-        <Button onClick={onClick} className="flex items-center space-x-2">
-            {imgSrc && <img src={imgSrc || "/placeholder.svg"} alt="Service" className="w-5 h-5" />}
-            <span>Connect</span>
-        </Button>
-    )
-}
 
 const CustomDynamicField: React.FC<{
     field: CredentialField
@@ -153,7 +145,8 @@ const ServiceSelector: React.FC<{
 }
 
 // Main Component
-const defaultCred: CredentialInfo = serviceFields.find(cred => cred.service === "Google") || serviceFields[0];
+// const defaultCred: CredentialInfo = serviceFields.find(cred => cred.service === "Google") || serviceFields[0];
+const defaultCred: CredentialInfo = serviceFields[0];
 const credsThatHaveConsentScreenList = [
     { name: "Google", function: oauthSignIn },
     { name: "SalesForce", function: SalesForceSignIn },
@@ -192,7 +185,7 @@ export function CreateCredentialDialog({
     const [isLoadingApi, setIsLoadingApi] = useState(false)
     const [isCurrentCredOauth2, setIsCurrentCredOauth2] = useState(defaultCred?.defaultRedirectUri)
     const [showPassword, setShowPassword] = useState<Record<string, boolean>>({})
-
+    const { createCred, loading, success } = useCredentialStore()
     useEffect(() => {
         resetCredInfo()
     }, [open])
@@ -365,31 +358,30 @@ export function CreateCredentialDialog({
                 if (credNameAndFunctionForConsent?.continueProcess) {
                     Cookies.set("continueProcess", newCredInfo.service);
                 }
-                Cookies.set("type", newCredInfo.service);
                 newCredInfo.cred.forEach(c => {
                     Cookies.set(c.Credential_name, String(c.Credential_value));
                 });
+                Cookies.set("type", newCredInfo.service);
                 Cookies.set("new_user", String(credentialsList.length === 0));
                 Cookies.set("name", newCredInfo.Service_name);
                 callConsentFunction();
             } else {
-                // dispatch(addCredential({
-                //     username: Cookies.get("email") ?? "",
-                //     new_user: credentialsList.length === 0,
-                //     credType: newCredInfo.service,
-                //     credInfo: {
-                //         ...newCredInfo,
-                //         cred: newCredInfo.cred.map(element => ({
-                //             Credential_name: element.Credential_name,
-                //             Credential_value: typeof element.Credential_value === "string"
-                //                 ? element.Credential_value
-                //                 : String(element.Credential_value),
-                //         })),
-                //     },
-                // }));
+                createCred({
+                    "name": newCredInfo.Service_name,
+                    "type": newCredInfo.service,
+                    "data": newCredInfo.cred.reduce((acc, element) => {
+                        if (element.Credential_name !== "type") {
+                            acc[element.Credential_name] = typeof element.Credential_value === "string"
+                                ? element.Credential_value
+                                : String(element.Credential_value);
+                        }
+                        return acc;
+                    }, {} as Record<string, string>),
+
+                })
                 console.log({ credInfo });
 
-                resetCredInfo();
+                // resetCredInfo();
             }
 
         } else {
@@ -402,7 +394,7 @@ export function CreateCredentialDialog({
 
         return (
             <Fragment key={fieldId}>
-                {!field.connectBtn && !field.custom && (
+                {!field.custom && (
                     <div className="space-y-2">
                         <Label htmlFor={fieldId}>
                             {field.label}
@@ -481,6 +473,7 @@ export function CreateCredentialDialog({
                             </div>
                         ) : field.radio ? (
                             <RadioGroup
+                                className="flex flex-row items-center"
                                 value={field.Credential_value || ""}
                                 onValueChange={(value: any) => {
                                     if (field.credTypeConnection) {
@@ -510,12 +503,6 @@ export function CreateCredentialDialog({
                     </div>
                 )}
 
-                {field.connectBtn && (
-                    <div className="flex justify-center">
-                        <ConnectButton imgSrc={field.imgSrc} onClick={validateAndSave} />
-                    </div>
-                )}
-
                 {field.custom && (
                     <CustomDynamicField field={field} onChange={(value) => handleChange(value, index, level, parentInfo)} />
                 )}
@@ -537,7 +524,7 @@ export function CreateCredentialDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-lg max-h-[70vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>{"Add New"} Credential</DialogTitle>
                 </DialogHeader>
@@ -575,10 +562,9 @@ export function CreateCredentialDialog({
                     )}
                 </div>
                 <DialogFooter>
-                    {/* <Button variant="outline" onClick={onClose}>
-                        Cancel
-                    </Button> */}
-                    <Button onClick={validateAndSave}>{"Create"}</Button>
+                    <Button disabled={loading} variant={loading ? "outline" : "default"} onClick={validateAndSave}>
+                        Create {loading && <CircularLoader size={24} thickness={2} />}
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
