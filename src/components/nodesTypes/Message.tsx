@@ -6,10 +6,8 @@ import { useState } from "react";
 import { useFlowStore } from "../../store/flow-store";
 import TextOnlyTooltip from "../custom/text-tooltip";
 import TooltipWrapper from "./RootNode";
-function removeHTMLTags(htmlCode: string): string {
-  const withoutHTMLTags = htmlCode.replace(/<[^>]*>/g, '');
-  return withoutHTMLTags.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-}
+import { removeHTMLTags } from "../../lib/utils";
+
 
 interface Data {
   rightSideData: {

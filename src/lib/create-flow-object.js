@@ -139,7 +139,7 @@ export function createFlowObject() {
         ...obj2,
         save: false,
       }
-      
+
       if (element.data.save) {
         obj2 = {
           ...obj2,

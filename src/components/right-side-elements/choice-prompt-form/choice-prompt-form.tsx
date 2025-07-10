@@ -3,6 +3,8 @@
 import { Node, NodeProps } from "@xyflow/react"
 import { ListChecks, Plus, Trash2 } from "lucide-react"
 import { useDebounceConfig } from "../../../hooks/use-debounced-config"
+import { removeHTMLTags } from "../../../lib/utils"
+import { useFlowStore } from "../../../store/flow-store"
 import { LoopFromForm } from "../../common/loop-from-end"
 import { Button } from "../../ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card"
@@ -18,19 +20,19 @@ interface Choice {
     id: string
     label: string
 }
-
+interface RightSideData {
+    choices: Choice[],
+    botSays: string,
+    save: boolean;
+    variableName: string;
+    loopFromSwitch: boolean;
+    loopFromName: string
+}
 interface ChoiceConfigProps extends Record<string, unknown> {
     /* node.data passed from <PropertiesPanel /> */
     label: string
     description: string
-    rightSideData: {
-        choices?: Choice[],
-        botSays: string,
-        save: boolean;
-        variableName: string;
-        loopFromSwitch: boolean;
-        loopFromName: string
-    }
+    rightSideData: RightSideData
 }
 interface ChoicePromptFormProps {
     selectedNode: NodeProps<Node<ChoiceConfigProps>>
@@ -41,17 +43,41 @@ interface ChoicePromptFormProps {
 /* -------------------------------------------------------------------------- */
 /*                              REACT COMPONENT                               */
 /* -------------------------------------------------------------------------- */
+function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
+    if (!data) return false;
+
+    // Check botSays content
+    if (!removeHTMLTags(data.botSays || '').trim()) {
+        return false;
+    }
+
+    // Check choices items
+    for (const item of data.choices) {
+        if (!item.label || item.label.trim() === '') {
+            return false;
+        }
+    }
+
+    // Check variableName if save is true
+    if (data.save && !data.variableName) {
+        return false;
+    }
+
+
+    return true;
+}
 
 export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpdate }: ChoicePromptFormProps) {
 
     /* --------------------------- helper functions -------------------------- */
-
+    const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
     const { localConfig, updateConfigField, updateNestedConfig } = useDebounceConfig<ChoiceConfigProps["rightSideData"]>(
         selectedNode.data.rightSideData,
         {
             delay: 300,
             onSave: (savedConfig) => {
                 // Save label changes
+                updateNodesValidationById(selectedNode.id, checkIfAllRequiredDataIsFilled(savedConfig))
                 handleRightSideDataUpdate(savedConfig)
 
             },
@@ -64,7 +90,6 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
     const variableName = localConfig.variableName ?? ""
     const loopFromName = localConfig.loopFromName ?? ""
     const loopFromSwitch = localConfig.loopFromSwitch ?? false
-
 
 
     const addChoice = () => {
@@ -90,7 +115,7 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
         <div className="space-y-4">
             {/* ── basic node meta ──────────────────────────────────────────────── */}
             <div>
-                <Label htmlFor="botSays">Node Name</Label>
+                <Label htmlFor="botSays">Bot says</Label>
                 <Input id="botSays" value={botSays} onChange={(e) => updateNestedConfig("botSays", e.target.value)} />
             </div>
 
@@ -118,7 +143,12 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
                                         variant="ghost"
                                         size="sm"
                                         className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                                        onClick={() => removeChoice(choice.id)}
+                                        onClick={() => {
+                                            if (choices.length > 1) {
+                                                removeChoice(choice.id)
+                                            }
+                                        }
+                                        }
                                     >
                                         <Trash2 className="w-3 h-3" />
                                     </Button>

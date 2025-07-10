@@ -31,7 +31,6 @@ export function PropertiesPanel() {
         return <></>
     const selectedNodeData = selectedNode ? nodes.find((n) => n.id === selectedNode.id) : null
 
-
     const handleConfigUpdate = (key: string, value: any) => {
         // updateNode(selectedNodeData.id, {
         //     data: {
@@ -84,7 +83,7 @@ export function PropertiesPanel() {
             case "attache":
                 return <AttacheConfig {...commonProps} />
             // case "choice":
-                // return <ChoiceConfig {...commonProps} />
+            // return <ChoiceConfig {...commonProps} />
             default:
                 return <DefaultConfig {...commonProps} />
             case "end":

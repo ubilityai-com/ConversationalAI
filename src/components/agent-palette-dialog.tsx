@@ -124,7 +124,7 @@ const agentTypes = [
       botSays: "Hello please choose a choice",
       save: false,
       variableName: "",
-      choices: [{ label: "Choice 1", id: v4() }],
+      choices: [{ label: "Choice 1", id: `choice-${Date.now()}` }],
       loopFromSwitch: false,
       loopFromName: "",
     }

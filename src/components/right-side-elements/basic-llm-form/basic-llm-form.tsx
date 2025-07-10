@@ -65,7 +65,7 @@ export default function BasicLlmForm({ selectedNode }: BasicLlmProps) {
   const jsonOutput = selectedNode.data.rightSideData.jsonOutput
   const nodeData = useNodesData(selectedNode.id);
   const ss = useNodesData("")
-  console.log({ ss, nodeData, json, isNodeValid, filledData,states });
+  console.log({ ss, nodeData, json, isNodeValid, filledData, states });
 
 
   // Extract variables when template changes
@@ -207,6 +207,7 @@ export default function BasicLlmForm({ selectedNode }: BasicLlmProps) {
             apiRes={json}
             setApiRes={setJson}
             selectedNode={selectedNode}
+            onUpdate={() => { }}
           />
         </CardContent>
       </Card>
