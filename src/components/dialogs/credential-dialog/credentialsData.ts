@@ -9,7 +9,7 @@ function oauthSignIn() {
     const authEndpoint = "https://accounts.google.com/o/oauth2/auth";
     const clientId = Cookies.get("clientID");
     // const redirectUri = process.env.REACT_APP_DOMAIN + "/dashboard/credentials";
-    const redirectUri = "http://localhost:3000/dashboard/credentials";
+    const redirectUri = "http://localhost:3000";
     const responseType = "code";
     const scope = [
         "https://mail.google.com/",
@@ -1209,78 +1209,36 @@ const serviceFields: CredentialInfo[] = [
         Service_name: "",
         cred: [
             {
-                label: "Type",
-                Credential_name: "type",
-                Credential_value: "Default",
-                radio: true,
-                credTypeConnection: true,
-                list: [
-                    {
-                        label: "Default",
-                        value: "Default",
-                    },
-                    {
-                        label: "OAuth Application",
-                        value: "OAuth Application",
-                    },
-                ],
-                options: {
-                    Default: [
-                        {
-                            label: "Client ID",
-                            Credential_name: "clientID",
-                            Credential_value: process.env.REACT_APP_GOOGLE_CLIENT_ID,
-                            hidden: true,
-                        },
-                        // {
-                        //   label: "Client Secret",
-                        //   Credential_name: "clientSecret",
-                        //   Credential_value: process.env.REACT_APP_GOOGLE_CLIENT_SECRET,
-                        //   hidden: true,
-                        // },
-                        {
-                            connectBtn: true,
-                            imgSrc: "/components-icons/Google.png",
-                            Credential_name: "connectBtn",
-                            Credential_value: "connectBtn",
-                        },
-                    ],
-                    "OAuth Application": [
-                        {
-                            label: "Client ID",
-                            Credential_name: "clientID",
-                            Credential_value: "",
-                            hashed: true,
-                        },
-                        {
-                            label: "Client Secret",
-                            Credential_name: "clientSecret",
-                            Credential_value: "",
-                            hashed: true,
-                        },
-                        {
-                            label: "Developer Token",
-                            Credential_name: "developerToken",
-                            Credential_value: "",
-                            optional: true,
-                            hashed: true,
-                        },
-                        {
-                            label: "Private Key",
-                            Credential_name: "privateKey",
-                            Credential_value: "",
-                            optional: true,
-                            hashed: true,
-                        },
-                        {
-                            label: "Service Account Email",
-                            Credential_name: "clientEmail",
-                            Credential_value: "",
-                            optional: true,
-                            // hashed: true,
-                        },
-                    ],
-                },
+                label: "Client ID",
+                Credential_name: "clientID",
+                Credential_value: "1093036340405-lr76sjvtd2n78k4og8qlah99uo6fa9ke.apps.googleusercontent.com",
+                hashed: true,
+            },
+            {
+                label: "Client Secret",
+                Credential_name: "clientSecret",
+                Credential_value: "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",
+                hashed: true,
+            },
+            {
+                label: "Developer Token",
+                Credential_name: "developerToken",
+                Credential_value: "",
+                optional: true,
+                hashed: true,
+            },
+            {
+                label: "Private Key",
+                Credential_name: "privateKey",
+                Credential_value: "",
+                optional: true,
+                hashed: true,
+            },
+            {
+                label: "Service Account Email",
+                Credential_name: "clientEmail",
+                Credential_value: "",
+                optional: true,
             },
         ],
     },
@@ -2768,14 +2726,10 @@ const serviceFields: CredentialInfo[] = [
             {
                 label: "Type",
                 Credential_name: "type",
-                Credential_value: "Default",
+                Credential_value: "Access Token",
                 radio: true,
                 credTypeConnection: true,
                 list: [
-                    {
-                        label: "Default",
-                        value: "Default",
-                    },
                     {
                         label: "Access Token",
                         value: "Access Token",
@@ -2786,26 +2740,6 @@ const serviceFields: CredentialInfo[] = [
                     },
                 ],
                 options: {
-                    Default: [
-                        {
-                            label: "Client ID",
-                            Credential_name: "clientId",
-                            Credential_value: "9065883635925.9089826494336",
-                            hidden: true,
-                        },
-                        {
-                            label: "Client Secret",
-                            Credential_name: "clientSecret",
-                            Credential_value: "69b45072d985472c2ce3500f6ccda892",
-                            hidden: true,
-                        },
-                        {
-                            connectBtn: true,
-                            imgSrc: "/components-icons/Slack.png",
-                            Credential_name: "connectBtn",
-                            Credential_value: "connectBtn",
-                        },
-                    ],
                     "Access Token": [
                         {
                             label: "Access Token",

@@ -24,7 +24,7 @@ export const useCredentialStore = create<CredentialState>((set, get) => ({
     createCred: async (data) => {
         set({ loading: true, error: null, success: false });
         try {
-            const res = await axios.post("/api/credentials", data, {
+            const res = await axios.post("http://135.181.28.94/api/credentials", data, {
                 headers: { "Content-Type": "application/json" },
             });
             set({ success: true, response: res.data, loading: false });
@@ -41,7 +41,7 @@ export const useCredentialStore = create<CredentialState>((set, get) => ({
     fetchCreds: async () => {
         set({ loading: true, error: null });
         try {
-            const res = await axios.get("/api/credentials");
+            const res = await axios.get("http://135.181.28.94/api/credentials");
             set({ credentials: res.data, loading: false });
         } catch (error: any) {
             set({
@@ -55,7 +55,7 @@ export const useCredentialStore = create<CredentialState>((set, get) => ({
     deleteCred: async (id) => {
         set({ loading: true, error: null });
         try {
-            await axios.delete(`/api/credentials/${id}`);
+            await axios.delete(`http://135.181.28.94//api/credentials/${id}`);
             // Refresh the credentials list after deletion
             await get().fetchCreds();
             set({ loading: false });

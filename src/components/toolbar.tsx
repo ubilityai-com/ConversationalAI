@@ -26,7 +26,7 @@ export function Toolbar() {
 
         <div className="flex items-center space-x-2">
 
-          {/* <Button variant="outline" size="sm" onClick={() => {
+          <Button variant="outline" size="sm" onClick={() => {
             setFormDialogStatus("createCred")
             setIsFormDialogOpen(true)
             // fetchCreds()
@@ -34,7 +34,7 @@ export function Toolbar() {
           }>
             <Key className="w-4 h-4 mr-2" />
             Create Cred
-          </Button> */}
+          </Button>
           <Button variant="outline" size="sm" onClick={() => { }}>
             <Upload className="w-4 h-4 mr-2" />
             Import
