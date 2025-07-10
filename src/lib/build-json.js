@@ -1,10 +1,15 @@
 import { useFlowStore } from "../store/flow-store";
 import { getNextNodeId, stringifyAndExtractVariables } from "./utils";
 
-import getRouterContent from "../components/right-side-elements/router-form/get-content";
-import getMessageContent from "../components/right-side-elements/message-form/get-content";
 import getMultipleChoiceContent from "../components/right-side-elements/choice-prompt-form/get-content";
-
+import getMessageContent from "../components/right-side-elements/message-form/get-content";
+import getRouterContent from "../components/right-side-elements/router-form/get-content";
+function camelToDashCase(str) {
+    return str
+        .replace(/([a-z])([A-Z])/g, "$1-$2") // Split camelCase (aB → a-b)
+        .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2") // Handle acronyms (RPA → rpa)
+        .toLowerCase();
+}
 export function createFlowObject() {
     const { nodes, edges } = useFlowStore.getState();
     const endNode = nodes.find(el => el.type === "End")
@@ -51,6 +56,14 @@ export function createFlowObject() {
             flow.bot[element.id] = {
                 type: "Router",
                 content,
+                next: getNextNodeId(element.id, edges, nodes, "branch-default"),
+            };
+
+        }
+        else if (element.type === "ReactAgent") {
+            flow.bot[element.id] = {
+                type: "ReactAgent",
+                content: require(`../components/right-side-elements/${camelToDashCase(element.type)}`),
                 next: getNextNodeId(element.id, edges, nodes, "branch-default"),
             };
 

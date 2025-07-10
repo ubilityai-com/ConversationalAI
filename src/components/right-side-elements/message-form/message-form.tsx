@@ -3,13 +3,35 @@ import { Node, NodeProps } from "@xyflow/react"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import { useDebounceConfig } from "../../../hooks/use-debounced-config"
+import { removeHTMLTags } from "../../../lib/utils"
+import { useFlowStore } from "../../../store/flow-store"
 import { LoopFromForm } from "../../common/loop-from-end"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
 import { Switch } from "../../ui/switch"
-import { useFlowStore } from "../../../store/flow-store"
-import { removeHTMLTags } from "../../../lib/utils"
-import getContent from "./get-content"
+
+interface RightSideData {
+  botSays?: string;
+  // advanced?: boolean;
+  // regex?: boolean;
+  // errorMessage?: string;
+  save?: boolean;
+  variableName: string;
+  loopFromSwitch: boolean;
+  loopFromName: string
+}
+export function getContent(selectedNode: any) {
+  const rightSideData: RightSideData = selectedNode.data.rightSideData
+  return {
+    content: {
+      type: "data",
+      data: {
+        text: rightSideData.botSays
+      }
+    },
+    saveUserInputAs: rightSideData.save ? rightSideData.variableName : null
+  };
+}
 
 interface RightSideData {
   botSays?: string;

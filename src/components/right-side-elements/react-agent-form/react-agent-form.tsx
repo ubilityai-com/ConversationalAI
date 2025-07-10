@@ -1,7 +1,7 @@
 "use client";
 
 import { Node, NodeProps } from "@xyflow/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ReactAgentJson } from "../../../elements/langchain-elements/ReactAgentJson";
 import ModelsElements from "../../../elements/model-elements";
 import { ToolsElements } from "../../../elements/tools-elements";
@@ -21,6 +21,20 @@ interface LlmFormProps {
     selectedNode: NodeProps<Node<LLMConfigProps>>;
     handleRightSideDataUpdate: (value: any) => void;
 }
+export function getContent(selectedNode: any) {
+    const rightSideData = selectedNode.data.rightSideData
+    const model = rightSideData.extras.model
+    return {
+        content: {
+            type: "data",
+            data: {
+                query: rightSideData.json.query,
+                model: require("../../properties/contents/model")[model.type]
+            }
+        },
+        saveUserInputAs: rightSideData.save ? rightSideData.variableName : null
+    };
+}
 
 export default function ReactAgentForm({
     selectedNode,
@@ -29,7 +43,10 @@ export default function ReactAgentForm({
     const [schema, setSchema] = useState<any[]>(ReactAgentJson.rightSideData.json
     );
     const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
-
+    useEffect(()=>{
+        console.log({ddd: require("../../properties/contents/model")});
+        
+    },[])
 
     const { localConfig, updateNestedConfig } =
         useDebounceConfig<LLMConfigProps["rightSideData"]>(
