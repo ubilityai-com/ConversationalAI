@@ -6,14 +6,16 @@ Flask route handlers for managing credentials.
 
 from app import http_app
 from pydantic import BaseModel
-from models.credentials import create_credential, list_credentials, delete_credential
+from models.credentials import create_credential, list_credentials, delete_credential,get_credentials_by_names
 from fastapi import HTTPException
-
 
 class CredentialCreateRequest(BaseModel):
     name: str
+    type: str
     data: dict
 
+# class CredentialsBatchRequest(BaseModel):
+#     names: List[str]
 
 @http_app.post('/credentials')
 def create_credential_view(payload: CredentialCreateRequest):
@@ -27,7 +29,7 @@ def create_credential_view(payload: CredentialCreateRequest):
         dict: Success message.
     """
     try:
-        create_credential(payload.name, payload.data)
+        create_credential(payload.name,payload.type, payload.data)
         return {"message": "Credential created"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating credential: {str(e)}")
@@ -63,3 +65,21 @@ def delete_credential_view(id: int):
         return {"message": "Credential deleted"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error deleting credential: {str(e)}")
+
+
+
+# @http_app.post('/credentials/batch')
+# def get_multiple_credentials_view(payload: CredentialsBatchRequest):
+#     """
+#     Get multiple credentials by name.
+
+#     Args:
+#         payload (CredentialsBatchRequest): List of credential names.
+
+#     Returns:
+#         dict: A dictionary of credential name -> data.
+#     """
+#     try:
+#         return get_credentials_by_names(payload.names)
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error retrieving credentials: {str(e)}")

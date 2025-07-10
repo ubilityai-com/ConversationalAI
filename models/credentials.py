@@ -11,22 +11,23 @@ from typing import List, Dict
 from app import DB_FILE
 
 
-def create_credential(name: str, data: dict) -> None:
+def create_credential(name: str,type: str, data: dict) -> None:
     """
     Insert a new credential into the database.
 
     Args:
         name (str): The name of the credential.
         data (dict): Credential-specific data.
+        type (str): App type of this cred.
     """
     created_at = str(int(time.time()))
     with sqlite3.connect(DB_FILE) as conn:
         conn.execute(
             """
-            INSERT INTO credentials (name, data, created_at)
-            VALUES (?, ?, ?)
+            INSERT INTO credentials (name,type, data, created_at)
+            VALUES (?, ?,?, ?)
             """,
-            (name, json.dumps(data), created_at)
+            (name, type,json.dumps(data), created_at)
         )
 
 
