@@ -50,11 +50,11 @@ class jiu(BaseModel):
 @http_app.post('/activate_bot')
 def testing(payload: jiu):
     try:
-        cred = payload.param['flow']['credentials']
+        cred = payload.param['credentials']
         cred_obj=get_credentials_by_names(cred)
         obj = {
             "credentials":cred_obj,
-            "bot":payload.param['flow']['bot']
+            "bot":payload.param['bot']
         }
         active_dialogues['khaled']=obj
         print(obj)
