@@ -77,7 +77,7 @@ export function createFlowObject() {
                 type: "MultipleChoice",
                 content,
                 next: element.id + "-handler",
-                saveUserInputAs,
+                saveUserInputAs: saveUserInputAs === null ? element.id : saveUserInputAs,
                 usedVariables: stringifyAndExtractVariables(content),
             };
             flow.bot[`${element.id}-handler`] = {
@@ -88,7 +88,7 @@ export function createFlowObject() {
                     type: "data",
                     data: {
                         cases: {
-                            other: getNextNodeId(element.id, edges, nodes, "choice-default"),
+                            Other: getNextNodeId(element.id, edges, nodes, "choice-default"),
                             ...choices?.reduce((acc, elt) => {
                                 acc[elt.label] = getNextNodeId(element.id, edges, nodes, elt.id);
                                 return acc;

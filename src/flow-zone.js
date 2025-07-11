@@ -71,9 +71,8 @@ const FlowZone = () => {
     setIsRightOpen(true)
   }
   const onElementClick = (event, element) => {
-    console.log({ element, clickedElement });
     if (element) {
-      if (clickedElement.id !== element.id) {
+      if (clickedElement?.id !== element.id) {
         setClickedElement(false)
         handleRightDrawerClose()
         setTimeout(() => {
