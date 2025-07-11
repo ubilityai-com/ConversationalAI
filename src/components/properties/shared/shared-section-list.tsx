@@ -63,7 +63,7 @@ export function SharedListSection({
         add(id, newToolId, newTool.defaultValid)
         onConfigUpdate(`extras.${variableName}.list`, [
             ...currentTools,
-            { content: { ...newTool.rightSideData, json: newToolDefaultInputs }, type: "CustomTool", id: newToolId },
+            { content: { ...newTool.rightSideData, json: newToolDefaultInputs }, type: "Calculator", id: newToolId },
         ]);
 
 

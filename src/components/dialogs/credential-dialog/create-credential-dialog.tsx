@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Switch } from "../../ui/switch"
 import { ClickUpSignIn, containsOnlyLettersAndNumbers, credsThatNeedRedirects, DropboxSignIn, FacebookSignIn, HubSpotSignIn, InstagramSignIn, JiraSignIn, LinkedInSignIn, MailChimpSignIn, MicrosoftSignIn, oauthSignIn, PipeDriveSignIn, QuickBooksSignIn, RedditSignIn, SalesForceSignIn, serviceFields, ServiceNowSignIn, setCredOnOneLevel, SlackSignIn, SnowflakeSignIn, XeroSignIn, XSignIn, ZendeskSignIn, ZohoSignIn, ZoomSignIn } from "./credentialsData"
 import { CircularLoader } from "../../ui/CircularLoader"
+import { useFlowStore } from "../../../store/flow-store"
 
 
 
@@ -145,8 +146,6 @@ const ServiceSelector: React.FC<{
 }
 
 // Main Component
-// const defaultCred: CredentialInfo = serviceFields.find(cred => cred.service === "Google") || serviceFields[0];
-const defaultCred: CredentialInfo = serviceFields[0];
 const credsThatHaveConsentScreenList = [
     { name: "Google", function: oauthSignIn },
     { name: "SalesForce", function: SalesForceSignIn },
@@ -175,9 +174,11 @@ export function CreateCredentialDialog({
     open,
     onOpenChange,
     onSave,
+    credType,
+    refetch,
     credentialsList = [],
-    authToken,
 }: CredentialModalProps) {
+    const defaultCred: CredentialInfo = serviceFields.find(cred => cred.service === credType) || serviceFields[0];
     const [searchText, setSearchText] = useState("Google")
     const [autoCompleteList, setAutoCompleteList] = useState<AutoCompleteItem[]>(credsWithImagesList(serviceFields))
     const [credInfo, setCredInfo] = useState<CredentialInfo>(defaultCred)
@@ -186,6 +187,8 @@ export function CreateCredentialDialog({
     const [isCurrentCredOauth2, setIsCurrentCredOauth2] = useState(defaultCred?.defaultRedirectUri)
     const [showPassword, setShowPassword] = useState<Record<string, boolean>>({})
     const { createCred, loading, success } = useCredentialStore()
+    const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
+
     useEffect(() => {
         resetCredInfo()
     }, [open])
@@ -281,7 +284,7 @@ export function CreateCredentialDialog({
         }
     }
 
-    const validateAndSave = () => {
+    const validateAndSave = async () => {
 
         let newCredInfo: CredentialInfo = { ...credInfo, cred: setCredOnOneLevel(credInfo.cred) };
         console.log({ newCredInfo });
@@ -362,11 +365,11 @@ export function CreateCredentialDialog({
                     Cookies.set(c.Credential_name, String(c.Credential_value));
                 });
                 Cookies.set("type", newCredInfo.service);
-                Cookies.set("new_user", String(credentialsList.length === 0));
+                // Cookies.set("new_user", String(credentialsList.length === 0));
                 Cookies.set("name", newCredInfo.Service_name);
                 callConsentFunction();
             } else {
-                createCred({
+                const res = await createCred({
                     "name": newCredInfo.Service_name,
                     "type": newCredInfo.service,
                     "data": newCredInfo.cred.reduce((acc, element) => {
@@ -379,9 +382,11 @@ export function CreateCredentialDialog({
                     }, {} as Record<string, string>),
 
                 })
-                console.log({ credInfo });
+                if (res === true) {
+                    refetch()
+                }
 
-                // resetCredInfo();
+                resetCredInfo();
             }
 
         } else {
@@ -545,7 +550,7 @@ export function CreateCredentialDialog({
                     </div>
                     <div className="space-y-2">
                         <Label>Service or app to connect to</Label>
-                        <ServiceSelector value={searchText} onChange={handleServiceChange} options={autoCompleteList} />
+                        <ServiceSelector disabled value={searchText} onChange={handleServiceChange} options={autoCompleteList} />
                     </div>
                     <div className="space-y-4">{credInfo.cred.map((field, index) => renderField(field, index))}</div>
                     {isCurrentCredOauth2 && credsThatNeedRedirects[credInfo.service] && (

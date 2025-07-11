@@ -9,7 +9,7 @@ export function Toolbar() {
   const isRunning = false
   const setFormDialogStatus = useFlowStore(state => state.setFormDialogStatus)
   const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
-  const { createCred, loading, error, success } = useCredentialStore()
+  const { activate, loading, error, success } = useCredentialStore()
 
 
   return (
@@ -26,15 +26,14 @@ export function Toolbar() {
 
         <div className="flex items-center space-x-2">
 
-          <Button variant="outline" size="sm" onClick={() => {
+          {/* <Button variant="outline" size="sm" onClick={() => {
             setFormDialogStatus("createCred")
             setIsFormDialogOpen(true)
-            // fetchCreds()
           }
           }>
             <Key className="w-4 h-4 mr-2" />
             Create Cred
-          </Button>
+          </Button> */}
           <Button variant="outline" size="sm" onClick={() => { }}>
             <Upload className="w-4 h-4 mr-2" />
             Import
@@ -61,7 +60,10 @@ export function Toolbar() {
 
           <Button
             onClick={() => {
-              createFlowObject()
+              const data = createFlowObject()
+              activate({
+                param: data
+              })
             }}
             variant={isRunning ? "destructive" : "default"}
             size="sm"

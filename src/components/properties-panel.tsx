@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import { Settings, X } from "lucide-react"
+import { Settings, Trash2, X } from "lucide-react"
 
 // Import all config components
 import { useFlowStore } from "../store/flow-store"
@@ -23,6 +23,7 @@ export function PropertiesPanel() {
     const nodes = useFlowStore(state => state.nodes)
     const selectedNode = useFlowStore(state => state.clickedElement)
     const setClickedElement = useFlowStore(state => state.setClickedElement)
+    const deleteNode = useFlowStore(state => state.deleteNode)
 
 
     const [activeTab, setActiveTab] = useState("config")
@@ -128,9 +129,13 @@ export function PropertiesPanel() {
                     </h2>
                 </div>
                 <div className="flex items-center space-x-2 flex-shrink-0">
+                    {selectedNode.type !== "Handler" && <Button variant="ghost" size="sm" onClick={() => deleteNode(selectedNode.id)} className="text-red-500 hover:text-red-600 w-8 h-8 p-0">
+                        <Trash2 className="w-4 h-4" />
+                    </Button>}
                     <Button variant="ghost" size="sm" onClick={() => setClickedElement(null)} className="w-8 h-8 p-0">
                         <X className="w-4 h-4" />
                     </Button>
+
                 </div>
             </div>
 

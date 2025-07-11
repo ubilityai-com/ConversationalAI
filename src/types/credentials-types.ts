@@ -60,4 +60,6 @@ export interface CredentialModalProps {
     serviceFields?: CredentialInfo[]
     credentialsList?: any[]
     authToken?: string
+    credType?: string,
+    refetch: () => void
 }

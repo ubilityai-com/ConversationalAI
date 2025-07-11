@@ -8,6 +8,7 @@ import { useRightDrawerStore } from "../../store/right-drawer-store"
 import { Button } from "../ui/button"
 import { Label } from "../ui/label"
 import { SearchableSelect } from "./searchable-select"
+import { useFlowStore } from "../../store/flow-store"
 
 
 function isJsonObjectOrArray(input: string): boolean {
@@ -90,7 +91,7 @@ interface ApiCallerProps {
     inDynamic?: boolean
     disabled?: boolean
     helperSpan?: string
-    value:string
+    value: string
 }
 
 export function ApiCaller({
@@ -496,11 +497,18 @@ export function ApiCaller({
 
     const disable = isLoadingList || isDisabled || disabled || isUsingAi
     const finalList = getList(ListsForThisNode, apiJson.credential, apiJson.credType, apiJson.multiselect)
+    const setFormDialogStatus = useFlowStore(state => state.setFormDialogStatus)
+    const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
+    const setDialogProps = useFlowStore((state) => state.setDialogProps);
 
     const handleChange = (value: any) => {
-        console.log({ value });
-
-        onChange({ name: "value", val: value })
+        if (value === " + Create new credential") {
+            setFormDialogStatus("createCred")
+            setIsFormDialogOpen(true)
+            setDialogProps({ credType: apiJson.credType, refetch: () => callDynamicAPI(apiJson.config, apiJson.res) })
+        }
+        else
+            onChange({ name: "value", val: value })
 
     }
 

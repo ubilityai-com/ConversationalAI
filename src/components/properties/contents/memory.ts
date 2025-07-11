@@ -26,9 +26,9 @@ export const ConversationSummaryBufferMemory = (selectedNode: any) => {
     const content = memory.content
     return {
         type: memory.type,
-        historyId: memory.id,
+        historyId: selectedNode.id,
         max_token_limit: content.maxTokenLimit,
-        context: (content.historyId)
+        context: []
 
     }
 }
@@ -38,8 +38,8 @@ export const ConversationBufferWindowMemory = (selectedNode: any) => {
     const content = memory.content
     return {
         type: memory.type,
-        historyId: memory.id,
-        context: (content.historyId),
+        historyId: selectedNode.id,
+        context: [],
         size: content.size,
     }
 }
@@ -49,7 +49,7 @@ export const RedisStackMemory = (selectedNode: any) => {
     const content = memory.content
     return {
         type: "RedisMemory",
-        historyId: memory.sessionName,
+        historyId: selectedNode.id,
         cred: content.cred,
 
     }

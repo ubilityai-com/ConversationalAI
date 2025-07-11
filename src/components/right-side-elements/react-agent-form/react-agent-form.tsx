@@ -22,14 +22,39 @@ interface LlmFormProps {
     selectedNode: NodeProps<Node<LLMConfigProps>>;
     handleRightSideDataUpdate: (value: any) => void;
 }
+function extractCreds(obj: any): string[] {
+    const creds: string[] = [];
+
+    for (const key in obj) {
+        const item = obj[key];
+
+        // skip if not enabled
+        if (!item?.enabled) continue;
+
+        if (item.multiple) {
+            if (Array.isArray(item.list)) {
+                item.list.forEach((listItem: any) => {
+                    const cred = listItem?.content?.cred;
+                    if (cred) {
+                        creds.push(cred);
+                    }
+                });
+            }
+        } else {
+            const cred = item?.content?.cred;
+            if (cred) {
+                creds.push(cred);
+            }
+        }
+    }
+
+    return creds;
+}
 export function getContent(selectedNode: any) {
     const rightSideData = selectedNode.data.rightSideData
     const model = rightSideData.extras.model
     const memory = rightSideData.extras.memory
     const tool = rightSideData.extras.tool
-    console.log({ aaa: require("../../properties/contents/tool"), tool });
-    console.log({ aaa: require("../../properties/contents/model"), model });
-    console.log({ aaa: require("../../properties/contents/memory"), memory });
 
     return {
         content: {
@@ -38,9 +63,9 @@ export function getContent(selectedNode: any) {
                 inputs: { query: rightSideData.json.query },
                 model: require("../../properties/contents/model")[model.type](selectedNode),
                 chainMemory: require("../../properties/contents/memory")[memory.type](selectedNode),
-                cred: {},
+                cred: extractCreds(selectedNode?.data.rightSideData.extras),
                 paramsTools: tool.list.map((el: any) => {
-                    return require("../../properties/contents/tool")[el.type](selectedNode)
+                    return require("../../properties/contents/tool")[el.type](el.content)
                 })
             }
         },
@@ -55,10 +80,8 @@ export default function ReactAgentForm({
     const [schema, setSchema] = useState<any[]>(ReactAgentJson.rightSideData.json
     );
     const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
-    useEffect(() => {
-        console.log({ ddd: require("../../properties/contents/model") });
 
-    }, [])
+    console.log({ selectedNode });
 
     const { localConfig, updateNestedConfig } =
         useDebounceConfig<LLMConfigProps["rightSideData"]>(
@@ -109,7 +132,7 @@ export default function ReactAgentForm({
                 variableName="memory"
                 onConfigUpdate={updateNestedConfig} />
             <SharedListSection
-                defaultType="CustomTool"
+                defaultType="Calculator"
                 description="Configure tools for the LLM agent to use"
                 elements={ToolsElements}
                 title="Tools"

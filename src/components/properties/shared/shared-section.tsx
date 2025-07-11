@@ -1,6 +1,6 @@
 import { FileJson } from "lucide-react";
 import { useState } from "react";
-import { validateArray } from "../../../lib/utils";
+import { ApiResItem, validateArray } from "../../../lib/utils";
 import { useFlowStore } from "../../../store/flow-store";
 import AutomationSimple from "../../custom/automation-v4";
 import {
@@ -19,6 +19,7 @@ import {
     SelectValue,
 } from "../../ui/select";
 import { Switch } from "../../ui/switch";
+import { objToReturnDynamicv2 } from "../../../lib/automation-utils";
 
 interface SectionProps {
     config: any;
@@ -93,7 +94,9 @@ export function SharedSection({
                                     ) as any;
                                     setSchema(op);
                                     onConfigUpdate(`extras.${variableName}.type`, value);
-                                    add(id, variableName, validateArray(schema.rightSideData.json, {}))
+                                    onConfigUpdate(`extras.${variableName}.content`, objToReturnDynamicv2((op.rightSideData.json)));
+
+                                    add(id, variableName, validateArray(op.rightSideData.json, {}))
 
                                 }}
                             >

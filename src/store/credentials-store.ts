@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
+import { useFlowStore } from "./flow-store";
 
 
 interface CredentialState {
@@ -8,9 +9,10 @@ interface CredentialState {
     success: boolean;
     response: any;
     credentials: any[];
-    createCred: (data: any) => Promise<void>;
+    createCred: (data: any) => Promise<boolean>;
     fetchCreds: () => Promise<void>;
     deleteCred: (id: string) => Promise<void>;
+    activate: (data: any) => Promise<void>;
 }
 
 export const useCredentialStore = create<CredentialState>((set, get) => ({
@@ -19,16 +21,14 @@ export const useCredentialStore = create<CredentialState>((set, get) => ({
     success: false,
     response: null,
     credentials: [],
-
-    // POST
-    createCred: async (data) => {
+    activate: async (data) => {
         set({ loading: true, error: null, success: false });
         try {
-            const res = await axios.post("http://135.181.28.94/api/credentials", data, {
+            const res = await axios.post(process.env.REACT_APP_DNS_URL + "activate_bo", data, {
                 headers: { "Content-Type": "application/json" },
             });
             set({ success: true, response: res.data, loading: false });
-            get().fetchCreds(); // refresh after post
+
         } catch (error: any) {
             set({
                 error: error.response?.data?.message || error.message || "Unknown error",
@@ -37,11 +37,34 @@ export const useCredentialStore = create<CredentialState>((set, get) => ({
         }
     },
 
+    // POST
+    createCred: async (data) => {
+        const { setIsFormDialogOpen, setShowSnackBarMessage } = useFlowStore.getState()
+        set({ loading: true, error: null, success: false });
+        try {
+            const res = await axios.post(process.env.REACT_APP_DNS_URL + "credentials", data, {
+                headers: { "Content-Type": "application/json" },
+            });
+            set({ success: true, response: res.data, loading: false });
+            setIsFormDialogOpen(false)
+            setShowSnackBarMessage({ open: true, message: res.data.message || "credential created successfully", color: "success", duration: 3000 })
+            get().fetchCreds(); // refresh after post
+            return true
+
+        } catch (error: any) {
+            set({
+                error: error.response?.data?.message || error.message || "Unknown error",
+                loading: false,
+            });
+            return false
+        }
+    },
+
     // GET
     fetchCreds: async () => {
         set({ loading: true, error: null });
         try {
-            const res = await axios.get("http://135.181.28.94/api/credentials");
+            const res = await axios.get(process.env.REACT_APP_DNS_URL + "credentials");
             set({ credentials: res.data, loading: false });
         } catch (error: any) {
             set({
@@ -55,7 +78,7 @@ export const useCredentialStore = create<CredentialState>((set, get) => ({
     deleteCred: async (id) => {
         set({ loading: true, error: null });
         try {
-            await axios.delete(`http://135.181.28.94//api/credentials/${id}`);
+            await axios.delete(`${process.env.REACT_APP_DNS_URL}credentials/${id}`);
             // Refresh the credentials list after deletion
             await get().fetchCreds();
             set({ loading: false });

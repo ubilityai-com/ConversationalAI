@@ -57,15 +57,17 @@ export function createFlowObject() {
                 type: "Router",
                 content,
                 next: getNextNodeId(element.id, edges, nodes, "branch-default"),
+                usedVariables: stringifyAndExtractVariables(content),
             };
-
         }
         else if (element.type === "ReactAgent") {
-
+            const { content, saveUserInputAs } = require(`../components/right-side-elements/${camelToDashCase(element.type)}-form/${camelToDashCase(element.type)}-form`).getContent(element)
             flow.bot[element.id] = {
                 type: "LC_REACT_AGENT",
-                ...require(`../components/right-side-elements/${camelToDashCase(element.type)}-form/${camelToDashCase(element.type)}-form`).getContent(element),
+                content,
+                saveUserInputAs,
                 next: getNextNodeId(element.id, edges, nodes, null),
+                usedVariables: stringifyAndExtractVariables(content)
             };
 
         }

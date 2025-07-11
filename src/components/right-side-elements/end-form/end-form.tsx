@@ -66,14 +66,14 @@ export default function EndForm({
   return (
     // Message and End Components
     <div className="mt-4">
-      {/* <Label className="block text-sm p-1 mb-1 font-normal">Bot Says</Label>
+      <Label className="block text-sm p-1 mb-1 font-normal">Bot Says</Label>
       <Input
         name="botSays"
         placeholder="Message"
         value={botSays || ""}
         onChange={(event) => updateNestedConfig("botSays", event.target.value)}
       />
-      <Separator orientation="horizontal" className="my-6" /> */}
+      <Separator orientation="horizontal" className="my-6" />
       <div className="flex items-center space-x-2 mx-2 mb-2">
         <Switch
           checked={loopFromSwitch || false}

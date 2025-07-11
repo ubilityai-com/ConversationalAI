@@ -35,7 +35,7 @@ export default function RightSideDrawer() {
             ref={drawerRef}
             data-open={!!clickedElement ? "open" : "closed"}
             style={{ width: `${newWidthRightDrawer}px` }}
-            className={`fixed top-[61px] right-0 h-[calc(100%-61px)] min-h-[calc(100%-61px)] overflow-y-auto overflow-x-hidden group w-[${newWidthRightDrawer}px] bg-background shadow-2xl border-l border-border transform transition-transform duration-300 ease-in-out z-40 data-[open=closed]:translate-x-full data-[open=open]:translate-x-0`}
+            className={`fixed top-[56px] right-0 h-[calc(100%-61px)] min-h-[calc(100%-61px)] overflow-y-auto overflow-x-hidden group w-[${newWidthRightDrawer}px] bg-background shadow-2xl border-l border-border transform transition-transform duration-300 ease-in-out z-40 data-[open=closed]:translate-x-full data-[open=open]:translate-x-0`}
         >
             <div
                 className="absolute left-0 inset-y-0 w-1 cursor-ew-resize hover:bg-[#72afdd] hover:opacity-50 flex items-center"

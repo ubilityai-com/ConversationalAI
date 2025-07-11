@@ -113,7 +113,7 @@ export default function MessageForm({
       },
     },
   )
-  console.log({ message: getContent(selectedNode) });
+  console.log({ selectedNode });
 
   return (
     <div className="space-y-4">

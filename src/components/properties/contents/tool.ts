@@ -12,19 +12,16 @@ const getAccvalue = (finaleObj: any, name: string) => {
         return finaleObj[name] ? finaleObj[name][name] || undefined : undefined;
 };
 
-export const Calculator = (selectedNode: any) => {
-    const tool = selectedNode.data.rightSideData.extras.tool
-    const content = tool.list
+export const Calculator = (content: any) => {
+    const json = content.json
     return {
         type: "calculator",
-        description: content.description,
+        description: json?.description,
 
     }
 }
-export const CustomTool = (selectedNode: any) => {
-    const tool = selectedNode.data.rightSideData.extras.tool
-    const content = tool.list
-    console.log({ content });
+export const CustomTool = (content: any) => {
+    const json = content.json
 
     //  if (inputsDescription !== null) {
     //     if (!checkIfKeysValuesFilled(inputsDescription)) return false;
@@ -51,3 +48,16 @@ export const CustomTool = (selectedNode: any) => {
 
     }
 }
+export const McpTool = (content: any) => {
+    const json = content.json
+
+    return {
+        type: "mcp",
+        params: {
+            name: json.name,
+            url: json.getMcpBy === "url" ? json.url : undefined
+        }
+
+    }
+}
+

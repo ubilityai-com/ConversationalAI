@@ -26,8 +26,8 @@ const FlowZone = () => {
     Router: RouterNode,
     RPA: RPANode,
     BasicLlm: Chain,
-    End:EndNode,
-    ReactAgent:LlmNode
+    End: EndNode,
+    ReactAgent: LlmNode
   };
   const edgeTypes = {
     buttonEdge: ButtonEdge
@@ -40,6 +40,7 @@ const FlowZone = () => {
   const applyEdgeChangesFunc = useFlowStore(state => state.applyEdgeChangesFunc)
   const setReactFlowInstance = useFlowStore(state => state.setReactFlowInstance)
   const setClickedElement = useFlowStore(state => state.setClickedElement)
+  const clickedElement = useFlowStore(state => state.clickedElement)
   const setIsRightOpen = useFlowStore(state => state.setIsRightOpen)
   const setShowSnackBarMessage = useFlowStore(state => state.setShowSnackBarMessage)
   const setMousePositionManySelectedElementMenu = useFlowStore(state => state.setMousePositionManySelectedElementMenu)
@@ -70,16 +71,26 @@ const FlowZone = () => {
     setIsRightOpen(true)
   }
   const onElementClick = (event, element) => {
+    console.log({ element, clickedElement });
     if (element) {
-      setClickedElement(element)
-      handleRightDrawerOpen()
+      if (clickedElement.id !== element.id) {
+        setClickedElement(false)
+        handleRightDrawerClose()
+        setTimeout(() => {
+          setClickedElement(element)
+        }, 300);
+      }
+      else {
+        setClickedElement(clickedElement)
+        handleRightDrawerOpen()
+      }
     }
   }
   const handleSnackBarMessageOpen = (message, color, duration) => {
     setShowSnackBarMessage({ open: true, message: message, color: color, duration: duration })
   }
   const onConnect = (params) => {
-    console.log({params});
+    console.log({ params });
     if (params.source === params.target) {
       handleSnackBarMessageOpen("Couldn't connect component with itself !", "#ce3a32", 3000)
     } else {

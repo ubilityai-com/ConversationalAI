@@ -14,9 +14,11 @@ const getAccvalue = (finaleObj: any, name: string) => {
 export const OpenAIChatModel = (selectedNode: any) => {
     const model = selectedNode.data.rightSideData.extras.model
     const content = model.content
+    console.log({ content });
+
     return {
         provider: "openAi",
-        model: model.type,
+        model: content.model,
         cred: content.cred,
         params: {
             optionals: {

@@ -59,7 +59,7 @@ export function ToolsSection({
 }: ToolsSectionProps) {
   const toolsEnabled = config.toolsEnabled === true;
   const tools = config.tools || [];
-  const tool = config.tool || "CustomTool";
+  const tool = config.tool || "Calculator";
   const [json, setJson] = useState<AutomationItem[]>([]);
   const [schema, setSchema] = useState<any>();
 
@@ -77,13 +77,13 @@ export function ToolsSection({
   // Tools management for LLM agent
   const addTool = () => {
     const currentTools = tools;
-    const op = ToolsElements.find((o) => o.type === "CustomTool") as any;
+    const op = ToolsElements.find((o) => o.type === "Calculator") as any;
     console.log({ op });
     const newTool = setAutomationArray(op?.rightSideData?.json);
 
     onConfigUpdate("tools", [
       ...currentTools,
-      { toolData: newTool, type: "CustomTool" },
+      { toolData: newTool, type: "Calculator" },
     ]);
   };
 
@@ -190,11 +190,11 @@ export function ToolsSection({
                               (tool: Tool, index: number) =>
                                 toolIndex === index
                                   ? {
-                                      type: value,
-                                      toolData: setAutomationArray(
-                                        op?.rightSideData?.json
-                                      ),
-                                    }
+                                    type: value,
+                                    toolData: setAutomationArray(
+                                      op?.rightSideData?.json
+                                    ),
+                                  }
                                   : tool
                             );
 
