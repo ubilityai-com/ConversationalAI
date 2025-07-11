@@ -135,7 +135,6 @@ export function SharedListSection({
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center space-x-2">
                                                     <PenToolIcon className="w-4 h-4 text-gray-500" />
-
                                                 </div>
                                                 <div className="flex items-center space-x-2">
                                                     <Button

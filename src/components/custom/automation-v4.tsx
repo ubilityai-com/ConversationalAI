@@ -15,6 +15,7 @@ import { Separator } from "../ui/separator"
 import { Textarea } from "../ui/textarea"
 import ApiCaller from "./async-dropdown"
 import DynamicFields from "./dynamic-fields-v4"
+import { FieldWrapper } from "./field-wrapper"
 import { SearchableSelect } from "./searchable-select"
 
 // Validation functions
@@ -39,7 +40,6 @@ const validationConditionFunctions = {
 }
 
 
-
 // Helper functions
 const isJsonString = (str: string) => {
     try {
@@ -59,7 +59,6 @@ const hexToRgb = (hex: string) => {
     const b = bigint & 255
     return { r, g, b }
 }
-
 
 
 interface AutomationSimpleProps {
@@ -150,35 +149,47 @@ export default function AutomationSimple({
                             {item.label}
                             {item.required && <span className="text-red-500 ml-1">*</span>}
                         </Label>
-                        {item.multiline ? (
-                            <Textarea
-                                placeholder={item.placeholder}
-                                value={getFieldValue(item) || ""}
-                                onChange={(e) =>
-                                    onChangeAutomationSimple({
-                                        newValue: e.target.value,
-                                        variableName: item.variableName,
-                                    })
-                                }
-                                className={cn("min-h-[80px]", item.errorSpan && "border-red-500")}
-                                {...commonProps}
-                            />
-                        ) : (
-                            <Input
-                                type={item.password ? "password" : item.numberField ? "number" : item.date ? "date" : "text"}
-                                placeholder={item.placeholder}
-                                value={getFieldValue(item) || ""}
-                                onChange={(e) =>
-                                    onChangeAutomationSimple({
-                                        newValue: e.target.value,
-                                        variableName: item.variableName,
-                                    })
-                                }
-                                maxLength={item.maxLength}
-                                className={cn(item.errorSpan && "border-red-500")}
-                                {...commonProps}
-                            />
-                        )}
+                        <FieldWrapper
+                            field={item}
+                            value={getFieldValue(item) || ""}
+                            onChange={(newValue) => {
+                                onChangeAutomationSimple({
+                                    newValue: newValue,
+                                    variableName: item.variableName,
+                                })
+                            }}
+                            variableName={item.variableName}
+                        >
+                            {item.multiline ? (
+                                <Textarea
+                                    placeholder={item.placeholder}
+                                    value={getFieldValue(item) || ""}
+                                    onChange={(e) =>
+                                        onChangeAutomationSimple({
+                                            newValue: e.target.value,
+                                            variableName: item.variableName,
+                                        })
+                                    }
+                                    className={cn("min-h-[80px]", item.errorSpan && "border-red-500")}
+                                    {...commonProps}
+                                />
+                            ) : (
+                                <Input
+                                    type={item.password ? "password" : item.numberField ? "number" : item.date ? "date" : "text"}
+                                    placeholder={item.placeholder}
+                                    value={getFieldValue(item) || ""}
+                                    onChange={(e) =>
+                                        onChangeAutomationSimple({
+                                            newValue: e.target.value,
+                                            variableName: item.variableName,
+                                        })
+                                    }
+                                    maxLength={item.maxLength}
+                                    className={cn(item.errorSpan && "border-red-500")}
+                                    {...commonProps}
+                                />
+                            )}
+                        </FieldWrapper>
                         {item.helperSpan && <p className="text-xs text-muted-foreground">{item.helperSpan}</p>}
                         {item.errorSpan && (
                             <p className="text-xs text-red-500 flex items-center gap-1">
@@ -196,13 +207,8 @@ export default function AutomationSimple({
                             {item.label}
                             {item.required && <span className="text-red-500 ml-1">*</span>}
                         </Label>
-                        <SearchableSelect
-                            options={
-                                item.list?.map((opt: any) => ({
-                                    value: opt.value,
-                                    label: opt.option,
-                                })) || []
-                            }
+                        <FieldWrapper
+                            field={item}
                             value={getFieldValue(item) || ""}
                             onChange={(newValue) => {
                                 onChangeAutomationSimple({
@@ -210,10 +216,27 @@ export default function AutomationSimple({
                                     variableName: item.variableName,
                                 })
                             }}
-                            placeholder={`Select ${item.label?.toLowerCase()}`}
-                            className={cn(item.errorSpan && "border-red-500")}
-                            {...commonProps}
-                        />
+                            variableName={item.variableName}
+                        >
+                            <SearchableSelect
+                                options={
+                                    item.list?.map((opt: any) => ({
+                                        value: opt.value,
+                                        label: opt.option,
+                                    })) || []
+                                }
+                                value={getFieldValue(item) || ""}
+                                onChange={(newValue) => {
+                                    onChangeAutomationSimple({
+                                        newValue: newValue,
+                                        variableName: item.variableName,
+                                    })
+                                }}
+                                placeholder={`Select ${item.label?.toLowerCase()}`}
+                                className={cn(item.errorSpan && "border-red-500")}
+                                {...commonProps}
+                            />
+                        </FieldWrapper>
                         {item.helperSpan && <p className="text-xs text-muted-foreground">{item.helperSpan}</p>}
                         {item.errorSpan && (
                             <p className="text-xs text-red-500 flex items-center gap-1">
@@ -238,42 +261,78 @@ export default function AutomationSimple({
                 )
 
             case "api":
+                console.log({ item, fieldValues });
+
                 return (
-                    <ApiCaller
-                        inDynamic={InDynamic ? (indexForDynamic === 0 ? true : false) : undefined}
-                        disabled={disabled}
-                        apiJson={item}
-                        value={getFieldValue(item)}
-                        onChange={({ val, name }) => {
-                            onChangeAutomationSimple({
-                                newValue: val,
-                                variableName: item.variableName,
-                            })
-                        }}
-                        flowZoneSelectedId={flowZoneSelectedId}
-                        helperSpan={item.helperSpan}
-                    />
+                    <div className="space-y-2">
+                        <Label className="text-sm font-medium">
+                            {item.label}
+                            {item.required && <span className="text-red-500 ml-1">*</span>}
+                        </Label>
+                        <FieldWrapper
+                            field={item}
+
+                            value={getFieldValue(item) || ""}
+                            variableName={item.variableName}
+                            onChange={(newValue) => {
+                                console.log({ newValue });
+
+                                onChangeAutomationSimple({
+                                    newValue: newValue,
+                                    variableName: item.variableName,
+                                })
+                            }}
+                        >
+                            <ApiCaller
+                                inDynamic={InDynamic ? (indexForDynamic === 0 ? true : false) : undefined}
+                                disabled={disabled}
+                                apiJson={item}
+                                value={getFieldValue(item)}
+                                onChange={({ val, name }) => {
+                                    onChangeAutomationSimple({
+                                        newValue: val,
+                                        variableName: item.variableName,
+                                    })
+                                }}
+                                flowZoneSelectedId={flowZoneSelectedId}
+                                helperSpan={item.helperSpan}
+                            />
+                        </FieldWrapper>
+                    </div>
                 )
 
             case "checkbox":
                 return (
                     <div className="flex items-center space-x-2">
-                        <Checkbox
-                            id={`checkbox-${index}`}
-                            checked={getFieldValue(item) || false}
-                            onCheckedChange={(checked) =>
-                                onChangeAutomationSimple({
+                        <FieldWrapper
+                            field={item}
 
-                                    newValue: checked,
+                            variableName={item.variableName}
+                            value={getFieldValue(item) || ""}
+                            onChange={(newValue) => {
+                                onChangeAutomationSimple({
+                                    newValue: newValue,
                                     variableName: item.variableName,
                                 })
-                            }
-                            {...commonProps}
-                        />
-                        <Label htmlFor={`checkbox-${index}`} className="text-sm font-medium">
-                            {item.label || item.innerLabel}
-                            {item.required && <span className="text-red-500 ml-1">*</span>}
-                        </Label>
+                            }}
+                        >
+                            <Checkbox
+                                id={`checkbox-${index}`}
+                                checked={getFieldValue(item) || false}
+                                onCheckedChange={(checked) =>
+                                    onChangeAutomationSimple({
+
+                                        newValue: checked,
+                                        variableName: item.variableName,
+                                    })
+                                }
+                                {...commonProps}
+                            />
+                            <Label htmlFor={`checkbox-${index}`} className="text-sm font-medium">
+                                {item.label || item.innerLabel}
+                                {item.required && <span className="text-red-500 ml-1">*</span>}
+                            </Label>
+                        </FieldWrapper>
                     </div>
                 )
 
@@ -315,6 +374,7 @@ export default function AutomationSimple({
                             {item.required && <span className="text-red-500 ml-1">*</span>}
                         </Label>
                         <div className="flex flex-wrap gap-2">
+
                             {multiselectValue?.map((val: string, valIndex: number) => (
                                 <Badge key={valIndex} variant="secondary" className="text-xs">
                                     {val}
@@ -450,7 +510,6 @@ export default function AutomationSimple({
 
             case "accordion":
                 const dynamicValuee = getDynamicFieldValue(item)
-
                 return (
                     <Accordion type="single" collapsible className="w-full">
                         <AccordionItem value={`item-${index}`}>

@@ -93,7 +93,7 @@ export function SharedSection({
                                     ) as any;
                                     setSchema(op);
                                     onConfigUpdate(`extras.${variableName}.type`, value);
-                                    add(id, variableName, validateArray(schema, {}))
+                                    add(id, variableName, validateArray(schema.rightSideData.json, {}))
 
                                 }}
                             >

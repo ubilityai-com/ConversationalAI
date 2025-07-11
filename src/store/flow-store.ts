@@ -8,7 +8,44 @@ type SubNodesValidation = {
         subs: { [subId: string]: boolean };
     };
 };
+export interface WorkflowVariable {
+    id: string
+    origin: string
+    name: string
+    type: "string" | "number" | "boolean" | "object" | "array"
+    value: any
+    description?: string
+    category: VariableCategory
+    createdAt: Date
+    updatedAt: Date
+}
+
+export type VariableCategory = "ai" | "dialogue" | "global"
+
 interface FlowState {
+    fieldRefs: { [key: string]: HTMLElement | null }
+    setFieldRef: (key: string, ref: HTMLElement | null) => void
+
+    focusedField: string | null
+    setFocusedField: (field: string | null) => void
+    blurTimeoutRef: NodeJS.Timeout | null
+    setBlurTimeoutRef: (timeout: NodeJS.Timeout | null) => void
+    variables: WorkflowVariable[]
+    variablesPickerVisible: boolean
+    selectedOutputOrVariable: string | null
+    setSelectedOutputOrVariable: (name: string | null) => void
+    isPopoverInteracting: boolean
+    setIsPopoverInteracting: (open: boolean) => void
+    setVarPicker: (value: boolean) => void
+    varPickerProps: { onSelectVariable: (value: string) => void } | null
+    setVarPickerProps: ((props: { onSelectVariable: (value: string) => void } | null) => void);
+    addVariable: (variable: Omit<WorkflowVariable, "id" | "createdAt" | "updatedAt">) => void
+    updateVariable: (id:  VariableCategory ,name:string, updates: Partial<Omit<WorkflowVariable, "id" | "createdAt">>) => void
+    deleteVariable: (id: string) => void
+    getVariableByName: (name: string) => WorkflowVariable | undefined
+    getVariablesByCategory: (category: VariableCategory) => WorkflowVariable[]
+    clearVariables: () => void
+    clearVariablesByCategory: (category: VariableCategory) => void
     // Flow instance
     reactFlowInstance: ReactFlowInstance | null
     setReactFlowInstance: (instance: ReactFlowInstance) => void
@@ -169,6 +206,84 @@ interface FlowState {
 }
 
 export const useFlowStore = create<FlowState>((set, get) => ({
+    fieldRefs: {},
+    setFieldRef: (key, ref) =>
+        set((state) => ({
+            fieldRefs: {
+                ...state.fieldRefs,
+                [key]: ref,
+            },
+        })),
+
+    blurTimeoutRef: null,
+    setBlurTimeoutRef: (timeout) => set({ blurTimeoutRef: timeout }),
+    focusedField: null,
+    setFocusedField: (field) => set({ focusedField: field }),
+    variables: [],
+    variablesPickerVisible: false,
+    selectedOutputOrVariable: null,
+    setSelectedOutputOrVariable: (name) => {
+        set({ selectedOutputOrVariable: name })
+    },
+    isPopoverInteracting: false,
+    setIsPopoverInteracting: (open) => {
+        set({ isPopoverInteracting: open })
+    },
+    setVarPicker: (value) => {
+        set(() => ({ variablesPickerVisible: value }))
+    },
+    varPickerProps: null,
+    setVarPickerProps: (props) => {
+        set({ varPickerProps: props })
+    },
+    addVariable: (variable) => {
+        const newVariable: WorkflowVariable = {
+            ...variable,
+            id: crypto.randomUUID(),
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }
+
+        set((state) => ({
+            variables: [...state.variables, newVariable],
+        }))
+    },
+
+    updateVariable: (origin, name, updates) => {
+        console.log({ origin, name, updates, va: get().variables });
+        const newV = get().variables.map((variable) =>
+            variable.category === origin && variable.name === name ? { ...variable, ...updates, updatedAt: new Date() } : variable,
+        )
+        console.log({ newV });
+
+        set({
+            variables: newV
+        })
+    },
+
+    deleteVariable: (id) => {
+        set((state) => ({
+            variables: state.variables.filter((variable) => variable.id !== id),
+        }))
+    },
+
+    getVariableByName: (name) => {
+        return get().variables.find((variable) => variable.name === name)
+    },
+
+    getVariablesByCategory: (category) => {
+        return get().variables.filter((variable) => variable.category === category)
+    },
+
+    clearVariables: () => {
+        set({ variables: [] })
+    },
+
+    clearVariablesByCategory: (category) => {
+        set((state) => ({
+            variables: state.variables.filter((variable) => variable.category !== category),
+        }))
+    },
     // Flow instance
     reactFlowInstance: null,
     setReactFlowInstance: (instance) => set({ reactFlowInstance: instance }),
@@ -241,8 +356,8 @@ export const useFlowStore = create<FlowState>((set, get) => ({
 
     addSubNodeValidation: (parentId, subId, valid) =>
         set((state) => {
-            console.trace({parentId});
-            
+            console.trace({ parentId });
+
             const existing = state.subNodesValidation[parentId] || { valid: true, subs: {} };
             const newSubs = { ...existing.subs, [subId]: valid };
             const parentValid = Object.values(newSubs).every(Boolean);

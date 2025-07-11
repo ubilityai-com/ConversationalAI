@@ -6,6 +6,7 @@ import { CreateCredentialDialog } from "./credential-dialog/create-credential-di
 import { ItemsListDialog } from "./langchain-dialog";
 import { PublishDialog } from "./save-dialog";
 import { ValidationDialog } from "./validation-dialog";
+import { VariablesDialog } from "./variables-dialog";
 
 export const dialogRegistry: Record<string, React.FC<any>> = {
     publish: PublishDialog,
@@ -13,7 +14,8 @@ export const dialogRegistry: Record<string, React.FC<any>> = {
     changeName: ChangeNameDialog,
     langchain: ItemsListDialog,
     addNode: AgentPaletteDialog,
-    createCred: CreateCredentialDialog
+    createCred: CreateCredentialDialog,
+    variables: VariablesDialog
 };
 export default function DialogManager() {
     const { isFormDialogOpen, formDialogStatus, dialogProps, setIsFormDialogOpen } = useFlowStore();
