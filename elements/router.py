@@ -47,15 +47,15 @@ class Router:
     #             return variables.get(var_name, '')
     #     return value
     
-def find_next_step(self):
-    # First, try to find a matching condition
-    for condition in self.conditions:
-        if self.evaluate_condition(condition):
-            return condition['next']
-    
-    # If none matched, find a default
-    for condition in self.conditions:
-        if "default" in condition:
-            return condition["default"]
-    
-    return None
+    def find_next_step(self):
+        # First, try to find a matching condition
+        for condition in self.conditions:
+            if self.evaluate_condition(condition):
+                return condition['next']
+        
+        # If none matched, find a default
+        for condition in self.conditions:
+            if "default" in condition:
+                return condition["default"]
+        
+        return None
