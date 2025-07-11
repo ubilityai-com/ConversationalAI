@@ -4,6 +4,7 @@ export const ConversationBufferWindowMemoryJson = {
   "color": "black",
   "nodeType": "memory",
   "new": true,
+  defaultValid: false,
   "rightSideData": {
     "json": [
       {

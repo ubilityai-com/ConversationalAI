@@ -61,10 +61,11 @@ export function createFlowObject() {
 
         }
         else if (element.type === "ReactAgent") {
+
             flow.bot[element.id] = {
-                type: "ReactAgent",
-                content: require(`../components/right-side-elements/${camelToDashCase(element.type)}`),
-                next: getNextNodeId(element.id, edges, nodes, "branch-default"),
+                type: "LC_REACT_AGENT",
+                ...require(`../components/right-side-elements/${camelToDashCase(element.type)}-form/${camelToDashCase(element.type)}-form`).getContent(element),
+                next: getNextNodeId(element.id, edges, nodes, null),
             };
 
         }

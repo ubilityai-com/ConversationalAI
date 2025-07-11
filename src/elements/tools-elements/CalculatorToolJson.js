@@ -3,7 +3,7 @@ export const CalculatorToolJson = {
     "nodeType": "tool",
     type: "Calculator",
     label: "Calculator",
-    defaultValid:true,
+    defaultValid: true,
     color: "#72797b",
     description: "Make it easier for AI agents to perform arithmetic",
     rightSideData: {

@@ -29,3 +29,17 @@ export const OpenAIChatModel = (selectedNode: any) => {
         },
     }
 }
+export const TogetherAIChatModel = (selectedNode: any) => {
+    const model = selectedNode.data.rightSideData.extras.model
+    const content = model.content
+    return {
+        provider: "togetherAi",
+        model: model.type,
+        cred: content.cred,
+        params: {
+            optionals: {
+                temperature: parseFloat(getAccvalue(content, "samplingTemperature")),
+            },
+        },
+    }
+}

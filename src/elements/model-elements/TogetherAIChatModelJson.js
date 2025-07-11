@@ -4,6 +4,7 @@ export const TogetherAIChatModelJson = {
   label: "Together AI Chat Model",
   color: "#72797b",
   description: "Language Model Together AI",
+  defaultValid: false,
   rightSideData: {
     json: [
       {

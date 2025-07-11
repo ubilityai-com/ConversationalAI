@@ -12,13 +12,45 @@ const getAccvalue = (finaleObj: any, name: string) => {
         return finaleObj[name] ? finaleObj[name][name] || undefined : undefined;
 };
 
-export const ConversationBufferMemory = (selectedNode: any) => {
+export const ConversationalBufferMemory = (selectedNode: any) => {
     const memory = selectedNode.data.rightSideData.extras.memory
     const content = memory.content
     return {
         type: "ConversationBufferMemory",
         historyId: memory.id,
         context: (content.historyId)
+    }
+}
+export const ConversationSummaryBufferMemory = (selectedNode: any) => {
+    const memory = selectedNode.data.rightSideData.extras.memory
+    const content = memory.content
+    return {
+        type: memory.type,
+        historyId: memory.id,
+        max_token_limit: content.maxTokenLimit,
+        context: (content.historyId)
+
+    }
+}
+
+export const ConversationBufferWindowMemory = (selectedNode: any) => {
+    const memory = selectedNode.data.rightSideData.extras.memory
+    const content = memory.content
+    return {
+        type: memory.type,
+        historyId: memory.id,
+        context: (content.historyId),
+        size: content.size,
+    }
+}
+
+export const RedisStackMemory = (selectedNode: any) => {
+    const memory = selectedNode.data.rightSideData.extras.memory
+    const content = memory.content
+    return {
+        type: "RedisMemory",
+        historyId: memory.sessionName,
+        cred: content.cred,
 
     }
 }

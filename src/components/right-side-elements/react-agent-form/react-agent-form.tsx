@@ -11,6 +11,7 @@ import { useRightDrawerStore } from "../../../store/right-drawer-store";
 import AutomationSimple from "../../custom/automation-v4";
 import { SharedSection } from "../../properties/shared/shared-section";
 import { SharedListSection } from "../../properties/shared/shared-section-list";
+import { MemoryElements } from "../../../elements/memory-elements";
 
 interface LLMConfigProps extends Record<string, any> {
     label: string;
@@ -24,12 +25,23 @@ interface LlmFormProps {
 export function getContent(selectedNode: any) {
     const rightSideData = selectedNode.data.rightSideData
     const model = rightSideData.extras.model
+    const memory = rightSideData.extras.memory
+    const tool = rightSideData.extras.tool
+    console.log({ aaa: require("../../properties/contents/tool"), tool });
+    console.log({ aaa: require("../../properties/contents/model"), model });
+    console.log({ aaa: require("../../properties/contents/memory"), memory });
+
     return {
         content: {
             type: "data",
             data: {
-                query: rightSideData.json.query,
-                model: require("../../properties/contents/model")[model.type]
+                inputs: { query: rightSideData.json.query },
+                model: require("../../properties/contents/model")[model.type](selectedNode),
+                chainMemory: require("../../properties/contents/memory")[memory.type](selectedNode),
+                cred: {},
+                paramsTools: tool.list.map((el: any) => {
+                    return require("../../properties/contents/tool")[el.type](selectedNode)
+                })
             }
         },
         saveUserInputAs: rightSideData.save ? rightSideData.variableName : null
@@ -43,10 +55,10 @@ export default function ReactAgentForm({
     const [schema, setSchema] = useState<any[]>(ReactAgentJson.rightSideData.json
     );
     const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
-    useEffect(()=>{
-        console.log({ddd: require("../../properties/contents/model")});
-        
-    },[])
+    useEffect(() => {
+        console.log({ ddd: require("../../properties/contents/model") });
+
+    }, [])
 
     const { localConfig, updateNestedConfig } =
         useDebounceConfig<LLMConfigProps["rightSideData"]>(
@@ -87,7 +99,15 @@ export default function ReactAgentForm({
                 title="LLM Model"
                 variableName="model"
                 onConfigUpdate={updateNestedConfig} />
-
+            <SharedSection
+                config={localConfig.extras.memory}
+                defaultType="ConversationalBufferMemory"
+                description="Select the memory that fits your use case"
+                elements={MemoryElements}
+                id={selectedNode.id}
+                title="Memory"
+                variableName="memory"
+                onConfigUpdate={updateNestedConfig} />
             <SharedListSection
                 defaultType="CustomTool"
                 description="Configure tools for the LLM agent to use"

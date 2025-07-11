@@ -4,19 +4,20 @@ export const ConversationSummaryBufferMemoryJson = {
   "color": "black",
   "nodeType": "memory",
   "new": true,
+  defaultValid: false,
   "rightSideData": {
     "json": [
       {
         type: "textfield",
-        required:true,
+        required: true,
         label: "Max token limit",
         variableName: "maxTokenLimit",
-        value:"",
+        value: "",
         numberField: true,
-        typeOfValue:"integer",
+        typeOfValue: "integer",
         placeholder: "eg 50",
         hasDynamicVariable: true,
-        helperSpan:"Summarize conversations once token limit is reached"
+        helperSpan: "Summarize conversations once token limit is reached"
       },
     ]
   }

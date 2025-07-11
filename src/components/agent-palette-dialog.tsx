@@ -37,7 +37,7 @@ const agentTypes = [
     defaults: {
       extras: {
         "tool": {
-          multiple:true,
+          multiple: true,
           enabled: false,
           type: "CustomTool",
           list: []
