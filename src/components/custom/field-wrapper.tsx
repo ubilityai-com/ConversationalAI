@@ -94,7 +94,14 @@ export function FieldWrapper({
     }
 
     console.log({ SelectedOutputOrVariable, inputNameOnContextMenu, focusedField });
+    useEffect(() => {
+        return () => {
+            console.log("unmountsssssssssssssssssssssss");
+            setVarPicker(false)
+            setIsPopoverInteracting(false)
 
+        }
+    }, [])
     useEffect(() => {
         if (SelectedOutputOrVariable) {
             if (focusedField === variableName) {

@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid"
 import MainLayout from "./MainLayout"
 import { useFlowStore } from "./store/flow-store"
 import { OAuth2AuthenticationFlow } from "./components/dialogs/credential-dialog/credOAuth2"
-
+import json from "./f.json"
 const Main = () => {
   // Get state and actions from Zustand stores
   const {
@@ -15,6 +15,7 @@ const Main = () => {
     edges,
     nodesValidation,
     addNodesValidation,
+    setNodesValidation,
     setEdges,
     setUserData,
     setAuthToken,
@@ -148,7 +149,7 @@ const Main = () => {
             restart: "",
             thankYou: "",
             cancel: "",
-            start: true,
+            start: false,
             bye: "",
           },
         },
@@ -157,7 +158,11 @@ const Main = () => {
     ])
     addNodesValidation(id, false)
   }
-
+  useEffect(() => {
+    setNodesValidation(json.nodesValidation)
+    setEdges(json.edges)
+    setNodes(json.nodes)
+  }, [])
   // Get Cards, Intents and Entities from DB and save them in state variables
   const getDataFromDatabaseAndSaveItInState = (url, authToken, stateName) => {
     const config = {

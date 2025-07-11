@@ -1,0 +1,474 @@
+{
+    "nodes": [
+        {
+            "id": "7fa101ae-49da-40b2-bf82-31c073e0880f",
+            "type": "Handler",
+            "data": {
+                "color": "#68b04b",
+                "label": "Start Dialog",
+                "description": "Begin your Chatbot journey",
+                "icon": "PlayArrow",
+                "rightSideData": {
+                    "greet": "greet",
+                    "restart": "",
+                    "thankYou": "",
+                    "cancel": "cancel",
+                    "start": true,
+                    "bye": ""
+                }
+            },
+            "position": {
+                "x": 11,
+                "y": 49
+            },
+            "measured": {
+                "width": 256,
+                "height": 137
+            },
+            "selected": false,
+            "dragging": true
+        },
+        {
+            "id": "68146acd-9d13-401e-8186-9593f8a03100",
+            "type": "Message",
+            "position": {
+                "x": 344,
+                "y": 49
+            },
+            "data": {
+                "label": "Message",
+                "description": "Send messages and notifications",
+                "rightSideData": {
+                    "botSays": "<p>your age</p>",
+                    "advanced": false,
+                    "regex": "",
+                    "errorMessage": "",
+                    "save": true,
+                    "variableName": "age",
+                    "loopFromSwitch": false,
+                    "loopFromName": ""
+                }
+            },
+            "measured": {
+                "width": 256,
+                "height": 114
+            },
+            "selected": false,
+            "dragging": true
+        },
+        {
+            "id": "84388c12-69f8-434c-afe0-d9bdebea465a",
+            "type": "ChoicePrompt",
+            "position": {
+                "x": 178.29806142760356,
+                "y": 377.6132672528795
+            },
+            "data": {
+                "label": "Multiple Choice",
+                "description": "Present multiple options for user selection",
+                "nodeType": "Logic",
+                "rightSideData": {
+                    "botSays": "Hello please choose a choice",
+                    "save": false,
+                    "variableName": "",
+                    "choices": [
+                        {
+                            "label": "talk to an ai agent",
+                            "id": "choice-1752242706739"
+                        },
+                        {
+                            "id": "choice-1752242793052",
+                            "label": "end"
+                        }
+                    ],
+                    "loopFromSwitch": false,
+                    "loopFromName": ""
+                }
+            },
+            "measured": {
+                "width": 320,
+                "height": 289
+            },
+            "selected": false,
+            "dragging": true
+        },
+        {
+            "id": "9d8fcbc5-0229-41bc-895e-3d18cdf57637",
+            "type": "Router",
+            "position": {
+                "x": 738,
+                "y": 200
+            },
+            "data": {
+                "label": "Router",
+                "description": "Route workflow based on multiple conditions",
+                "nodeType": "Logic",
+                "rightSideData": {
+                    "branches": [
+                        {
+                            "id": "branch-1752242833692",
+                            "name": "Branch 1",
+                            "description": "description",
+                            "operatorType": "number",
+                            "firstOperator": "${age}",
+                            "secondOperator": "18",
+                            "checkType": "greater_equal"
+                        }
+                    ],
+                    "defaultBranch": {
+                        "name": "Default",
+                        "description": "default desc"
+                    },
+                    "save": false,
+                    "variableName": "",
+                    "loopFromSwitch": false,
+                    "loopFromName": ""
+                }
+            },
+            "measured": {
+                "width": 320,
+                "height": 331
+            },
+            "selected": true
+        },
+        {
+            "id": "4a479b6b-5398-4f3e-a2d9-26c87090db0e",
+            "type": "Message",
+            "position": {
+                "x": 1223.0200334131807,
+                "y": 72.67028401203555
+            },
+            "data": {
+                "label": "Message",
+                "description": "Send messages and notifications",
+                "rightSideData": {
+                    "botSays": "<p>hello how can i help you&gt;</p>",
+                    "advanced": false,
+                    "regex": "",
+                    "errorMessage": "",
+                    "save": true,
+                    "variableName": "userQuestion",
+                    "loopFromSwitch": false,
+                    "loopFromName": ""
+                }
+            },
+            "measured": {
+                "width": 256,
+                "height": 114
+            },
+            "selected": false,
+            "dragging": true
+        },
+        {
+            "id": "8f8748e0-7960-40f7-afaf-525ed6835313",
+            "type": "Message",
+            "position": {
+                "x": 1173.0868114571163,
+                "y": 389.7462434330451
+            },
+            "data": {
+                "label": "Message",
+                "description": "Send messages and notifications",
+                "rightSideData": {
+                    "botSays": "<p>you are not able to talk with agent,age under 18.</p>",
+                    "advanced": false,
+                    "regex": "",
+                    "errorMessage": "",
+                    "save": false,
+                    "variableName": "",
+                    "loopFromSwitch": false,
+                    "loopFromName": ""
+                }
+            },
+            "measured": {
+                "width": 256,
+                "height": 114
+            },
+            "selected": false,
+            "dragging": true
+        },
+        {
+            "id": "f818ff9c-a2ef-47a9-b500-6feb55cb9c4c",
+            "type": "Message",
+            "position": {
+                "x": 1272.2703971915878,
+                "y": 244.3133574076754
+            },
+            "data": {
+                "label": "Message",
+                "description": "Send messages and notifications",
+                "rightSideData": {
+                    "botSays": "<p>question: ${userQuestion}</p>",
+                    "advanced": false,
+                    "regex": "",
+                    "errorMessage": "",
+                    "save": false,
+                    "variableName": "",
+                    "loopFromSwitch": false,
+                    "loopFromName": ""
+                }
+            },
+            "measured": {
+                "width": 256,
+                "height": 114
+            },
+            "selected": false,
+            "dragging": true
+        },
+        {
+            "id": "7740a039-f618-4b68-beae-54cd1220d8c9",
+            "type": "ReactAgent",
+            "position": {
+                "x": 1528.9849975090722,
+                "y": 353.2693953022989
+            },
+            "data": {
+                "label": "React Agent",
+                "description": "Large Language Model for text processing",
+                "nodeType": "AI",
+                "rightSideData": {
+                    "extras": {
+                        "tool": {
+                            "multiple": true,
+                            "enabled": true,
+                            "type": "Calculator",
+                            "list": [
+                                {
+                                    "type": "McpTool",
+                                    "content": {
+                                        "json": {
+                                            "name": "slacktool",
+                                            "getMcpBy": "url",
+                                            "url": "https://mcp-test.ubilityai.com/mcp/c58e73c7-0df2-591d-b481-72130f1f44f2/sse"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "model": {
+                            "enabled": true,
+                            "type": "OpenAIChatModel",
+                            "content": {
+                                "cred": "validOpenAi",
+                                "model": "gpt-4o"
+                            }
+                        },
+                        "memory": {
+                            "enabled": true,
+                            "type": "ConversationalBufferMemory",
+                            "content": {}
+                        }
+                    },
+                    "json": {
+                        "query": "${userQuestion}"
+                    }
+                }
+            },
+            "measured": {
+                "width": 256,
+                "height": 114
+            },
+            "selected": false,
+            "dragging": true
+        },
+        {
+            "id": "c4557143-e3a1-4175-9670-2dfc428b5d2e",
+            "type": "End",
+            "position": {
+                "x": 1424.502869463558,
+                "y": 636.8536035211821
+            },
+            "data": {
+                "label": "End",
+                "description": "Terminates the chat with a custom message",
+                "nodeType": "Control",
+                "rightSideData": {
+                    "botSays": "byebye",
+                    "loopFromSwitch": false,
+                    "loopFromName": "None"
+                }
+            },
+            "measured": {
+                "width": 256,
+                "height": 137
+            },
+            "selected": false,
+            "dragging": true
+        }
+    ],
+    "edges": [
+        {
+            "source": "7fa101ae-49da-40b2-bf82-31c073e0880f",
+            "target": "68146acd-9d13-401e-8186-9593f8a03100",
+            "arrowHeadType": "arrowclosed",
+            "targetHandle": null,
+            "type": "buttonEdge",
+            "markerEnd": {
+                "type": "arrowclosed"
+            },
+            "animated": false,
+            "style": {
+                "stroke": "#afafb5",
+                "strokeWidth": 2
+            },
+            "id": "xy-edge__7fa101ae-49da-40b2-bf82-31c073e0880fundefined-68146acd-9d13-401e-8186-9593f8a03100null"
+        },
+        {
+            "source": "68146acd-9d13-401e-8186-9593f8a03100",
+            "target": "84388c12-69f8-434c-afe0-d9bdebea465a",
+            "arrowHeadType": "arrowclosed",
+            "targetHandle": null,
+            "type": "buttonEdge",
+            "markerEnd": {
+                "type": "arrowclosed"
+            },
+            "animated": false,
+            "style": {
+                "stroke": "#afafb5",
+                "strokeWidth": 2
+            },
+            "id": "xy-edge__68146acd-9d13-401e-8186-9593f8a03100undefined-84388c12-69f8-434c-afe0-d9bdebea465anull"
+        },
+        {
+            "source": "84388c12-69f8-434c-afe0-d9bdebea465a",
+            "target": "9d8fcbc5-0229-41bc-895e-3d18cdf57637",
+            "arrowHeadType": "arrowclosed",
+            "sourceHandle": "choice-1752242706739",
+            "targetHandle": null,
+            "type": "buttonEdge",
+            "markerEnd": {
+                "type": "arrowclosed"
+            },
+            "animated": false,
+            "style": {
+                "stroke": "#afafb5",
+                "strokeWidth": 2
+            },
+            "id": "xy-edge__84388c12-69f8-434c-afe0-d9bdebea465achoice-1752242706739-9d8fcbc5-0229-41bc-895e-3d18cdf57637null"
+        },
+        {
+            "source": "9d8fcbc5-0229-41bc-895e-3d18cdf57637",
+            "target": "4a479b6b-5398-4f3e-a2d9-26c87090db0e",
+            "arrowHeadType": "arrowclosed",
+            "sourceHandle": "branch-1752242833692",
+            "targetHandle": null,
+            "type": "buttonEdge",
+            "markerEnd": {
+                "type": "arrowclosed"
+            },
+            "animated": false,
+            "style": {
+                "stroke": "#afafb5",
+                "strokeWidth": 2
+            },
+            "id": "xy-edge__9d8fcbc5-0229-41bc-895e-3d18cdf57637branch-1752242833692-4a479b6b-5398-4f3e-a2d9-26c87090db0enull"
+        },
+        {
+            "source": "9d8fcbc5-0229-41bc-895e-3d18cdf57637",
+            "target": "8f8748e0-7960-40f7-afaf-525ed6835313",
+            "arrowHeadType": "arrowclosed",
+            "sourceHandle": "branch-default",
+            "targetHandle": null,
+            "type": "buttonEdge",
+            "markerEnd": {
+                "type": "arrowclosed"
+            },
+            "animated": false,
+            "style": {
+                "stroke": "#afafb5",
+                "strokeWidth": 2
+            },
+            "id": "xy-edge__9d8fcbc5-0229-41bc-895e-3d18cdf57637branch-default-8f8748e0-7960-40f7-afaf-525ed6835313null"
+        },
+        {
+            "source": "4a479b6b-5398-4f3e-a2d9-26c87090db0e",
+            "target": "f818ff9c-a2ef-47a9-b500-6feb55cb9c4c",
+            "arrowHeadType": "arrowclosed",
+            "targetHandle": null,
+            "type": "buttonEdge",
+            "markerEnd": {
+                "type": "arrowclosed"
+            },
+            "animated": false,
+            "style": {
+                "stroke": "#afafb5",
+                "strokeWidth": 2
+            },
+            "id": "xy-edge__4a479b6b-5398-4f3e-a2d9-26c87090db0eundefined-f818ff9c-a2ef-47a9-b500-6feb55cb9c4cnull"
+        },
+        {
+            "source": "f818ff9c-a2ef-47a9-b500-6feb55cb9c4c",
+            "target": "7740a039-f618-4b68-beae-54cd1220d8c9",
+            "arrowHeadType": "arrowclosed",
+            "targetHandle": null,
+            "type": "buttonEdge",
+            "markerEnd": {
+                "type": "arrowclosed"
+            },
+            "animated": false,
+            "style": {
+                "stroke": "#afafb5",
+                "strokeWidth": 2
+            },
+            "id": "xy-edge__f818ff9c-a2ef-47a9-b500-6feb55cb9c4cundefined-7740a039-f618-4b68-beae-54cd1220d8c9null"
+        },
+        {
+            "source": "7740a039-f618-4b68-beae-54cd1220d8c9",
+            "target": "c4557143-e3a1-4175-9670-2dfc428b5d2e",
+            "arrowHeadType": "arrowclosed",
+            "targetHandle": null,
+            "type": "buttonEdge",
+            "markerEnd": {
+                "type": "arrowclosed"
+            },
+            "animated": false,
+            "style": {
+                "stroke": "#afafb5",
+                "strokeWidth": 2
+            },
+            "id": "xy-edge__7740a039-f618-4b68-beae-54cd1220d8c9undefined-c4557143-e3a1-4175-9670-2dfc428b5d2enull"
+        },
+        {
+            "source": "84388c12-69f8-434c-afe0-d9bdebea465a",
+            "sourceHandle": "choice-1752242793052",
+            "target": "c4557143-e3a1-4175-9670-2dfc428b5d2e",
+            "arrowHeadType": "arrowclosed",
+            "type": "buttonEdge",
+            "markerEnd": {
+                "type": "arrowclosed"
+            },
+            "style": {
+                "stroke": "#afafb5",
+                "strokeWidth": 2
+            },
+            "id": "xy-edge__84388c12-69f8-434c-afe0-d9bdebea465achoice-1752242793052-c4557143-e3a1-4175-9670-2dfc428b5d2e"
+        },
+        {
+            "source": "84388c12-69f8-434c-afe0-d9bdebea465a",
+            "sourceHandle": "choice-default",
+            "target": "c4557143-e3a1-4175-9670-2dfc428b5d2e",
+            "arrowHeadType": "arrowclosed",
+            "type": "buttonEdge",
+            "markerEnd": {
+                "type": "arrowclosed"
+            },
+            "style": {
+                "stroke": "#afafb5",
+                "strokeWidth": 2
+            },
+            "id": "xy-edge__84388c12-69f8-434c-afe0-d9bdebea465achoice-default-c4557143-e3a1-4175-9670-2dfc428b5d2e"
+        }
+    ],
+    "nodesValidation": {
+        "2f294128-c9f0-402e-a896-dcc681f8636d": false,
+        "7fa101ae-49da-40b2-bf82-31c073e0880f": true,
+        "68146acd-9d13-401e-8186-9593f8a03100": true,
+        "84388c12-69f8-434c-afe0-d9bdebea465a": true,
+        "9d8fcbc5-0229-41bc-895e-3d18cdf57637": true,
+        "4a479b6b-5398-4f3e-a2d9-26c87090db0e": true,
+        "8f8748e0-7960-40f7-afaf-525ed6835313": true,
+        "f818ff9c-a2ef-47a9-b500-6feb55cb9c4c": true,
+        "7740a039-f618-4b68-beae-54cd1220d8c9": false,
+        "c4557143-e3a1-4175-9670-2dfc428b5d2e": true
+    }
+}
