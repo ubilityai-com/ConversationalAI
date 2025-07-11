@@ -6,7 +6,7 @@ from dialogues.dialogues import active_dialogues
 from fastapi import HTTPException
 from pydantic import BaseModel
 from app import http_app
-from models.credentials import get_credential
+from models.credentials import get_credential,get_credentials_by_names
 from elements.app_integration import AppIntegration
 
 def load_dialogue(dialogue_id):
@@ -40,3 +40,24 @@ def test_node(payload: TestNodeRequest):
         return {"output": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error test node: {str(e)}")
+    
+
+class jiu(BaseModel):
+    param: dict
+
+
+
+@http_app.post('/activate_bot')
+def testing(payload: jiu):
+    try:
+        cred = payload.param['flow']['credentials']
+        cred_obj=get_credentials_by_names(cred)
+        obj = {
+            "credentials":cred_obj,
+            "bot":payload.param['flow']['bot']
+        }
+        active_dialogues['khaled']=obj
+        print(obj)
+        return {"Message":"Successfully activated!"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error : {str(e)}")
