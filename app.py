@@ -12,6 +12,8 @@ from elements.message import Message
 from functions import execute_process, save_user_input
 from logger_config import logger, setup_logger
 from collections import defaultdict
+from fastapi.middleware.cors import CORSMiddleware
+
 
 # Initialize logging
 setup_logger()
@@ -30,6 +32,15 @@ from dialogues.dialogues import active_dialogues
 
 # FastAPI instance for HTTP routes
 http_app = FastAPI()
+
+# Enable CORS Middleware in FastAPI
+http_app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Import HTTP route modules
 from routes.credentials_view import *
