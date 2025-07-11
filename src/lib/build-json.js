@@ -77,7 +77,7 @@ export function createFlowObject() {
                 type: "MultipleChoice",
                 content,
                 next: element.id + "-handler",
-                saveUserInputAs: saveUserInputAs === null ? element.id : saveUserInputAs,
+                saveUserInputAs: saveUserInputAs === null ? element.id + "-var" : saveUserInputAs,
                 usedVariables: stringifyAndExtractVariables(content),
             };
             flow.bot[`${element.id}-handler`] = {

@@ -519,12 +519,6 @@ export function ApiCaller({
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <Label className={cn("text-sm font-medium", disable && "text-muted-foreground")}>
-                    {apiJson.label}
-                    {apiJson.required && <span className="text-destructive ml-1">*</span>}
-                </Label>
-            </div>
 
             {apiJson.multiselect ? (
                 <SearchableSelect

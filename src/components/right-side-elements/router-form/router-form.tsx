@@ -13,6 +13,7 @@ import { validateArray } from "../../../lib/utils";
 import { useFlowStore } from "../../../store/flow-store";
 import getContent from "./get-content";
 import { RouterBranch, RouterDefaultBranch } from "../../nodes/router-node";
+import { FieldWrapper } from "../../custom/field-wrapper";
 
 interface RightSideData {
   branches: RouterBranch[]
@@ -150,13 +151,21 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
                       <Label htmlFor={`branch-name-${index}`} className="text-xs">
                         Branch Name
                       </Label>
-                      <Input
-                        id={`branch-name-${index}`}
-                        placeholder="Branch name"
+                      <FieldWrapper
+                        field={{ type: "textfield" }}
+                        variableName={`branch-name-${index}`}
                         value={branch.name || `Branch ${index + 1}`}
-                        onChange={(e) => updateBranch(index, { name: e.target.value })}
+                        onChange={(e) => updateBranch(index, { name: e })}
                         className="h-8 text-xs"
-                      />
+                      >
+                        <Input
+                          id={`branch-name-${index}`}
+                          placeholder="Branch name"
+                          value={branch.name || `Branch ${index + 1}`}
+                          onChange={(e) => updateBranch(index, { name: e.target.value })}
+                          className="h-8 text-xs"
+                        />
+                      </FieldWrapper>
                     </div>
 
                     <div>
@@ -200,26 +209,42 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
                         <Label htmlFor={`first-operator-${index}`} className="text-xs">
                           First Operator
                         </Label>
-                        <Input
-                          id={`first-operator-${index}`}
-                          placeholder="First value"
+                        <FieldWrapper
+                          field={{ type: "textfield" }}
+                          variableName={`first-operator-${index}`}
                           value={branch.firstOperator || ""}
-                          onChange={(e) => updateBranch(index, { firstOperator: e.target.value })}
+                          onChange={(e) => updateBranch(index, { firstOperator: e })}
                           className="h-8 text-xs"
-                        />
+                        >
+                          <Input
+                            id={`first-operator-${index}`}
+                            placeholder="First value"
+                            value={branch.firstOperator || ""}
+                            onChange={(e) => updateBranch(index, { firstOperator: e.target.value })}
+                            className="h-8 text-xs"
+                          />
+                        </FieldWrapper>
                       </div>
 
                       <div>
                         <Label htmlFor={`second-operator-${index}`} className="text-xs">
                           Second Operator
                         </Label>
-                        <Input
-                          id={`second-operator-${index}`}
-                          placeholder="Second value"
+                        <FieldWrapper
+                          field={{ type: "textfield" }}
+                          variableName={`second-operator-${index}`}
                           value={branch.secondOperator || ""}
-                          onChange={(e) => updateBranch(index, { secondOperator: e.target.value })}
+                          onChange={(e) => updateBranch(index, { secondOperator: e })}
                           className="h-8 text-xs"
-                        />
+                        >
+                          <Input
+                            id={`second-operator-${index}`}
+                            placeholder="Second value"
+                            value={branch.secondOperator || ""}
+                            onChange={(e) => updateBranch(index, { secondOperator: e.target.value })}
+                            className="h-8 text-xs"
+                          />
+                        </FieldWrapper>
                       </div>
 
                       <div>
@@ -278,16 +303,28 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
                 <Label htmlFor="default-branch-name" className="text-xs">
                   Default Branch Name
                 </Label>
-                <Input
-                  id="default-branch-name"
-                  placeholder="Default branch name"
+                <FieldWrapper
+                  field={{ type: "textfield" }}
+                  variableName={`default-branch-name`}
                   value={localConfig.defaultBranch?.name || "Default"}
                   onChange={(e) => {
                     const currentDefault = localConfig.defaultBranch || {}
-                    updateNestedConfig("defaultBranch", { ...currentDefault, name: e.target.value })
-                  }}
+                    updateNestedConfig("defaultBranch", { ...currentDefault, name: e })
+                  }
+                  }
                   className="h-8 text-xs"
-                />
+                >
+                  <Input
+                    id="default-branch-name"
+                    placeholder="Default branch name"
+                    value={localConfig.defaultBranch?.name || "Default"}
+                    onChange={(e) => {
+                      const currentDefault = localConfig.defaultBranch || {}
+                      updateNestedConfig("defaultBranch", { ...currentDefault, name: e })
+                    }}
+                    className="h-8 text-xs"
+                  />
+                </FieldWrapper>
               </div>
 
               <div>

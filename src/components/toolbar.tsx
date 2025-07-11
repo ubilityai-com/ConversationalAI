@@ -53,6 +53,8 @@ export function Toolbar() {
 
 
           <Button variant="outline" size="sm" onClick={() => {
+             setIsFormDialogOpen(true);
+             setFormDialogStatus("variables");
           }}>
             <Variable className="w-4 h-4 mr-2" />
             Variables

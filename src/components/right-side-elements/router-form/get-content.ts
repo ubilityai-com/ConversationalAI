@@ -27,8 +27,8 @@ export default function getContent(
                     ...rightSideData.branches?.map((el) => ({
                         operation: el.checkType,
                         dataType: el.operatorType,
-                        firstOperator: el.operatorType === "number" ? parseFloat(el.firstOperator) : el.firstOperator,
-                        secondOperator: el.operatorType === "number" ? parseFloat(el.secondOperator) : el.secondOperator,
+                        firstOperator: el.firstOperator,
+                        secondOperator: el.secondOperator,
                         next: getNextNodeId(selectedNode.id, edges, nodes, el.id),
                     }))],
             },

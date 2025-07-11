@@ -6,6 +6,7 @@ import { useDebounceConfig } from "../../../hooks/use-debounced-config"
 import { removeHTMLTags } from "../../../lib/utils"
 import { useFlowStore } from "../../../store/flow-store"
 import { LoopFromForm } from "../../common/loop-from-end"
+import { EditableField } from "../../custom/editable-field"
 import { Button } from "../../ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card"
 import { Input } from "../../ui/input"
@@ -83,7 +84,8 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
             },
         },
     )
-
+    const addVariable = useFlowStore(state => state.addVariable)
+    const updateVariable = useFlowStore(state => state.updateVariable)
     const choices: Choice[] = localConfig.choices ?? []
     const botSays = localConfig.botSays ?? ""
     const save = localConfig.save ?? ""
@@ -180,6 +182,8 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
                     checked={save || false}
                     onCheckedChange={(checked) => {
                         updateNestedConfig("save", checked)
+                        if (checked)
+                            addVariable({ origin: selectedNode.id, category: "dialogue", name: "", type: "string", value: "" })
                     }}
                     id="save-switch"
                 />
@@ -191,11 +195,14 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
             {save && (
                 <>
                     <Label className="block text-sm p-1 mb-1 font-normal">Variable Name</Label>
-                    <Input
+                    <EditableField
                         name="variableName"
                         placeholder="Variable Name"
                         value={variableName || ""}
-                        onChange={(event) => updateNestedConfig("variableName", event.target.value)
+                        onChange={(newValue) => {
+                            updateVariable("dialogue", variableName, { category: "dialogue", name: newValue })
+                            updateNestedConfig("variableName", newValue)
+                        }
                         }
                     />
                 </>

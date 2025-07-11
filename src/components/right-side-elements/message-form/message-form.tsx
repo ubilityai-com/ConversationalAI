@@ -6,7 +6,7 @@ import { useDebounceConfig } from "../../../hooks/use-debounced-config"
 import { removeHTMLTags } from "../../../lib/utils"
 import { useFlowStore } from "../../../store/flow-store"
 import { LoopFromForm } from "../../common/loop-from-end"
-import { Input } from "../../ui/input"
+import { EditableField } from "../../custom/editable-field"
 import { Label } from "../../ui/label"
 import { Switch } from "../../ui/switch"
 import { useEffect } from "react"
@@ -101,7 +101,9 @@ export default function MessageForm({
   handleRightSideDataUpdate,
 }: MessageFormProps) {
   const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
-  const { localConfig, updateConfigField, updateNestedConfig } = useDebounceConfig<MessageConfigProps["rightSideData"]>(
+  const addVariable = useFlowStore(state => state.addVariable)
+  const updateVariable = useFlowStore(state => state.updateVariable)
+  const { localConfig, updateNestedConfig } = useDebounceConfig<MessageConfigProps["rightSideData"]>(
     selectedNode.data.rightSideData,
     {
       delay: 300,
@@ -136,7 +138,10 @@ export default function MessageForm({
       <div className="flex items-center space-x-2 mx-2 mb-2">
         <Switch
           checked={localConfig.save || false}
-          onCheckedChange={(checked) => updateNestedConfig("save", checked)}
+          onCheckedChange={(checked) => {
+            addVariable({ category: "dialogue", name: "", type: "string", value: "", origin: selectedNode.id })
+            updateNestedConfig("save", checked)
+          }}
           id="save-switch"
         />
         <Label htmlFor="save-switch" className="text-xs font-normal">
@@ -147,11 +152,14 @@ export default function MessageForm({
       {localConfig.save && (
         <div>
           <Label className="block text-sm mb-1 font-normal">Variable Name</Label>
-          <Input
+          <EditableField
             name="variableName"
             placeholder="Variable Name"
             value={localConfig.variableName || ""}
-            onChange={(e) => updateNestedConfig("variableName", e.target.value)}
+            onChange={(newValue) => {
+              updateVariable("dialogue", localConfig.variableName, { category: "dialogue", name: newValue })
+              updateNestedConfig("variableName", newValue)
+            }}
           />
         </div>
       )}
