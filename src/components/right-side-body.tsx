@@ -2,12 +2,8 @@ import { useNodesData } from "@xyflow/react";
 import { ComponentType, useEffect, useState } from "react";
 import { useFlowStore } from "../store/flow-store";
 import { useRightDrawerStore } from "../store/right-drawer-store";
-function camelToDashCase(str: string) {
-  return str
-    .replace(/([a-z])([A-Z])/g, "$1-$2") // Split camelCase (aB → a-b)
-    .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2") // Handle acronyms (RPA → rpa)
-    .toLowerCase();
-}
+import { camelToDashCase } from "../lib/utils";
+
 export default function RightSideBody() {
   const [isLoading, setIsLoading] = useState(false);
 

@@ -158,11 +158,11 @@ const Main = () => {
     ])
     addNodesValidation(id, false)
   }
-  useEffect(() => {
-    setNodesValidation(json.nodesValidation)
-    setEdges(json.edges)
-    setNodes(json.nodes)
-  }, [])
+  // useEffect(() => {
+  //   setNodesValidation(json.nodesValidation)
+  //   setEdges(json.edges)
+  //   setNodes(json.nodes)
+  // }, [])
   // Get Cards, Intents and Entities from DB and save them in state variables
   const getDataFromDatabaseAndSaveItInState = (url, authToken, stateName) => {
     const config = {

@@ -437,7 +437,7 @@ export function keyBy<T extends Record<string, any>, K extends keyof T>(
     return acc;
   }, {} as Record<string, T>);
 }
-export function isPlainObject<T extends any>(value:T){
+export function isPlainObject<T extends any>(value: T) {
   return typeof (value) === "object" && !Array.isArray(value)
 }
 
@@ -463,8 +463,8 @@ export const validateArray = (items: FormItem[], values: FormValues): boolean =>
   for (const item of items) {
     const { type, variableName, required, multiselect, options, json, fieldsArray } = item;
     const value = values[variableName];
-    console.log({item,value,values});
-    
+    console.log({ item, value, values });
+
     switch (type) {
       case "dropdown":
       case "api":
@@ -522,12 +522,17 @@ export function removeHTMLTags(htmlCode: string): string {
   const withoutHTMLTags = htmlCode.replace(/<[^>]*>/g, '');
   return withoutHTMLTags.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 }
-
+export function camelToDashCase(str: string): string {
+  return str
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2")
+    .toLowerCase();
+}
 export function getNextNodeId(
   nodeId: string,
   edges: Edge[],
   nodes: Node[],
-  handleId?: string
+  handleId?: string | null
 ): string | null {
   const foundEdge = edges.find(
     edge => edge.source === nodeId && (!handleId || edge.sourceHandle === handleId)

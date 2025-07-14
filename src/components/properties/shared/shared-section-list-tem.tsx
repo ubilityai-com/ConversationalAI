@@ -1,5 +1,6 @@
 import { ComponentType, useEffect, useState } from "react";
 import { useFlowStore } from "../../../store/flow-store";
+import { camelToDashCase } from "../../../lib/utils";
 
 interface SectionProps {
     content: any;
@@ -10,12 +11,7 @@ interface SectionProps {
     path: string
     parentId: string
 }
-function camelToDashCase(str: string) {
-    return str
-        .replace(/([a-z])([A-Z])/g, "$1-$2") // Split camelCase (aB → a-b)
-        .replace(/([A-Z])([A-Z][a-z])/g, "$1-$2") // Handle acronyms (RPA → rpa)
-        .toLowerCase();
-}
+
 export function SharedListItemSection({
     content,
     type,

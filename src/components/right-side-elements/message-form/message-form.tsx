@@ -1,9 +1,9 @@
 // Dynamically import ReactQuill to avoid SSR issues
-import { Node, NodeProps } from "@xyflow/react"
+import { Edge, Node, NodeProps } from "@xyflow/react"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import { useDebounceConfig } from "../../../hooks/use-debounced-config"
-import { removeHTMLTags } from "../../../lib/utils"
+import { getNextNodeId, removeHTMLTags, stringifyAndExtractVariables } from "../../../lib/utils"
 import { useFlowStore } from "../../../store/flow-store"
 import { LoopFromForm } from "../../common/loop-from-end"
 import { EditableField } from "../../custom/editable-field"
@@ -21,16 +21,21 @@ interface RightSideData {
   loopFromSwitch: boolean;
   loopFromName: string
 }
-export function getContent(selectedNode: any) {
+
+export function getContent(selectedNode: any, params: any) {
   const rightSideData: RightSideData = selectedNode.data.rightSideData
+  const content = {
+    type: "data",
+    data: {
+      text: rightSideData.botSays
+    }
+  }
   return {
-    content: {
-      type: "data",
-      data: {
-        text: rightSideData.botSays
-      }
-    },
-    saveUserInputAs: rightSideData.save ? rightSideData.variableName : null
+    type: "Message",
+    content: content,
+    next: getNextNodeId(selectedNode.id, params.edges, params.nodes, null),
+    saveUserInputAs: rightSideData.save ? rightSideData.variableName : null,
+    usedVariables: stringifyAndExtractVariables(content)
   };
 }
 

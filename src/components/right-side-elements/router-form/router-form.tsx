@@ -9,9 +9,8 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
-import { validateArray } from "../../../lib/utils";
+import { getNextNodeId, stringifyAndExtractVariables, validateArray } from "../../../lib/utils";
 import { useFlowStore } from "../../../store/flow-store";
-import getContent from "./get-content";
 import { RouterBranch, RouterDefaultBranch } from "../../nodes/router-node";
 import { FieldWrapper } from "../../custom/field-wrapper";
 
@@ -35,7 +34,31 @@ interface RouterConfigFormProps {
     value: any
   ) => void
 }
-
+export function getContent(selectedNode: any, params: any) {
+  const rightSideData: RightSideData = selectedNode.data.rightSideData
+  const { edges, nodes } = params
+  const content = {
+    type: "data",
+    data: {
+      conditions: [
+        { default: getNextNodeId(selectedNode.id, edges, nodes, "branch-default") },
+        ...rightSideData.branches?.map((el) => ({
+          operation: el.checkType,
+          dataType: el.operatorType,
+          firstOperator: el.firstOperator,
+          secondOperator: el.secondOperator,
+          next: getNextNodeId(selectedNode.id, edges, nodes, el.id),
+        }))],
+    },
+  }
+  return {
+    type: "Router",
+    content: content,
+    next: getNextNodeId(selectedNode.id, edges, nodes, "branch-default"),
+    saveUserInputAs: rightSideData.save ? rightSideData.variableName : null,
+    usedVariables: stringifyAndExtractVariables(content)
+  };
+}
 
 function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
   if (!data) return false;
@@ -100,7 +123,6 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
   const edges = useFlowStore(state => state.edges)
   const nodes = useFlowStore(state => state.nodes)
 
-  console.log({ router: getContent(selectedNode, edges, nodes), data: selectedNode.data.rightSideData, edges, nodes });
 
   return (
     <div className="space-y-4">

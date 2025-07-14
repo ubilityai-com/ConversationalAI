@@ -12,6 +12,7 @@ import AutomationSimple from "../../custom/automation-v4";
 import { SharedSection } from "../../properties/shared/shared-section";
 import { SharedListSection } from "../../properties/shared/shared-section-list";
 import { MemoryElements } from "../../../elements/memory-elements";
+import { getNextNodeId, stringifyAndExtractVariables } from "../../../lib/utils";
 
 interface LLMConfigProps extends Record<string, any> {
     label: string;
@@ -50,26 +51,30 @@ function extractCreds(obj: any): string[] {
 
     return creds;
 }
-export function getContent(selectedNode: any) {
+export function getContent(selectedNode: any, params: any) {
     const rightSideData = selectedNode.data.rightSideData
     const model = rightSideData.extras.model
     const memory = rightSideData.extras.memory
     const tool = rightSideData.extras.tool
-
+    const { edges, nodes } = params
+    const content = {
+        type: "data",
+        data: {
+            inputs: { query: rightSideData.json.query },
+            model: require("../../properties/contents/model")[model.type](selectedNode),
+            chainMemory: require("../../properties/contents/memory")[memory.type](selectedNode),
+            cred: extractCreds(selectedNode?.data.rightSideData.extras),
+            paramsTools: tool.list.map((el: any) => {
+                return require("../../properties/contents/tool")[el.type](el.content)
+            })
+        }
+    }
     return {
-        content: {
-            type: "data",
-            data: {
-                inputs: { query: rightSideData.json.query },
-                model: require("../../properties/contents/model")[model.type](selectedNode),
-                chainMemory: require("../../properties/contents/memory")[memory.type](selectedNode),
-                cred: extractCreds(selectedNode?.data.rightSideData.extras),
-                paramsTools: tool.list.map((el: any) => {
-                    return require("../../properties/contents/tool")[el.type](el.content)
-                })
-            }
-        },
-        saveUserInputAs: rightSideData.save ? rightSideData.variableName : null
+        type: "LC_REACT_AGENT",
+        content: content,
+        saveUserInputAs: rightSideData.save ? rightSideData.variableName : null,
+        next: getNextNodeId(selectedNode.id, edges, nodes, null),
+        usedVariables: stringifyAndExtractVariables(content)
     };
 }
 
