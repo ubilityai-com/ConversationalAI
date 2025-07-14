@@ -60,4 +60,50 @@ export const McpTool = (content: any) => {
 
     }
 }
+export const GoogleSearchTool = (content: any) => {
+    const json = content.json
 
+    return {
+        type: "GoogleSearch",
+        name: json.name,
+        description: json.description,
+        cred: json.cred
+    }
+}
+
+export const CustomCodeTool = (content: any) => {
+    const json = content.json
+    let jsonToSend: any = {
+        name: json.name,
+        description: json.description,
+        params: {},
+    }
+    if (json.type === "Python")
+        jsonToSend = {
+            ...jsonToSend,
+            type: "pythonCode",
+            params: { customPythonCode: json.code },
+        };
+    else
+        jsonToSend = {
+            ...jsonToSend,
+            type: "javaScriptCode",
+            params: { customJavaScriptCode: json.code },
+        };
+    return jsonToSend
+}
+export const SerpApiTool = (content: any) => {
+    const json = content.json
+    return {
+        type: "serpApi",
+        description: json.description,
+        cred: json.cred
+    }
+}
+export const WikipediaTool = (content: any) => {
+    const json = content.json
+    return {
+        type: "wikipidia",
+        description: json.description,
+    }
+}

@@ -2,7 +2,7 @@ import { useDebounceConfig } from "../../../../../hooks/use-debounced-config";
 import AutomationSimple from "../../../../custom/automation-v4";
 
 
-interface McpToolProps {
+interface GoogleSearchToolProps {
     selectedNodeId: string
     content: any,
     schema: any[]
@@ -13,7 +13,7 @@ interface McpToolProps {
 
 
 
-const McpTool: React.FC<McpToolProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter }) => {
+const GoogleSearchTool: React.FC<GoogleSearchToolProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter }) => {
     const { localConfig, updateNestedConfig } =
         useDebounceConfig<any>(
             content,
@@ -36,7 +36,7 @@ const McpTool: React.FC<McpToolProps> = ({ selectedNodeId, content, onContentUpd
                 onFieldChange={({ path, value }) => {
                     updateNestedConfig(`json.${path}`, value)
                 }}
-                filledDataName={`McpTool_${counter}`}
+                filledDataName={`GoogleSearchTool_${counter}`}
                 fieldValues={json}
                 path="json"
 
@@ -45,4 +45,4 @@ const McpTool: React.FC<McpToolProps> = ({ selectedNodeId, content, onContentUpd
     )
 }
 
-export default McpTool
+export default GoogleSearchTool
