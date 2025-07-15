@@ -3,7 +3,6 @@ import axios, { type AxiosRequestConfig } from "axios"
 import { useFlowStore } from "../../../store/flow-store"
 import { OAuth2ServiceTypes } from "./OAuth2FlowServicesList"
 import { useCredentialStore } from "../../../store/credentials-store"
-// import { useFlowStore, type AddCredentialPayload } from "./flow-store"
 
 // Type definitions
 interface MyFunctions {
@@ -313,11 +312,7 @@ export const OAuth2AuthenticationFlow = async (): Promise<void> => {
     const urlParams = new URLSearchParams(window.location.search)
     const code = urlParams.get("code")
     const cookieType = Cookies.get("type")
-    const isOneClick = Cookies.get("isOneClick")
 
-    // if (code && cookieType && isOneClick) {
-    //     alert("in")
-    // } else
     if (code && cookieType) {
         await StartOAuth2Flow()
     } else if (Cookies.get("type") && !Cookies.get("continueProcess")) {

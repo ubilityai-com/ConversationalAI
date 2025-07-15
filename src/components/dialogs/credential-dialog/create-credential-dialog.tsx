@@ -1,36 +1,33 @@
 import Cookies from "js-cookie"
-import { Copy, Eye, EyeOff, Plus, Trash2 } from "lucide-react"
-import type React from "react"
+import { Copy, Eye, EyeOff, Plus, Settings, Shield, Zap } from "lucide-react"
 import { Fragment, useEffect, useState } from "react"
 import { useCredentialStore } from "../../../store/credentials-store"
-import { AutoCompleteItem, CopyField, CredentialField, CredentialInfo, CredentialModalProps } from "../../../types/credentials-types"
+import type {
+    AutoCompleteItem,
+    CredentialField,
+    CredentialInfo,
+    CredentialModalProps
+} from "../../../types/credentials-types"
+import { CircularLoader } from "../../ui/CircularLoader"
 import { Alert, AlertDescription } from "../../ui/alert"
 import { Badge } from "../../ui/badge"
 import { Button } from "../../ui/button"
-import { Card } from "../../ui/card"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../../ui/dialog"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
 import { RadioGroup, RadioGroupItem } from "../../ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
 import { Switch } from "../../ui/switch"
-import { ClickUpSignIn, containsOnlyLettersAndNumbers, credsThatNeedRedirects, DropboxSignIn, FacebookSignIn, HubSpotSignIn, InstagramSignIn, JiraSignIn, LinkedInSignIn, MailChimpSignIn, MicrosoftSignIn, oauthSignIn, PipeDriveSignIn, QuickBooksSignIn, RedditSignIn, SalesForceSignIn, serviceFields, ServiceNowSignIn, setCredOnOneLevel, SlackSignIn, SnowflakeSignIn, XeroSignIn, XSignIn, ZendeskSignIn, ZohoSignIn, ZoomSignIn } from "./credentialsData"
-import { CircularLoader } from "../../ui/CircularLoader"
-import { useFlowStore } from "../../../store/flow-store"
+import { credsThatHaveConsentScreenList } from "./OAuth-signin-services"
+import { CopyFields, CustomDynamicField, ServiceSelector } from "./credential-components"
+import {
+    containsOnlyLettersAndNumbers,
+    credsThatNeedRedirects,
+    serviceFields,
+    setCredOnOneLevel,
+} from "./credentialsData"
 
 
-
-// Mock data - replace with your actual service fields
-
-
-const handleCopyClick = async (text: string): Promise<void> => {
-    try {
-        await navigator.clipboard.writeText(text)
-        console.log("Copied to clipboard:", text)
-    } catch (error) {
-        console.error("Failed to copy:", error)
-    }
-}
 
 const credsWithImagesList = (serviceFields: CredentialInfo[]): AutoCompleteItem[] => {
     return serviceFields.map((opt) => ({
@@ -39,137 +36,7 @@ const credsWithImagesList = (serviceFields: CredentialInfo[]): AutoCompleteItem[
     }))
 }
 
-// Components
-const CopyFields: React.FC<{ field: CopyField }> = ({ field }) => {
-    return (
-        <div className="space-y-2">
-            <Label>{field.label}</Label>
-            <div className="flex items-center space-x-2">
-                <Input
-                    value={field.value}
-                    readOnly
-                    className="bg-muted cursor-pointer"
-                    onClick={() => handleCopyClick(field.value)}
-                />
-                <Button variant="outline" size="icon" onClick={() => handleCopyClick(field.value)}>
-                    <Copy className="h-4 w-4" />
-                </Button>
-            </div>
-        </div>
-    )
-}
 
-
-const CustomDynamicField: React.FC<{
-    field: CredentialField
-    onChange: (value: any) => void
-}> = ({ field, onChange }) => {
-    const [items, setItems] = useState<Array<{ key: string; value: string }>>(
-        field.Credential_value || [{ key: "", value: "" }],
-    )
-
-    const addItem = () => {
-        const newItems = [...items, { key: "", value: "" }]
-        setItems(newItems)
-        onChange(newItems)
-    }
-
-    const removeItem = (index: number) => {
-        const newItems = items.filter((_, i) => i !== index)
-        setItems(newItems)
-        onChange(newItems)
-    }
-
-    const updateItem = (index: number, field: "key" | "value", value: string) => {
-        const newItems = [...items]
-        newItems[index][field] = value
-        setItems(newItems)
-        onChange(newItems)
-    }
-
-    return (
-        <div className="space-y-3">
-            <Label>{field.label}</Label>
-            {items.map((item, index) => (
-                <Card key={index} className="p-3">
-                    <div className="flex items-center space-x-2">
-                        <Input
-                            placeholder="Key"
-                            value={item.key}
-                            onChange={(e: any) => updateItem(index, "key", e.target.value)}
-                            className="flex-1"
-                        />
-                        <Input
-                            placeholder="Value"
-                            value={item.value}
-                            onChange={(e: any) => updateItem(index, "value", e.target.value)}
-                            className="flex-1"
-                        />
-                        <Button variant="outline" size="icon" onClick={() => removeItem(index)} disabled={items.length === 1}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                </Card>
-            ))}
-            <Button variant="outline" onClick={addItem} className="w-full bg-transparent">
-                <Plus className="h-4 w-4 mr-2" />
-                Add Item
-            </Button>
-        </div>
-    )
-}
-
-const ServiceSelector: React.FC<{
-    value: string
-    onChange: (value: string) => void
-    options: AutoCompleteItem[]
-    disabled?: boolean
-}> = ({ value, onChange, options, disabled }) => {
-
-    return (
-        <Select value={value} onValueChange={onChange} disabled={disabled}>
-            <SelectTrigger>
-                <SelectValue placeholder="Select a service" />
-            </SelectTrigger>
-            <SelectContent>
-                {options.map((option) => (
-                    <SelectItem key={option.title} value={option.title}>
-                        <div className="flex items-center space-x-2">
-                            <img src={option.image || "/placeholder.svg"} alt={option.title} className="w-4 h-4" />
-                            <span>{option.title}</span>
-                        </div>
-                    </SelectItem>
-                ))}
-            </SelectContent>
-        </Select>
-    )
-}
-
-// Main Component
-const credsThatHaveConsentScreenList = [
-    { name: "Google", function: oauthSignIn },
-    { name: "SalesForce", function: SalesForceSignIn },
-    { name: "ZohoCRM", function: ZohoSignIn },
-    { name: "Zoom", function: ZoomSignIn },
-    { name: "HubSpot", function: HubSpotSignIn },
-    { name: "Dropbox", function: DropboxSignIn },
-    { name: "Microsoft", function: MicrosoftSignIn },
-    { name: "Xero", function: XeroSignIn },
-    { name: "PipeDrive", function: PipeDriveSignIn },
-    { name: "QuickBooks", function: QuickBooksSignIn },
-    { name: "Jira", function: JiraSignIn, condition: true },
-    { name: "Facebook", function: FacebookSignIn, continueProcess: true },
-    { name: "Instagram", function: InstagramSignIn },
-    { name: "LinkedIn", function: LinkedInSignIn },
-    { name: "X", function: XSignIn },
-    { name: "ServiceNow", function: ServiceNowSignIn },
-    { name: "Reddit", function: RedditSignIn },
-    { name: "Zendesk", function: ZendeskSignIn, condition: true },
-    { name: "ClickUp", function: ClickUpSignIn, condition: true },
-    { name: "MailChimp", function: MailChimpSignIn, condition: true },
-    { name: "Snowflake", function: SnowflakeSignIn },
-    { name: "Slack", function: SlackSignIn, condition: true },
-];
 export function CreateCredentialDialog({
     open,
     onOpenChange,
@@ -178,7 +45,7 @@ export function CreateCredentialDialog({
     refetch,
     credentialsList = [],
 }: CredentialModalProps) {
-    const defaultCred: CredentialInfo = serviceFields.find(cred => cred.service === credType) || serviceFields[0];
+    const defaultCred: CredentialInfo = serviceFields.find((cred) => cred.service === credType) || serviceFields[0]
     const [searchText, setSearchText] = useState("Google")
     const [autoCompleteList, setAutoCompleteList] = useState<AutoCompleteItem[]>(credsWithImagesList(serviceFields))
     const [credInfo, setCredInfo] = useState<CredentialInfo>(defaultCred)
@@ -187,7 +54,6 @@ export function CreateCredentialDialog({
     const [isCurrentCredOauth2, setIsCurrentCredOauth2] = useState(defaultCred?.defaultRedirectUri)
     const [showPassword, setShowPassword] = useState<Record<string, boolean>>({})
     const { createCred, loading, success } = useCredentialStore()
-    const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
 
     useEffect(() => {
         resetCredInfo()
@@ -202,71 +68,78 @@ export function CreateCredentialDialog({
         setShowPassword({})
     }
 
+    const updateCredentialValue = (
+        credArray: CredentialField[],
+        path: number[],
+        value: any,
+        optionKeys: string[] = [],
+    ): CredentialField[] => {
+        if (path.length === 0) return credArray
+
+        const [currentIndex, ...remainingPath] = path
+
+        return credArray.map((field, index) => {
+            if (index !== currentIndex) return field
+
+            // If this is the target field (no more path to traverse)
+            if (remainingPath.length === 0) {
+                return { ...field, Credential_value: value }
+            }
+            // Navigate deeper into options
+            if (field.options && optionKeys.length > 0) {
+                const [currentOptionKey, ...remainingOptionKeys] = optionKeys
+                const optionValue = field.options[currentOptionKey]
+
+                if (optionValue) {
+                    return {
+                        ...field,
+                        options: {
+                            ...field.options,
+                            [currentOptionKey]: updateCredentialValue(optionValue, remainingPath, value, remainingOptionKeys),
+                        },
+                    }
+                }
+            }
+
+            return field
+        })
+    }
+
+    // Optimized recursive handleChange function
     const handleChange = (value: any, fieldIndex: number, level = 0, parentInfo?: any) => {
-        if (level === 0) {
-            // Handle top-level fields
-            setCredInfo((prev) => ({
-                ...prev,
-                cred: prev.cred.map((field, index) => (index === fieldIndex ? { ...field, Credential_value: value } : field)),
-            }))
-        } else if (level === 1) {
-            // Handle first nested level (options)
-            const { child0, indexChild0 } = parentInfo || {}
-            setCredInfo((prev) => ({
-                ...prev,
-                cred: prev.cred.map((field, ind) => {
-                    if (indexChild0 === ind && field.options && field.options[child0]) {
-                        return {
-                            ...field,
-                            options: {
-                                ...field.options,
-                                [child0]: field.options[child0].map((subField, subIndex) => {
-                                    if (subIndex === fieldIndex) {
-                                        return { ...subField, Credential_value: value }
-                                    }
-                                    return subField
-                                }),
-                            },
-                        }
+        setCredInfo((prev) => {
+            let path: number[] = [fieldIndex]
+            let optionKeys: string[] = []
+
+            // Build path and option keys based on level and parentInfo
+            if (level > 0 && parentInfo) {
+                // Reconstruct the path from parentInfo
+                path = []
+                optionKeys = []
+
+                // Add parent indices and option keys based on level
+                for (let i = 0; i < level; i++) {
+                    const parentIndex = parentInfo[`indexChild${i}`]
+                    const optionKey = parentInfo[`child${i}`]
+
+                    if (i === 0) {
+                        path.push(parentIndex)
                     }
-                    return field
-                }),
-            }))
-        } else if (level === 2) {
-            // Handle second nested level (nested options)
-            const { child0, child1, indexChild0, indexChild1 } = parentInfo || {}
-            setCredInfo((prev) => ({
-                ...prev,
-                cred: prev.cred.map((field, ind) => {
-                    if (indexChild0 === ind && field.options && field.options[child0]) {
-                        return {
-                            ...field,
-                            options: {
-                                ...field.options,
-                                [child0]: field.options[child0].map((subField, subIndex) => {
-                                    if (subIndex === indexChild1 && subField.options && subField.options[child1]) {
-                                        return {
-                                            ...subField,
-                                            options: {
-                                                ...subField.options,
-                                                [child1]: subField.options[child1].map((deepField, deepIndex) => {
-                                                    if (deepIndex === fieldIndex) {
-                                                        return { ...deepField, Credential_value: value }
-                                                    }
-                                                    return deepField
-                                                }),
-                                            },
-                                        }
-                                    }
-                                    return subField
-                                }),
-                            },
-                        }
+
+                    if (optionKey !== undefined) {
+                        optionKeys.push(optionKey.toString())
                     }
-                    return field
-                }),
-            }))
-        }
+                }
+
+                // Add current field index
+                path.push(fieldIndex)
+            }
+
+            return {
+                ...prev,
+                cred: updateCredentialValue(prev.cred, path, value, optionKeys),
+            }
+        })
     }
 
     const handleServiceChange = (serviceName: string) => {
@@ -279,132 +152,141 @@ export function CreateCredentialDialog({
             setSearchText(serviceName)
             const currentCredType = newCred.cred.find((field) => field.credTypeConnection)
             const initialCredStatus = serviceName in credsThatNeedRedirects
-
-            setIsCurrentCredOauth2(currentCredType ? currentCredType.Credential_value === "OAuth Application" : initialCredStatus)
+            setIsCurrentCredOauth2(
+                currentCredType ? currentCredType.Credential_value === "OAuth Application" : initialCredStatus,
+            )
         }
     }
 
     const validateAndSave = async () => {
+        let newCredInfo: CredentialInfo = { ...credInfo, cred: setCredOnOneLevel(credInfo.cred) }
 
-        let newCredInfo: CredentialInfo = { ...credInfo, cred: setCredOnOneLevel(credInfo.cred) };
-        console.log({ newCredInfo });
+        if (error) setError(false) // To satisfy TypeScript; replace with your real `error` state if needed
 
-        if (error) setError(false); // To satisfy TypeScript; replace with your real `error` state if needed
+        let errorMsg: string | null = null
 
-        let errorMsg: string | null = null;
-
-        if (
-            newCredInfo.Service_name.trim().length > 0 &&
-            newCredInfo.service.trim().length > 0 &&
-            searchText.trim()
-        ) {
+        if (newCredInfo.Service_name.trim().length > 0 && newCredInfo.service.trim().length > 0 && searchText.trim()) {
             newCredInfo.cred.forEach((c) => {
                 if (c.custom) {
-                    (c.Credential_value as { key: string; value: string }[]).some(item => {
+                    ; (c.Credential_value as { key: string; value: string }[]).some((item) => {
                         if (item.key.trim() === "" || item.value.trim() === "") {
-                            errorMsg = "Please fill all the fields";
-                            return true;
+                            errorMsg = "Please fill all the fields"
+                            return true
                         }
-                        return false;
-                    });
+                        return false
+                    })
                 }
                 if (typeof c.Credential_value === "string" && c.Credential_value.trim().length < 3 && !c.optional) {
-                    errorMsg = "Credential fields should be at least 3 characters.";
+                    errorMsg = "Credential fields should be at least 3 characters."
                 } else if (c.api && c.Credential_value === "None") {
-                    errorMsg = `Please choose a ${c.label}`;
+                    errorMsg = `Please choose a ${c.label}`
                 }
-            });
+            })
 
             if (errorMsg) {
-                setError(errorMsg);
-                return;
+                setError(errorMsg)
+                return
             }
 
-            const oAuth2Cred = newCredInfo.cred.find(c => c.credTypeConnection);
-            const currentCredConnectionTypeOauth = !!(oAuth2Cred && (
-                oAuth2Cred.Credential_value === "OAuth Application" ||
-                oAuth2Cred.Credential_value === "Default"
-            ));
+            const oAuth2Cred = newCredInfo.cred.find((c) => c.credTypeConnection)
+            const currentCredConnectionTypeOauth = !!(
+                oAuth2Cred &&
+                (oAuth2Cred.Credential_value === "OAuth Application" || oAuth2Cred.Credential_value === "Default")
+            )
 
             newCredInfo = {
                 ...newCredInfo,
-                cred: newCredInfo.cred.filter(f => {
+                cred: newCredInfo.cred.filter((f) => {
                     if (f.optional && (f.dropdown || f.radio)) {
-                        return f.Credential_value !== "None";
+                        return f.Credential_value !== "None"
                     }
                     if (typeof f.Credential_value === "string") {
-                        return f.Credential_value.trim().length > 0 || f.credTypeConnection;
+                        return f.Credential_value.trim().length > 0 || f.credTypeConnection
                     }
-                    return true;
+                    return true
                 }),
-            };
+            }
 
-            const credNameAndFunctionForConsent = credsThatHaveConsentScreenList.find(c => c.name === newCredInfo.service);
+            const credNameAndFunctionForConsent = credsThatHaveConsentScreenList.find((c) => c.name === newCredInfo.service)
             const callConsentFunction = () => {
-                setTimeout(() => credNameAndFunctionForConsent?.function(), 100);
-            };
-
-
-            if (credentialsList.some(c => c.credName === newCredInfo.Service_name)) {
-                setError("Credential name already exists.");
-                return;
+                setTimeout(() => credNameAndFunctionForConsent?.fn(), 100)
             }
+
+            if (credentialsList.some((c) => c.credName === newCredInfo.Service_name)) {
+                setError("Credential name already exists.")
+                return
+            }
+
             if (!containsOnlyLettersAndNumbers(newCredInfo.Service_name)) {
-                setError("The Name should only consist of letters and numbers, without any special characters or spaces.");
-                return;
+                setError("The Name should only consist of letters and numbers, without any special characters or spaces.")
+                return
             }
+
             if (newCredInfo.Service_name.length > 25) {
-                setError("The credential name can have a maximum of 25 characters.");
-                return;
+                setError("The credential name can have a maximum of 25 characters.")
+                return
             }
-            if (!newCredInfo.CREATE && (credNameAndFunctionForConsent && !credNameAndFunctionForConsent.condition) || currentCredConnectionTypeOauth) {
+
+            if (
+                (!newCredInfo.CREATE && credNameAndFunctionForConsent && !credNameAndFunctionForConsent.condition) ||
+                currentCredConnectionTypeOauth
+            ) {
                 if (credNameAndFunctionForConsent?.continueProcess) {
-                    Cookies.set("continueProcess", newCredInfo.service);
+                    Cookies.set("continueProcess", newCredInfo.service)
                 }
-                newCredInfo.cred.forEach(c => {
-                    Cookies.set(c.Credential_name, String(c.Credential_value));
-                });
-                Cookies.set("type", newCredInfo.service);
+                newCredInfo.cred.forEach((c) => {
+                    Cookies.set(c.Credential_name, String(c.Credential_value))
+                })
+                Cookies.set("type", newCredInfo.service)
                 // Cookies.set("new_user", String(credentialsList.length === 0));
-                Cookies.set("name", newCredInfo.Service_name);
-                callConsentFunction();
+                Cookies.set("name", newCredInfo.Service_name)
+                callConsentFunction()
             } else {
                 const res = await createCred({
-                    "name": newCredInfo.Service_name,
-                    "type": newCredInfo.service,
-                    "data": newCredInfo.cred.reduce((acc, element) => {
-                        if (element.Credential_name !== "type") {
-                            acc[element.Credential_name] = typeof element.Credential_value === "string"
-                                ? element.Credential_value
-                                : String(element.Credential_value);
-                        }
-                        return acc;
-                    }, {} as Record<string, string>),
-
+                    name: newCredInfo.Service_name,
+                    type: newCredInfo.service,
+                    data: newCredInfo.cred.reduce(
+                        (acc, element) => {
+                            if (element.Credential_name !== "type") {
+                                acc[element.Credential_name] =
+                                    typeof element.Credential_value === "string"
+                                        ? element.Credential_value
+                                        : String(element.Credential_value)
+                            }
+                            return acc
+                        },
+                        {} as Record<string, string>,
+                    ),
                 })
-                if (res === true) {
+                if (res) {
                     refetch()
+                    resetCredInfo()
                 }
-
-                resetCredInfo();
             }
-
         } else {
-            setError("Please fill all the fields");
+            setError("Please fill all the fields")
         }
-    };
+    }
+
     const renderField = (field: CredentialField, index: number, level = 0, parentInfo?: any) => {
         if (field.hidden) return null
+
         const fieldId = `${field.Credential_name}-${index}-${level}`
 
         return (
             <Fragment key={fieldId}>
                 {!field.custom && (
-                    <div className="space-y-2">
-                        <Label htmlFor={fieldId}>
+                    <div className="space-y-3">
+                        <Label
+                            htmlFor={fieldId}
+                            className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2"
+                        >
                             {field.label}
                             {field.optional && (
-                                <Badge variant="secondary" className="ml-2 text-xs">
+                                <Badge
+                                    variant="secondary"
+                                    className="text-xs bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
+                                >
                                     Optional
                                 </Badge>
                             )}
@@ -418,13 +300,13 @@ export function CreateCredentialDialog({
                                     value={field.Credential_value || ""}
                                     onChange={(e: any) => handleChange(e.target.value, index, level, parentInfo)}
                                     disabled={field.disabled || field.readOnly}
-                                    className="pr-10"
+                                    className="pr-12 h-11 border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
                                 />
                                 <Button
                                     type="button"
                                     variant="ghost"
-                                    size="icon"
-                                    className="absolute right-0 top-0 h-full px-3"
+                                    size="sm"
+                                    className="absolute right-1 top-1/2 -translate-y-1/2 h-9 w-9 hover:bg-gray-100 dark:hover:bg-gray-700"
                                     onClick={() =>
                                         setShowPassword((prev) => ({
                                             ...prev,
@@ -436,19 +318,29 @@ export function CreateCredentialDialog({
                                 </Button>
                             </div>
                         ) : field.switch ? (
-                            <div className="flex items-center space-x-2">
-                                <Switch
-                                    id={fieldId}
-                                    checked={field.Credential_value || false}
-                                    onCheckedChange={(checked: any) => handleChange(checked, index, level, parentInfo)}
-                                    disabled={field.disabled}
-                                />
-                                <Label htmlFor={fieldId} className="text-sm text-muted-foreground">
-                                    {field.Credential_value ? "Enabled" : "Disabled"}
-                                </Label>
+                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-750 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <div className="flex items-center space-x-3">
+                                    <Switch
+                                        id={fieldId}
+                                        checked={field.Credential_value || false}
+                                        onCheckedChange={(checked: any) => handleChange(checked, index, level, parentInfo)}
+                                        disabled={field.disabled}
+                                    />
+                                    <Label htmlFor={fieldId} className="text-sm font-medium">
+                                        {field.Credential_value ? "Enabled" : "Disabled"}
+                                    </Label>
+                                </div>
+                                <div
+                                    className={`px-2 py-1 rounded-full text-xs font-medium ${field.Credential_value
+                                        ? "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400"
+                                        : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400"
+                                        }`}
+                                >
+                                    {field.Credential_value ? "ON" : "OFF"}
+                                </div>
                             </div>
                         ) : field.dropdown || field.api ? (
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-3">
                                 <Select
                                     value={field.Credential_value || ""}
                                     onValueChange={(value: any) => {
@@ -459,42 +351,55 @@ export function CreateCredentialDialog({
                                     }}
                                     disabled={field.disabled}
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger className="h-11 border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500">
                                         <SelectValue placeholder={field.placeholder || `Select ${field.label}`} />
                                     </SelectTrigger>
                                     <SelectContent>
                                         {field.list?.map((option) => (
-                                            <SelectItem key={option.value} value={option.value}>
+                                            <SelectItem key={option.value} value={option.value} className="py-2">
                                                 {option.label}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                                 {field.api && field.getList && (
-                                    <Button variant="outline" size="icon" onClick={field.getList} disabled={isLoadingApi}>
-                                        <Plus className="h-4 w-4" />
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={field.getList}
+                                        disabled={isLoadingApi}
+                                        className="h-11 w-11 hover:bg-blue-50 hover:border-blue-200 dark:hover:bg-blue-900/20 bg-transparent"
+                                    >
+                                        {isLoadingApi ? <CircularLoader size={16} thickness={2} /> : <Plus className="h-4 w-4" />}
                                     </Button>
                                 )}
                             </div>
                         ) : field.radio ? (
-                            <RadioGroup
-                                className="flex flex-row items-center"
-                                value={field.Credential_value || ""}
-                                onValueChange={(value: any) => {
-                                    if (field.credTypeConnection) {
-                                        setIsCurrentCredOauth2(value === "OAuth Application")
-                                    }
-                                    handleChange(value, index, level, parentInfo)
-                                }}
-                                disabled={field.disabled}
-                            >
-                                {field.list?.map((option) => (
-                                    <div key={option.value} className="flex items-center space-x-2">
-                                        <RadioGroupItem value={option.value} id={`${fieldId}-${option.value}`} />
-                                        <Label htmlFor={`${fieldId}-${option.value}`}>{option.label}</Label>
-                                    </div>
-                                ))}
-                            </RadioGroup>
+                            <div className="p-4 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-750 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <RadioGroup
+                                    className="flex flex-wrap gap-4"
+                                    value={field.Credential_value || ""}
+                                    onValueChange={(value: any) => {
+                                        if (field.credTypeConnection) {
+                                            setIsCurrentCredOauth2(value === "OAuth Application")
+                                        }
+                                        handleChange(value, index, level, parentInfo)
+                                    }}
+                                    disabled={field.disabled}
+                                >
+                                    {field.list?.map((option) => (
+                                        <div
+                                            key={option.value}
+                                            className="flex items-center space-x-2 p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                        >
+                                            <RadioGroupItem value={option.value} id={`${fieldId}-${option.value}`} />
+                                            <Label htmlFor={`${fieldId}-${option.value}`} className="font-medium cursor-pointer">
+                                                {option.label}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </RadioGroup>
+                            </div>
                         ) : (
                             <Input
                                 id={fieldId}
@@ -503,17 +408,16 @@ export function CreateCredentialDialog({
                                 value={field.Credential_value || ""}
                                 onChange={(e: any) => handleChange(e.target.value, index, level, parentInfo)}
                                 disabled={field.disabled || field.readOnly}
+                                className="h-11 border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
                             />
                         )}
                     </div>
                 )}
-
                 {field.custom && (
                     <CustomDynamicField field={field} onChange={(value) => handleChange(value, index, level, parentInfo)} />
                 )}
-
                 {field.options && field.options[field.Credential_value?.toString()] && (
-                    <div className="ml-4 space-y-4 border-l-2 border-muted pl-4">
+                    <div className="ml-6 space-y-4 border-l-2 border-blue-200 dark:border-blue-700 pl-6 bg-gradient-to-r from-blue-50/30 to-transparent dark:from-blue-900/10 rounded-r-lg py-4">
                         {field.options[field.Credential_value.toString()].map((subField, subIndex) =>
                             renderField(subField, subIndex, level + 1, {
                                 ...parentInfo,
@@ -529,47 +433,107 @@ export function CreateCredentialDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-lg max-h-[70vh] overflow-y-auto">
-                <DialogHeader>
-                    <DialogTitle>{"Add New"} Credential</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-6">
-                    {credInfo.description && (
-                        <Alert>
-                            <AlertDescription dangerouslySetInnerHTML={{ __html: credInfo.description }} />
-                        </Alert>
-                    )}
-                    <div className="space-y-2">
-                        <Label htmlFor="credName">Name</Label>
-                        <Input
-                            id="credName"
-                            placeholder="Enter credential name"
-                            value={credInfo.Service_name}
-                            onChange={(e: any) => setCredInfo((prev) => ({ ...prev, Service_name: e.target.value }))}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Service or app to connect to</Label>
-                        <ServiceSelector disabled value={searchText} onChange={handleServiceChange} options={autoCompleteList} />
-                    </div>
-                    <div className="space-y-4">{credInfo.cred.map((field, index) => renderField(field, index))}</div>
-                    {isCurrentCredOauth2 && credsThatNeedRedirects[credInfo.service] && (
-                        <div className="space-y-4">
-                            {credsThatNeedRedirects[credInfo.service].map((field, index) => (
-                                <CopyFields key={index} field={field} />
-                            ))}
+            <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col bg-white dark:bg-gray-900">
+                <DialogHeader className="pb-6 border-b border-gray-200 dark:border-gray-700">
+                    <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                        <div className="p-2 bg-gradient-to-br from-blue-300 to-blue-400 rounded-lg">
+                            <Shield className="h-6 w-6 text-white" />
                         </div>
-                    )}
-                    {error && (
-                        <Alert variant="destructive">
-                            <AlertDescription>{error}</AlertDescription>
-                        </Alert>
-                    )}
+                        Add New Credential
+                    </DialogTitle>
+                </DialogHeader>
+                <div className="flex-1 overflow-y-auto px-1"
+                    style={{
+                        scrollbarWidth: "thin",
+                        scrollbarColor: "#cbd5e1 transparent",
+                        WebkitOverflowScrolling: "touch",
+                    }}
+                >
+                    <div className="space-y-8 py-6">
+                        {credInfo.description && (
+                            <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
+                                <Zap className="h-4 w-4 text-blue-600" />
+                                <AlertDescription
+                                    className="text-blue-800 dark:text-blue-200"
+                                    dangerouslySetInnerHTML={{ __html: credInfo.description }}
+                                />
+                            </Alert>
+                        )}
+                        <div className="space-y-6">
+                            <div className="space-y-3">
+                                <Label htmlFor="credName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Credential Name
+                                </Label>
+                                <Input
+                                    id="credName"
+                                    placeholder="Enter a unique name for this credential"
+                                    value={credInfo.Service_name}
+                                    onChange={(e: any) => setCredInfo((prev) => ({ ...prev, Service_name: e.target.value }))}
+                                    className="h-11 border-gray-200 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div className="space-y-3">
+                                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Service Provider</Label>
+                                <ServiceSelector
+                                    // disabled
+                                    value={searchText}
+                                    onChange={handleServiceChange}
+                                    options={autoCompleteList}
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-6">
+                            <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                                    <Settings className="h-5 w-5" />
+                                    Configuration
+                                </h3>
+                                <div className="space-y-6">{credInfo.cred.map((field, index) => renderField(field, index))}</div>
+                            </div>
+                            {isCurrentCredOauth2 && credsThatNeedRedirects[credInfo.service] && (
+                                <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                                        <Copy className="h-5 w-5" />
+                                        OAuth Configuration
+                                    </h3>
+                                    <div className="space-y-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/10 dark:to-orange-900/10 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
+                                        {credsThatNeedRedirects[credInfo.service].map((field, index) => (
+                                            <CopyFields key={index} field={field} />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {error && (
+                                <Alert
+                                    variant="destructive"
+                                    className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20"
+                                >
+                                    <AlertDescription className="text-red-800 dark:text-red-200">{error}</AlertDescription>
+                                </Alert>
+                            )}
+                        </div>
+                    </div>
                 </div>
-                <DialogFooter>
-                    <Button disabled={loading} variant={loading ? "outline" : "default"} onClick={validateAndSave}>
-                        Create {loading && <CircularLoader size={24} thickness={2} />}
-                    </Button>
+                <DialogFooter className="pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex gap-3 w-full justify-end">
+                        <Button
+                            disabled={loading}
+                            onClick={validateAndSave}
+                            className="flex-1 h-11 text-white font-medium"
+                        >
+                            {loading ? (
+                                <div className="flex items-center gap-2">
+                                    <CircularLoader size={18} thickness={2} color={"white"} />
+                                    Creating...
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <Shield className="h-4 w-4" />
+                                    Create Credential
+                                </div>
+                            )}
+                        </Button>
+                    </div>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
