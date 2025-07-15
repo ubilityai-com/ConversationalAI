@@ -533,7 +533,7 @@ export default function AutomationSimple({
                                             onFieldChange({ path: `${path}`, value: value })
                                         }
                                     }}
-                                    filledArray={dynamicValuee}
+                                    filledArray={[dynamicValuee]}
                                     flowZoneSelectedId={flowZoneSelectedId}
                                     path={`${path}.${item.variableName}`}
                                     {...commonProps}

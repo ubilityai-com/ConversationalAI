@@ -1,6 +1,7 @@
 import { FileJson } from "lucide-react";
 import { useState } from "react";
-import { ApiResItem, validateArray } from "../../../lib/utils";
+import { objToReturnDynamicv2 } from "../../../lib/automation-utils";
+import { validateArray } from "../../../lib/utils";
 import { useFlowStore } from "../../../store/flow-store";
 import AutomationSimple from "../../custom/automation-v4";
 import {
@@ -19,7 +20,7 @@ import {
     SelectValue,
 } from "../../ui/select";
 import { Switch } from "../../ui/switch";
-import { objToReturnDynamicv2 } from "../../../lib/automation-utils";
+import { defaultStyle } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 interface SectionProps {
     config: any;
@@ -92,9 +93,12 @@ export function SharedSection({
                                     const op = elements.find(
                                         (o) => o.type === value
                                     ) as any;
+                                    const defaultValues = objToReturnDynamicv2((op.rightSideData.json))
+                                    console.log({defaultValues});
+                                    
                                     setSchema(op);
                                     onConfigUpdate(`extras.${variableName}.type`, value);
-                                    onConfigUpdate(`extras.${variableName}.content`, objToReturnDynamicv2((op.rightSideData.json)));
+                                    onConfigUpdate(`extras.${variableName}.content`, defaultValues);
 
                                     add(id, variableName, validateArray(op.rightSideData.json, {}))
 

@@ -168,6 +168,7 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
     const fieldsArray = Array.isArray(currentFieldsArray) ? currentFieldsArray : []
     const hasRequiredError = json.required && fieldsArray.length === 0
     const hasRequiredSuccess = json.required && fieldsArray.length > 0
+    const isAccordion = json.type === "accordion"
     console.log({ json, currentFieldsArray, fieldsArray })
 
     // Create field values for nested automation components
@@ -236,7 +237,7 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
                                             flowZoneSelectedId={flowZoneSelectedId}
                                             onFieldChange={({ path, value }) => {
                                                 console.log({ path, value });
-                                                onFieldChange({ path: `${json.variableName}.${fieldSetInd}.${path}`, value: value })
+                                                onFieldChange({ path: `${json.variableName}.${!isAccordion ? `${fieldSetInd}.` : ``}${path}`, value: value })
 
                                             }}
                                             fieldValues={fieldSet}

@@ -4,14 +4,9 @@ import { Settings, Trash2, X } from "lucide-react"
 
 // Import all config components
 import { useFlowStore } from "../store/flow-store"
-import { AttacheConfig } from "./properties/configs/attache-config"
 // import { ConditionConfig } from "./properties/configs/condition-config"
-import { DefaultConfig } from "./properties/configs/default-config"
-import { EndConfig } from "./properties/configs/end-config"
 // import { LLMConfig } from "./properties/configs/llm-config"
-import { MessageConfig } from "./properties/configs/message-config"
 // import { RouterConfig } from "./properties/configs/router-config"
-import { ToolConfig } from "./properties/configs/tool-config"
 import RightSideBody from "./right-side-body"
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
@@ -19,78 +14,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 
 
 export function PropertiesPanel() {
-    // const { selectedNode, nodes, updateNode } = useWorkflow()
-    const nodes = useFlowStore(state => state.nodes)
     const selectedNode = useFlowStore(state => state.clickedElement)
     const setClickedElement = useFlowStore(state => state.setClickedElement)
     const deleteNode = useFlowStore(state => state.deleteNode)
 
-
-    const [activeTab, setActiveTab] = useState("config")
-    const [isCollapsed, setIsCollapsed] = useState(false)
     if (!selectedNode)
         return <></>
-    const selectedNodeData = selectedNode ? nodes.find((n) => n.id === selectedNode.id) : null
 
-    const handleConfigUpdate = (key: string, value: any) => {
-        // updateNode(selectedNodeData.id, {
-        //     data: {
-        //         ...selectedNodeData.data,
-        //         config: {
-        //             ...selectedNodeData.data.config,
-        //             [key]: value,
-        //         },
-        //     },
-        // })
-    }
-
-    const handleLabelUpdate = (label: string) => {
-        // updateNode(selectedNodeData.id, {
-        //     data: {
-        //         ...selectedNodeData.data,
-        //         label,
-        //     },
-        // })
-    }
-
-    const handleDataUpdate = (updates: any) => {
-        // updateNode(selectedNodeData.id, {
-        //     data: {
-        //         ...selectedNodeData.data,
-        //         ...updates,
-        //     },
-        // })
-    }
-
-    const renderConfigForm = () => {
-        const commonProps = {
-            data: selectedNodeData.data,
-            onLabelUpdate: handleLabelUpdate,
-            onConfigUpdate: handleConfigUpdate,
-            onDataUpdate: handleDataUpdate,
-        }
-
-        switch (selectedNodeData.type) {
-            // case "llm":
-            //     return <LLMConfig {...commonProps} />
-            // case "router":
-            //     return <RouterConfig {...commonProps} />
-            case "message":
-                return <MessageConfig {...commonProps} />
-            case "tool":
-                return <ToolConfig {...commonProps} />
-            // case "condition":
-            //     return <ConditionConfig {...commonProps} />
-            case "attache":
-                return <AttacheConfig {...commonProps} />
-            // case "choice":
-            // return <ChoiceConfig {...commonProps} />
-            default:
-                return <DefaultConfig {...commonProps} />
-            case "end":
-                return <EndConfig {...commonProps} />
-        }
-    }
 
     // Add this style tag at the top of the component, after the imports
     const sliderStyles = `
@@ -124,12 +54,12 @@ export function PropertiesPanel() {
                     <h2 className="text-lg font-semibold text-gray-900 flex items-center truncate">
                         <Settings className="w-5 h-5 mr-2 flex-shrink-0" />
                         <Badge variant="secondary" className="text-sm">
-                            {selectedNodeData.type}
+                            {selectedNode?.type}
                         </Badge>
                     </h2>
                 </div>
                 <div className="flex items-center space-x-2 flex-shrink-0">
-                    {selectedNode.type !== "Handler" && <Button variant="ghost" size="sm" onClick={() => deleteNode(selectedNode.id)} className="text-red-500 hover:text-red-600 w-8 h-8 p-0">
+                    {selectedNode?.type !== "Handler" && <Button variant="ghost" size="sm" onClick={() => deleteNode(selectedNode?.id)} className="text-red-500 hover:text-red-600 w-8 h-8 p-0">
                         <Trash2 className="w-4 h-4" />
                     </Button>}
                     <Button variant="ghost" size="sm" onClick={() => setClickedElement(null)} className="w-8 h-8 p-0">
@@ -144,7 +74,7 @@ export function PropertiesPanel() {
 
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-sm">{selectedNodeData.type} Configuration</CardTitle>
+                        <CardTitle className="text-sm">{selectedNode?.type} Configuration</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <RightSideBody />

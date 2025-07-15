@@ -149,7 +149,7 @@ const agentTypes = [
     name: "Message",
     type: "Message",
     color: "bg-emerald-500",
-    defaultValid: false,
+    defaultValid: true,
     label: "Message",
     description: "Send messages and notifications",
     icon: MessageCircle,
