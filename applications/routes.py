@@ -9,7 +9,7 @@ class SlackAppIntegration(BaseModel):
     credential_name: str
 
 
-@http_app.post("/cloud/regular/slack/listUsers")
+@http_app.post("/slack/listUsers")
 async def list_slack_users(payload: SlackAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
