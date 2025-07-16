@@ -10,7 +10,7 @@ Includes:
 - Dynamic routing and formatting
 """
 from logger_config import logger
-import json
+import json,base64
 from typing import Union
 from elements.message import Message
 from elements.multiple_choice import MultipleChoice
@@ -22,6 +22,8 @@ from elements.rag import RAG
 from elements.basic_llm import BasicLLM
 from elements.app_integration import AppIntegration
 from dialogues.dialogues import active_dialogues
+import gzip, os, gzip,magic,uuid
+import os.path
 
 
 async def execute_process(sio, sid, conversation, dialogue):
@@ -83,8 +85,8 @@ async def execute_process(sio, sid, conversation, dialogue):
             current_dialogue.get('usedVariables', [])
         ).send(sio, sid)
 
-    elif element_type == 'Handler':
-        await handle_routing(sio, sid, conversation, dialogue, current_dialogue,content)
+    elif element_type == 'MC_Handler':
+        await handle_multiple_choice(sio, sid, conversation, dialogue, current_dialogue,content)
         return
 
     elif element_type == 'Router':
@@ -102,6 +104,8 @@ async def execute_process(sio, sid, conversation, dialogue):
     elif element_type == 'AppIntegration':
         await handle_app_integration(sio, sid, conversation, dialogue, current_dialogue,content)
         return
+    elif element_type == 'Attachement':
+        await Message(content["data"]['message']).send(sio, sid)
     else:
         print(f'[Warning] Invalid element type: {element_type}')
 
@@ -130,10 +134,10 @@ def save_user_input(conversation: dict, input_object: dict):
 
     Args:
         conversation (dict): The current conversation.
-        input_object (dict): The message input object containing 'value'.
+        input_object (dict): The message input object containing 'data'.
     """
     logger.info("Save user's input to conversation variables")
-    conversation['variables'][conversation['wait_for_user_input']] = input_object.get('value')
+    conversation['variables'][conversation['wait_for_user_input']] = input_object.get('data')
     conversation['wait_for_user_input'] = None
 
 
@@ -166,14 +170,14 @@ def replace_variables(template: Union[str, list, dict], variables: dict, used_va
         return template  # If template is an unexpected type, return it as-is
 
 
-async def handle_routing(sio, sid, conversation, dialogue, current_dialogue,content):
+async def handle_multiple_choice(sio, sid, conversation, dialogue, current_dialogue,content):
     """
     Handle conditional branching logic with Handler elements.
     """
     
     used_variable = current_dialogue['usedVariables'][0]
     case_value = conversation['variables'].get(used_variable, '')
-
+    print(case_value)
     valid_cases = [k for k in content["data"]['cases'].keys() if k != 'Other']
 
     if case_value in valid_cases:
@@ -285,3 +289,121 @@ def get_value_from_path(json_body, path, default=None):
         return current
     except (KeyError, IndexError, ValueError, TypeError):
         return default
+    
+
+def save_file_input(conversation,conversation_id,user_input):
+    try:
+        logger.info("Save user's file to conversation variables")
+        # Decompress if gzip
+        raw_data = (
+            gzip.decompress(user_input.get('data'))
+            if user_input.get('data')[:2] == b'\x1f\x8b'
+            else user_input.get('data')
+        )
+
+        # Detect MIME and validate
+        mime = magic.Magic(mime=True)
+        detected_mime = mime.from_buffer(raw_data)
+        logger.info(f"[INFO] Detected MIME type: {detected_mime}")
+
+        # Find extension from MIME (reverse lookup)
+        matched_extension = None
+        for ext, mime_list in ALLOWED_EXTENSIONS.items():
+            if detected_mime in mime_list:
+                matched_extension = ext
+                break
+
+        if not matched_extension:
+            logger.warning(f"extension {detected_mime} not allowed")
+            
+        # Extra security check for SVG (security)
+        if matched_extension == "svg":
+            try:
+                svg_content = raw_data.decode('utf-8', errors='ignore').lower()
+                if any(danger in svg_content for danger in ["<script", "onload=", "javascript:"]):
+                    logger.warning("dangerous svg file")
+                    
+            except Exception:
+                logger.warning("fail svg")
+                
+        random_suffix = str(uuid.uuid4())[:6]
+        file_name = f"{random_suffix}.{matched_extension}"
+
+        target_dir = f"/home/ubility/Desktop/new_chatbot_ubility/chatbot/temp/{conversation['dialogue_id']}/{conversation_id}"
+        os.makedirs(target_dir, exist_ok=True) # directories (id,token) created if they don't exist
+        file_path = os.path.join(target_dir, file_name)
+
+        # Save file
+        with open(file_path, "wb") as f:
+            f.write(raw_data)
+
+        conversation['variables'][conversation['wait_for_user_input']] = file_name
+        conversation['wait_for_user_input'] = None
+
+    except Exception as error:
+        raise Exception(error)
+    
+
+
+def get_file_data(conversation,conversation_id,file_name):
+    try:
+
+        # Construct full file path
+        file_path = f"/home/ubility/Desktop/new_chatbot_ubility/chatbot/temp/{conversation['dialogue_id']}/{conversation_id}/{file_name}"
+        if not os.path.exists(file_path):
+            return 
+
+        # Load and return file as a downloadable attachment
+        with open(file_path, 'rb') as f:
+            file_data = f.read()
+            
+        # Encode the binary data to base64
+        encoded_data = base64.b64encode(file_data).decode('utf-8')
+
+        # Return as a JSON-compatible dict
+        return {
+            "file_name": file_name,
+            "content_type": "application/octet-stream",
+            "data_base64": encoded_data
+        }
+
+    except Exception as error:
+        logger.warning(f"[ERROR] Failed to return file: {error}")
+        return 
+
+ALLOWED_EXTENSIONS = {
+    # Text & Data
+    "txt": ["text/plain"],
+    "json": ["application/json"],
+    "csv": ["text/csv"],
+    "xml": ["application/xml", "text/xml"],
+
+    # Documents
+    "pdf": ["application/pdf"],
+    "doc": ["application/msword"],
+    "docx": ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+    "xls": ["application/vnd.ms-excel"],
+    "xlsx": ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
+    "ppt": ["application/vnd.ms-powerpoint"],
+    "pptx": ["application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+
+    # Images
+    "png": ["image/png"],
+    "jpg": ["image/jpeg"],
+    "jpeg": ["image/jpeg"],
+    "svg": ["image/svg+xml"],
+
+
+    # Audio
+    "mp3": ["audio/mpeg"],
+    "wav": ["audio/wav", "audio/x-wav"],
+    "ogg": ["audio/ogg"],
+    "m4a": ["audio/mp4"],
+
+    # Video
+    "mp4": ["video/mp4"],
+    "mov": ["video/quicktime"],
+    "avi": ["video/x-msvideo"],
+    "mkv": ["video/x-matroska"],
+    "webm": ["video/webm"]
+}

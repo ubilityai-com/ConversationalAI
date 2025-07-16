@@ -9,7 +9,7 @@ import json,socketio,uvicorn
 from datetime import datetime
 from fastapi import FastAPI
 from elements.message import Message
-from functions import execute_process, save_user_input
+from functions import execute_process, save_user_input,save_file_input
 from logger_config import logger, setup_logger
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
@@ -116,11 +116,12 @@ async def message(sid, data):
     logger.info("New Message Event received")
 
     user_input = json.loads(data) if isinstance(data, str) else data
-    user_message = user_input.get('value', '').lower().strip()
+    user_message = user_input.get('data', '')
     dialogue_id = user_input.get('dialogueId')
+    data_type = user_input.get('data_type')
 
-    if not dialogue_id:
-        logger.warning("No dialogue_id provided.")
+    if not dialogue_id or not data_type:
+        logger.warning("The request is missing required headers")
         return
 
     conversation_id = get_conversation_id_from_sid(dialogue_id, sid)
@@ -134,7 +135,7 @@ async def message(sid, data):
     dialogue = active_dialogues[dialogue_id]['bot']
 
     # Handle cancellation
-    if user_message in CANCELLATION_PHRASES:
+    if isinstance(user_message,str) and user_message.lower().strip() in CANCELLATION_PHRASES:
         logger.warning("The conversation was canceled by the user")
         cancel_message = Message(dialogue['firstElementId']['cancel'])
         await cancel_message.send(sio, sid)
@@ -146,8 +147,14 @@ async def message(sid, data):
         return
 
     # Save input and continue process
-    if conversation.get('wait_for_user_input'):
+    if conversation.get('wait_for_user_input') and data_type != "binary":
         save_user_input(conversation, user_input)
+
+    # Save input file and continue process
+    if conversation.get('wait_for_user_input') and data_type == "binary":
+        user_input['data'] = bytes(user_input["data"]) #should be removed
+        save_file_input(conversation,conversation_id, user_input)
+
     await execute_process(sio, sid, conversation, dialogue)
 
 def get_conversation_id_from_sid(dialogue_id, sid):

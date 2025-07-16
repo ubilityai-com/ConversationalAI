@@ -20,7 +20,7 @@
             margin-bottom: 10px;
         }
         #message-input {
-            width: 70%;
+            width: 60%;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -92,7 +92,28 @@
             color: #666;
             margin-top: 5px;
         }
-
+        #attachment-input {
+            display: none;
+        }
+        #attachment-label {
+            padding: 8px 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        .attachment-message {
+            background-color: #f9f9f9;
+            color: #333;
+            text-align: right;
+        }
+        .attachment-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -105,52 +126,47 @@
     <div>
         <input type="text" id="message-input" placeholder="Type your message...">
         <button id="send-button">Send</button>
+        <input type="file" id="attachment-input" />
+        <label id="attachment-label" for="attachment-input">📎</label>
     </div>
 
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
-        // Generate a random conversation ID for this session
         const conversationId = 'conv-' + Math.random().toString(36).substring(2, 11);
-        const dialogueId = 'demo'
-        
-        // Connect to the Socket.IO server
+        const dialogueId = 'demo';
+
         const socket = io('http://localhost:8031', {
-            query: { conversationId:conversationId, dialogueId:dialogueId}
+            query: { conversationId: conversationId, dialogueId: dialogueId }
         });
-        
-        // Get DOM elements
+
         const chatContainer = document.getElementById('chat-container');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
         const connectionStatus = document.getElementById('connection-status');
-        
-        // Track if we're currently showing choices
+
         let showingChoices = false;
         let currentChoices = [];
-        
-        // Handle connection events
+
         socket.on('connect', () => {
             console.log('Connected to server');
             connectionStatus.textContent = 'Connected';
             connectionStatus.className = 'connected';
         });
-        
+
         socket.on('disconnect', () => {
             console.log('Disconnected from server');
             connectionStatus.textContent = 'Disconnected';
             connectionStatus.className = 'disconnected';
         });
-        
+
         socket.on('force_disconnect', (reason) => {
             addMessage('System', reason, 'system-message');
             socket.disconnect();
         });
-        
-        // Handle incoming messages
+
         socket.on('message', (data) => {
-            // Log the raw incoming message to console
             console.log('Received from server:', data);
-            
+
             if (data.type === 'multipleChoice') {
                 showingChoices = true;
                 currentChoices = data.choices.map(c => c.text);
@@ -161,30 +177,28 @@
                 addMessage('Bot', data.text, 'bot-message');
             }
         });
-        
-        // Send message when button is clicked
+
         sendButton.addEventListener('click', sendMessage);
-        
-        // Send message when Enter key is pressed
+
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 sendMessage();
             }
         });
-        
+
+        document.getElementById('attachment-input').addEventListener('change', sendFile);
+
         function sendMessage() {
             const message = messageInput.value.trim();
             if (message) {
                 const messageObj = {
                     type: "Message",
-                    value: message,
+                    data: message,
                     dialogueId: dialogueId,
-                    conversationId: conversationId
+                    conversationId: conversationId,
+                    data_type: "text"
                 };
-                
-                // Log outgoing message to console
                 console.log('Sending to server:', messageObj);
-                
                 socket.emit('message', JSON.stringify(messageObj));
                 addMessage('You', message, 'user-message');
                 messageInput.value = '';
@@ -196,19 +210,47 @@
         function sendChoice(choice) {
             const messageObj = {
                 type: "Message",
-                value: choice,
+                data: choice,
                 dialogueId: dialogueId,
-                conversationId: conversationId
+                conversationId: conversationId,
+                data_type: "text"
             };
-            
-            // Log outgoing choice to console
             console.log('Sending choice to server:', messageObj);
-            
             socket.emit('message', JSON.stringify(messageObj));
             addMessage('You', choice, 'user-message');
             showingChoices = false;
             currentChoices = [];
         }
+
+        function sendFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const arrayBuffer = e.target.result;
+                const byteArray = new Uint8Array(arrayBuffer);
+
+                const messageObj = {
+                    type: "Message",
+                    data: Array.from(byteArray),  // send as array of bytes
+                    filename: file.name,
+                    mimetype: file.type,
+                    dialogueId: dialogueId,
+                    conversationId: conversationId,
+                    data_type: "binary"
+                };
+
+                console.log('Sending file to server:', messageObj);
+                socket.emit('message', JSON.stringify(messageObj));
+                displaySentFile(file);
+            };
+
+            reader.readAsArrayBuffer(file);  // Read raw bytes
+        }
+
+
         function addMessage(sender, text, className) {
             const messageElement = document.createElement('div');
             messageElement.className = `message ${className}`;
@@ -216,17 +258,15 @@
             chatContainer.appendChild(messageElement);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-        
+
         function addChoiceMessage(sender, text, choices) {
             const messageElement = document.createElement('div');
             messageElement.className = 'message choice-message';
-            messageElement.innerHTML = `
-                <strong>${sender}:</strong> ${text}
-            `;
-            
+            messageElement.innerHTML = `<strong>${sender}:</strong> ${text}`;
+
             const buttonsContainer = document.createElement('div');
             buttonsContainer.className = 'choice-buttons';
-            
+
             choices.forEach(choice => {
                 const button = document.createElement('button');
                 button.className = 'choice-button';
@@ -234,13 +274,35 @@
                 button.onclick = () => sendChoice(choice);
                 buttonsContainer.appendChild(button);
             });
-            
+
             messageElement.appendChild(buttonsContainer);
             chatContainer.appendChild(messageElement);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-        
-        // Display the conversation ID
+
+        function displaySentFile(file) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `message attachment-message`;
+            messageElement.innerHTML = `<strong>You:</strong> Sent file: ${file.name}`;
+
+            if (file.type.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'attachment-preview';
+                messageElement.appendChild(img);
+            } else {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(file);
+                link.download = file.name;
+                link.textContent = 'Download file';
+                link.style.display = 'block';
+                messageElement.appendChild(link);
+            }
+
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
         addMessage('System', `Conversation ID: ${conversationId}`, 'system-message');
     </script>
 </body>
