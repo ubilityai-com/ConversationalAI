@@ -10,7 +10,7 @@ Includes:
 - Dynamic routing and formatting
 """
 from logger_config import logger
-import json
+import json,base64
 from typing import Union
 from elements.message import Message
 from elements.multiple_choice import MultipleChoice
@@ -342,6 +342,34 @@ def save_file_input(conversation,conversation_id,user_input):
 
     except Exception as error:
         raise Exception(error)
+    
+
+
+def get_file_data(conversation,conversation_id,file_name):
+    try:
+
+        # Construct full file path
+        file_path = f"/home/ubility/Desktop/new_chatbot_ubility/chatbot/temp/{conversation['dialogue_id']}/{conversation_id}/{file_name}"
+        if not os.path.exists(file_path):
+            return 
+
+        # Load and return file as a downloadable attachment
+        with open(file_path, 'rb') as f:
+            file_data = f.read()
+            
+        # Encode the binary data to base64
+        encoded_data = base64.b64encode(file_data).decode('utf-8')
+
+        # Return as a JSON-compatible dict
+        return {
+            "file_name": file_name,
+            "content_type": "application/octet-stream",
+            "data_base64": encoded_data
+        }
+
+    except Exception as error:
+        logger.warning(f"[ERROR] Failed to return file: {error}")
+        return 
 
 ALLOWED_EXTENSIONS = {
     # Text & Data
