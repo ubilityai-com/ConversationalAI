@@ -55,6 +55,7 @@ export const McpTool = (content: any) => {
         type: "mcp",
         params: {
             name: json.name,
+            credential: json.getMcpBy === "name" ? json.cred : undefined,
             url: json.getMcpBy === "url" ? json.url : undefined
         }
 
@@ -67,7 +68,7 @@ export const GoogleSearchTool = (content: any) => {
         type: "GoogleSearch",
         name: json.name,
         description: json.description,
-        cred: json.cred
+        credential: json.cred
     }
 }
 
@@ -97,7 +98,7 @@ export const SerpApiTool = (content: any) => {
     return {
         type: "serpApi",
         description: json.description,
-        cred: json.cred
+        credential: json.cred
     }
 }
 export const WikipediaTool = (content: any) => {

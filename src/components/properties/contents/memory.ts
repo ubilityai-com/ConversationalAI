@@ -50,7 +50,7 @@ export const RedisStackMemory = (selectedNode: any) => {
     return {
         type: "RedisMemory",
         historyId: selectedNode.id,
-        cred: content.cred,
+        credential: content.cred,
 
     }
 }

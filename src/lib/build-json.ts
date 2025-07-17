@@ -13,12 +13,12 @@ export function createFlowObject(): Flow {
         edges: Edge[];
     };
 
-    let flow: Flow = {
+    const flow: Flow = {
         credentials: [],
         bot: {},
     };
 
-    nodes.forEach((element: any) => {
+    nodes.forEach((element: Node & { data: any }) => {
         if (element.type === "Handler") {
             const { greet, cancel, start } = element.data.rightSideData;
             flow.bot.firstElementId = {
@@ -28,13 +28,32 @@ export function createFlowObject(): Flow {
                 cancel,
             };
         } else {
-            const result = require(`../components/right-side-elements/${camelToDashCase(element.type)}-form/${camelToDashCase(element.type)}-form`).getContent(
+            const result = require(`../components/right-side-elements/${camelToDashCase(element.type as string)}-form/${camelToDashCase(element.type as string)}-form`).getContent(
                 element,
                 { edges, nodes }
             );
 
+            // Collect `cred` if exists, then remove it
+            if (result.cred) {
+                if (Array.isArray(result.cred)) {
+                    flow.credentials.push(...result.cred);
+                } else {
+                    flow.credentials.push(result.cred);
+                }
+                delete result.cred;
+            }
+
             if (result.multiple) {
                 result.data.forEach((item: { id: string; value: any }) => {
+                    // Also check and collect `cred` from each item if present
+                    if (item.value?.cred) {
+                        if (Array.isArray(item.value.cred)) {
+                            flow.credentials.push(...item.value.cred);
+                        } else {
+                            flow.credentials.push(item.value.cred);
+                        }
+                        delete item.value.cred;
+                    }
                     flow.bot[item.id] = item.value;
                 });
             } else {

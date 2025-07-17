@@ -8,10 +8,10 @@ import { WikipediaToolJson } from "./WikipediaToolJson";
 
 export const ToolsElements = [
     GoogleSearchToolJson,
-    CalculatorToolJson,
-    CustomCodeToolJson,
+    // CalculatorToolJson,
+    // CustomCodeToolJson,
     SerpApiToolJson,
     WikipediaToolJson,
-    CustomToolJson,
+    // CustomToolJson,
     McpToolJson
 ];

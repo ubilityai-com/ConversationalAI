@@ -25,55 +25,73 @@ export const McpToolJson = {
                 ],
                 options: {
                     "name": [
+                        // {
+                        //     type: "api",
+                        //     label: "Name",
+                        //     variableName: "name",
+                        //     required: true,
+                        //     value: "None",
+                        //     list: [],
+                        //     config: [
+                        //         {
+                        //             key: "method",
+                        //             value: "get",
+                        //         },
+                        //         {
+                        //             key: "headers",
+                        //             obj: [
+                        //                 {
+                        //                     key: "Authorization",
+                        //                     dependOn: [
+                        //                         {
+                        //                             type: "static",
+                        //                             value: "Bearer ",
+                        //                         },
+                        //                         {
+                        //                             type: "redux",
+                        //                             value: "authentication.authToken",
+                        //                         },
+                        //                     ],
+                        //                 },
+                        //                 {
+                        //                     key: "content-type",
+                        //                     value: "application/json",
+                        //                 },
+                        //             ],
+                        //         },
+                        //         {
+                        //             key: "url",
+                        //             dependOn: [
+                        //                 {
+                        //                     type: "static",
+                        //                     value:
+                        //                         process.env.REACT_APP_DNS_URL + "api/mcp/list_mcp_files",
+                        //                 },
+                        //             ],
+                        //         },
+                        //     ],
+                        //     res: {
+                        //         path: "data",
+                        //     },
+                        //     apiDependsOn: [],
+                        // },
                         {
-                            type: "api",
+                            type: "textfield",
                             label: "Name",
                             variableName: "name",
+                            value: "",
+                            placeholder: "Name",
+                            hasDynamicVariable: true,
                             required: true,
-                            value: "None",
-                            list: [],
-                            config: [
-                                {
-                                    key: "method",
-                                    value: "get",
-                                },
-                                {
-                                    key: "headers",
-                                    obj: [
-                                        {
-                                            key: "Authorization",
-                                            dependOn: [
-                                                {
-                                                    type: "static",
-                                                    value: "Bearer ",
-                                                },
-                                                {
-                                                    type: "redux",
-                                                    value: "authentication.authToken",
-                                                },
-                                            ],
-                                        },
-                                        {
-                                            key: "content-type",
-                                            value: "application/json",
-                                        },
-                                    ],
-                                },
-                                {
-                                    key: "url",
-                                    dependOn: [
-                                        {
-                                            type: "static",
-                                            value:
-                                                process.env.REACT_APP_DNS_URL + "api/mcp/list_mcp_files",
-                                        },
-                                    ],
-                                },
-                            ],
-                            res: {
-                                path: "data",
-                            },
-                            apiDependsOn: [],
+                        },
+                        {
+                            type: "textfield",
+                            label: "Credential",
+                            variableName: "cred",
+                            value: "",
+                            placeholder: "Credential",
+                            hasDynamicVariable: true,
+                            required: true,
                         },
                     ],
                     "url": [

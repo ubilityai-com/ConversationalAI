@@ -7,7 +7,7 @@ import { RedisStackMemoryJson } from "./RedisStackMemoryJson";
 export const MemoryElements = [
     //add Component
     ConversationSummaryBufferMemoryJson,
-    ConversationBufferWindowMemoryJson,
+    // ConversationBufferWindowMemoryJson,
     ConversationalBufferMemoryJson,
-    RedisStackMemoryJson,
+    // RedisStackMemoryJson,
 ];

@@ -23,6 +23,9 @@ import { Badge } from "./ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
 import { Input } from "./ui/input"
 import { ScrollArea } from "./ui/scroll-area"
+import ModelsElements from "../elements/model-elements"
+import { MemoryElements } from "../elements/memory-elements"
+import { ToolsElements } from "../elements/tools-elements"
 
 const agentTypes = [
   BasicLLMJson,
@@ -36,21 +39,34 @@ const agentTypes = [
     automated: "json",
     defaults: {
       extras: {
-        "tool": {
-          multiple: true,
-          enabled: false,
-          type: "CustomTool",
-          list: []
-        },
+
         "model": {
-          enabled: false,
-          type: "OpenAIModel",
-          content: {}
+          enabled: true,
+          type: "OpenAIChatModel",
+          content: {},
+          description: "Select the model that fits your use case",
+          title: "LLM Model",
+          elements: ModelsElements
         },
         "memory": {
-          enabled: false,
+          enabled: true,
           type: "ConversationalBufferMemory",
-          content: {}
+          content: {},
+          description: "Select the memory that fits your use case",
+          title: "Memory",
+          elements: MemoryElements
+          // optional: true,
+
+        },
+        "tool": {
+          multiple: true,
+          enabled: true,
+          type: "GoogleSearchTool",
+          list: [],
+          description: "Configure tools for the LLM agent to use",
+          title: "Tools",
+          elements: ToolsElements
+          // optional: true,
         }
       },
       "json": [
@@ -100,7 +116,7 @@ const agentTypes = [
     label: "Router",
     description: "Route workflow based on multiple conditions",
     icon: GitBranch,
-    defaultValid: false,
+    defaultValid: true,
     category: "Logic",
     color: "bg-cyan-500",
     defaults: {
@@ -115,7 +131,7 @@ const agentTypes = [
   {
     type: "ChoicePrompt",
     label: "Multiple Choice",
-    defaultValid: false,
+    defaultValid: true,
     description: "Present multiple options for user selection",
     icon: CheckSquare,
     category: "Logic",
@@ -149,7 +165,7 @@ const agentTypes = [
     name: "Message",
     type: "Message",
     color: "bg-emerald-500",
-    defaultValid: false,
+    defaultValid: true,
     label: "Message",
     description: "Send messages and notifications",
     icon: MessageCircle,

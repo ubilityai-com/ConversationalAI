@@ -18,7 +18,7 @@ export const OpenAIChatModel = (selectedNode: any) => {
     return {
         provider: "openAi",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 base_url: getAccvalue(content, "baseUrl"),
@@ -36,7 +36,7 @@ export const TogetherAIChatModel = (selectedNode: any) => {
     return {
         provider: "togetherAi",
         model: model.type,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 temperature: parseFloat(getAccvalue(content, "samplingTemperature")),
@@ -50,7 +50,7 @@ export const AnthropicChatModel = (selectedNode: any) => {
     return {
         provider: "anthropic",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 max_tokens: parseInt(getAccvalue(content, "maximumNumberOfTokens")),
@@ -67,7 +67,7 @@ export const AzureChatModel = (selectedNode: any) => {
     return {
         provider: "azureOpenAi",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 max_tokens: parseInt(getAccvalue(content, "maximumNumberOfTokens")),
@@ -87,7 +87,7 @@ export const OllamaChatModel = (selectedNode: any) => {
     jsonToSend = {
         provider: "ollama",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 temperature: parseFloat(getAccvalue(content, "samplingTemperature")),
@@ -117,7 +117,7 @@ export const HuggingFaceChatModel = (selectedNode: any) => {
     return {
         provider: "huggingFace",
         model: content.model ? content.model : "",
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 max_new_tokens: parseInt(getAccvalue(content, "maxNewTokens")),
@@ -134,7 +134,7 @@ export const CohereChatModel = (selectedNode: any) => {
     return {
         provider: "cohere",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 temperature: parseFloat(getAccvalue(content, "samplingTemperature")),
@@ -148,7 +148,7 @@ export const AWSBedrockChatModel = (selectedNode: any) => {
     return {
         provider: "awsBedrock",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 max_tokens: parseInt(getAccvalue(content, "maximumNumberOfTokens")),
@@ -163,7 +163,7 @@ export const MistralAIChatModel = (selectedNode: any) => {
     return {
         provider: "mistralAi",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 max_tokens: parseInt(getAccvalue(content, "maximumNumberOfTokens")),
@@ -182,7 +182,7 @@ export const GooglePalmGeminiChatModel = (selectedNode: any) => {
     return {
         provider: "googlePaLMGemini",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 temperature: parseFloat(getAccvalue(content, "samplingTemperature")),
@@ -198,7 +198,7 @@ export const VertexAIChatModel = (selectedNode: any) => {
     return {
         provider: "vertexAi",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 max_output_tokens: parseInt(getAccvalue(content, "maxOutputTokens")),
@@ -215,7 +215,7 @@ export const GoogleGenerativeAiChatModel = (selectedNode: any) => {
     return {
         provider: "googleGenerativeAi",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 max_tokens: getAccvalue(content, "maxOutputTokens"),
@@ -232,7 +232,7 @@ export const GroqChatModel = (selectedNode: any) => {
     return {
         provider: "groq",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 temperature: getAccvalue(content, "temperature"),
@@ -247,7 +247,7 @@ export const AI21ChatModel = (selectedNode: any) => {
     return {
         provider: "ai21",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 max_tokens: getAccvalue(content, "maxOutputTokens"),
@@ -263,7 +263,7 @@ export const FireworksChatModel = (selectedNode: any) => {
     return {
         provider: "fireworks",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 temperature: getAccvalue(content, "temperature"),
@@ -277,7 +277,7 @@ export const NvidiaChatModel = (selectedNode: any) => {
     let jsonToSend: any = {
         provider: "nvidia",
         model: content.model ? content.model : "",
-        cred: content.cred,
+        credential: content.cred,
         params: {
             optionals: {
                 temperature: parseFloat(getAccvalue(content, "temperature")),

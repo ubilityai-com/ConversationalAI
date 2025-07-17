@@ -30,11 +30,11 @@ interface EndFormProps {
   ) => void
 }
 function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
-  // if (!data) return false;
+  if (!data) return false;
 
-  // if (!removeHTMLTags(data.botSays || '').trim()) {
-  //   return false;
-  // }
+  if (!removeHTMLTags(data.botSays || '').trim()) {
+    return false;
+  }
 
   return true;
 }

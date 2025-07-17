@@ -193,7 +193,7 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
     return (
         <div className="space-y-4">
             <div className={cn("rounded-l-md")}>
-                <Card>
+                <Card className="border-none">
                     {json.type !== "accordion" && <CardHeader className="pb-3">
                         <CardTitle className="text-sm flex items-center">
                             <ListChecks className="w-4 h-4 mr-2" />
@@ -203,7 +203,7 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
                         <CardDescription>Add options users can select. Every choice gets its own output handle.</CardDescription>
                     </CardHeader>}
 
-                    <CardContent className="space-y-4">
+                    <CardContent className="p-0 space-y-4">
                         {filledArray.length === 0 && (
                             <p className="text-xs text-gray-500">
                                 No {json.title} yet. Click "Add {json.title}".

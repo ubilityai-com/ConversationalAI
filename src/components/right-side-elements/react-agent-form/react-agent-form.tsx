@@ -1,18 +1,13 @@
-"use client";
-
 import { Node, NodeProps } from "@xyflow/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ReactAgentJson } from "../../../elements/langchain-elements/ReactAgentJson";
-import ModelsElements from "../../../elements/model-elements";
-import { ToolsElements } from "../../../elements/tools-elements";
 import { useDebounceConfig } from "../../../hooks/use-debounced-config";
+import { getNextNodeId, stringifyAndExtractVariables } from "../../../lib/utils";
 import { useFlowStore } from "../../../store/flow-store";
 import { useRightDrawerStore } from "../../../store/right-drawer-store";
 import AutomationSimple from "../../custom/automation-v4";
 import { SharedSection } from "../../properties/shared/shared-section";
 import { SharedListSection } from "../../properties/shared/shared-section-list";
-import { MemoryElements } from "../../../elements/memory-elements";
-import { getNextNodeId, stringifyAndExtractVariables } from "../../../lib/utils";
 
 interface LLMConfigProps extends Record<string, any> {
     label: string;
@@ -29,13 +24,10 @@ function extractCreds(obj: any): string[] {
     for (const key in obj) {
         const item = obj[key];
 
-        // skip if not enabled
-        if (!item?.enabled) continue;
-
         if (item.multiple) {
             if (Array.isArray(item.list)) {
                 item.list.forEach((listItem: any) => {
-                    const cred = listItem?.content?.cred;
+                    const cred = listItem?.content?.json?.cred;
                     if (cred) {
                         creds.push(cred);
                     }
@@ -70,6 +62,7 @@ export function getContent(selectedNode: any, params: any) {
         }
     }
     return {
+        cred: extractCreds(selectedNode?.data.rightSideData.extras),
         type: "LC_REACT_AGENT",
         content: content,
         saveUserInputAs: rightSideData.save ? rightSideData.variableName : null,
@@ -103,6 +96,7 @@ export default function ReactAgentForm({
                 },
             }
         );
+    const extras = localConfig.extras || {}
     return (
         <div className="space-y-6">
             <AutomationSimple
@@ -117,36 +111,28 @@ export default function ReactAgentForm({
 
                 }}
             />
-
-            <SharedSection
-                config={localConfig.extras.model}
-                defaultType="OpenAIChatModel"
-                description="Select the model that fits your use case"
-                elements={ModelsElements}
-                id={selectedNode.id}
-                title="LLM Model"
-                variableName="model"
-                onConfigUpdate={updateNestedConfig} />
-            <SharedSection
-                config={localConfig.extras.memory}
-                defaultType="ConversationalBufferMemory"
-                description="Select the memory that fits your use case"
-                elements={MemoryElements}
-                id={selectedNode.id}
-                title="Memory"
-                variableName="memory"
-                onConfigUpdate={updateNestedConfig} />
-            <SharedListSection
-                defaultType="Calculator"
-                description="Configure tools for the LLM agent to use"
-                elements={ToolsElements}
-                title="Tools"
-                variableName="tool"
-                config={localConfig.extras.tool}
-                id={selectedNode.id}
-                onConfigUpdate={updateNestedConfig}
-            />
-
+            {Object.keys(extras).map((key) => {
+                if (extras[key].list) return <SharedListSection
+                    defaultType={extras[key].type}
+                    description={extras[key].description}
+                    elements={extras[key].elements}
+                    title={extras[key].title}
+                    variableName={key}
+                    config={localConfig.extras[key]}
+                    id={selectedNode.id}
+                    onConfigUpdate={updateNestedConfig}
+                />
+                else return <SharedSection
+                    defaultType={extras[key].type}
+                    description={extras[key].description}
+                    elements={extras[key].elements}
+                    title={extras[key].title}
+                    variableName={key}
+                    config={localConfig.extras[key]}
+                    id={selectedNode.id}
+                    onConfigUpdate={updateNestedConfig}
+                />
+            })}
         </div>
     );
 }
