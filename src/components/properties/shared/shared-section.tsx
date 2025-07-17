@@ -82,9 +82,10 @@ export function SharedSection({
                                         value={type}
                                         onValueChange={(value) => {
                                             const op = elements.find((o) => o.type === value) as any
+                                            const defaultValues = objToReturnDynamicv2((op.rightSideData.json))
                                             setSchema(op)
                                             onConfigUpdate(`extras.${variableName}.type`, value)
-                                            onConfigUpdate(`extras.${variableName}.content`, objToReturnDynamicv2(op.rightSideData.json))
+                                            onConfigUpdate(`extras.${variableName}.content`, defaultValues)
                                             add(id, variableName, validateArray(op.rightSideData.json, {}))
                                         }}
                                     >

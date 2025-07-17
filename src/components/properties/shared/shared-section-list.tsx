@@ -59,9 +59,12 @@ export function SharedListSection({
     }
 
     const removeTool = (toolId: string) => {
-        const currentTools = list
-        const updatedTools = currentTools.filter((tool: any, index: number) => tool.id !== toolId)
-        onConfigUpdate(`extras.${variableName}.list`, updatedTools)
+
+        const currentTools = list;
+        const updatedTools = currentTools.filter(
+            (tool: any, index: number) => tool.id !== toolId
+        );
+        onConfigUpdate(`extras.${variableName}.list`, updatedTools);
         del(id, toolId)
     }
 
@@ -176,7 +179,6 @@ export function SharedListSection({
                         <Switch
                             checked={enabled}
                             onCheckedChange={(checked) => {
-                                const op = elements.find((o) => o.type === defaultType) as any
                                 onConfigUpdate(`extras.${variableName}.type`, defaultType)
                                 onConfigUpdate(`extras.${variableName}.enabled`, checked)
                             }}
