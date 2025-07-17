@@ -2,28 +2,29 @@ from app import http_app
 from models.credentials import get_credentials_by_names
 from fastapi import  HTTPException
 from pydantic import BaseModel
-import httpx
+import aiohttp
 
 ############################# Slack API's  ###############################
 class SlackAppIntegration(BaseModel):
     credential_name: str
 
 
+from fastapi import HTTPException
+import aiohttp
+
 @http_app.post("/slack/listUsers")
 async def list_slack_users(payload: SlackAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
-
+        json_cred = json_cred[payload.credential_name]
         if "accessToken" in json_cred:
             token = json_cred["accessToken"]
             url = "https://www.slack.com/api/users.list"
             headers = {"Authorization": f"Bearer {token}"}
-
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url, headers=headers)
-
-            result = response.json()
-
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers) as response:
+                    response.raise_for_status()
+                    result = await response.json()
             if "members" in result:
                 users = [
                     {"name": user["name"], "id": user["id"]}
@@ -31,8 +32,8 @@ async def list_slack_users(payload: SlackAppIntegration):
                     if not user["deleted"]
                 ]
                 return {"Users": users}
-            raise HTTPException(status_code=500, detail=result)
-        raise HTTPException(status_code=500, detail="Missing input data")
+            raise HTTPException(status_code=500, detail=str(result))
+        raise HTTPException(status_code=400, detail="Missing accessToken in credentials")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -41,16 +42,17 @@ async def list_slack_users(payload: SlackAppIntegration):
 async def get_slack_channels(payload: SlackAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
 
         if "accessToken" in json_cred:
             token = json_cred["accessToken"]
             url = "https://www.slack.com/api/conversations.list?types=public_channel,private_channel,mpim"
             headers = {"Authorization": f"Bearer {token}"}
 
-            async with httpx.AsyncClient() as client:
-                response = await client.get(url, headers=headers)
-
-            result = response.json()
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers) as response:
+                    response.raise_for_status()
+                    result = await response.json()
 
             if "channels" in result:
                 channels = [
@@ -58,8 +60,11 @@ async def get_slack_channels(payload: SlackAppIntegration):
                     for channel in result["channels"]
                 ]
                 return {"channels": channels}
-            raise HTTPException(status_code=500, detail=result)
 
-        raise HTTPException(status_code=500, detail="Missing input data")
+            raise HTTPException(status_code=500, detail=str(result))
+
+        raise HTTPException(status_code=400, detail="Missing accessToken in credentials")
+
     except Exception as error:
         raise HTTPException(status_code=500, detail=str(error))
+
