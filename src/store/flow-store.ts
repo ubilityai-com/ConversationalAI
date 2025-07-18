@@ -40,7 +40,7 @@ interface FlowState {
     varPickerProps: { onSelectVariable: (value: string) => void } | null
     setVarPickerProps: ((props: { onSelectVariable: (value: string) => void } | null) => void);
     addVariable: (variable: Omit<WorkflowVariable, "id" | "createdAt" | "updatedAt">) => void
-    updateVariable: (id:  VariableCategory ,name:string, updates: Partial<Omit<WorkflowVariable, "id" | "createdAt">>) => void
+    updateVariable: (id: VariableCategory, name: string, updates: Partial<Omit<WorkflowVariable, "id" | "createdAt">>) => void
     deleteVariable: (id: string) => void
     getVariableByName: (name: string) => WorkflowVariable | undefined
     getVariablesByCategory: (category: VariableCategory) => WorkflowVariable[]
@@ -239,7 +239,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
     addVariable: (variable) => {
         const newVariable: WorkflowVariable = {
             ...variable,
-            id: crypto.randomUUID(),
+            id: v4(),
             createdAt: new Date(),
             updatedAt: new Date(),
         }

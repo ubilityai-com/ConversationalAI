@@ -81,10 +81,9 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate }:
           id="start-switch"
         />
         <Label htmlFor="start-switch" className="text-xs font-normal">
-          Let the use start the diaolg
+          Let the user start the diaolg
         </Label>
       </div>
-
     </div>
   )
 }

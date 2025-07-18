@@ -183,7 +183,7 @@ export default function ConditionAgentForm({
     return (
         <div className="space-y-6">
             <div>
-                <Label htmlFor={`instruction`} className="text-xs mb-1">
+                <Label htmlFor={`instruction`} className="block text-sm mb-2 font-normal">
                     Instructions
                 </Label>
                 <Textarea
@@ -196,7 +196,7 @@ export default function ConditionAgentForm({
                 />
             </div>
             <div>
-                <Label htmlFor={`input`} className="text-xs mb-1">
+                <Label htmlFor={`input`} className="block text-sm mb-2 font-normal">
                     input
                 </Label>
                 <Textarea
