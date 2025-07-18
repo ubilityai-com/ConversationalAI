@@ -177,15 +177,20 @@ async def handle_multiple_choice(sio, sid, conversation, dialogue, current_dialo
     
     used_variable = current_dialogue['usedVariables'][0]
     case_value = conversation['variables'].get(used_variable, '')
-    print(case_value)
     valid_cases = [k for k in content["data"]['cases'].keys() if k != 'Other']
 
     if case_value in valid_cases:
         conversation['current_step'] = content["data"]['cases'][case_value]
+        await execute_process(sio, sid, conversation, dialogue)
     else:
-        conversation['current_step'] = content["data"]['cases'].get('Other')
-
-    await execute_process(sio, sid, conversation, dialogue)
+        other = content["data"]['cases'].get('Other')
+        if not other: # other is None
+            conversation['current_step'] = dialogue['firstElementId']['next']
+            conversation['variables'] = {}
+            return
+        else:
+            conversation['current_step'] = other
+            await execute_process(sio, sid, conversation, dialogue)
 
 
 async def handle_router(sio, sid, conversation, dialogue,content):
@@ -195,12 +200,13 @@ async def handle_router(sio, sid, conversation, dialogue,content):
 
     router = Router(content["data"]['conditions'])
     next_step = router.find_next_step()
-
     if next_step:
         conversation['current_step'] = next_step
         await execute_process(sio, sid, conversation, dialogue)
-    else:
-        print('[Router] No valid condition matched.')
+    else: # next is None
+        conversation['current_step'] = dialogue['firstElementId']['next']
+        conversation['variables'] = {}
+        return
 
 
 def handle_text_formatter(conversation,content):

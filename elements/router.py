@@ -6,7 +6,7 @@ class Router:
     
     def evaluate_condition(self, condition):
         if 'operation' not in condition:
-            return True
+            return False
         
         left = condition['firstOperator']
         right = condition['secondOperator']

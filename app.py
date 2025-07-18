@@ -46,7 +46,7 @@ http_app.add_middleware(
 from routes.credentials_view import *
 from routes.chatbot_view import *
 from routes.functions import *
-
+from applications.routes import *
 # Socket.IO ASGI server
 sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi')
 app = socketio.ASGIApp(sio, other_asgi_app=http_app)
