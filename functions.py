@@ -85,7 +85,7 @@ async def execute_process(sio, sid, conversation, dialogue):
             current_dialogue.get('usedVariables', [])
         ).send(sio, sid)
 
-    elif element_type == 'MC_Handler':
+    elif element_type == 'Handler':
         await handle_multiple_choice(sio, sid, conversation, dialogue, current_dialogue,content)
         return
 
