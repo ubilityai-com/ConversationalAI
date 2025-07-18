@@ -1,4 +1,4 @@
-import { MarkerType } from "@xyflow/react"
+import { MarkerType } from "@xyflow/react";
 import {
   Bot,
   CheckSquare,
@@ -7,18 +7,18 @@ import {
   MessageSquare,
   Search,
   Square,
-  Workflow
-} from "lucide-react"
-import { useState } from "react"
-import { v4 as uuidv4 } from "uuid"
-import { BasicLLMJson } from "../elements/langchain-elements/BasicLLMJson"
-import { setAutomationArray } from "../lib/automation-utils"
-import { ApiResItem, objToReturnDynamic } from "../lib/utils"
-import { useFlowStore } from "../store/flow-store"
-import { Badge } from "./ui/badge"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
-import { Input } from "./ui/input"
-import { ScrollArea } from "./ui/scroll-area"
+  Workflow,
+} from "lucide-react";
+import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { BasicLLMJson } from "../elements/langchain-elements/BasicLLMJson";
+import { setAutomationArray } from "../lib/automation-utils";
+import { ApiResItem, objToReturnDynamic } from "../lib/utils";
+import { useFlowStore } from "../store/flow-store";
+import { Badge } from "./ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Input } from "./ui/input";
+import { ScrollArea } from "./ui/scroll-area";
 
 const agentTypes = [
   // BasicLLMJson,
@@ -32,23 +32,22 @@ const agentTypes = [
     automated: "json",
     defaults: {
       extras: {
-        "model": {
+        model: {
           enabled: true,
           type: "",
           content: {},
           description: "Select the model that fits your use case",
           title: "LLM Model",
         },
-        "memory": {
+        memory: {
           enabled: true,
           type: "ConversationalBufferMemory",
           content: {},
           description: "Select the memory that fits your use case",
           title: "Memory",
           // optional: true,
-
         },
-        "tool": {
+        tool: {
           multiple: true,
           enabled: true,
           type: "GoogleSearchTool",
@@ -56,9 +55,9 @@ const agentTypes = [
           description: "Configure tools for the LLM agent to use",
           title: "Tools",
           // optional: true,
-        }
+        },
       },
-      "json": [
+      json: [
         {
           type: "textfield",
           label: "Query",
@@ -75,14 +74,14 @@ const agentTypes = [
           type: "outputJson",
           value: {
             Output: {
-              "answer": ""
+              answer: "",
             },
             Error: "",
             Status: "",
           },
         },
-      ]
-    }
+      ],
+    },
   },
   {
     type: "ConditionAgent",
@@ -100,7 +99,7 @@ const agentTypes = [
       instruction: "",
       input: "",
       extras: {
-        "model": {
+        model: {
           enabled: true,
           type: "",
           content: {},
@@ -108,7 +107,7 @@ const agentTypes = [
           title: "LLM Model",
         },
       },
-    }
+    },
   },
   // {
   //   type: "tool",
@@ -141,7 +140,7 @@ const agentTypes = [
       variableName: "",
       loopFromSwitch: false,
       loopFromName: "",
-    }
+    },
   },
   {
     type: "ChoicePrompt",
@@ -158,7 +157,7 @@ const agentTypes = [
       choices: [{ label: "Choice 1", id: `choice-${Date.now()}` }],
       loopFromSwitch: false,
       loopFromName: "",
-    }
+    },
   },
   // {
   //   type: "output",
@@ -194,7 +193,7 @@ const agentTypes = [
       variableName: "",
       loopFromSwitch: false,
       loopFromName: "",
-    }
+    },
   },
   // {
   //   type: "attache",
@@ -215,79 +214,115 @@ const agentTypes = [
       botSays: "",
       loopFromSwitch: false,
       loopFromName: "None",
-    }
+    },
   },
-]
+];
 
-const categories = ["All", "AI", "Integration", "Logic", "IO", "Control", "Communication"]
+const categories = [
+  "All",
+  "AI",
+  "Integration",
+  "Logic",
+  "IO",
+  "Control",
+  "Communication",
+];
 
 interface AgentPaletteDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  x: number,
-  y: number,
-  source: string,
-  sourceHandle: string
-
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  x: number;
+  y: number;
+  source: string;
+  sourceHandle: string;
 }
 
-export function AgentPaletteDialog({ open, onOpenChange, x, y, source, sourceHandle }: AgentPaletteDialogProps) {
-  const reactFlowInstance = useFlowStore(state => state.reactFlowInstance)
-  const nodes = useFlowStore(state => state.nodes)
-  const droppedElement = useFlowStore(state => state.droppedElement)
-  const setNodes = useFlowStore(state => state.setNodes)
-  const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
-  const addNodesValidation = useFlowStore(state => state.addNodesValidation)
+export function AgentPaletteDialog({
+  open,
+  onOpenChange,
+  x,
+  y,
+  source,
+  sourceHandle,
+}: AgentPaletteDialogProps) {
+  const reactFlowInstance = useFlowStore((state) => state.reactFlowInstance);
+  const nodes = useFlowStore((state) => state.nodes);
+  const droppedElement = useFlowStore((state) => state.droppedElement);
+  const setNodes = useFlowStore((state) => state.setNodes);
+  const setIsFormDialogOpen = useFlowStore(
+    (state) => state.setIsFormDialogOpen
+  );
+  const addNodesValidation = useFlowStore((state) => state.addNodesValidation);
 
-
-  const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("All")
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const filteredAgents = agentTypes.filter((agent) => {
     const matchesSearch =
       agent.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      agent.description.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === "All" || agent.category === selectedCategory
-    return matchesSearch && matchesCategory
-  })
+      agent.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "All" || agent.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
   const handleAgentSelect = (agent: any) => {
     console.log({ agent, x, y });
 
-    addNewElementToFlowZone(agent, x + 500, y)
+    addNewElementToFlowZone(agent, x + 500, y);
     // Reset filters when closing
-    setSearchTerm("")
-    setSelectedCategory("All")
-  }
+    setSearchTerm("");
+    setSelectedCategory("All");
+  };
   // Add new element to the flow
-  const addNewElementToFlowZone = (element: any, clientX: number, clientY: number) => {
+  const addNewElementToFlowZone = (
+    element: any,
+    clientX: number,
+    clientY: number
+  ) => {
     console.log({ element, reactFlowInstance });
 
     if (element && reactFlowInstance) {
-      const sourceNode = reactFlowInstance.getNode(source)
+      const sourceNode = reactFlowInstance.getNode(source);
       console.log({ element });
+      const clonedElement = JSON.parse(JSON.stringify(element));
+      const generateID = uuidv4();
+      let newDefaults = { ...clonedElement.defaults };
+      if (clonedElement.automated) {
+        console.log({
+          sss: objToReturnDynamic(
+            setAutomationArray(
+              clonedElement.defaults[clonedElement.automated]
+            ) as ApiResItem[]
+          ),
+        });
 
-      const generateID = uuidv4()
-      let newDefaults = { ...element.defaults }
-      if (element.automated) {
-        console.log({ sss: objToReturnDynamic(setAutomationArray(element.defaults[element.automated]) as ApiResItem[]) });
-
-        newDefaults = { ...newDefaults, [element.automated]: objToReturnDynamic(setAutomationArray(element.defaults[element.automated]) as ApiResItem[]) }
+        newDefaults = {
+          ...newDefaults,
+          [clonedElement.automated]: objToReturnDynamic(
+            setAutomationArray(
+              clonedElement.defaults[clonedElement.automated]
+            ) as ApiResItem[]
+          ),
+        };
       }
       let newElement = {
         id: generateID,
-        type: element.type,
-        position: { x: (sourceNode?.position.x || 0) + 500, y: (sourceNode?.position.y || 0) },
+        type: clonedElement.type,
+        position: {
+          x: (sourceNode?.position.x || 0) + 500,
+          y: sourceNode?.position.y || 0,
+        },
         data: {
-          label: element.label,
-          description: element.description,
-          nodeType: element.category,
-          rightSideData: newDefaults
-        }
-      }
+          label: clonedElement.label,
+          description: clonedElement.description,
+          nodeType: clonedElement.category,
+          rightSideData: newDefaults,
+        },
+      };
       console.log(newElement);
 
-      reactFlowInstance.addNodes(newElement)
+      reactFlowInstance.addNodes(newElement);
       const edge = {
         source,
         target: generateID,
@@ -298,19 +333,20 @@ export function AgentPaletteDialog({ open, onOpenChange, x, y, source, sourceHan
         markerEnd: { type: MarkerType.ArrowClosed },
         animated: false,
         style: { stroke: "#afafb5", strokeWidth: 2 },
-        id: `xy-edge__${source}${sourceHandle}-${generateID}${null}`
-      }
-      reactFlowInstance.addEdges(edge)
-      addNodesValidation(generateID, element.defaultValid)
-      setIsFormDialogOpen(false)
+        id: `xy-edge__${source}${sourceHandle}-${generateID}${null}`,
+      };
+      reactFlowInstance.addEdges(edge);
+      addNodesValidation(generateID, element.defaultValid);
+      setIsFormDialogOpen(false);
     }
-
-  }
+  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Choose an Agent</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">
+            Choose an Agent
+          </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -330,7 +366,9 @@ export function AgentPaletteDialog({ open, onOpenChange, x, y, source, sourceHan
             {categories.map((category) => (
               <Badge
                 key={category}
-                variant={selectedCategory === category ? "default" : "secondary"}
+                variant={
+                  selectedCategory === category ? "default" : "secondary"
+                }
                 className="cursor-pointer text-xs hover:bg-primary/80"
                 onClick={() => setSelectedCategory(category)}
               >
@@ -343,7 +381,7 @@ export function AgentPaletteDialog({ open, onOpenChange, x, y, source, sourceHan
           <ScrollArea className="h-96">
             <div className="grid grid-cols-2 gap-3 p-1">
               {filteredAgents.map((agent) => {
-                const IconComponent = agent.icon
+                const IconComponent = agent.icon;
                 return (
                   <div
                     key={agent.type}
@@ -355,23 +393,31 @@ export function AgentPaletteDialog({ open, onOpenChange, x, y, source, sourceHan
                         className={`w-10 h-10 ${agent.color} rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}
                       >
                         {agent.type === "attache" ? (
-                          <img src="/images/attache-logo.png" alt="Gmail" className="w-6 h-6 object-contain" />
+                          <img
+                            src="/images/attache-logo.png"
+                            alt="Gmail"
+                            className="w-6 h-6 object-contain"
+                          />
                         ) : (
-                          IconComponent && <IconComponent className="w-5 h-5 text-white" />
+                          IconComponent && (
+                            <IconComponent className="w-5 h-5 text-white" />
+                          )
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
                           {agent.label}
                         </h4>
-                        <p className="text-xs text-gray-500 mt-1 leading-relaxed line-clamp-2">{agent.description}</p>
+                        <p className="text-xs text-gray-500 mt-1 leading-relaxed line-clamp-2">
+                          {agent.description}
+                        </p>
                         <Badge variant="outline" className="mt-2 text-xs">
                           {agent.category}
                         </Badge>
                       </div>
                     </div>
                   </div>
-                )
+                );
               })}
             </div>
 
@@ -381,12 +427,14 @@ export function AgentPaletteDialog({ open, onOpenChange, x, y, source, sourceHan
                   <Search className="w-5 h-5 text-gray-400" />
                 </div>
                 <p className="text-sm text-gray-500">No agents found</p>
-                <p className="text-xs text-gray-400 mt-1">Try adjusting your search or filters</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Try adjusting your search or filters
+                </p>
               </div>
             )}
           </ScrollArea>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
