@@ -2,12 +2,11 @@ import { Node, NodeProps } from "@xyflow/react";
 import { useState } from "react";
 import { ReactAgentJson } from "../../../elements/langchain-elements/ReactAgentJson";
 import { useDebounceConfig } from "../../../hooks/use-debounced-config";
-import { getNextNodeId, stringifyAndExtractVariables } from "../../../lib/utils";
+import { extractCreds, getNextNodeId, stringifyAndExtractVariables } from "../../../lib/utils";
 import { useFlowStore } from "../../../store/flow-store";
 import { useRightDrawerStore } from "../../../store/right-drawer-store";
 import AutomationSimple from "../../custom/automation-v4";
-import { SharedSection } from "../../properties/shared/shared-section";
-import { SharedListSection } from "../../properties/shared/shared-section-list";
+import { DynamicElementLoader } from "../../properties/shared/DynamicElementLoader";
 
 interface LLMConfigProps extends Record<string, any> {
     label: string;
@@ -18,31 +17,7 @@ interface LlmFormProps {
     selectedNode: NodeProps<Node<LLMConfigProps>>;
     handleRightSideDataUpdate: (value: any) => void;
 }
-function extractCreds(obj: any): string[] {
-    const creds: string[] = [];
 
-    for (const key in obj) {
-        const item = obj[key];
-
-        if (item.multiple) {
-            if (Array.isArray(item.list)) {
-                item.list.forEach((listItem: any) => {
-                    const cred = listItem?.content?.json?.cred;
-                    if (cred) {
-                        creds.push(cred);
-                    }
-                });
-            }
-        } else {
-            const cred = item?.content?.cred;
-            if (cred) {
-                creds.push(cred);
-            }
-        }
-    }
-
-    return creds;
-}
 export function getContent(selectedNode: any, params: any) {
     const rightSideData = selectedNode.data.rightSideData
     const model = rightSideData.extras.model
@@ -111,28 +86,16 @@ export default function ReactAgentForm({
 
                 }}
             />
-            {Object.keys(extras).map((key) => {
-                if (extras[key].list) return <SharedListSection
-                    defaultType={extras[key].type}
-                    description={extras[key].description}
-                    elements={extras[key].elements}
-                    title={extras[key].title}
-                    variableName={key}
-                    config={localConfig.extras[key]}
-                    id={selectedNode.id}
-                    onConfigUpdate={updateNestedConfig}
+            {Object.keys(extras).map(key => (
+                <DynamicElementLoader
+                    key={key}
+                    extrasKey={key}
+                    extrasConfig={extras[key]}
+                    localConfig={localConfig.extras[key]}
+                    selectedNodeId={selectedNode.id}
+                    updateNestedConfig={updateNestedConfig}
                 />
-                else return <SharedSection
-                    defaultType={extras[key].type}
-                    description={extras[key].description}
-                    elements={extras[key].elements}
-                    title={extras[key].title}
-                    variableName={key}
-                    config={localConfig.extras[key]}
-                    id={selectedNode.id}
-                    onConfigUpdate={updateNestedConfig}
-                />
-            })}
+            ))}
         </div>
     );
 }

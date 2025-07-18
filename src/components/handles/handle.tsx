@@ -6,7 +6,7 @@ import { useFlowStore } from "../../store/flow-store";
 import { Button } from "../ui/button";
 
 interface NodeHandleProps extends HandleProps {
-  variant?: "input" | "output" | "condition" | "choice" | "branch";
+  variant?: "input" | "output" | "condition" | "choice" | "branch" | "scenario";
   label?: string;
   isConnected?: boolean;
   nodeColor?: string;
@@ -51,8 +51,8 @@ export function NodeHandle({
   };
   const getHandleStyles = () => {
     const baseStyles = {
-      width: "20px",
-      height: "20px",
+      width: "16px",
+      height: "16px",
       border: "2px solid white",
       borderRadius: "50%",
       boxShadow:
@@ -111,6 +111,17 @@ export function NodeHandle({
           ...(isConnected && {
             boxShadow:
               "0 0 0 2px rgba(34, 211, 238, 0.3), 0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+          }),
+        };
+      case "scenario":
+        return {
+          ...baseStyles,
+          width: "16px",
+          height: "16px",
+          background: "linear-gradient(135deg, #ffd936cc 0%, #db2777 100%)",
+          ...(isConnected && {
+            boxShadow:
+              "0 0 0 2px rgba(244, 114, 182, 0.3), 0 4px 6px -1px rgba(0, 0, 0, 0.1)",
           }),
         };
       default:

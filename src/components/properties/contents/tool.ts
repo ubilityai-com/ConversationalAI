@@ -50,15 +50,11 @@ export const CustomTool = (content: any) => {
 }
 export const McpTool = (content: any) => {
     const json = content.json
-
     return {
         type: "mcp",
-        params: {
-            name: json.name,
-            credential: json.getMcpBy === "name" ? json.cred : undefined,
-            url: json.getMcpBy === "url" ? json.url : undefined
-        }
-
+        name: json.name,
+        credential: json.getMcpBy === "name" ? json.cred : undefined,
+        url: json.getMcpBy === "url" ? json.url : undefined
     }
 }
 export const GoogleSearchTool = (content: any) => {

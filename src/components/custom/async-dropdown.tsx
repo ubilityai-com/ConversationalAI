@@ -448,6 +448,7 @@ export function ApiCaller({
     // Check if component should be disabled
     let isDisabled = false
     apiJson.apiDependsOn.forEach((elt: any) => {
+        console.log({ flowZoneSelectedElement, elt });
         if (elt.isAutomation === false) {
             if (
                 getNestedPropertyValue(flowZoneSelectedElement, `data.rightSideData.${elt.name}`) === "" ||

@@ -8,76 +8,68 @@ export const OpenAIChatModelJson = {
   rightSideData: {
     json: [
 
-      // {
-      //   type: "api",
-      //   label: "Credentials",
-      //   variableName: "cred",
-      //   required: true,
-      //   credential: true,
-      //   credType: "OpenAI",
-      //   value: "None",
-      //   list: [],
-      //   config: [
-      //     {
-      //       key: "method",
-      //       value: "get",
-      //     },
-      //     {
-      //       key: "headers",
-      //       obj: [
-      //         {
-      //           key: "Authorization",
-      //           dependOn: [
-      //             {
-      //               type: "static",
-      //               value: "Bearer ",
-      //             },
-      //             {
-      //               type: "redux",
-      //               value: "authentication.authToken",
-      //             },
-      //           ],
-      //         },
-      //         {
-      //           key: "content-type",
-      //           value: "application/json",
-      //         },
-      //       ],
-      //     },
-      //     {
-      //       key: "url",
-      //       dependOn: [
-      //         {
-      //           type: "static",
-      //           value:
-      //             process.env.REACT_APP_DNS_URL + "credentials",
-      //         },
-      //       ],
-      //     },
-      //   ],
-      //   res: {
-      //     path: "data",
-      //     keys: {
-      //       option: {
-      //         fields: ["name"],
-      //       },
-      //       value: {
-      //         fields: ["name"],
-      //       },
-      //       type: { fields: ["type"] },
-      //     },
-      //   },
-      //   apiDependsOn: [],
-      //   conditionOnFirstTime: [],
-      //   conditionOnRefresh: [],
-      // },
       {
-        type: "textfield",
+        type: "api",
         label: "Credentials",
         variableName: "cred",
-        value: "",
-        placeholder: "credential",
-        hasDynamicVariable: true,
+        required: true,
+        credential: true,
+        credType: "OpenAI",
+        value: "None",
+        list: [],
+        config: [
+          {
+            key: "method",
+            value: "get",
+          },
+          {
+            key: "headers",
+            obj: [
+              {
+                key: "Authorization",
+                dependOn: [
+                  {
+                    type: "static",
+                    value: "Bearer ",
+                  },
+                  {
+                    type: "redux",
+                    value: "authentication.authToken",
+                  },
+                ],
+              },
+              {
+                key: "content-type",
+                value: "application/json",
+              },
+            ],
+          },
+          {
+            key: "url",
+            dependOn: [
+              {
+                type: "static",
+                value:
+                  process.env.REACT_APP_DNS_URL + "credentials",
+              },
+            ],
+          },
+        ],
+        res: {
+          path: "data",
+          keys: {
+            option: {
+              fields: ["name"],
+            },
+            value: {
+              fields: ["name"],
+            },
+            type: { fields: ["type"] },
+          },
+        },
+        apiDependsOn: [],
+        conditionOnFirstTime: [],
+        conditionOnRefresh: [],
       },
       {
         type: "textfield",
@@ -106,7 +98,7 @@ export const OpenAIChatModelJson = {
       //           type: "static",
       //           value:
       //             process.env.REACT_APP_DNS_URL +
-      //             "cloud/regular/langchain/getModels",
+      //             "openai/listModels",
       //         },
       //       ],
       //     },
@@ -141,18 +133,9 @@ export const OpenAIChatModelJson = {
       //           isAutomation: true,
       //         },
       //         {
-      //           key: "provider",
-      //           obj: [
-      //             {
-      //               key: "providerName",
-      //               value: "openai",
-      //             },
-      //             {
-      //               key: "modelType",
-      //               value: "chat",
-      //             },
-      //           ],
-      //         },
+      //           key: "modelType",
+      //           value: "chat"
+      //         }
       //       ],
       //     },
       //   ],

@@ -6,7 +6,7 @@ import { Label } from "../../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
 import { Separator } from "../../ui/separator"
 import { Switch } from "../../ui/switch"
-import { removeHTMLTags } from "../../../lib/utils"
+import { removeHTMLTags, stringifyAndExtractVariables } from "../../../lib/utils"
 
 interface RightSideData {
   botSays: string,
@@ -29,6 +29,24 @@ interface EndFormProps {
     value: any
   ) => void
 }
+export function getContent(selectedNode: any, params: any) {
+  const rightSideData: RightSideData = selectedNode.data.rightSideData
+  const content = {
+    type: "data",
+    data: {
+      text: rightSideData.botSays
+    }
+  }
+  return {}
+  // {
+  //   type: "End",
+  //   content: content,
+  //   next: null,
+  //   saveUserInputAs: rightSideData.save ? rightSideData.variableName : null,
+  //   usedVariables: stringifyAndExtractVariables(content)
+  // };
+}
+
 function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
   if (!data) return false;
 

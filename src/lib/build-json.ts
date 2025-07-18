@@ -28,6 +28,7 @@ export function createFlowObject(): Flow {
                 cancel,
             };
         } else {
+
             const result = require(`../components/right-side-elements/${camelToDashCase(element.type as string)}-form/${camelToDashCase(element.type as string)}-form`).getContent(
                 element,
                 { edges, nodes }

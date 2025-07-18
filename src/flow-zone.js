@@ -15,6 +15,7 @@ import { setAutomationArray } from './lib/automation-utils';
 import { useFlowStore } from './store/flow-store';
 import { EndNode } from './components/nodes/end-node';
 import { LlmNode } from './components/nodes/llm-node';
+import { ConditionAgentNode } from './components/nodes/condition-agent-node';
 
 const FlowZone = () => {
   const nodeTypes = {
@@ -27,7 +28,8 @@ const FlowZone = () => {
     RPA: RPANode,
     BasicLlm: Chain,
     End: EndNode,
-    ReactAgent: LlmNode
+    ReactAgent: LlmNode,
+    ConditionAgent: ConditionAgentNode
   };
   const edgeTypes = {
     buttonEdge: ButtonEdge

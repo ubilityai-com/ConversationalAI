@@ -570,4 +570,44 @@ export function stringifyAndExtractVariables(json: unknown): string[] | null {
   const result = Array.from(variables);
   return result.length === 0 ? null : result;
 }
+export function extractCreds(obj: any): string[] {
+  const creds: string[] = [];
 
+  for (const key in obj) {
+    const item = obj[key];
+
+    if (item.multiple) {
+      if (Array.isArray(item.list)) {
+        item.list.forEach((listItem: any) => {
+          const cred = listItem?.content?.json?.cred;
+          if (cred) {
+            creds.push(cred);
+          }
+        });
+      }
+    } else {
+      const cred = item?.content?.cred;
+      if (cred) {
+        creds.push(cred);
+      }
+    }
+  }
+
+  return creds;
+}
+export async function loadElementByKey(key: string) {
+  //  import ModelsElements from "../elements/model-elements"
+  // import { MemoryElements } from "../elements/memory-elements"
+  // import { ToolsElements } from "../elements/tools-elements"
+  try {
+    const module = await import(`../elements/${key}-elements`);
+    return module.default || module[`${capitalize(key)}Elements`];
+  } catch (error) {
+    console.warn(`No elements found for ${key}, skipping dynamic import.`, error);
+    return null;
+  }
+}
+
+function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}

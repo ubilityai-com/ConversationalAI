@@ -21,24 +21,6 @@ interface RightSideData {
   loopFromSwitch: boolean;
   loopFromName: string
 }
-
-export function getContent(selectedNode: any, params: any) {
-  const rightSideData: RightSideData = selectedNode.data.rightSideData
-  const content = {
-    type: "data",
-    data: {
-      text: rightSideData.botSays
-    }
-  }
-  return {
-    type: "Message",
-    content: content,
-    next: getNextNodeId(selectedNode.id, params.edges, params.nodes, null),
-    saveUserInputAs: rightSideData.save ? rightSideData.variableName : null,
-    usedVariables: stringifyAndExtractVariables(content)
-  };
-}
-
 interface RightSideData {
   botSays?: string;
   advanced?: boolean;
@@ -60,6 +42,22 @@ interface MessageFormProps {
   handleRightSideDataUpdate: (
     value: any
   ) => void
+}
+export function getContent(selectedNode: any, params: any) {
+  const rightSideData: RightSideData = selectedNode.data.rightSideData
+  const content = {
+    type: "data",
+    data: {
+      text: rightSideData.botSays
+    }
+  }
+  return {
+    type: "Message",
+    content: content,
+    next: getNextNodeId(selectedNode.id, params.edges, params.nodes, null),
+    saveUserInputAs: rightSideData.save ? rightSideData.variableName : null,
+    usedVariables: stringifyAndExtractVariables(content)
+  };
 }
 
 function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {

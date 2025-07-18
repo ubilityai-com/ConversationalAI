@@ -76,23 +76,46 @@ export const McpToolJson = {
                         //     apiDependsOn: [],
                         // },
                         {
-                            type: "textfield",
+                            type: "dropdown",
                             label: "Name",
                             variableName: "name",
-                            value: "",
+                            value: "SlackMcpServer",
                             placeholder: "Name",
                             hasDynamicVariable: true,
                             required: true,
+                            list: [
+                                {
+                                    option: "SlackMcpServer",
+                                    value: "SlackMcpServer",
+                                },
+                                {
+                                    option: "AirtableMcpServer",
+                                    value: "AirtableMcpServer",
+                                },
+                                {
+                                    option: "HubspotMcpServer",
+                                    value: "HubspotMcpServer",
+                                },
+                                {
+                                    option: "WhatsappMcpServer",
+                                    value: "WhatsappMcpServer",
+                                },
+                                {
+                                    option: "NotionMcpServer",
+                                    value: "NotionMcpServer",
+                                },
+                            ],
                         },
                         {
                             type: "textfield",
                             label: "Credential",
                             variableName: "cred",
                             value: "",
-                            placeholder: "Credential",
+                            placeholder: "credential",
                             hasDynamicVariable: true,
                             required: true,
                         },
+
                     ],
                     "url": [
                         {

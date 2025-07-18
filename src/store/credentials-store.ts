@@ -22,18 +22,22 @@ export const useCredentialStore = create<CredentialState>((set, get) => ({
     response: null,
     credentials: [],
     activate: async (data) => {
+        const { setShowSnackBarMessage } = useFlowStore.getState()
         set({ loading: true, error: null, success: false });
         try {
             const res = await axios.post(process.env.REACT_APP_DNS_URL + "activate_bot", data, {
                 headers: { "Content-Type": "application/json" },
             });
             set({ success: true, response: res.data, loading: false });
+            setShowSnackBarMessage({ open: true, message: res.data.message || "Bot Activated successfully", color: "success", duration: 3000 })
+
 
         } catch (error: any) {
             set({
                 error: error.response?.data?.message || error.message || "Unknown error",
                 loading: false,
             });
+            setShowSnackBarMessage({ open: true, message: "Failed to activate Bot", color: "destructive", duration: 3000 })
         }
     },
 

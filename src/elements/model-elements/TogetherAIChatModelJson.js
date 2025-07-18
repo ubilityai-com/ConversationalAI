@@ -49,7 +49,7 @@ export const TogetherAIChatModelJson = {
               {
                 type: "static",
                 value:
-                  process.env.REACT_APP_DNS_URL + "cloud/azure/credential/list",
+                  process.env.REACT_APP_DNS_URL + "togetherAi/listModels",
               },
             ],
           },
@@ -71,101 +71,100 @@ export const TogetherAIChatModelJson = {
         conditionOnRefresh: [],
       },
       {
-        type: "api",
+        type: "textfield",
         label: "Model",
         variableName: "model",
-        value: "None",
-        required: true,
-        list: [],
-        config: [
-          {
-            key: "method",
-            value: "post",
-          },
-          {
-            key: "url",
-            dependOn: [
-              {
-                type: "static",
-                value:
-                  process.env.REACT_APP_DNS_URL +
-                  "cloud/regular/langchain/getModels",
-              },
-            ],
-          },
-          {
-            key: "headers",
-            obj: [
-              {
-                key: "Authorization",
-                dependOn: [
-                  {
-                    type: "static",
-                    value: "Bearer ",
-                  },
-                  {
-                    type: "redux",
-                    value: "authentication.authToken",
-                  },
-                ],
-              },
-              {
-                key: "content-type",
-                value: "application/json",
-              },
-            ],
-          },
-          {
-            key: "data",
-            obj: [
-              {
-                key: "credential_name",
-                dependOn: "cred",
-                isAutomation: true,
-              },
-              {
-                key: "provider",
-                obj: [
-                  {
-                    key: "providerName",
-                    value: "togetherAi",
-                  },
-                  {
-                    key: "modelType",
-                    value: "chat",
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-        res: {
-          path: "data.Models",
-          type: [],
-          key: true,
-        },
-        apiDependsOn: [
-          {
-            type: "dropdown",
-            name: "cred",
-            isAutomation: true,
-          },
-        ],
-        conditionOnFirstTime: [
-          {
-            type: "dropdown",
-            name: "cred",
-            isAutomation: true,
-          },
-        ],
-        conditionOnRefresh: [
-          {
-            type: "dropdown",
-            name: "cred",
-            isAutomation: true,
-          },
-        ],
+        value: "",
+        placeholder: "model",
+        hasDynamicVariable: true,
       },
+      // {
+      //   type: "api",
+      //   label: "Model",
+      //   variableName: "model",
+      //   value: "None",
+      //   required: true,
+      //   list: [],
+      //   config: [
+      //     {
+      //       key: "method",
+      //       value: "post",
+      //     },
+      //     {
+      //       key: "url",
+      //       dependOn: [
+      //         {
+      //           type: "static",
+      //           value:
+      //             process.env.REACT_APP_DNS_URL +
+      //             "cloud/regular/langchain/getModels",
+      //         },
+      //       ],
+      //     },
+      //     {
+      //       key: "headers",
+      //       obj: [
+      //         {
+      //           key: "Authorization",
+      //           dependOn: [
+      //             {
+      //               type: "static",
+      //               value: "Bearer ",
+      //             },
+      //             {
+      //               type: "redux",
+      //               value: "authentication.authToken",
+      //             },
+      //           ],
+      //         },
+      //         {
+      //           key: "content-type",
+      //           value: "application/json",
+      //         },
+      //       ],
+      //     },
+      //     {
+      //       key: "data",
+      //       obj: [
+      //         {
+      //           key: "credential_name",
+      //           dependOn: "cred",
+      //           isAutomation: true,
+      //         },
+      //         {
+      //           key: "modelType",
+      //           value: "chat",
+      //         },
+      //       ],
+      //     },
+      //   ],
+      //   res: {
+      //     path: "data.Models",
+      //     type: [],
+      //     key: true,
+      //   },
+      //   apiDependsOn: [
+      //     {
+      //       type: "dropdown",
+      //       name: "cred",
+      //       isAutomation: true,
+      //     },
+      //   ],
+      //   conditionOnFirstTime: [
+      //     {
+      //       type: "dropdown",
+      //       name: "cred",
+      //       isAutomation: true,
+      //     },
+      //   ],
+      //   conditionOnRefresh: [
+      //     {
+      //       type: "dropdown",
+      //       name: "cred",
+      //       isAutomation: true,
+      //     },
+      //   ],
+      // },
       {
         title: "Additional Fields",
         type: "accordion",

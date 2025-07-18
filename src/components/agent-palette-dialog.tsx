@@ -1,20 +1,16 @@
-"use client"
-
-import { useState } from "react"
-
 import { MarkerType } from "@xyflow/react"
 import {
   Bot,
   CheckSquare,
-  Database,
   GitBranch,
   MessageCircle,
   MessageSquare,
   Search,
   Square,
-  Workflow,
+  Workflow
 } from "lucide-react"
-import { v4 as uuidv4, v4 } from "uuid"
+import { useState } from "react"
+import { v4 as uuidv4 } from "uuid"
 import { BasicLLMJson } from "../elements/langchain-elements/BasicLLMJson"
 import { setAutomationArray } from "../lib/automation-utils"
 import { ApiResItem, objToReturnDynamic } from "../lib/utils"
@@ -23,12 +19,9 @@ import { Badge } from "./ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
 import { Input } from "./ui/input"
 import { ScrollArea } from "./ui/scroll-area"
-import ModelsElements from "../elements/model-elements"
-import { MemoryElements } from "../elements/memory-elements"
-import { ToolsElements } from "../elements/tools-elements"
 
 const agentTypes = [
-  BasicLLMJson,
+  // BasicLLMJson,
   {
     type: "ReactAgent",
     label: "React Agent",
@@ -39,14 +32,12 @@ const agentTypes = [
     automated: "json",
     defaults: {
       extras: {
-
         "model": {
           enabled: true,
-          type: "OpenAIChatModel",
+          type: "",
           content: {},
           description: "Select the model that fits your use case",
           title: "LLM Model",
-          elements: ModelsElements
         },
         "memory": {
           enabled: true,
@@ -54,7 +45,6 @@ const agentTypes = [
           content: {},
           description: "Select the memory that fits your use case",
           title: "Memory",
-          elements: MemoryElements
           // optional: true,
 
         },
@@ -65,7 +55,6 @@ const agentTypes = [
           list: [],
           description: "Configure tools for the LLM agent to use",
           title: "Tools",
-          elements: ToolsElements
           // optional: true,
         }
       },
@@ -96,21 +85,47 @@ const agentTypes = [
     }
   },
   {
-    type: "tool",
-    label: "Tool Agent",
-    description: "Execute external tools and APIs",
-    icon: Database,
-    category: "Integration",
-    color: "bg-orange-500",
-  },
-  {
-    type: "condition",
-    label: "Condition",
+    type: "ConditionAgent",
+    label: "Condition Agent",
     description: "Branch workflow based on conditions",
     icon: GitBranch,
-    category: "Logic",
+    category: "AI",
     color: "bg-yellow-500",
+    defaults: {
+      save: false,
+      variableName: "",
+      scenarios: [{ label: "scenario 1", id: `scenario-${Date.now()}` }],
+      loopFromSwitch: false,
+      loopFromName: "",
+      instruction: "",
+      input: "",
+      extras: {
+        "model": {
+          enabled: true,
+          type: "",
+          content: {},
+          description: "Select the model that fits your use case",
+          title: "LLM Model",
+        },
+      },
+    }
   },
+  // {
+  //   type: "tool",
+  //   label: "Tool Agent",
+  //   description: "Execute external tools and APIs",
+  //   icon: Database,
+  //   category: "Integration",
+  //   color: "bg-orange-500",
+  // },
+  // {
+  //   type: "condition",
+  //   label: "Condition",
+  //   description: "Branch workflow based on conditions",
+  //   icon: GitBranch,
+  //   category: "Logic",
+  //   color: "bg-yellow-500",
+  // },
   {
     type: "Router",
     label: "Router",
@@ -145,27 +160,28 @@ const agentTypes = [
       loopFromName: "",
     }
   },
-  {
-    type: "output",
-    label: "Output",
-    description: "Final output of the workflow",
-    icon: MessageSquare,
-    category: "IO",
-    color: "bg-blue-500",
-  },
-  {
-    type: "orchestrator",
-    label: "Orchestrator",
-    description: "Coordinate multiple agents",
-    icon: Workflow,
-    category: "Control",
-    color: "bg-indigo-500",
-  },
+  // {
+  //   type: "output",
+  //   label: "Output",
+  //   description: "Final output of the workflow",
+  //   icon: MessageSquare,
+  //   category: "IO",
+  //   color: "bg-blue-500",
+  // },
+  // {
+  //   type: "orchestrator",
+  //   label: "Orchestrator",
+  //   description: "Coordinate multiple agents",
+  //   icon: Workflow,
+  //   category: "Control",
+  //   color: "bg-indigo-500",
+  // },
   {
     name: "Message",
     type: "Message",
     color: "bg-emerald-500",
     defaultValid: true,
+    category: "Logic",
     label: "Message",
     description: "Send messages and notifications",
     icon: MessageCircle,
@@ -180,14 +196,14 @@ const agentTypes = [
       loopFromName: "",
     }
   },
-  {
-    type: "attache",
-    label: "Gmail",
-    description: "Send and receive emails",
-    icon: null,
-    category: "Communication",
-    color: "bg-gray-500",
-  },
+  // {
+  //   type: "attache",
+  //   label: "Gmail",
+  //   description: "Send and receive emails",
+  //   icon: null,
+  //   category: "Communication",
+  //   color: "bg-gray-500",
+  // },
   {
     type: "End",
     label: "End",
@@ -292,7 +308,7 @@ export function AgentPaletteDialog({ open, onOpenChange, x, y, source, sourceHan
   }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh]">
+      <DialogContent className="max-w-3xl max-h-[80vh]">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Choose an Agent</DialogTitle>
         </DialogHeader>
