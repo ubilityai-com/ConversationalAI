@@ -4,8 +4,9 @@ from langchain_core.messages import HumanMessage, AIMessage
 from ubility_langchain.model import Model
 
 class BasicLLM:
-    def __init__(self, data):
+    def __init__(self, data, credentials):
         self.data = data
+        self.credentials = credentials
 
     def _langchain_set_outputParser(self):
         try:
@@ -33,7 +34,7 @@ class BasicLLM:
     async def stream(self, sio, sid):
         try:
             if "provider" in self.data['model'] and "params" in self.data['model'] and "optionals" in self.data['model']["params"]:
-                llm_model = Model(provider=self.data['model']["provider"], model=self.data['model']["model"] if "model" in self.data['model'] else "", credentials= self.data['cred'], params=self.data['model']["params"]).chat()
+                llm_model = Model(provider=self.data['model']["provider"], model=self.data['model']["model"] if "model" in self.data['model'] else "", credentials= self.credentials[self.data['model']['credential']], params=self.data['model']["params"]).chat()
 
             else:
                 raise Exception("Missing Model Data")
@@ -81,14 +82,14 @@ class BasicLLM:
                         result = ''
                         for chunk in chain.stream(input=self.data['inputs']["query"]):
                             await sio.emit('message', {
-                                'type': 'message',
-                                'text': chunk.content
+                                'type': 'chunk',
+                                'chunk': chunk.content
                             }, room=sid)
                             result += chunk.content
 
-                        # await sio.emit('message', {
-                        #     'type': 'end of chunks'
-                        # }, room=sid)
+                        await sio.emit('message', {
+                            'type': 'end of chunks'
+                        }, room=sid)
                         result = outputParser.parse(result)
                         return result
                                             
@@ -127,14 +128,14 @@ class BasicLLM:
                             result = ''
                             for chunk in chain.stream(input=self.data['inputs']["promptInputs"]):
                                 await sio.emit('message', {
-                                    'type': 'message',
-                                    'text': chunk.content
+                                    'type': 'chunk',
+                                    'chunk': chunk.content
                                 }, room=sid)
                                 result += chunk.content
 
-                            # await sio.emit('message', {
-                            #     'type': 'end of chunks'
-                            # }, room=sid)
+                            await sio.emit('message', {
+                                'type': 'end of chunks'
+                            }, room=sid)
                             result = outputParser.parse(result)
                             return result
 

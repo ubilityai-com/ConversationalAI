@@ -20,13 +20,15 @@ from elements.flow_invoker import FlowInvoker
 from elements.variable_manager import VariableManager
 from elements.rag import RAG
 from elements.basic_llm import BasicLLM
+from elements.react_agent import REACT_AGENT
+from elements.condition_agent import CONDITION_AGENT
 from elements.app_integration import AppIntegration
 from dialogues.dialogues import active_dialogues
 import gzip, os, gzip,magic,uuid
 import os.path
 
 
-async def execute_process(sio, sid, conversation, dialogue):
+async def execute_process(sio, sid, conversation, conversation_id, dialogue):
     """
     Core processing engine for executing a conversation step.
 
@@ -46,6 +48,7 @@ async def execute_process(sio, sid, conversation, dialogue):
     current_dialogue = dialogue.get(current_step, {})
     wait_for_user = current_dialogue.get('saveUserInputAs')
     element_type = 'Greet' if current_step == 'firstElementId' else current_dialogue.get('type')
+    credentials = active_dialogues[conversation['dialogue_id']]["credentials"]
 
     if 'usedVariables' in current_dialogue:
         used_vars = current_dialogue.get('usedVariables') or []
@@ -54,12 +57,6 @@ async def execute_process(sio, sid, conversation, dialogue):
             current_dialogue["content"],
             conversation['variables'],
             used_vars
-        )
-    if 'LC' in element_type and 'usedVariables' in current_dialogue:
-        current_dialogue['data'] = replace_variables(
-            current_dialogue['data'],
-            conversation['variables'],
-            current_dialogue.get('usedVariables', [])
         )
 
     logger.info(f"Element type : {element_type}")
@@ -71,12 +68,43 @@ async def execute_process(sio, sid, conversation, dialogue):
         await Message(content["data"]['text']).send(sio, sid)
 
     elif element_type == "LC_RAG":
-        await RAG(current_dialogue['data']).stream(sio, sid)
+        await RAG(content["data"], credentials).stream(sio, sid)
         
     elif element_type == "LC_BASIC_LLM":
-        result = await BasicLLM(current_dialogue['data']).stream(sio, sid)
-        if 'outputParser' in current_dialogue['data']['params'] and current_dialogue['data']['params']['outputParser']['type'] == 'StructuredOutputParser':
-            conversation = save_output_parser_vars(current_dialogue['data']['params']['outputParser'], conversation, result)
+        result = await BasicLLM(content["data"], credentials).stream(sio, sid)
+        if 'outputParser' in content["data"]['params'] and content["data"]['params']['outputParser']['type'] == 'StructuredOutputParser':
+            conversation = save_output_parser_vars(content["data"]['params']['outputParser'], conversation, result)
+
+    elif element_type == "LC_REACT_AGENT":
+        if conversation['variables']['react_fail']:
+            last_input_value = conversation['variables']['last_input_value']
+            result = await REACT_AGENT(content["data"], credentials).stream(sio, sid, conversation_id, last_input_value)
+            if result['status'] == 'fail':
+                conversation['variables']['react_fail'] = True
+                return
+            else:
+                conversation['variables']['react_fail'] = False
+        else:
+            result = await REACT_AGENT(content["data"], credentials).stream(sio, sid, conversation_id)
+            if result['status'] == 'fail':
+                conversation['variables']['react_fail'] = True
+                return
+            else:
+                conversation['variables']['react_fail'] = False
+    
+    elif element_type == "LC_CONDITION_AGENT":
+        result = await CONDITION_AGENT(content["data"], credentials).execute(sio, sid)
+
+        # save result in a variable if user want to
+        if 'saveOutputAs' in current_dialogue:
+            logger.info(f"Save condition agent output in variables")
+            if current_dialogue['saveOutputAs']:
+                for element in current_dialogue['saveOutputAs']:
+                    if not element['path']: # save all result in a variable 
+                        conversation['variables'][element['name']] = result
+                    else: # save specific key in result
+                        value = get_value_from_path(result,element['path'])
+                        conversation['variables'][element['name']] = value
 
     elif element_type == 'MultipleChoice':
         await MultipleChoice(
@@ -86,11 +114,11 @@ async def execute_process(sio, sid, conversation, dialogue):
         ).send(sio, sid)
 
     elif element_type == 'MC_Handler':
-        await handle_multiple_choice(sio, sid, conversation, dialogue, current_dialogue,content)
+        await handle_multiple_choice(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content)
         return
 
     elif element_type == 'Router':
-        await handle_router(sio, sid, conversation, dialogue,content)
+        await handle_router(sio, sid, conversation, conversation_id, dialogue,content)
         return
 
     elif element_type == 'TextFormatter':
@@ -102,7 +130,7 @@ async def execute_process(sio, sid, conversation, dialogue):
     elif element_type == 'VariableManager':
         handle_variable_manager(conversation,content)
     elif element_type == 'AppIntegration':
-        await handle_app_integration(sio, sid, conversation, dialogue, current_dialogue,content)
+        await handle_app_integration(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content)
         return
     elif element_type == 'Attachement':
         await Message(content["data"]['message']).send(sio, sid)
@@ -121,7 +149,7 @@ async def execute_process(sio, sid, conversation, dialogue):
             return
 
         conversation['current_step'] = next_step
-        await execute_process(sio, sid, conversation, dialogue)
+        await execute_process(sio, sid, conversation, conversation_id, dialogue)
     else:
         logger.info("Waiting for user input ...")
         conversation['wait_for_user_input'] = wait_for_user
@@ -170,7 +198,7 @@ def replace_variables(template: Union[str, list, dict], variables: dict, used_va
         return template  # If template is an unexpected type, return it as-is
 
 
-async def handle_multiple_choice(sio, sid, conversation, dialogue, current_dialogue,content):
+async def handle_multiple_choice(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content):
     """
     Handle conditional branching logic with Handler elements.
     """
@@ -181,7 +209,7 @@ async def handle_multiple_choice(sio, sid, conversation, dialogue, current_dialo
 
     if case_value in valid_cases:
         conversation['current_step'] = content["data"]['cases'][case_value]
-        await execute_process(sio, sid, conversation, dialogue)
+        await execute_process(sio, sid, conversation, conversation_id, dialogue)
     else:
         other = content["data"]['cases'].get('Other')
         if not other: # other is None
@@ -190,7 +218,7 @@ async def handle_multiple_choice(sio, sid, conversation, dialogue, current_dialo
             return
         else:
             conversation['current_step'] = other
-            await execute_process(sio, sid, conversation, dialogue)
+            await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
 
 async def handle_router(sio, sid, conversation, dialogue,content):
@@ -254,7 +282,7 @@ def save_output_parser_vars(output_parser_data: dict, conversation: dict, result
     return conversation
 
 
-async def handle_app_integration(sio, sid, conversation, dialogue, current_dialogue,content):
+async def handle_app_integration(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content):
 
 
     app_content_json = content["data"]
@@ -281,7 +309,7 @@ async def handle_app_integration(sio, sid, conversation, dialogue, current_dialo
 
     # continue process execution
     conversation['current_step'] = current_dialogue['next']
-    await execute_process(sio, sid, conversation, dialogue)
+    await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
 
 def get_value_from_path(json_body, path, default=None):
