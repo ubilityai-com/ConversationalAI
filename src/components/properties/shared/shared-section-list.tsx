@@ -1,8 +1,7 @@
 import { FileJson, PenToolIcon, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { v4 } from "uuid"
-import { objToReturnDynamicv2 } from "../../../lib/automation-utils"
-import { type ApiResItem, keyBy } from "../../../lib/utils"
+import { keyBy } from "../../../lib/utils"
 import { useFlowStore } from "../../../store/flow-store"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../ui/accordion"
 import { Button } from "../../ui/button"
@@ -25,7 +24,6 @@ interface SectionProps {
 
 export function SharedListSection({
     config,
-    defaultType,
     onConfigUpdate,
     id,
     title,
@@ -47,14 +45,12 @@ export function SharedListSection({
 
     const addTool = () => {
         const currentTools = list
-        const newTool = elements.find((o) => o.type === defaultType) as any
-        const newToolDefaultInputs = objToReturnDynamicv2(newTool?.rightSideData?.json as ApiResItem[])
-        console.log({ ss: { ...newTool.rightSideData, json: newToolDefaultInputs }, newTool })
+
         const newToolId = v4()
-        add(id, newToolId, newTool.defaultValid)
+        add(id, newToolId, false)
         onConfigUpdate(`extras.${variableName}.list`, [
             ...currentTools,
-            { content: { ...newTool.rightSideData, json: newToolDefaultInputs }, type: "GoogleSearchTool", id: newToolId },
+            { content: {}, type: "", id: newToolId },
         ])
     }
 
@@ -139,7 +135,7 @@ export function SharedListSection({
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                {schemas && (
+                                {schemas && tool.type && (
                                     <SharedListItemSection
                                         key={toolIndex}
                                         content={tool.content}
@@ -179,7 +175,7 @@ export function SharedListSection({
                         <Switch
                             checked={enabled}
                             onCheckedChange={(checked) => {
-                                onConfigUpdate(`extras.${variableName}.type`, defaultType)
+                                onConfigUpdate(`extras.${variableName}.type`, "")
                                 onConfigUpdate(`extras.${variableName}.enabled`, checked)
                             }}
                             aria-label="Enable output parser"

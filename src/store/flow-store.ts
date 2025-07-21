@@ -356,7 +356,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
 
     addSubNodeValidation: (parentId, subId, valid) =>
         set((state) => {
-            console.trace({ parentId });
+            console.trace({ parentId,subId,valid });
 
             const existing = state.subNodesValidation[parentId] || { valid: true, subs: {} };
             const newSubs = { ...existing.subs, [subId]: valid };

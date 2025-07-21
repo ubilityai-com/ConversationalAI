@@ -1,14 +1,10 @@
 import { useNodesData } from "@xyflow/react"
 import axios from "axios"
-import { Loader2, RefreshCw } from "lucide-react"
 import { useEffect, useRef } from "react"
-import { cn } from "../../lib/utils"
 import { useApiData, useApiStore } from "../../store/api-store"
-import { useRightDrawerStore } from "../../store/right-drawer-store"
-import { Button } from "../ui/button"
-import { Label } from "../ui/label"
-import { SearchableSelect } from "./searchable-select"
 import { useFlowStore } from "../../store/flow-store"
+import { useRightDrawerStore } from "../../store/right-drawer-store"
+import { SearchableSelect } from "./searchable-select"
 
 
 function isJsonObjectOrArray(input: string): boolean {
@@ -64,14 +60,14 @@ function getList(list: any[], isCred: boolean, credType?: string, isMultiselect?
     return isMultiselect
         ? list
         : isCred && credType && credType === "Custom"
-            ? [{ label: "None", value: "None" }, ...list.filter((cred) => cred.type === credType)]
+            ? [...list.filter((cred) => cred.type === credType)]
             : isCred && credType && credType !== "Custom"
                 ? [
-                    { label: "None", value: "None" },
+
                     ...list.filter((cred) => cred.type === credType),
                     { label: " + Create new credential", value: " + Create new credential", credType },
                 ]
-                : [{ label: "None", value: "None" }, ...list]
+                : [...list]
 }
 
 function isUsingVariable(value: string): boolean {
@@ -92,6 +88,7 @@ interface ApiCallerProps {
     disabled?: boolean
     helperSpan?: string
     value: string
+    filledDataName: string
 }
 
 export function ApiCaller({
@@ -101,7 +98,8 @@ export function ApiCaller({
     inDynamic,
     disabled,
     helperSpan,
-    value
+    value,
+    filledDataName
 }: ApiCallerProps) {
     const { setListAndDropDownList, setIsLoadingList, setFetchList, setNotFetchingListAsFirstTime } = useApiStore()
     const flowZoneSelectedElement = useNodesData(flowZoneSelectedId || "")
@@ -114,7 +112,8 @@ export function ApiCaller({
     const { list: ListsForThisNode, isLoading: isLoadingList, notFetchingAsFirstTime } = useApiData(compName)
 
     // Get finale object from flow store or other source
-    const finaleObj = useRightDrawerStore(state => state.automation.filledData[flowZoneSelectedId || ""]?.["json"]) || {}
+    const finaleObj = useRightDrawerStore(state => state.automation.filledData[flowZoneSelectedId || ""]?.[filledDataName]) || {}
+
     backup = { ...backup, [compName]: { ...backup[compName], ["1"]: finaleObj } };
 
     const isUsingAi = apiJson.hasAI && value === "##AI##"
@@ -143,20 +142,23 @@ export function ApiCaller({
     useEffect(() => {
         setTimeout(() => {
             if (!isUsingAi && notFetchingAsFirstTime !== undefined && !apiJson.multiselect && !isLoadingList) {
+                
                 if (
                     !isUsingVariable(value) &&
-                    value !== "None" &&
+                    (value !== "None" && value) &&
                     !ListsForThisNode.find((elt) => elt.value === value)
                 ) {
                     if (inDynamic === undefined || inDynamic) {
-                        onChange({
-                            name: ["value"],
-                            val: ["None"],
-                        })
-                    } else {
+                        console.trace("innnnnnnnnnnnnnnnnnn")
                         onChange({
                             name: "value",
-                            val: "None",
+                            val: "",
+                        })
+                    } else {
+                        console.trace("innnnnnnnnnnnnnnnnnn")
+                        onChange({
+                            name: "value",
+                            val: "",
                         })
                     }
                     saveRightSide()
@@ -289,7 +291,7 @@ export function ApiCaller({
 
                 if (
                     !apiJson.multiselect &&
-                    value !== "None" &&
+                    (value !== "None" && value) &&
                     !isUsingVariable(value) &&
                     !checkIfVariableInDropDown(
                         value,
@@ -298,9 +300,10 @@ export function ApiCaller({
                         false,
                     )
                 ) {
+                    console.trace("innnnnnnnnnnnnnnnnnn")
                     onChange({
                         name: "value",
-                        val: "None",
+                        val: "",
                     })
                 }
 
@@ -321,9 +324,10 @@ export function ApiCaller({
                     status: false,
                 })
 
+                console.trace("innnnnnnnnnnnnnnnnnn")
                 onChange({
-                    name: ["value"],
-                    val: [apiJson.multiselect ? [] : "None"],
+                    name: "value",
+                    val: apiJson.multiselect ? [] : "",
                 })
 
                 setListAndDropDownList({
@@ -379,7 +383,7 @@ export function ApiCaller({
                             (!getNestedPropertyValue(finaleObj, elt.name) ||
                                 (getNestedPropertyValue(finaleObj, elt.name) &&
                                     typeof getNestedPropertyValue(finaleObj, elt.name) === "string" &&
-                                    getNestedPropertyValue(finaleObj, elt.name).trim() === "None"))
+                                    getNestedPropertyValue(finaleObj, elt.name).trim() === ""))
                         ) {
                             if (elt.hasOwnProperty("value")) {
                                 if (getNestedPropertyValue(finaleObj, elt.name) !== elt.value) {
@@ -418,7 +422,6 @@ export function ApiCaller({
             }
         }),
     ])
-    console.log({ finaleObj });
 
     // Effect for initial load
     useEffect(() => {
@@ -448,22 +451,15 @@ export function ApiCaller({
     // Check if component should be disabled
     let isDisabled = false
     apiJson.apiDependsOn.forEach((elt: any) => {
-        console.log({ flowZoneSelectedElement, elt });
-        if (elt.isAutomation === false) {
-            if (
-                getNestedPropertyValue(flowZoneSelectedElement, `data.rightSideData.${elt.name}`) === "" ||
-                getNestedPropertyValue(flowZoneSelectedElement, `data.rightSideData.${elt.name}`) === undefined
-            ) {
-                isDisabled = true
-            }
-        } else {
+        console.log({ flowZoneSelectedElement, elt,finaleObj });
+         
             if (Object.keys(finaleObj).length !== 0) {
                 if (
                     elt.type === "dropdown" &&
                     (!getNestedPropertyValue(finaleObj, elt.name) ||
                         (getNestedPropertyValue(finaleObj, elt.name) &&
                             typeof getNestedPropertyValue(finaleObj, elt.name) === "string" &&
-                            getNestedPropertyValue(finaleObj, elt.name).trim() === "None"))
+                            getNestedPropertyValue(finaleObj, elt.name).trim() === ""))
                 ) {
                     if (elt.hasOwnProperty("value")) {
                         if (getNestedPropertyValue(finaleObj, elt.name) !== elt.value) {
@@ -479,16 +475,18 @@ export function ApiCaller({
                     isDisabled = true
                 }
             }
-        }
+        
     })
-
+    
     if (isDisabled && isLoadingList === false) {
-        if (!apiJson.multiselect && value !== "None") {
+        if (!apiJson.multiselect && (value !== "None" && value)) {
+            console.trace("innnnnnnnnnnnnnnnnnn")
             onChange({
                 name: "value",
-                val: "None",
+                val: "",
             })
         } else if (apiJson.multiselect && value.length > 0) {
+            console.trace("innnnnnnnnnnnnnnnnnn")
             onChange({
                 name: "value",
                 val: [],
@@ -533,6 +531,7 @@ export function ApiCaller({
                 />
             ) : (
                 <SearchableSelect
+                    showDeselect
                     showRefresh
                     loading={isLoadingList}
                     onRefresh={() => callDynamicAPI(apiJson.config, apiJson.res)}

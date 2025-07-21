@@ -27,6 +27,7 @@ interface DynamicInputFieldsProps {
         [key: string]: any
     }
     disabled?: boolean
+    filledDataName:string
     flowZoneSelectedId: string
     // New props for external field values
     fieldValues?: Record<string, any>
@@ -66,7 +67,7 @@ const UseAIIcon: React.FC<{
 
 
 const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
-    const { json, disabled, flowZoneSelectedId, fieldValues, onFieldChange, filledArray } = props
+    const { json, disabled, flowZoneSelectedId, fieldValues, onFieldChange, filledArray,filledDataName } = props
 
     // Mock selector - replace with your actual Redux selector
     const selectedRPA = { status: "Inactive" } // useSelector((state) => state.updateRPA.selectedRPA)
@@ -230,6 +231,7 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
 
                                     <div>
                                         <AutomationSimple
+                                            filledDataName={filledDataName}
                                             disabled={disabled || isActive}
                                             indexForDynamic={fieldSetInd}
                                             schema={json.type === "accordion" ? (json.fieldsArray[0] as ApiResItem[]) : json.structure}

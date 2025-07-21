@@ -57,6 +57,7 @@ const CustomTool: React.FC<CustomToolProps> = ({ selectedNodeId, content, onCont
   return (
     <div className="space-y-4">
       <AutomationSimple
+        filledDataName="json"
         schema={schema}
         flowZoneSelectedId={selectedNodeId}
         onFieldChange={({ path, value }) => {

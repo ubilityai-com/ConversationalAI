@@ -1,14 +1,16 @@
 import { FileJson } from "lucide-react"
-import { useState } from "react"
+import { useRef, useState } from "react"
+import { useDebounceConfig } from "../../../hooks/use-debounced-config"
+import { objToReturnDynamicv2 } from "../../../lib/automation-utils"
 import { validateArray } from "../../../lib/utils"
 import { useFlowStore } from "../../../store/flow-store"
+import { useRightDrawerStore } from "../../../store/right-drawer-store"
 import AutomationSimple from "../../custom/automation-v4"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../ui/accordion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card"
 import { Label } from "../../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
 import { Switch } from "../../ui/switch"
-import { objToReturnDynamicv2 } from "../../../lib/automation-utils"
 
 interface SectionProps {
     config: any
@@ -35,14 +37,38 @@ export function SharedSection({
     variableName,
     elements,
 }: SectionProps) {
+    const setNodeFilledDataByKey = useRightDrawerStore((state) => state.setNodeFilledDataByKey)
+    const setValidationByKey = useRightDrawerStore((state) => state.setValidationByKey)
+
+    const { localConfig,updateConfig, updateNestedConfig } =
+        useDebounceConfig<any>(
+            config.content,
+            {
+                delay: 300,
+                onSave: (savedConfig) => {
+                    // Save label changes   
+                    console.log({schema,savedConfig});
+                    
+                    console.log({ savedConfig, validateArray: validateArray(schema.current.rightSideData.json, savedConfig) });
+                    onConfigUpdate(`extras.${variableName}.content`, savedConfig);
+                    updateSubNodeValidationById(id, variableName, validateArray(schema.current.rightSideData.json, savedConfig))
+                    setNodeFilledDataByKey(id, "model", savedConfig)
+
+
+
+                },
+            }
+        );
+
     const enabled = config.enabled === true
-    const type = config.type || defaultType
+    const type = config.type
     const optional = config.optional || false
-    const content = config.content || []
-    const [schema, setSchema] = useState<any>(getSchema(type, elements))
+    const content = localConfig || {}
     const add = useFlowStore((s) => s.addSubNodeValidation)
+    const updateSubNodeValidationById = useFlowStore((s) => s.updateSubNodeValidationById)
     const del = useFlowStore((s) => s.deleteSubNodeById)
-    console.log({ defaultType, type, config });
+    console.log({ defaultType, type, localConfig, content });
+    const schema = useRef(getSchema(type, elements));
 
 
     return (
@@ -57,11 +83,6 @@ export function SharedSection({
                         <Switch
                             checked={enabled}
                             onCheckedChange={(checked) => {
-                                const enabledOption = elements.find((o) => o.type === defaultType) as any
-                                if (!checked) del(id, variableName)
-                                else add(id, variableName, enabledOption.defaultValid)
-                                setSchema(enabledOption)
-                                onConfigUpdate(`extras.${variableName}.type`, defaultType)
                                 onConfigUpdate(`extras.${variableName}.enabled`, checked)
                             }}
                             aria-label="Enable output parser"
@@ -83,9 +104,13 @@ export function SharedSection({
                                         onValueChange={(value) => {
                                             const op = elements.find((o) => o.type === value) as any
                                             const defaultValues = objToReturnDynamicv2((op.rightSideData.json))
-                                            setSchema(op)
+                                            console.log({ defaultValues });
+
+                                            schema.current=op
                                             onConfigUpdate(`extras.${variableName}.type`, value)
-                                            onConfigUpdate(`extras.${variableName}.content`, defaultValues)
+                                            setTimeout(() => {
+                                                updateConfig(defaultValues)
+                                            }, 1000);
                                             add(id, variableName, validateArray(op.rightSideData.json, {}))
                                         }}
                                     >
@@ -101,16 +126,19 @@ export function SharedSection({
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                {schema && (
+                                {schema.current && (
                                     <AutomationSimple
                                         filledDataName={`${variableName}`}
-                                        schema={schema?.rightSideData?.json}
-                                        setSchema={setSchema}
+                                        schema={schema.current?.rightSideData?.json}
                                         flowZoneSelectedId={id}
-                                        AllJson={schema?.rightSideData?.json}
+                                        AllJson={schema.current?.rightSideData?.json}
                                         fieldValues={content}
+                                        firstCall={true}
                                         onFieldChange={({ path, value }) => {
-                                            onConfigUpdate(`extras.${variableName}.content.${path}`, value)
+                                            console.log({ path, value });
+                                            console.log({ path, value, content });
+
+                                            updateNestedConfig(`${path}`, value)
                                         }}
                                     />
                                 )}

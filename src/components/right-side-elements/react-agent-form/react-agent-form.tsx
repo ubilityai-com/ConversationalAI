@@ -7,7 +7,34 @@ import { useFlowStore } from "../../../store/flow-store";
 import { useRightDrawerStore } from "../../../store/right-drawer-store";
 import AutomationSimple from "../../custom/automation-v4";
 import { DynamicElementLoader } from "../../properties/shared/DynamicElementLoader";
-
+function isExtrasValid(extras:any, values:Record<string, boolean>) {
+    for (const key in extras) {
+      const item = extras[key];
+  
+      if (!item.enabled) continue;
+  
+      const isRequired = !item.optional;
+  
+      if (!isRequired) continue;
+  
+      if (item.multiple) {
+        const list = item.list || [];
+        for (const subItem of list) {
+          const id = subItem.id;
+          if (!values[id]) {
+            return false;
+          }
+        }
+      } else {
+        if (!values[key]) {
+          return false;
+        }
+      }
+    }
+  
+    return true;
+  }
+  
 interface LLMConfigProps extends Record<string, any> {
     label: string;
     description: string;
@@ -62,21 +89,31 @@ export default function ReactAgentForm({
             {
                 delay: 300,
                 onSave: (savedConfig) => {
-                    // Save label changes   
+                    // Save label changes
+                    const st = useRightDrawerStore.getState()
+                    
                     const nodeValid = useRightDrawerStore.getState().automation.validation[selectedNode.id].json
                     const subNodesValidation = useFlowStore.getState().subNodesValidation
                     const subsValid = subNodesValidation[selectedNode.id]?.valid
+                    const subs= subNodesValidation[selectedNode.id]?.subs
+
+                    console.log({ st ,vvv:isExtrasValid(savedConfig.extras,subs)});
+                    console.log({ nodeValid, subNodesValidation, subsValid });
+
                     updateNodesValidationById(selectedNode.id, nodeValid && subsValid)
                     handleRightSideDataUpdate(savedConfig);
                 },
             }
         );
     const extras = localConfig.extras || {}
+    console.log({ extras });
+
     return (
         <div className="space-y-6">
             <AutomationSimple
                 filledDataName="json"
                 schema={schema}
+                firstCall
                 fieldValues={localConfig.json}
                 setSchema={setSchema}
                 flowZoneSelectedId={selectedNode.id}
