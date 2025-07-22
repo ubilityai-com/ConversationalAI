@@ -617,26 +617,42 @@ def slack_get_file(creds,params):
 
     :param dict params: Dictionary containing parameters.
 
+        - :flow_id: (str, Required) - The flow id for downloading the file.
+        - :user_id: (str, required) - The user id for downloading the file.
         - :token: (str, required) - Access token for authenticating with Slack.
         - :file: (str, required) - The ID of the file for which to retrieve information.
+        - :download_file: (bool, optional) - whether to download the file content.
 
     Returns:
       dict: A dictionary containing information about the specified file.
 
     """
+    from functions import upload_file
     try:
         cred=json.loads(creds)
-        if "accessToken" in cred and "file" in params:
+        if "accessToken" in cred and "file" in params and "user_id" in params and "flow_id" in params:
             token = cred["accessToken"]
             file_id = params["file"]
+            user_id = params["user_id"]
+            flow_id = params["flow_id"]
+            download_file = params.get("download_file", False)
             client = WebClient(token=token)
             response = client.files_info(file=file_id)
             result = json.loads(json.dumps(response, default=str))
-            response_json = {
-                "content": response["content"],
-                "file" : response["file"],
-                "response_json":result
-            }
+            if download_file:
+                file_url = response["file"]["url_private_download"]
+                headers = {
+                    "Authorization": "Bearer " + token,
+                }
+                file_response = requests.get(file_url, headers=headers)
+                if file_response.status_code == 200:
+                    response_json = upload_file(user_id,flow_id,file_response.content)
+            else:
+                response_json = {
+                    "content": response["content"],
+                    "file" : response["file"],
+                    "response_json":result
+                }
             return response_json
         else:
             raise Exception("Missing input data")
@@ -695,12 +711,14 @@ def slack_upload_file(creds,params):
 
     :param dict params: Dictionary containing parameters.
 
+        - :flow_id: (str, Required) - The flow id for uploading the file.
+        - :user_id: (str, required) - The user id for uploading the file.
         - :token: (str, required) - Access token for authenticating with Slack.
         - :channel: (str, required) -The ID of the channel to which the file will be uploaded.
         - :filename: (str, required) - The name of the file ( with extention e.g .png, .txt, .csv ).
         - One of the following is required:
             - :url: (str) - online URL of the file to be uploaded.
-            - :Content: (str) - Base64-encoded file content or <<....>> to load.
+            - :Content: (str) - filename of the file to be uploaded
         - :title: (str, optional) - Title of the file.
         - :initial_comment: (str, optional) - Initial comment to add to the file.
         - :thread_ts: (str, optional) - Timestamp of the thread to which the file belongs.
@@ -709,26 +727,15 @@ def slack_upload_file(creds,params):
       dict: A dictionary containing information about the uploaded file.
 
     """
+    from functions import get_file_with_content
     try:
         cred=json.loads(creds)
-        if "accessToken" in cred and "channel" in params and "filename" in params and ("url" in params or "content" in params):
+        if "accessToken" in cred and "user_id" in params and "flow_id" in params and "channel" in params and "filename" in params and ("url" in params or "content" in params):
+            user_id = params["user_id"]
+            flow_id = params["flow_id"]
             token = cred["accessToken"]
             content = params.get("content")
             url = params.get("url")
-            file_data = None
-            file_path = None
-            if content:
-                if content.startswith("<<") and content.endswith(">>"):
-                    file_name = content[2:-2]
-                    file_path = f"/app/robotfiles/UbilityLibraries/temp/{file_name}"
-                    if not os.path.exists(file_path):
-                        raise Exception(f"File not found: {file_path}")
-                    with open(file_path, "rb") as f:
-                        file_data = f.read()
-                else:
-                    raise Exception("Invalid content format. Use <<filename>> for local file reference.")
-            elif url:
-                file_path = url
             client = WebClient(token=token)
             data = {}
             for key, value in params.items():
@@ -736,16 +743,20 @@ def slack_upload_file(creds,params):
                     continue
                 if value:
                     data[key] = value
-
-            if file_path and file_data is None:
-                response = requests.get(file_path)
+            
+            if content:
+                # Retrieve file content data
+                contentData=get_file_with_content(user_id,flow_id,content)
+                if "Error" in contentData:
+                    raise Exception(f"Failed to retrieve file content: {contentData['Error']}")
+                # Extract file content and name
+                data["file"] = bytes.fromhex(contentData["file_content"])
+            elif url:
+                response = requests.get(url)
                 if response.status_code == 200:
                     data["file"] = response.content
                 else:
                     raise Exception(f"Failed to fetch the file. Status code: {response.status_code}")
-
-            if file_data:
-                data["file"] = file_data
 
             response = client.files_upload_v2(**data)
             result = json.loads(json.dumps(response, default=str))
