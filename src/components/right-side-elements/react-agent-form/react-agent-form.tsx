@@ -7,7 +7,7 @@ import { useFlowStore } from "../../../store/flow-store";
 import { useRightDrawerStore } from "../../../store/right-drawer-store";
 import AutomationSimple from "../../custom/automation-v4";
 import { DynamicElementLoader } from "../../properties/shared/DynamicElementLoader";
-function isExtrasValid(extras:any, values:Record<string, boolean>) {
+function isExtrasValid(extras:any, values:Record<string, boolean>={}) {
     for (const key in extras) {
       const item = extras[key];
   
@@ -19,13 +19,15 @@ function isExtrasValid(extras:any, values:Record<string, boolean>) {
   
       if (item.multiple) {
         const list = item.list || [];
+        if(isRequired && list.length===0)
+            return false
         for (const subItem of list) {
           const id = subItem.id;
           if (!values[id]) {
             return false;
           }
         }
-      } else {
+      } else {        
         if (!values[key]) {
           return false;
         }
@@ -97,9 +99,9 @@ export default function ReactAgentForm({
                     const subs= subNodesValidation[selectedNode.id]?.subs
 
                     console.log({ st ,vvv:isExtrasValid(savedConfig.extras,subs)});
-                    console.log({ nodeValid, subNodesValidation, subsValid });
+                    console.log({ nodeValid, subNodesValidation, subsValid,vvv:nodeValid && isExtrasValid(savedConfig.extras,subs) });
 
-                    updateNodesValidationById(selectedNode.id, nodeValid && subsValid)
+                    updateNodesValidationById(selectedNode.id, nodeValid && isExtrasValid(savedConfig.extras,subs))
                     handleRightSideDataUpdate(savedConfig);
                 },
             }

@@ -52,7 +52,7 @@ export function SharedSection({
                     console.log({ savedConfig, validateArray: validateArray(schema.current.rightSideData.json, savedConfig) });
                     onConfigUpdate(`extras.${variableName}.content`, savedConfig);
                     updateSubNodeValidationById(id, variableName, validateArray(schema.current.rightSideData.json, savedConfig))
-                    setNodeFilledDataByKey(id, "model", savedConfig)
+                    setNodeFilledDataByKey(id, variableName, savedConfig)
 
 
 
