@@ -7,10 +7,12 @@ import { createFlowObject } from "../lib/build-json"
 
 export function Toolbar() {
   const isRunning = false
-  const setFormDialogStatus = useFlowStore(state => state.setFormDialogStatus)
-  const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
-  const { activate, loading, error, success } = useCredentialStore()
 
+  const { nodesValidation, setFormDialogStatus, setIsFormDialogOpen, setShowSnackBarMessage } = useFlowStore()
+  const { activate, loading, error, success } = useCredentialStore()
+  function hasFalseValue(obj: Record<string, boolean>): boolean {
+    return Object.values(obj).includes(false);
+  }
 
   return (
     <>
@@ -53,8 +55,8 @@ export function Toolbar() {
 
 
           <Button variant="outline" size="sm" onClick={() => {
-             setIsFormDialogOpen(true);
-             setFormDialogStatus("variables");
+            setIsFormDialogOpen(true);
+            setFormDialogStatus("variables");
           }}>
             <Variable className="w-4 h-4 mr-2" />
             Variables
@@ -62,11 +64,19 @@ export function Toolbar() {
 
           <Button
             onClick={() => {
-              const data = createFlowObject()
-              activate({
-                param: data
-              })
-            }}
+              if (hasFalseValue(nodesValidation)) {
+                // setIsFormDialogOpen(true);
+                // setFormDialogStatus("validation");
+                setShowSnackBarMessage({ open: true, message: "Please make sure all nodes are valid!", color: "destructive", duration: 3000 })
+              }
+              else {
+                const data = createFlowObject()
+                activate({
+                  param: data
+                })
+              }
+            }
+            }
             variant={isRunning ? "destructive" : "default"}
             size="sm"
           >

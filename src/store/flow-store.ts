@@ -342,8 +342,10 @@ export const useFlowStore = create<FlowState>((set, get) => ({
         }))
     },
     deleteNodesValidationById: (nodeId) => {
-        set((state) => ({
-        }))
+        set((state) => {
+            const { [nodeId]: _, ...rest } = state.nodesValidation;
+            return { nodesValidation: rest };
+        });
     },
     updateNodesValidationById: (nodeId, valid) => {
         set((state) => ({
@@ -356,7 +358,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
 
     addSubNodeValidation: (parentId, subId, valid) =>
         set((state) => {
-            console.trace({ parentId,subId,valid });
+            console.trace({ parentId, subId, valid });
 
             const existing = state.subNodesValidation[parentId] || { valid: true, subs: {} };
             const newSubs = { ...existing.subs, [subId]: valid };
@@ -417,8 +419,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
         }
 
         const { nodes: updatedNodes, edges: updatedEdges } = removeNodeAndEdges(id, nodes, edges)
-
-
+        const { [id]: _, ...updatedNodesValidation } = state.nodesValidation;
         // Check clickedElement
         const newClickedElement = state.clickedElement?.id === id
             ? null
@@ -428,6 +429,7 @@ export const useFlowStore = create<FlowState>((set, get) => ({
             ...state,
             nodes: updatedNodes,
             edges: updatedEdges,
+            nodesValidation: updatedNodesValidation,
             clickedElement: newClickedElement,
             isRightOpen: false,
             mousePositionManySelectedElementMenu: { mouseX: null, mouseY: null }
