@@ -21,6 +21,7 @@ from elements.variable_manager import VariableManager
 from elements.rag import RAG
 from elements.basic_llm import BasicLLM
 from elements.app_integration import AppIntegration
+from elements.http_request import HttpRequest
 from dialogues.dialogues import active_dialogues
 import gzip, os, gzip,magic,uuid
 import os.path
@@ -98,6 +99,10 @@ async def execute_process(sio, sid, conversation, dialogue):
 
     elif element_type == 'FlowInvoker':
         await handle_flow_invoker(conversation,content)
+
+    elif element_type == 'HttpRequest':
+        await handle_http_request(sio, sid, conversation, dialogue, current_dialogue,content)
+        return
 
     elif element_type == 'VariableManager':
         handle_variable_manager(conversation,content)
@@ -253,6 +258,23 @@ def save_output_parser_vars(output_parser_data: dict, conversation: dict, result
         
     return conversation
 
+async def handle_http_request(sio, sid, conversation, dialogue, current_dialogue,content):
+    
+    request = await HttpRequest(content["data"]).make_request()
+
+    # save result in a variable if user want to 
+    logger.info(f"Save http_request output in variables")
+    if 'saveOutputAs' in content["data"]:
+        for element in content["data"]['saveOutputAs']:
+            if not element['path']: # save all result in a variable 
+                conversation['variables'][element['name']] = request
+            else: # save specific key in result
+                value = get_value_from_path(request,element['path'])
+                conversation['variables'][element['name']] = value
+
+    # continue process execution
+    conversation['current_step'] = current_dialogue['next']
+    await execute_process(sio, sid, conversation, dialogue)
 
 async def handle_app_integration(sio, sid, conversation, dialogue, current_dialogue,content):
 
