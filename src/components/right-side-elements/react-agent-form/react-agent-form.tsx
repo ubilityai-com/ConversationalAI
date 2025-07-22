@@ -54,7 +54,6 @@ export default function ReactAgentForm({
     );
     const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
 
-    console.log({ selectedNode });
 
     const { localConfig, updateNestedConfig } =
         useDebounceConfig<LLMConfigProps["rightSideData"]>(

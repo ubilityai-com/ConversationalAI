@@ -17,6 +17,9 @@ import ApiCaller from "./async-dropdown"
 import DynamicFields from "./dynamic-fields-v4"
 import { FieldWrapper } from "./field-wrapper"
 import { SearchableSelect } from "./searchable-select"
+import ReactQuill from "react-quill"
+import "react-quill/dist/quill.snow.css"
+import ReactQuillEditor from "./textFormatter"
 
 // Validation functions
 const validateNumberGreaterThanZero = (value: string) => {
@@ -238,7 +241,7 @@ export default function AutomationSimple({
                             />
                         </FieldWrapper>
                         {item.helperSpan && <p className="text-xs text-muted-foreground">{item.helperSpan}</p>}
-                        {item.errorSpan && (
+                        {item.errorSpan && !item.value && (
                             <p className="text-xs text-red-500 flex items-center gap-1">
                                 <AlertCircle className="h-3 w-3" />
                                 {item.errorSpan}
@@ -578,6 +581,35 @@ export default function AutomationSimple({
 
             case "row":
                 return <></>
+            case "textFormatter":
+                return (
+                    <div className="space-y-2">
+                        <Label className="text-sm font-medium">
+                            {item.label}
+                            {item.required && <span className="text-red-500 ml-1">*</span>}
+                        </Label>
+                        <div className="custom-editor w-[93%] mb-2">
+                            <ReactQuillEditor
+                                item={item}
+                                value={getFieldValue(item) || ""}
+                                onChange={(value: any) => {
+                                    onChangeAutomationSimple({
+                                        newValue: value,
+                                        variableName: item.variableName,
+                                    })
+                                }}
+                            />
+
+                        </div>
+                        {item.helperSpan && <p className="text-xs text-muted-foreground">{item.helperSpan}</p>}
+                        {item.errorSpan && (
+                            <p className="text-xs text-red-500 flex items-center gap-1">
+                                <AlertCircle className="h-3 w-3" />
+                                {item.errorSpan}
+                            </p>
+                        )}
+                    </div>
+                )
 
             default:
                 return (

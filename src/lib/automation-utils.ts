@@ -16,7 +16,7 @@ export const setAutomationArray = (
 ) => {
   const result: AutomationItem[] = [];
   console.log({ apiRes, child });
-console.trace("innn")
+  console.trace("innn")
   apiRes.forEach((item) => {
     const childArray = Array.isArray(child) ? child : [];
     console.log({ item, childArray });
@@ -560,7 +560,7 @@ export const getVariableNames = (items: AutomationItem[]): string[] => {
 type FieldItem = {
   type: string;
   value?: any;
-  variableName?: string;
+  variableName: string;
   typeOfValue?: string;
   credential?: boolean;
   list?: { option: string; cred: string }[];
@@ -633,8 +633,8 @@ export function objToReturnDynamicv2(apiRes: ApiResponse): Record<string, any> {
 
     if (type === "textFormatter" && value?.trim()) {
       obj[variableName!] = value
-        
-        
+
+
     }
 
     if (type === "multiselect" && Array.isArray(value) && value.length > 0) {
@@ -675,6 +675,302 @@ export function objToReturnDynamicv2(apiRes: ApiResponse): Record<string, any> {
       obj[target.variableName!] = arrayData ?? [];
     }
   });
+
+  return obj;
+}
+
+export function replaceTags(
+  inputString: string,
+  tagToReplace: string,
+  replacementChars: string
+): string {
+  const pattern = new RegExp(`<${tagToReplace}>(.*?)<\/${tagToReplace}>`, "gs");
+
+  return inputString.replace(pattern, (_, content: string) => {
+    const trimmedText = content.trim();
+    const spacesCount = content.length - trimmedText.length;
+    return `${replacementChars}${trimmedText}${replacementChars}${" ".repeat(spacesCount)}`;
+  });
+}
+
+export function replaceLink(inputString: string): string {
+  const pattern = /<a href="([^"]+)"[^>]*>(?:<(?:strong|em|s)>){0,3}([^<]+)(?:<\/(?:strong|em|s)>){0,3}<\/a>/g;
+  return inputString.replace(pattern, "<$1|$2>");
+}
+
+export function replaceParandBr(inputString: string): string {
+  const pattern = /<p>([\s\S]*?)<\/p>|<br>/g;
+
+  return inputString.replace(pattern, (_match, p1?: string) => {
+    return p1 ? p1.trim() + "\n" : "\n";
+  });
+}
+
+
+export function replaceCodeBlock(inputString: string): string {
+  const pattern = /<pre.*?>([\s\S]*?)<\/pre>/g; // replaced (.*?) with ([\s\S]*?)
+  return inputString.replace(pattern, "```$1```");
+}
+
+export function replaceMultipleOccurrences(
+  inputString: string,
+  array: any
+): string {
+  let str = inputString
+    .replace(/<br>/g, "\n")
+    .replace(/<span[^>]*>(.*?)<\/span>/g, "$1");
+
+  str = replaceParandBr(str);
+
+  array.forEach((opt: any) => {
+    if (opt.type === "link") {
+      str = replaceLink(str);
+    } else if (opt.type === "code-block") {
+      str = replaceCodeBlock(str);
+    } else if (opt.toSearch && opt.toReplace) {
+      str = replaceTags(str, opt.toSearch, opt.toReplace);
+    }
+  });
+
+  return str;
+}
+/**
+ * Reverts the result of replaceMultipleOccurrences back to its approximate original HTML structure.
+ */
+function reverseMultipleOccurrences(
+  inputString: string,
+  array: any
+): string {
+  let str = inputString;
+  // 1️⃣ Reverse `replaceCodeBlock`: ```code``` => <pre>code</pre>
+  const codeBlockPattern = /```([\s\S]*?)```/g;
+  str = str.replace(codeBlockPattern, (_match, codeContent) => {
+    return `<pre>${codeContent}</pre>`;
+  });
+
+  // 2️⃣ Reverse `replaceLink`: <url|text> => <a href="url">text</a>
+  const linkPattern = /<([^|]+)\|([^>]+)>/g;
+  str = str.replace(linkPattern, (_match, url, text) => {
+    return `<a href="${url}">${text}</a>`;
+  });
+
+  // 3️⃣ Reverse replaceTags: **text** => <b>text</b>, etc.
+  array.forEach((opt: any) => {
+    if (opt.toSearch && opt.toReplace) {
+      const escapedReplace = opt.toReplace.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'); // escape special chars
+      const tag = opt.toSearch;
+
+      const tagPattern = new RegExp(`${escapedReplace}(.*?)${escapedReplace}`, 'gs');
+      str = str.replace(tagPattern, (_match, innerContent) => {
+        return `<${tag}>${innerContent}</${tag}>`;
+      });
+    }
+  });
+
+  // 4️⃣ Reverse replaceParandBr and <br> => \n
+  str = str.replace(/\n/g, "<br>");
+
+  return str;
+}
+
+export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record<string, any>): Record<string, any> {
+  let obj: Record<string, any> = {};
+
+  apiRes.forEach((item) => {
+    const {
+      type,
+      value,
+      variableName,
+      typeOfValue,
+      credential,
+      list,
+      options,
+      fieldsArray,
+      json,
+    } = item;
+    const valueToSend: string = fieldValues[variableName]
+    const hasValue = value !== undefined && value !== null;
+
+    const processValue = (val: any): any => {
+      if (typeOfValue === "integer") {
+        return parseInt(val) || val;
+      }
+      if (typeOfValue === "float") {
+        return parseFloat(val);
+      }
+      if (typeOfValue === "array") {
+        return [val];
+      }
+      return val;
+    };
+
+    const mergeOptionFields = () => {
+      if (options && valueToSend && options[valueToSend]) {
+        obj = { ...obj, ...objToReturnValuesToSend(options[valueToSend], fieldValues) };
+      }
+    };
+
+    if (["dropdown", "api"].includes(type) && valueToSend !== "None") {
+      if (credential && list) {
+        obj[variableName!] =
+          list.length > 1
+            ? list.find((c) => c.option === valueToSend)?.cred ?? ""
+            : "";
+      } else {
+        obj[variableName!] = processValue(valueToSend);
+      }
+      mergeOptionFields();
+    }
+
+    if (type === "textfield" || type === "editor") {
+      if (valueToSend?.toString().trim()) {
+        obj[variableName!] = processValue(valueToSend);
+      }
+    }
+
+    if (type === "textFormatter" && valueToSend?.trim()) {
+      obj[variableName!] = item.custom ?
+        replaceMultipleOccurrences(valueToSend, item.formats)
+        : valueToSend.replace(/\n/g, "\\n");
+
+
+    }
+
+    if (type === "multiselect" && Array.isArray(valueToSend) && valueToSend.length > 0) {
+      obj[variableName!] = valueToSend
+    }
+
+    if (type === "array" && Array.isArray(valueToSend) && valueToSend.length > 0) {
+      obj[variableName!] = valueToSend;
+    }
+
+    if (type === "json" && valueToSend && Object.keys(valueToSend).length > 0) {
+      obj[variableName!] = valueToSend;
+    }
+
+    if (type === "checkbox") {
+      obj[variableName!] =
+        typeOfValue === "string" ? valueToSend?.toString() : valueToSend;
+    }
+
+    if (type === "radiobutton") {
+      obj[variableName!] = valueToSend;
+      mergeOptionFields();
+    }
+
+    if (type === "color" && valueToSend?.trim()) {
+      obj[variableName!] = valueToSend;
+    }
+
+    if (type === "accordion" && fieldsArray?.[0]) {
+      obj[variableName!] = objToReturnValuesToSend(fieldsArray[0], fieldValues);
+    }
+
+    if (type === "dynamic") {
+      const target = json ?? item;
+      const arrayData = target.fieldsArray?.map((arr) =>
+        objToReturnValuesToSend(arr, fieldValues)
+      );
+      obj[target.variableName!] = arrayData ?? [];
+    }
+  });
+
+  return obj;
+}
+export function objToReturnDefaultValues(apiRes: ApiResponse, fieldValues: Record<string, any>): Record<string, any> {
+  let obj: Record<string, any> = {};
+  console.log({ fieldValues, apiRes });
+  if (fieldValues) {
+    apiRes.forEach((item) => {
+      const {
+        type,
+        value,
+        variableName,
+        typeOfValue,
+        credential,
+        list,
+        options,
+        fieldsArray,
+        json,
+      } = item;
+      console.log({ type });
+
+      const valueToSend: string = fieldValues[variableName]
+      const hasValue = value !== undefined && value !== null;
+
+      const mergeOptionFields = () => {
+        console.log({ options, valueToSend });
+
+        if (options && valueToSend && options[valueToSend]) {
+          obj = { ...obj, ...objToReturnDefaultValues(options[valueToSend], fieldValues) };
+        }
+      };
+
+      if (["dropdown", "api"].includes(type) && valueToSend !== "None") {
+        if (credential && list) {
+          obj[variableName!] =
+            list.length > 1
+              ? list.find((c) => c.option === valueToSend)?.cred ?? ""
+              : "";
+        } else {
+          obj[variableName!] = valueToSend;
+        }
+        mergeOptionFields();
+      }
+
+      if (type === "textfield" || type === "editor") {
+        if (valueToSend?.toString().trim()) {
+          obj[variableName!] = valueToSend.toString();
+        }
+      }
+
+      if (type === "textFormatter" && valueToSend?.trim()) {
+        obj[variableName!] =
+          // item.custom ?
+          reverseMultipleOccurrences(valueToSend, item.formats)
+        // : valueToSend.replace(/\n/g, "\\n");
+
+      }
+
+      if (type === "multiselect" && Array.isArray(valueToSend) && valueToSend.length > 0) {
+        obj[variableName!] = valueToSend
+      }
+
+      if (type === "array" && Array.isArray(valueToSend) && valueToSend.length > 0) {
+        obj[variableName!] = valueToSend;
+      }
+
+      if (type === "json" && valueToSend && Object.keys(valueToSend).length > 0) {
+        obj[variableName!] = valueToSend;
+      }
+
+      if (type === "checkbox") {
+        obj[variableName!] =
+          typeOfValue === "string" ? valueToSend?.toString() : valueToSend;
+      }
+
+      if (type === "radiobutton") {
+        obj[variableName!] = valueToSend;
+        mergeOptionFields();
+      }
+
+      if (type === "color" && valueToSend?.trim()) {
+        obj[variableName!] = valueToSend;
+      }
+
+      if (type === "accordion" && fieldsArray?.[0]) {
+        obj[variableName!] = objToReturnDefaultValues(fieldsArray[0], fieldValues);
+      }
+
+      if (type === "dynamic") {
+        const target = json ?? item;
+        const arrayData = target.fieldsArray?.map((arr) =>
+          objToReturnDefaultValues(arr, fieldValues)
+        );
+        obj[target.variableName!] = arrayData ?? [];
+      }
+    });
+  }
 
   return obj;
 }

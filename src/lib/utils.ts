@@ -40,7 +40,6 @@ export type ApiResItem = DropdownItem | DynamicItem | TextFieldItem;
 
 export const objToReturnDynamic = (apiRes: ApiResItem[]): Record<string, any> => {
   let obj: Record<string, any> = {};
-  console.log({ apiRes });
 
   apiRes.forEach((item1) => {
     if (item1.type === "dropdown") {
@@ -596,9 +595,7 @@ export function extractCreds(obj: any): string[] {
   return creds;
 }
 export async function loadElementByKey(key: string) {
-  //  import ModelsElements from "../elements/model-elements"
-  // import { MemoryElements } from "../elements/memory-elements"
-  // import { ToolsElements } from "../elements/tools-elements"
+
   try {
     const module = await import(`../elements/${key}-elements`);
     return module.default || module[`${capitalize(key)}Elements`];

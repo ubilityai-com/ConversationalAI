@@ -6,22 +6,25 @@ import {
   MessageCircle,
   MessageSquare,
   Search,
+  Slack,
   Square,
   Workflow,
 } from "lucide-react";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { BasicLLMJson } from "../elements/langchain-elements/BasicLLMJson";
-import { setAutomationArray } from "../lib/automation-utils";
+import { objToReturnDynamicv2, setAutomationArray } from "../lib/automation-utils";
 import { ApiResItem, objToReturnDynamic } from "../lib/utils";
 import { useFlowStore } from "../store/flow-store";
 import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
+import { SlackJson } from "../elements/regular-elements/SlackJson";
 
 const agentTypes = [
   // BasicLLMJson,
+  SlackJson,
   {
     type: "ReactAgent",
     label: "React Agent",
@@ -288,6 +291,8 @@ export function AgentPaletteDialog({
       const clonedElement = JSON.parse(JSON.stringify(element));
       const generateID = uuidv4();
       let newDefaults = { ...clonedElement.defaults };
+      console.log({ clonedElement });
+
       if (clonedElement.automated) {
         console.log({
           sss: objToReturnDynamic(
@@ -299,10 +304,10 @@ export function AgentPaletteDialog({
 
         newDefaults = {
           ...newDefaults,
-          [clonedElement.automated]: objToReturnDynamic(
-            setAutomationArray(
-              clonedElement.defaults[clonedElement.automated]
-            ) as ApiResItem[]
+          [clonedElement.automated]: objToReturnDynamicv2(
+
+            clonedElement.defaults[clonedElement.automated]
+
           ),
         };
       }
@@ -318,6 +323,7 @@ export function AgentPaletteDialog({
           description: clonedElement.description,
           nodeType: clonedElement.category,
           rightSideData: newDefaults,
+          color: clonedElement.color
         },
       };
       console.log(newElement);

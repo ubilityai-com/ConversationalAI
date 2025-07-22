@@ -1,6 +1,5 @@
 import { Node, NodeProps } from "@xyflow/react";
-import { useState } from "react";
-import { ConditionAgentJson } from "../../../elements/langchain-elements/ConditionAgentJson";
+import { ListChecks, Plus, Trash2 } from "lucide-react";
 import { useDebounceConfig } from "../../../hooks/use-debounced-config";
 import {
   extractCreds,
@@ -8,15 +7,10 @@ import {
   stringifyAndExtractVariables,
 } from "../../../lib/utils";
 import { useFlowStore } from "../../../store/flow-store";
-import { useRightDrawerStore } from "../../../store/right-drawer-store";
-import AutomationSimple from "../../custom/automation-v4";
-import { SharedSection } from "../../properties/shared/shared-section";
-import { SharedListSection } from "../../properties/shared/shared-section-list";
-import { objToReturnDynamicv2 } from "../../../lib/automation-utils";
-import { Label } from "../../ui/label";
 import { LoopFromForm } from "../../common/loop-from-end";
 import { EditableField } from "../../custom/editable-field";
-import { Switch } from "../../ui/switch";
+import { DynamicElementLoader } from "../../properties/shared/DynamicElementLoader";
+import { Button } from "../../ui/button";
 import {
   Card,
   CardContent,
@@ -24,14 +18,10 @@ import {
   CardHeader,
   CardTitle,
 } from "../../ui/card";
-import { ListChecks, Plus, Trash2 } from "lucide-react";
-import { Button } from "../../ui/button";
 import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
+import { Switch } from "../../ui/switch";
 import { Textarea } from "../../ui/textarea";
-import ModelsElements from "../../../elements/model-elements";
-import { ToolsElements } from "../../../elements/tools-elements";
-import { MemoryElements } from "../../../elements/memory-elements";
-import { DynamicElementLoader } from "../../properties/shared/DynamicElementLoader";
 
 interface Scenario {
   id: string;
