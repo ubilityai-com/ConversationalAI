@@ -1,12 +1,12 @@
 import { Node, NodeProps } from "@xyflow/react"
-import { useDebounceConfig } from "../../../hooks/use-debounced-config"
-import { useFlowStore } from "../../../store/flow-store"
-import { Input } from "../../ui/input"
-import { Label } from "../../ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
-import { Separator } from "../../ui/separator"
-import { Switch } from "../../ui/switch"
-import { removeHTMLTags, stringifyAndExtractVariables } from "../../../lib/utils"
+import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
+import { useFlowStore } from "../../../../store/flow-store"
+import { Input } from "../../../ui/input"
+import { Label } from "../../../ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../ui/select"
+import { Separator } from "../../../ui/separator"
+import { Switch } from "../../../ui/switch"
+import { removeHTMLTags, stringifyAndExtractVariables } from "../../../../lib/utils"
 
 interface RightSideData {
   botSays: string,

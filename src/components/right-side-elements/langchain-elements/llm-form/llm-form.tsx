@@ -2,12 +2,12 @@
 
 import { Node, NodeProps } from "@xyflow/react";
 import { useState } from "react";
-import { BasicLLMJson } from "../../../elements/langchain-elements/BasicLLMJson";
-import ModelsElements from "../../../elements/model-elements";
-import { useDebounceConfig } from "../../../hooks/use-debounced-config";
-import AutomationSimple from "../../custom/automation-v4";
-import { OutputParserSection } from "../../properties/shared/output-parser-section";
-import { SharedSection } from "../../properties/shared/shared-section";
+import { BasicLLMJson } from "../../../../elements/langchain-elements/BasicLLMJson";
+import ModelsElements from "../../../../elements/model-elements";
+import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
+import AutomationSimple from "../../../custom/automation-v4";
+import { OutputParserSection } from "../../../properties/shared/output-parser-section";
+import { SharedSection } from "../../../properties/shared/shared-section";
 
 interface LLMConfigProps extends Record<string, any> {
   label: string;

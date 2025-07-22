@@ -1,13 +1,13 @@
 import { useNodesData } from "@xyflow/react"
 import { AlertCircle, Brain, Code2 } from "lucide-react"
 import { useEffect, useState } from "react"
-import { useFlowStore } from "../../../store/flow-store"
-import { useRightDrawerStore } from "../../../store/right-drawer-store"
-import { Alert, AlertDescription } from "../../ui/alert"
-import { Badge } from "../../ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card"
-import { Input } from "../../ui/input"
-import { Label } from "../../ui/label"
+import { useFlowStore } from "../../../../store/flow-store"
+import { useRightDrawerStore } from "../../../../store/right-drawer-store"
+import { Alert, AlertDescription } from "../../../ui/alert"
+import { Badge } from "../../../ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "../../../ui/card"
+import { Input } from "../../../ui/input"
+import { Label } from "../../../ui/label"
 
 
 

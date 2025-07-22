@@ -1,7 +1,7 @@
 import { FileJson, PenToolIcon, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { v4 } from "uuid"
-import { keyBy } from "../../../lib/utils"
+import { keyBy, validateArray } from "../../../lib/utils"
 import { useFlowStore } from "../../../store/flow-store"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../ui/accordion"
 import { Button } from "../../ui/button"
@@ -10,6 +10,7 @@ import { Label } from "../../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
 import { Switch } from "../../ui/switch"
 import { SharedListItemSection } from "./shared-section-list-tem"
+import { objToReturnDynamicv2 } from "../../../lib/automation-utils"
 
 interface SectionProps {
     config: any
@@ -108,19 +109,22 @@ export function SharedListSection({
                                         onValueChange={(value) => {
                                             console.log({ value })
                                             const currentTools = list
+                                            const selectedOption = elements.find((opt) => opt.type === value)
+                                            const defaultValues = objToReturnDynamicv2((selectedOption.rightSideData.json))
+
                                             const updatedTools = currentTools.map((tool: any, index: number) =>
                                                 toolIndex === index
                                                     ? {
                                                         id: tool.id,
                                                         type: value,
-                                                        content: {},
+                                                        content: { json: defaultValues },
                                                     }
                                                     : tool,
                                             )
                                             console.log({ updatedTools })
-                                            const selectedOption = elements.find((opt) => opt.type === value)
                                             onConfigUpdate(`extras.${variableName}.list`, updatedTools)
                                             updateSubNodeValidationById(id, tool.id, selectedOption.defaultValid)
+
                                         }}
                                     >
                                         <SelectTrigger id={`tool-type-${tool.id}`} className="h-8 text-xs">

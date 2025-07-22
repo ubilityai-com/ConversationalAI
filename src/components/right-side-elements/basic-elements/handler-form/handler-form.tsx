@@ -1,9 +1,9 @@
 import { Node, NodeProps } from "@xyflow/react"
-import { useDebounceConfig } from "../../../hooks/use-debounced-config"
-import { useFlowStore } from "../../../store/flow-store"
-import { Input } from "../../ui/input"
-import { Label } from "../../ui/label"
-import { Switch } from "../../ui/switch"
+import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
+import { useFlowStore } from "../../../../store/flow-store"
+import { Input } from "../../../ui/input"
+import { Label } from "../../../ui/label"
+import { Switch } from "../../../ui/switch"
 interface RightSideData {
   greet?: string;
   cancel?: string;

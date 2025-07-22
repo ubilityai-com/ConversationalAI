@@ -1,4 +1,5 @@
 import { useDebounceConfig } from "../../../../../hooks/use-debounced-config";
+import { validateArray } from "../../../../../lib/utils";
 import AutomationSimple from "../../../../custom/automation-v4";
 
 
@@ -8,12 +9,13 @@ interface SerpApiToolProps {
   schema: any[]
   onContentUpdate: (value: any) => void;
   counter: number
+  validate: (value: any) => void
 
 }
 
 
 
-const SerpApiTool: React.FC<SerpApiToolProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter }) => {
+const SerpApiTool: React.FC<SerpApiToolProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter, validate }) => {
   const { localConfig, updateNestedConfig } =
     useDebounceConfig<any>(
       content,
@@ -22,6 +24,8 @@ const SerpApiTool: React.FC<SerpApiToolProps> = ({ selectedNodeId, content, onCo
         onSave: (savedConfig) => {
           // Save label changes
           onContentUpdate(savedConfig);
+          validate(validateArray(schema, savedConfig.json))
+
         },
       }
     );

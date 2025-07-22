@@ -1,12 +1,12 @@
 import { Node, NodeProps } from "@xyflow/react";
-import { useEffect, useState } from "react";
-import { SlackJson } from "../../../elements/regular-elements/SlackJson";
-import { useDebounceConfig } from "../../../hooks/use-debounced-config";
-import { extractCreds, getNextNodeId, stringifyAndExtractVariables } from "../../../lib/utils";
-import { useFlowStore } from "../../../store/flow-store";
-import { useRightDrawerStore } from "../../../store/right-drawer-store";
-import AutomationSimple from "../../custom/automation-v4";
-import { objToReturnDefaultValues, objToReturnDynamicv2, objToReturnValuesToSend } from "../../../lib/automation-utils";
+import { useState } from "react";
+import { SlackJson } from "../../../../elements/regular-elements/SlackJson";
+import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
+import { objToReturnDefaultValues, objToReturnValuesToSend } from "../../../../lib/automation-utils";
+import { getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils";
+import { useFlowStore } from "../../../../store/flow-store";
+import { useRightDrawerStore } from "../../../../store/right-drawer-store";
+import AutomationSimple from "../../../custom/automation-v4";
 
 interface RegularConfigProps extends Record<string, any> {
     label: string;
@@ -491,6 +491,7 @@ export function getContent(selectedNode: any, params: any) {
         data: {
             content_json: jsonToSend,
             app: "slack",
+            credential: json.cred,
             operation: getOperationName(json.type, json.operation),
             saveOutputAs: []
         }

@@ -955,7 +955,7 @@ export function objToReturnDefaultValues(apiRes: ApiResponse, fieldValues: Recor
       }
 
       if (type === "accordion" && fieldsArray?.[0]) {
-        obj[variableName!] = objToReturnDefaultValues(fieldsArray[0], fieldValues);
+        obj[variableName!] = objToReturnDefaultValues(fieldsArray[0], fieldValues[variableName]);
       }
 
       if (type === "dynamic") {

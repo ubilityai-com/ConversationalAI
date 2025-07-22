@@ -2,17 +2,17 @@
 
 import { Node, type NodeProps } from "@xyflow/react";
 import { GitBranch, Plus, Trash2 } from "lucide-react";
-import { useDebounceConfig } from "../../../hooks/use-debounced-config";
-import { Button } from "../../ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card";
-import { Input } from "../../ui/input";
-import { Label } from "../../ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
-import { Textarea } from "../../ui/textarea";
-import { getNextNodeId, stringifyAndExtractVariables, validateArray } from "../../../lib/utils";
-import { useFlowStore } from "../../../store/flow-store";
-import { RouterBranch, RouterDefaultBranch } from "../../nodes/router-node";
-import { FieldWrapper } from "../../custom/field-wrapper";
+import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
+import { Button } from "../../../ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../ui/card";
+import { Input } from "../../../ui/input";
+import { Label } from "../../../ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../ui/select";
+import { Textarea } from "../../../ui/textarea";
+import { getNextNodeId, stringifyAndExtractVariables, validateArray } from "../../../../lib/utils";
+import { useFlowStore } from "../../../../store/flow-store";
+import { RouterBranch, RouterDefaultBranch } from "../../../nodes/router-node";
+import { FieldWrapper } from "../../../custom/field-wrapper";
 
 interface RightSideData {
   branches: RouterBranch[]

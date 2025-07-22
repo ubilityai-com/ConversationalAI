@@ -24,7 +24,7 @@ import { SlackJson } from "../elements/regular-elements/SlackJson";
 
 const agentTypes = [
   // BasicLLMJson,
-  SlackJson,
+  // SlackJson,
   {
     type: "ReactAgent",
     label: "React Agent",
@@ -32,6 +32,7 @@ const agentTypes = [
     icon: Bot,
     category: "AI",
     color: "bg-purple-500",
+    nodeType: "langchain",
     automated: "json",
     defaults: {
       extras: {
@@ -91,6 +92,7 @@ const agentTypes = [
     description: "Branch workflow based on conditions",
     icon: GitBranch,
     category: "AI",
+    nodeType: "langchain",
     color: "bg-yellow-500",
     defaults: {
       save: false,
@@ -134,6 +136,7 @@ const agentTypes = [
     icon: GitBranch,
     defaultValid: true,
     category: "Logic",
+    nodeType: "basic",
     color: "bg-cyan-500",
     defaults: {
       branches: [],
@@ -151,6 +154,7 @@ const agentTypes = [
     description: "Present multiple options for user selection",
     icon: CheckSquare,
     category: "Logic",
+    nodeType: "basic",
     color: "bg-pink-500",
     defaults: {
       botSays: "Hello please choose a choice",
@@ -183,6 +187,7 @@ const agentTypes = [
     color: "bg-emerald-500",
     defaultValid: true,
     category: "Logic",
+    nodeType: "basic",
     label: "Message",
     description: "Send messages and notifications",
     icon: MessageCircle,
@@ -211,6 +216,7 @@ const agentTypes = [
     description: "Terminates the chat with a custom message",
     icon: Square,
     category: "Control",
+    nodeType: "basic",
     color: "bg-red-500",
     defaults: {
       botSays: "",
@@ -320,7 +326,7 @@ export function AgentPaletteDialog({
         data: {
           label: clonedElement.label,
           description: clonedElement.description,
-          nodeType: clonedElement.category,
+          nodeType: clonedElement.nodeType,
           rightSideData: newDefaults,
           color: clonedElement.color
         },

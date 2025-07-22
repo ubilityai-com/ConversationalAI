@@ -66,7 +66,7 @@ export function SharedListItemSection({
                 Component.name === `${type}` &&
                 !isLoading && (
                     <Component
-                        selectedNodeId={id}
+                        selectedNodeId={parentId}
                         schema={schema}
                         content={content}
                         onContentUpdate={onContentUpdate}

@@ -18,17 +18,18 @@ export default function RightSideBody() {
   };
 
   useEffect(() => {
+
     const loadComponent = async () => {
       setIsLoading(true);
       console.log(
-        `./right-side-elements/${camelToDashCase(
+        `./right-side-elements/${clickedElement.data.nodeType}-elements/${camelToDashCase(
           clickedElement.type
         )}-form/${camelToDashCase(clickedElement.type)}-form.tsx`
       );
 
       // Dynamically import the component with TypeScript typing
       const module = await import(
-        `./right-side-elements/${camelToDashCase(
+        `./right-side-elements/${clickedElement.data.nodeType}-elements/${camelToDashCase(
           clickedElement.type
         )}-form/${camelToDashCase(clickedElement.type)}-form.tsx`
       );
