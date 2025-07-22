@@ -1,10 +1,8 @@
 import { useNodesData } from "@xyflow/react"
 import { AlertCircle, Brain, Code2 } from "lucide-react"
 import { useEffect, useState } from "react"
-import { BasicLLMJson } from "../../../elements/langchain-elements/BasicLLMJson"
 import { useFlowStore } from "../../../store/flow-store"
 import { useRightDrawerStore } from "../../../store/right-drawer-store"
-import AutomationSimple from "../../custom/automation-v2"
 import { Alert, AlertDescription } from "../../ui/alert"
 import { Badge } from "../../ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card"
@@ -199,16 +197,7 @@ export default function BasicLlmForm({ selectedNode }: BasicLlmProps) {
           <CardTitle className="text-base">LLM Settings</CardTitle>
         </CardHeader>
         <CardContent>
-          <AutomationSimple
-            filledDataName="json"
-            flowZoneSelectedId={selectedNode.id}
-            flowZoneSelectedElement={selectedNode}
-            AllJson={BasicLLMJson.defaults.json}
-            apiRes={json}
-            setApiRes={setJson}
-            selectedNode={selectedNode}
-            onUpdate={() => { }}
-          />
+
         </CardContent>
       </Card>
 

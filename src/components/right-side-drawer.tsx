@@ -7,7 +7,7 @@ import { useVariablesPanel, VariablesPanel } from './variable-picker';
 let isFirstTime = true;
 export default function RightSideDrawer() {
     const drawerRef = useRef<HTMLDivElement>(null);
-    const [newWidthRightDrawer, setNewWidthRightDrawer] = useState(100)
+    const [newWidthRightDrawer, setNewWidthRightDrawer] = useState(400)
     const clickedElement = useFlowStore(state => state.clickedElement)
     const variablesPickerVisible = useFlowStore(state => state.variablesPickerVisible)
     const setVarPicker = useFlowStore(state => state.setVarPicker)
@@ -17,7 +17,7 @@ export default function RightSideDrawer() {
     useEffect(() => {
         const handleWindowResize = () => {
             const rightSideWidth = document.body.offsetWidth * 0.3
-            setNewWidthRightDrawer(rightSideWidth < 345 ? 345 : rightSideWidth);
+            setNewWidthRightDrawer(rightSideWidth < 400 ? 400 : rightSideWidth);
         };
         if (isFirstTime) handleWindowResize()
         window.addEventListener('resize', handleWindowResize);
@@ -28,7 +28,7 @@ export default function RightSideDrawer() {
     }, [document.body.offsetWidth]);
     const handleResizeDrawer = (event: React.DragEvent<HTMLDivElement>) => {
         let offsetRight = document.body.offsetWidth - (event.clientX - document.body.offsetLeft);
-        if (offsetRight > 345 && offsetRight < 900) {//minWidth = 345 maxWidth = 700;
+        if (offsetRight > 400 && offsetRight < 900) {//minWidth = 400 maxWidth = 700;
             setNewWidthRightDrawer(offsetRight + 10);
         }
     }

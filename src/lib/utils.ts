@@ -1,7 +1,7 @@
+import { Edge, Node } from "@xyflow/react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useFlowStore } from "../store/flow-store";
-import { Edge, Node } from "@xyflow/react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -467,7 +467,7 @@ export const validateArray = (items: FormItem[], values: FormValues): boolean =>
     switch (type) {
       case "dropdown":
       case "api":
-        if ((required && value === "None") || (required && multiselect && Array.isArray(value) && value.length === 0)) {
+        if ((required && (value === "None" || !value)) || (required && multiselect && Array.isArray(value) && value.length === 0)) {
           return false;
         }
         if (options && typeof value === "string" && options[value]) {

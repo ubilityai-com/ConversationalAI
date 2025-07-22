@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { cloneDeep } from 'lodash'; // or your preferred deep clone utility
 
 interface UseDebounceConfigOptions {
   delay?: number;
@@ -64,7 +65,9 @@ export function useDebounceConfig<T>(
   const updateNestedConfig = useCallback(
     (path: string, value: any) => {
       updateConfig((prev) => {
-        const newConfig = { ...prev };
+        const newConfig = cloneDeep(prev);
+        console.log({path,value,prev});
+        
 
         const keys = path.split(".");
         let current: any = newConfig;

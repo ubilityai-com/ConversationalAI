@@ -2,7 +2,8 @@
 
 import { AlertCircle, Code, Settings, Upload } from "lucide-react"
 import { type Dispatch, Fragment, type SetStateAction, useEffect } from "react"
-import { cn, objToReturnDynamic, validateArray } from "../../lib/utils"
+import { objToReturnDynamicv2 } from "../../lib/automation-utils"
+import { cn, validateArray } from "../../lib/utils"
 import { useRightDrawerStore } from "../../store/right-drawer-store"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion"
 import { Badge } from "../ui/badge"
@@ -65,7 +66,7 @@ const hexToRgb = (hex: string) => {
 
 
 interface AutomationSimpleProps {
-    filledDataName?: string
+    filledDataName: string
     flowZoneSelectedId: string
     schema: any[]
     setSchema?: Dispatch<SetStateAction<any[]>>
@@ -96,8 +97,11 @@ export default function AutomationSimple({
     fieldValues = {},
     onFieldChange,
     path = "",
+    firstCall,
     ...restProps
 }: AutomationSimpleProps) {
+    console.log({ fieldValues });
+
     const setValidationByKey = useRightDrawerStore((state) => state.setValidationByKey)
     const setNodeFilledDataByKey = useRightDrawerStore((state) => state.setNodeFilledDataByKey)
     const updateNodeRightSideDataNestedKey = useRightDrawerStore((state) => state.updateNodeRightSideDataNestedKey)
@@ -119,15 +123,14 @@ export default function AutomationSimple({
     }
 
     useEffect(() => {
-        if (!InDynamic) {
+        if (firstCall) {
             // Initialize validation and final object
-            console.log("Initializing automation  component")
+            console.log("Initializing automation  component", objToReturnDynamicv2(schema))
             if (flowZoneSelectedId && filledDataName) {
                 setValidationByKey(flowZoneSelectedId, filledDataName, validateArray(schema, fieldValues))
-                setNodeFilledDataByKey(flowZoneSelectedId, filledDataName, objToReturnDynamic(schema))
             }
         }
-    }, [InDynamic])
+    }, [firstCall])
 
     const onChangeAutomationSimple = ({ newValue, variableName }: any) => {
         const newFieldsValue = { ...fieldValues, [variableName]: newValue }
@@ -251,6 +254,7 @@ export default function AutomationSimple({
                             <Fragment >
                                 {item.options.hasOwnProperty(getFieldValue(item)) && (
                                     <AutomationSimple
+                                        filledDataName={filledDataName}
                                         flowZoneSelectedId={flowZoneSelectedId}
                                         schema={item.options[(getFieldValue(item) as string)]}
                                         fieldValues={fieldValues}
@@ -291,6 +295,7 @@ export default function AutomationSimple({
                                 disabled={disabled}
                                 apiJson={item}
                                 value={getFieldValue(item)}
+                                filledDataName={filledDataName}
                                 onChange={({ val, name }) => {
                                     onChangeAutomationSimple({
                                         newValue: val,
@@ -495,6 +500,7 @@ export default function AutomationSimple({
                                         fieldsArray: dynamicValue,
                                     }
                             }
+                            filledDataName={filledDataName}
                             onFieldChange={({ path, value }: any) => {
 
                                 if (fieldValues && item.variableName) {
@@ -519,6 +525,7 @@ export default function AutomationSimple({
                             <AccordionTrigger className="text-sm font-medium">{item.accTitle || item.title}</AccordionTrigger>
                             <AccordionContent>
                                 <DynamicFields
+                                    filledDataName={filledDataName}
                                     json={
                                         item.hasOwnProperty("json")
                                             ? {
