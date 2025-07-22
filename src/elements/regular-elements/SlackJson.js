@@ -14,14 +14,6 @@ export const SlackJson = {
   "defaults": {
     "json": [
       {
-        type: "textfield",
-        variableName: "chunkSize",
-        numberField: true,
-        typeOfValue: "integer",
-        value: "1000",
-        hasDynamicVariable: true,
-      },
-      {
         "type": "api",
         "label": "Credentials",
         "variableName": "cred",
@@ -184,7 +176,7 @@ export const SlackJson = {
                               "dependOn": [
                                 {
                                   "type": "static",
-                                  "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                                  "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                                 }
                               ]
                             },
@@ -302,7 +294,7 @@ export const SlackJson = {
                               "dependOn": [
                                 {
                                   "type": "static",
-                                  "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listUsers"
+                                  "value": process.env.REACT_APP_DNS_URL + "slack/listUsers"
                                 }
                               ]
                             },
@@ -812,7 +804,7 @@ export const SlackJson = {
                               "dependOn": [
                                 {
                                   "type": "static",
-                                  "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                                  "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                                 }
                               ]
                             },
@@ -931,7 +923,7 @@ export const SlackJson = {
                               "dependOn": [
                                 {
                                   "type": "static",
-                                  "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listUsers"
+                                  "value": process.env.REACT_APP_DNS_URL + "slack/listUsers"
                                 }
                               ]
                             },
@@ -1088,7 +1080,7 @@ export const SlackJson = {
                               "dependOn": [
                                 {
                                   "type": "static",
-                                  "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                                  "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                                 }
                               ]
                             },
@@ -1262,7 +1254,7 @@ export const SlackJson = {
                               "dependOn": [
                                 {
                                   "type": "static",
-                                  "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                                  "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                                 }
                               ]
                             },
@@ -1583,7 +1575,7 @@ export const SlackJson = {
                         "dependOn": [
                           {
                             "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                            "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                           }
                         ]
                       },
@@ -1882,7 +1874,7 @@ export const SlackJson = {
                         "dependOn": [
                           {
                             "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                            "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                           }
                         ]
                       },
@@ -1989,7 +1981,7 @@ export const SlackJson = {
                         "dependOn": [
                           {
                             "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                            "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                           }
                         ]
                       },
@@ -2096,7 +2088,7 @@ export const SlackJson = {
                         "dependOn": [
                           {
                             "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                            "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                           }
                         ]
                       },
@@ -2217,7 +2209,7 @@ export const SlackJson = {
                         "dependOn": [
                           {
                             "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                            "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                           }
                         ]
                       },
@@ -2326,7 +2318,7 @@ export const SlackJson = {
                         "dependOn": [
                           {
                             "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                            "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                           }
                         ]
                       },
@@ -2439,7 +2431,7 @@ export const SlackJson = {
                         "dependOn": [
                           {
                             "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                            "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                           }
                         ]
                       },
@@ -2546,7 +2538,7 @@ export const SlackJson = {
                         "dependOn": [
                           {
                             "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                            "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                           }
                         ]
                       },
@@ -2646,7 +2638,7 @@ export const SlackJson = {
                         "dependOn": [
                           {
                             "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listUsers"
+                            "value": process.env.REACT_APP_DNS_URL + "slack/listUsers"
                           }
                         ]
                       },
@@ -2781,7 +2773,7 @@ export const SlackJson = {
                         "dependOn": [
                           {
                             "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listUsers"
+                            "value": process.env.REACT_APP_DNS_URL + "slack/listUsers"
                           }
                         ]
                       },
@@ -2987,7 +2979,7 @@ export const SlackJson = {
                         "dependOn": [
                           {
                             "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listUsers"
+                            "value": process.env.REACT_APP_DNS_URL + "slack/listUsers"
                           }
                         ]
                       },
@@ -3483,7 +3475,7 @@ export const SlackJson = {
                         "dependOn": [
                           {
                             "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "cloud/regular/slack/listChannels"
+                            "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
                           }
                         ]
                       },

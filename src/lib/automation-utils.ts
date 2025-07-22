@@ -810,12 +810,12 @@ export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record
       }
     };
 
-    if (["dropdown", "api"].includes(type) && valueToSend !== "None") {
+    if (["dropdown", "api"].includes(type) && valueToSend !== "None" || valueToSend) {
       if (credential && list) {
-        obj[variableName!] =
-          list.length > 1
-            ? list.find((c) => c.option === valueToSend)?.cred ?? ""
-            : "";
+        obj[variableName!] = valueToSend
+        // list.length > 1
+        //   ? list.find((c) => c.option === valueToSend)?.cred ?? ""
+        //   : "";
       } else {
         obj[variableName!] = processValue(valueToSend);
       }
@@ -893,7 +893,6 @@ export function objToReturnDefaultValues(apiRes: ApiResponse, fieldValues: Recor
         fieldsArray,
         json,
       } = item;
-      console.log({ type });
 
       const valueToSend: string = fieldValues[variableName]
       const hasValue = value !== undefined && value !== null;
@@ -906,12 +905,9 @@ export function objToReturnDefaultValues(apiRes: ApiResponse, fieldValues: Recor
         }
       };
 
-      if (["dropdown", "api"].includes(type) && valueToSend !== "None") {
+      if (["dropdown", "api"].includes(type) && valueToSend !== "None" || valueToSend) {
         if (credential && list) {
-          obj[variableName!] =
-            list.length > 1
-              ? list.find((c) => c.option === valueToSend)?.cred ?? ""
-              : "";
+          obj[variableName!] = valueToSend
         } else {
           obj[variableName!] = valueToSend;
         }
