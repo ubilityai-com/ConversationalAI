@@ -408,18 +408,17 @@ export function ApiCaller({
     // Effect for dependency changes
     useEffect(() => {
         const valid = validateDependencies()
-
-        if (notFetchingAsFirstTime !== undefined && valid && (inDynamic === undefined || inDynamic) && !isUsingAi) {
-            console.log("dep", !apiJson.hasOwnProperty("credential"))
-            callDynamicAPI(apiJson.config, apiJson.res)
-        }
+        if (
+            apiJson.hasOwnProperty("apiDependsOn") &&
+            apiJson.apiDependsOn.length > 0
+        )
+            if (notFetchingAsFirstTime !== undefined && valid && (inDynamic === undefined || inDynamic) && !isUsingAi) {
+                console.log("dep", !apiJson.hasOwnProperty("credential"))
+                callDynamicAPI(apiJson.config, apiJson.res)
+            }
     }, [
         ...apiJson.apiDependsOn.map((e: any) => {
-            if (e.isAutomation === false) {
-                return JSON.stringify(getNestedPropertyValue(flowZoneSelectedElement, `data.rightSideData.${e.name}`))
-            } else {
-                return JSON.stringify(getNestedPropertyValue(finaleObj, e.name))
-            }
+            return JSON.stringify(getNestedPropertyValue(finaleObj, e.name))
         }),
     ])
 
@@ -451,33 +450,33 @@ export function ApiCaller({
     // Check if component should be disabled
     let isDisabled = false
     apiJson.apiDependsOn.forEach((elt: any) => {
-        console.log({ flowZoneSelectedElement, elt,finaleObj });
-         
-            if (Object.keys(finaleObj).length !== 0) {
-                if (
-                    elt.type === "dropdown" &&
-                    (!getNestedPropertyValue(finaleObj, elt.name) ||
-                        (getNestedPropertyValue(finaleObj, elt.name) &&
-                            typeof getNestedPropertyValue(finaleObj, elt.name) === "string" &&
-                            getNestedPropertyValue(finaleObj, elt.name).trim() === ""))
-                ) {
-                    if (elt.hasOwnProperty("value")) {
-                        if (getNestedPropertyValue(finaleObj, elt.name) !== elt.value) {
-                            isDisabled = true
-                        }
-                    } else {
+        console.log({ flowZoneSelectedElement, elt, finaleObj });
+
+        if (Object.keys(finaleObj).length !== 0) {
+            if (
+                elt.type === "dropdown" &&
+                (!getNestedPropertyValue(finaleObj, elt.name) ||
+                    (getNestedPropertyValue(finaleObj, elt.name) &&
+                        typeof getNestedPropertyValue(finaleObj, elt.name) === "string" &&
+                        getNestedPropertyValue(finaleObj, elt.name).trim() === ""))
+            ) {
+                if (elt.hasOwnProperty("value")) {
+                    if (getNestedPropertyValue(finaleObj, elt.name) !== elt.value) {
                         isDisabled = true
                     }
-                } else if (
-                    elt.type === "textfield" &&
-                    (!getNestedPropertyValue(finaleObj, elt.name) || getNestedPropertyValue(finaleObj, elt.name).trim() === "")
-                ) {
+                } else {
                     isDisabled = true
                 }
+            } else if (
+                elt.type === "textfield" &&
+                (!getNestedPropertyValue(finaleObj, elt.name) || getNestedPropertyValue(finaleObj, elt.name).trim() === "")
+            ) {
+                isDisabled = true
             }
-        
+        }
+
     })
-    
+
     if (isDisabled && isLoadingList === false) {
         if (!apiJson.multiselect && (value !== "None" && value)) {
             console.trace("innnnnnnnnnnnnnnnnnn")

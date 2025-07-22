@@ -511,12 +511,10 @@ export default function SlackForm({
 }: RegularFormProps) {
     const [schema, setSchema] = useState<any[]>(SlackJson.defaults.json);
     const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
+    const setNodeFilledDataByKey = useRightDrawerStore((state) => state.setNodeFilledDataByKey)
 
     const { localConfig, updateNestedConfig, setLocalConfig } =
         useDebounceConfig<RegularConfigProps["rightSideData"]>(
-            // { ...selectedNode.data.rightSideData, json: objToReturnDefaultValues(schema, selectedNode.data.rightSideData.json) },
-
-
             {
                 ...selectedNode.data.rightSideData,
                 json: objToReturnDefaultValues(schema, selectedNode.data.rightSideData.json),
@@ -527,6 +525,7 @@ export default function SlackForm({
                 delay: 300,
                 onSave: (savedConfig) => {
                     console.log({ savedConfig, selectedNode });
+                    setNodeFilledDataByKey(selectedNode.id, "json", savedConfig.json)
 
                     // Save label changes   
                     const nodeValid = useRightDrawerStore.getState().automation.validation[selectedNode.id].json
