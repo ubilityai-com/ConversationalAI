@@ -47,6 +47,7 @@ from routes.credentials_view import *
 from routes.chatbot_view import *
 from routes.functions import *
 from applications.routes import *
+from routes.files_view import *
 # Socket.IO ASGI server
 sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi')
 app = socketio.ASGIApp(sio, other_asgi_app=http_app)
@@ -98,13 +99,17 @@ async def connect(sid, environ, auth=None):
     current_step = conversation['current_step']
     dialogue = active_dialogues[dialogue_id]['bot']
 
+    # used for the recursive functionality in react agent
+    conversation['variables']['react_fail'] = False
+    conversation['variables']['last_input_value'] = ''
+
     # Greet the user if the current step is configured to do so
     if dialogue[current_step].get('start'):
         logger.info("Ubility bot will send greet message on connection")
         greet_message = Message(dialogue[current_step]['greet'])
         await greet_message.send(sio, sid)
         conversation['current_step'] = dialogue[current_step]['next']
-        await execute_process(sio, sid, conversation, dialogue)
+        await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
 
 @sio.event
@@ -133,6 +138,10 @@ async def message(sid, data):
     conversation['last_reply_at'] = datetime.now().isoformat()
 
     dialogue = active_dialogues[dialogue_id]['bot']
+    
+    # used for the recursive functionality in react agent
+    if data_type != "binary":
+        conversation['variables']['last_input_value'] = user_message
 
     # Handle cancellation
     if isinstance(user_message,str) and user_message.lower().strip() in CANCELLATION_PHRASES:
@@ -155,7 +164,7 @@ async def message(sid, data):
         user_input['data'] = bytes(user_input["data"]) #should be removed
         save_file_input(conversation,conversation_id, user_input)
 
-    await execute_process(sio, sid, conversation, dialogue)
+    await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
 def get_conversation_id_from_sid(dialogue_id, sid):
     dialogue_sessions = session.get(dialogue_id, {})

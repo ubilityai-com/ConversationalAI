@@ -62,11 +62,11 @@ class VectorStore:
     #set up postgres object 
     def _setup_postgres(self,cred,params):
         try:
-            if "Postgres" in cred:
-                host = cred["Postgres"]["host"]
-                database = cred["Postgres"]["database"]
-                username = cred["Postgres"]["username"]
-                password = cred["Postgres"]["password"]
+            if "host" in cred and "database" in cred and "username" in cred and "password" in cred:
+                host = cred["host"]
+                database = cred["database"]
+                username = cred["username"]
+                password = cred["password"]
                 c_name = params["collectionName"]
                 self.connection_url = "postgresql+psycopg2://"+username+":"+password+"@"+host+":5432/"+database
                 self.collection_name = c_name
@@ -79,9 +79,9 @@ class VectorStore:
     #set up milvus object 
     def _setup_milvus(self,cred,params):
         try:
-            if "Milvus" in cred:
-                host = cred["Milvus"]["host"]
-                port = cred["Milvus"]["port"]
+            if "host" in cred and "port" in cred:
+                host = cred["host"]
+                port = cred["port"]
                 self.connection_args={"host": host, "port": port}
                 logging.info("--------------Done--------------")
             else:
@@ -92,8 +92,8 @@ class VectorStore:
     #set up pinecone object 
     def _setup_pinecone(self,cred,params):
         try:
-            if "Pinecone" in cred:
-                self.api_key = cred["Pinecone"]["pineconeApiKey"]
+            if "pineconeApiKey" in cred:
+                self.api_key = cred["pineconeApiKey"]
                 self.index_name=params["indexName"]
                 logging.info("--------------Done--------------")
             else:
@@ -106,14 +106,16 @@ class VectorStore:
         try:
             self.cloud_id=None
             self.url=None
-            if "ElasticSearch" in cred:
-                if "cloudId" in cred["ElasticSearch"]:
-                    self.cloud_id = cred["ElasticSearch"]["cloudId"]
-                if "publicIp" in cred["ElasticSearch"]:
-                    self.url = f'https://{cred["ElasticSearch"]["publicIp"]}:{cred["ElasticSearch"]["port"]}'
+            if "userName" in cred and "password" in cred:
+                if "cloudId" in cred:
+                    self.cloud_id = cred["cloudId"]
+                elif "publicIp" in cred and "port" in cred:
+                    self.url = f'https://{cred["publicIp"]}:{cred["port"]}'
+                else:
+                    raise Exception("missing ElasticSearch credentials")
                     
-                self.user = cred["ElasticSearch"]["userName"]
-                self.password = cred["ElasticSearch"]["password"]
+                self.user = cred["userName"]
+                self.password = cred["password"]
                 self.index_name = params["indexName"]
                 logging.info("--------------Done--------------")
             else:

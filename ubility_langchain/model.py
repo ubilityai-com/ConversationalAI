@@ -116,8 +116,8 @@ class Model:
     #set up openAi object 
     def _setup_openAi(self,cred):
         try:
-            if "OpenAI" in cred:
-                self.api_key=cred["OpenAI"]["apiKey"]
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing OpenAI credentials")
@@ -127,8 +127,8 @@ class Model:
     #set up ollama object 
     def _setup_ollama(self,cred):
         try:
-            if "Ollama" in cred:
-                self.base_url=cred["Ollama"]["ollamaBaseUrl"]
+            if "ollamaBaseUrl" in cred:
+                self.base_url=cred["ollamaBaseUrl"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Ollama credentials")
@@ -138,8 +138,8 @@ class Model:
     #set up anthropic object 
     def _setup_anthropic(self,cred):
         try:
-            if "Anthropic" in cred:
-                self.api_key=cred["Anthropic"]["apiKey"]
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Anthropic credentials")
@@ -149,30 +149,19 @@ class Model:
     #set up awsBedrock object 
     def _setup_awsBedrock(self,cred):
         try:
-            if "AWSBedrock" in cred:
-                self.region_name=cred["AWSBedrock"]["regionName"]
+            if "regionName" in cred:
+                self.region_name=cred["regionName"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing AWS Bedrock credentials")
         except Exception as error:
             raise Exception(error)
         
-    #set up googlePaLMGemini object 
-    # def _setup_googlePaLMGemini(self,cred):
-    #     try:
-    #         if "GooglePaLMGemini" in cred:
-    #             self.api_key=cred["GooglePaLMGemini"]["apiKey"]
-    #             logging.info("--------------Done--------------")
-    #         else:
-    #             raise Exception("missing Google PaLM (Gemini) credentials")
-    #     except Exception as error:
-    #         raise Exception(error)
-        
     #set up azureOpenAi object 
     def _setup_azureOpenAi(self,cred):
         try:
-            if "AzureOpenAi" in cred:
-                self.api_key=cred["AzureOpenAi"]["apiKey"]
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Azure OpenAI credentials")
@@ -182,8 +171,8 @@ class Model:
     #set up mistralAi object 
     def _setup_mistralAi(self,cred):
         try:
-            if "MistralAi" in cred:
-                self.api_key=cred["MistralAi"]["apiKey"]
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing MistralAI credentials")
@@ -193,8 +182,8 @@ class Model:
     #set up cohere object 
     def _setup_cohere(self,cred):
         try:
-            if "Cohere" in cred:
-                self.api_key=cred["Cohere"]["apiKey"]
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Cohere credentials")
@@ -204,8 +193,8 @@ class Model:
     #set up togetherAi object 
     def _setup_togetherAi(self,cred):
         try:
-            if "TogetherAi" in cred:
-                self.api_key=cred["TogetherAi"]["apiKey"]
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing TogetherAi credentials")
@@ -215,8 +204,8 @@ class Model:
     #set up huggingFace object 
     def _setup_huggingFace(self,cred):
         try:
-            if "HuggingFace" in cred:
-                self.api_token=cred["HuggingFace"]["apiToken"]
+            if "apiToken" in cred:
+                self.api_token=cred["apiToken"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing HuggingFace credentials or params")
@@ -226,11 +215,11 @@ class Model:
     #set up vertexAi object 
     def _setup_vertexAi(self,cred):
         try:
-            if "VertexAi" in cred:
+            if "projectId" in cred and 'credentials' in cred:
                 optionals = self.params
                 self.kwargs = {
-                        "project_id": cred["VertexAi"]["projectId"],
-                        "credentials": cred["VertexAi"]["credentials"],
+                        "project_id": cred["projectId"],
+                        "credentials": cred["credentials"],
                         **optionals
                     }
                 logging.info("--------------Done--------------")
@@ -242,8 +231,8 @@ class Model:
     #set up googleGenerativeAI object 
     def _setup_googleGenerativeAI(self,cred):
         try:
-            if "Gemini" in cred:
-                self.api_key=cred["Gemini"]["apiKey"]
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Gemini credentials")
@@ -253,8 +242,8 @@ class Model:
     #set up groq object 
     def _setup_groq(self,cred):
         try:
-            if "Groq" in cred:
-                self.api_key=cred["Groq"]["apiKey"]
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Groq credentials")
@@ -264,8 +253,8 @@ class Model:
     # set up fireworks object
     def _setup_fireworks(self, cred):
         try:
-            if "Fireworks" in cred:
-                self.api_key = cred["Fireworks"]["apiKey"]
+            if "apiKey" in cred:
+                self.api_key = cred["apiKey"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Fireworks credentials")
@@ -275,8 +264,8 @@ class Model:
     # set up ai21 object
     def _setup_ai21(self,cred):
         try:
-            if "AI21" in cred:
-                self.api_key=cred["AI21"]["apiKey"]
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing AI21 credentials")
@@ -285,11 +274,11 @@ class Model:
         
     def _setup_nvidia(self,cred):
         try:
-            if "Nvidia" in cred:
-                if "apiKey" in cred["Nvidia"]:
-                 self.api_key=cred["Nvidia"]["apiKey"]
-                if "baseUrl" in cred["Nvidia"]:
-                  self.baseUrl= cred["Nvidia"]["baseUrl"]
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
+                logging.info("--------------Done--------------")
+            elif "baseUrl" in cred:
+                self.baseUrl= cred["baseUrl"]
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Nvidia credentials")
@@ -298,10 +287,9 @@ class Model:
 
     def _setup_nomic(self,cred):
         try:
-            if "Nomic" in cred:
-                if "apiKey" in cred["Nomic"]:
-                    self.api_key=cred["Nomic"]["apiKey"]
-                    logging.info("--------------Done--------------")
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
+                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Nomic credentials")
         except Exception as error:
