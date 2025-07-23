@@ -76,7 +76,7 @@ async def openAi_list_models(payload: OpenAiAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
         json_cred = json_cred[payload.credential_name]
-        if "apiKey" in json_cred and "modelType" in payload:
+        if "apiKey" in json_cred:
             modelType = payload.modelType
             apiKey = json_cred["apiKey"]
             url = "https://api.openai.com/v1/models"
@@ -112,7 +112,7 @@ async def togetherAi_list_models(payload: TogetherAiAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
         json_cred = json_cred[payload.credential_name]
-        if "apiKey" in json_cred and "modelType" in payload:
+        if "apiKey" in json_cred:
             modelType = payload.modelType
             apiKey = json_cred["apiKey"]
             url = "https://api.together.xyz/v1/models"
