@@ -863,7 +863,7 @@ export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record
     }
 
     if (type === "accordion" && fieldsArray?.[0]) {
-      obj[variableName!] = objToReturnValuesToSend(fieldsArray[0], fieldValues);
+      obj[variableName!] = objToReturnValuesToSend(fieldsArray[0], fieldValues[variableName]);
     }
 
     if (type === "dynamic") {
@@ -898,8 +898,6 @@ export function objToReturnDefaultValues(apiRes: ApiResponse, fieldValues: Recor
       const hasValue = value !== undefined && value !== null;
 
       const mergeOptionFields = () => {
-        console.log({ options, valueToSend });
-
         if (options && valueToSend && options[valueToSend]) {
           obj = { ...obj, ...objToReturnDefaultValues(options[valueToSend], fieldValues) };
         }
@@ -922,9 +920,9 @@ export function objToReturnDefaultValues(apiRes: ApiResponse, fieldValues: Recor
 
       if (type === "textFormatter" && valueToSend?.trim()) {
         obj[variableName!] =
-          // item.custom ?
-          reverseMultipleOccurrences(valueToSend, item.formats)
-        // : valueToSend.replace(/\n/g, "\\n");
+          item.custom ?
+            reverseMultipleOccurrences(valueToSend, item.formats)
+            : valueToSend.replace(/\n/g, "\\n");
 
       }
 

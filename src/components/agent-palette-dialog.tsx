@@ -24,7 +24,7 @@ import { SlackJson } from "../elements/regular-elements/SlackJson";
 
 const agentTypes = [
   // BasicLLMJson,
-  // SlackJson,
+  SlackJson,
   {
     type: "ReactAgent",
     label: "React Agent",

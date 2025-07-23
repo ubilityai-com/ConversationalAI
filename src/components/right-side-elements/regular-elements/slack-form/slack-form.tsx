@@ -3,7 +3,7 @@ import { useState } from "react";
 import { SlackJson } from "../../../../elements/regular-elements/SlackJson";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
 import { objToReturnDefaultValues, objToReturnValuesToSend } from "../../../../lib/automation-utils";
-import { getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils";
+import { getNextNodeId, stringifyAndExtractVariables, validateArray } from "../../../../lib/utils";
 import { useFlowStore } from "../../../../store/flow-store";
 import { useRightDrawerStore } from "../../../../store/right-drawer-store";
 import AutomationSimple from "../../../custom/automation-v4";
@@ -525,14 +525,13 @@ export default function SlackForm({
             {
                 delay: 300,
                 onSave: (savedConfig) => {
-                    console.log({ savedConfig, selectedNode });
                     setNodeFilledDataByKey(selectedNode.id, "json", savedConfig.json)
 
-                    // Save label changes   
+                    // Save label changes
                     const nodeValid = useRightDrawerStore.getState().automation.validation[selectedNode.id].json
                     updateNodesValidationById(selectedNode.id, nodeValid)
+                    // updateNodesValidationById(selectedNode.id, validateArray(schema, savedConfig.json))
                     handleRightSideDataUpdate({
-
                         ...savedConfig,
                         json: objToReturnValuesToSend(schema, savedConfig.json)
 
@@ -542,16 +541,7 @@ export default function SlackForm({
                 },
             }
         );
-    console.log({ selectedNode, localConfig });
-    // useEffect(() => {
-    //     console.log("mount");
 
-    //     return () => {
-    //         console.log("unmounnnnt");
-    //         setLocalConfig({ ...selectedNode.data.rightSideData, json: objToReturnDefaultValues(schema, localConfig.json) })
-
-    //     }
-    // }, [])
     return (
         <div className="space-y-6">
             <AutomationSimple
