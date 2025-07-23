@@ -16,7 +16,7 @@ export const setAutomationArray = (
 ) => {
   const result: AutomationItem[] = [];
   console.log({ apiRes, child });
-console.trace("innn")
+  console.trace("innn");
   apiRes.forEach((item) => {
     const childArray = Array.isArray(child) ? child : [];
     console.log({ item, childArray });
@@ -151,7 +151,7 @@ export const setAutomationArrayV2 = (
         child: childArray,
         id: uuidv4(),
       });
-      continue
+      continue;
     }
     switch (item.type) {
       case "dropdown": {
@@ -168,11 +168,16 @@ export const setAutomationArrayV2 = (
           });
 
           // Process nested options based on current value
-          if (item.options && filledValues[item.variableName] && item.options[filledValues[item.variableName]]) {
-            const nestedItems = setAutomationArrayV2(item.options[filledValues[item.variableName]], filledValues, [
-              ...childArray,
-              filledValues[item.variableName],
-            ]);
+          if (
+            item.options &&
+            filledValues[item.variableName] &&
+            item.options[filledValues[item.variableName]]
+          ) {
+            const nestedItems = setAutomationArrayV2(
+              item.options[filledValues[item.variableName]],
+              filledValues,
+              [...childArray, filledValues[item.variableName]]
+            );
             // console.log({ nestedItems });
 
             result.push(...nestedItems);
@@ -203,8 +208,13 @@ export const setAutomationArrayV2 = (
             child: childArray,
             json: {
               ...item.json,
-              fieldsArray: (filledValues[item.variableName] as AutomationItem[][]).map((field, index) =>
-                setAutomationArrayV2(Array.isArray(field) ? field : [field], filledValues[item.variableName][index])
+              fieldsArray: (
+                filledValues[item.variableName] as AutomationItem[][]
+              ).map((field, index) =>
+                setAutomationArrayV2(
+                  Array.isArray(field) ? field : [field],
+                  filledValues[item.variableName][index]
+                )
               ),
             },
           });
@@ -218,8 +228,13 @@ export const setAutomationArrayV2 = (
             ...item,
             id: uuidv4(),
             child: childArray,
-            fieldsArray: (filledValues[item.variableName] as AutomationItem[][]).map((field, index) =>
-              setAutomationArrayV2(Array.isArray(field) ? field : [field], filledValues[item.variableName][index])
+            fieldsArray: (
+              filledValues[item.variableName] as AutomationItem[][]
+            ).map((field, index) =>
+              setAutomationArrayV2(
+                Array.isArray(field) ? field : [field],
+                filledValues[item.variableName][index]
+              )
             ),
           });
         } else {
@@ -240,8 +255,13 @@ export const setAutomationArrayV2 = (
             ...item,
             id: uuidv4(),
             child: childArray,
-            fieldsArray: (filledValues[item.variableName] as AutomationItem[][]).map((field, index) =>
-              setAutomationArrayV2(Array.isArray(field) ? field : [field], filledValues[item.variableName][index])
+            fieldsArray: (
+              filledValues[item.variableName] as AutomationItem[][]
+            ).map((field, index) =>
+              setAutomationArrayV2(
+                Array.isArray(field) ? field : [field],
+                filledValues[item.variableName][index]
+              )
             ),
           });
         } else {
@@ -555,8 +575,6 @@ export const getVariableNames = (items: AutomationItem[]): string[] => {
   return [...new Set(variableNames)]; // Remove duplicates
 };
 
-
-
 type FieldItem = {
   type: string;
   value?: any;
@@ -632,9 +650,7 @@ export function objToReturnDynamicv2(apiRes: ApiResponse): Record<string, any> {
     }
 
     if (type === "textFormatter" && value?.trim()) {
-      obj[variableName!] = value
-        
-        
+      obj[variableName!] = value;
     }
 
     if (type === "multiselect" && Array.isArray(value) && value.length > 0) {
@@ -650,8 +666,7 @@ export function objToReturnDynamicv2(apiRes: ApiResponse): Record<string, any> {
     }
 
     if (type === "checkbox") {
-      obj[variableName!] =
-        typeOfValue === "string" ? value?.toString() : value;
+      obj[variableName!] = typeOfValue === "string" ? value?.toString() : value;
     }
 
     if (type === "radiobutton") {
