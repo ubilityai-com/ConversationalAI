@@ -2,10 +2,9 @@
 
 import { useNodesData } from "@xyflow/react";
 import { ComponentType, useEffect, useState } from "react";
+import { camelToDashCase } from "../lib/utils";
 import { useFlowStore } from "../store/flow-store";
 import { useRightDrawerStore } from "../store/right-drawer-store";
-import { camelToDashCase } from "../lib/utils";
-
 export default function RightSideBody() {
   const [isLoading, setIsLoading] = useState(false);
   const [Component, setComponent] = useState<ComponentType<any> | null>(null);

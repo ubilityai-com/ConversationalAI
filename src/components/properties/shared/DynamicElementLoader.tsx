@@ -1,8 +1,8 @@
-import { Suspense, useEffect, useState } from "react";
-import { SharedListSection } from "./shared-section-list";
-import { loadElementByKey } from "../../../lib/utils";
-import { SharedSection } from "./shared-section";
+/// <reference types="webpack-env" />
 
+import { useEffect, useState } from "react";
+import { SharedSection } from "./shared-section";
+import { SharedListSection } from "./shared-section-list";
 interface DynamicElementLoaderProps {
     extrasKey: string;
     extrasConfig: any;
@@ -11,21 +11,40 @@ interface DynamicElementLoaderProps {
     updateNestedConfig: any;
 }
 
+function capitalize(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+const context = require.context(
+    "../../../elements",
+    true,
+    /index\.tsx?$/
+);
+function loadElementByKey(key: string) {
+
+    try {
+        const path = `./${key}-elements/index.tsx`;
+        const module = context(path);
+        return module.default || module[`${capitalize(key)}Elements`];
+    } catch (error) {
+        console.warn(`No elements found for ${key}, skipping dynamic import.`, error);
+        return null;
+    }
+}
+
 export function DynamicElementLoader({
     extrasKey,
     extrasConfig,
     localConfig,
     selectedNodeId,
-    updateNestedConfig
+    updateNestedConfig,
 }: DynamicElementLoaderProps) {
     const [elements, setElements] = useState<any>(null);
 
     useEffect(() => {
-        async function load() {
-            const loaded = await loadElementByKey(extrasKey === "tool" ? "tools" : extrasKey);
-            setElements(loaded);
-        }
-        load();
+        const key = extrasKey === "tool" ? "tools" : extrasKey;
+        const loaded = loadElementByKey(key);
+        setElements(loaded);
     }, [extrasKey]);
 
     if (!elements) {

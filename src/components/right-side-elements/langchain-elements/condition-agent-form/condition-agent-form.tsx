@@ -96,7 +96,7 @@ export function getContent(selectedNode: any, params: any) {
     }, {}),
   };
   const handlerObj = {
-    type: "MC_Handler",
+    type: "Handler",
     usedVariables: [selectedNode.id + "-var"],
     saveUserInputAs: null,
     content: {
