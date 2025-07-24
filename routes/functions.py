@@ -8,6 +8,9 @@ from pydantic import BaseModel
 from app import http_app
 from models.credentials import get_credential,get_credentials_by_names
 from elements.app_integration import AppIntegration
+from fastapi import Query
+from models.chatbot import get_chatbot,update_chatbot
+
 
 def load_dialogue(dialogue_id):
     file_path = os.path.join("dialogues", f"{dialogue_id}.json")
@@ -61,3 +64,63 @@ def testing(payload: jiu):
         return {"Message":"Successfully activated!"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error : {str(e)}")
+    
+
+
+
+@http_app.get('/activate')
+def activate_chatbot_view(chatbot_id: int = Query(None)):
+    try:
+        """
+        Activate dialogue
+        1- get dialogue json from db
+        2- get credentials values
+        3- replace credentials array in dialogue object by real creds values
+        4- create json file 
+        5- add dialogue to dialogues.py
+        6- update db status to be active
+        """
+        chatbot_obj = get_chatbot(chatbot_id)
+
+        cred_obj = get_credentials_by_names(chatbot_obj['dialogue']['credentials'])
+
+        new_dialogue = {
+            "credentials": cred_obj,
+            "bot": chatbot_obj['dialogue']['bot']
+        }
+        file_name = chatbot_obj['name']+".json"
+        create_json_file = save_json_to_file(new_dialogue,file_name)
+        if not create_json_file:
+            raise HTTPException(status_code=500, detail=f"Fail activating chatbot")
+        
+        active_dialogues[chatbot_obj['name']] = new_dialogue
+
+        update_status = update_chatbot(chatbot_id,{"status":"Active"})
+        if not update_status:
+            raise HTTPException(status_code=500, detail=f"Fail activating chatbot")
+        
+        return {"Message":"Chatbot successfully activated"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+def save_json_to_file(data, filename):
+    """
+    Save a JSON object (Python dict) to a file.
+
+    Args:
+        data (dict): The JSON data to save.
+        filename (str): The name of the output file.
+    """
+    try:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        dialogues_dir = os.path.abspath(os.path.join(current_dir, '..', 'dialogues'))
+        os.makedirs(dialogues_dir, exist_ok=True)
+        file_path = os.path.join(dialogues_dir, filename)
+        
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+        return True
+    except Exception as e:
+        return False
