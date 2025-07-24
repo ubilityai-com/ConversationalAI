@@ -4,10 +4,9 @@ files_view.py
 FastAPI routes for managing files.
 """
 
-from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 from app import http_app
 from pydantic import BaseModel
-from typing import Optional
 import os
 
 
@@ -37,12 +36,12 @@ def upload_file(payload: FileUploadRequest):
             dest_file.write(binary_data)
         
         if os.path.exists(file_path):
-            return {"message":"File uploaded successfully"}
+            return {"Message":"File uploaded successfully"}
         else:
-            raise HTTPException(status_code=500, detail="Destination file not found")
+            return JSONResponse(status_code=500, content={"Error": "Destination file not found"})
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error uploading file: {str(e)}")
+        return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
 @http_app.get('/files')
@@ -59,4 +58,4 @@ def list_file_names():
         return [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
     
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error retrieving file names: {str(e)}")
+        return JSONResponse(status_code=500, content={"Error": str(e)})

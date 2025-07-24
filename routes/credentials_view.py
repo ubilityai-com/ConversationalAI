@@ -7,7 +7,7 @@ Flask route handlers for managing credentials.
 from app import http_app
 from pydantic import BaseModel
 from models.credentials import create_credential, list_credentials, delete_credential,get_credentials_by_names
-from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 
 class CredentialCreateRequest(BaseModel):
     name: str
@@ -32,7 +32,7 @@ def create_credential_view(payload: CredentialCreateRequest):
         create_credential(payload.name,payload.type, payload.data)
         return {"message": "Credential created"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error creating credential: {str(e)}")
+        return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
 @http_app.get('/credentials')
@@ -46,7 +46,7 @@ def list_credentials_view():
     try:
         return list_credentials()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error listing credentials: {str(e)}")
+        return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
 @http_app.delete('/credentials/{id}')
@@ -64,8 +64,7 @@ def delete_credential_view(id: int):
         delete_credential(id)
         return {"message": "Credential deleted"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error deleting credential: {str(e)}")
-
+        return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
 # @http_app.post('/credentials/batch')

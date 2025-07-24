@@ -6,7 +6,7 @@ FastAPI routes for managing chatbot objects.
 This module defines the HTTP endpoints for creating, listing, and deleting chatbot entries.
 """
 
-from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from app import http_app
 from models.chatbot import create_chatbot, list_chatbots, delete_chatbot, update_chatbot
@@ -17,7 +17,6 @@ class ChatbotCreateRequest(BaseModel):
     name: str
     dialogue: dict
     ui_json: dict
-    status: str
 
 
 class ChatbotUpdateRequest(BaseModel):
@@ -38,10 +37,10 @@ def create_chatbot_view(payload: ChatbotCreateRequest):
         dict: Success message.
     """
     try:
-        create_chatbot(payload.name, payload.dialogue, payload.ui_json, payload.status)
+        create_chatbot(payload.name, payload.dialogue, payload.ui_json, 'Inactive')
         return {"message": "Chatbot created"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error creating chatbot: {str(e)}")
+        return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
 @http_app.get('/chatbots')
@@ -55,7 +54,7 @@ def list_chatbots_view():
     try:
         return list_chatbots()
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error listing chatbots: {str(e)}")
+        return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
 @http_app.delete('/chatbots/{id}')
@@ -73,7 +72,7 @@ def delete_chatbots_view(id: int):
         delete_chatbot(id)
         return {"message": "Chatbot deleted"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error deleting chatbot: {str(e)}")
+        return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
 
@@ -93,4 +92,4 @@ def update_chatbot_view(id: int, payload: ChatbotUpdateRequest):
         update_chatbot(id, payload.dict(exclude_unset=True))
         return {"message": "Chatbot updated"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error updating chatbot: {str(e)}")
+        return JSONResponse(status_code=500, content={"Error": str(e)})
