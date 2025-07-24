@@ -3,17 +3,34 @@ import { Button } from "./ui/button"
 import { useFlowStore } from "../store/flow-store"
 import { useCredentialStore } from "../store/credentials-store"
 import { createFlowObject } from "../lib/build-json"
+import { checkIfAllNodesConnected } from "../lib/utils"
 
 
 export function Toolbar() {
   const isRunning = false
 
-  const { nodesValidation, setFormDialogStatus, setIsFormDialogOpen, setShowSnackBarMessage } = useFlowStore()
+  const { nodesValidation, setFormDialogStatus, setIsFormDialogOpen, setDialogProps, setShowSnackBarMessage, nodes, edges } = useFlowStore()
   const { activate, loading, error, success } = useCredentialStore()
   function hasFalseValue(obj: Record<string, boolean>): boolean {
     return Object.values(obj).includes(false);
   }
-
+  const handleRun = () => {
+    const connected = checkIfAllNodesConnected(nodes, edges)
+    if (!connected) {
+      // setIsFormDialogOpen(true);
+      // setFormDialogStatus("validation");
+      setShowSnackBarMessage({ open: true, message: "Please make sure all nodes are connected!", color: "destructive", duration: 3000 })
+    }
+    else if (hasFalseValue(nodesValidation)) {
+      setShowSnackBarMessage({ open: true, message: "Please make sure all nodes are valid!", color: "destructive", duration: 3000 })
+    }
+    else {
+      const data = createFlowObject()
+      activate({
+        param: data
+      })
+    }
+  }
   return (
     <>
       <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4">
@@ -63,20 +80,7 @@ export function Toolbar() {
           </Button>
 
           <Button
-            onClick={() => {
-              if (hasFalseValue(nodesValidation)) {
-                // setIsFormDialogOpen(true);
-                // setFormDialogStatus("validation");
-                setShowSnackBarMessage({ open: true, message: "Please make sure all nodes are valid!", color: "destructive", duration: 3000 })
-              }
-              else {
-                const data = createFlowObject()
-                activate({
-                  param: data
-                })
-              }
-            }
-            }
+            onClick={handleRun}
             variant={isRunning ? "destructive" : "default"}
             size="sm"
           >
@@ -94,7 +98,7 @@ export function Toolbar() {
           </Button>
 
         </div>
-      </div>
+      </div >
     </>
   )
 }

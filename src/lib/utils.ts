@@ -476,11 +476,12 @@ export const validateArray = (items: FormItem[], values: FormValues): boolean =>
         break;
 
       case "textfield":
-      case "textFormatter":
       case "editor":
         if (required && (!value || !value.toString().trim())) return false;
         break;
-
+      case "textFormatter":
+        if (required && (!value || !removeHTMLTags(value).toString().trim())) return false;
+        break;
       case "multiselect":
       case "array":
         if (required && (!Array.isArray(value) || value.length < 1)) return false;
@@ -607,4 +608,98 @@ export async function loadElementByKey(key: string) {
 
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+interface NodeType {
+  id: string;
+  type: string;
+  data: any;
+}
+
+interface EdgeType {
+  source: string;
+  target: string;
+  sourceHandle?: string | null;
+  targetHandle?: string | null;
+}
+
+
+export function checkIfAllNodesConnected(nodes: NodeType[], edges: EdgeType[]): boolean {
+
+  // Build maps for fast lookup
+  const incomingEdgesMap = new Map<string, EdgeType[]>();
+  const outgoingEdgesMap = new Map<string, EdgeType[]>();
+  const outgoingEdgesByHandle = new Map<string, Set<string>>();
+
+  edges.forEach((edge) => {
+    if (!incomingEdgesMap.has(edge.target)) {
+      incomingEdgesMap.set(edge.target, []);
+    }
+    incomingEdgesMap.get(edge.target)!.push(edge);
+
+    if (!outgoingEdgesMap.has(edge.source)) {
+      outgoingEdgesMap.set(edge.source, []);
+    }
+    outgoingEdgesMap.get(edge.source)!.push(edge);
+
+    const handleMapKey = `${edge.source}`;
+    if (!outgoingEdgesByHandle.has(handleMapKey)) {
+      outgoingEdgesByHandle.set(handleMapKey, new Set());
+    }
+    outgoingEdgesByHandle.get(handleMapKey)!.add(edge.sourceHandle ?? "default");
+  });
+
+  for (const node of nodes) {
+    const incoming = incomingEdgesMap.get(node.id) ?? [];
+    const outgoing = outgoingEdgesMap.get(node.id) ?? [];
+
+    if (node.type === "Handler") {
+      // Should have at least 1 outgoing edge
+      if (outgoing.length === 0) {
+        console.warn(`Node ${node.id} of type Handler has no outgoing connections.`);
+        return false;
+      }
+    } else if (node.type === "End") {
+      // Should have at least 1 incoming edge
+      if (incoming.length === 0) {
+        console.warn(`Node ${node.id} of type End has no incoming connections.`);
+        return false;
+      }
+    } else if (node.type === "ChoicePrompt") {
+      // Must have at least 1 incoming edge
+      if (incoming.length === 0) {
+        console.warn(`Node ${node.id} of type ChoicePrompt has no incoming connections.`);
+        return false;
+      }
+      // Must have outgoing edges for all choices + "choice-default"
+      const choiceIds: string[] = (node.data?.rightSideData?.choices ?? []).map(
+        (choice: any) => choice.id
+      );
+      const requiredHandles = new Set([...choiceIds, "choice-default"]);
+      const connectedHandles = outgoing
+        .map((edge) => edge.sourceHandle ?? "default")
+        .filter((handle) => handle !== null);
+
+      for (const handle of requiredHandles) {
+        if (!connectedHandles.includes(handle)) {
+          console.warn(
+            `Node ${node.id} of type ChoicePrompt is missing outgoing connection for handle: ${handle}`
+          );
+          return false;
+        }
+      }
+    } else {
+      // Default: should have at least 1 incoming and 1 outgoing edge
+      if (incoming.length === 0) {
+        console.warn(`Node ${node.id} of type ${node.type} has no incoming connections.`);
+        return false;
+      }
+      if (outgoing.length === 0) {
+        console.warn(`Node ${node.id} of type ${node.type} has no outgoing connections.`);
+        return false;
+      }
+    }
+  }
+
+  return true;
 }

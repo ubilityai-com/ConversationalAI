@@ -1,3 +1,5 @@
+/// <reference types="webpack-env" />
+
 import { useNodesData } from "@xyflow/react";
 import { ComponentType, useEffect, useState } from "react";
 import { useFlowStore } from "../store/flow-store";
@@ -6,8 +8,8 @@ import { camelToDashCase } from "../lib/utils";
 
 export default function RightSideBody() {
   const [isLoading, setIsLoading] = useState(false);
-
   const [Component, setComponent] = useState<ComponentType<any> | null>(null);
+
   const clickedElement = useFlowStore((state) => state.clickedElement);
   const updateNodeRightSideData = useRightDrawerStore(
     (state) => state.updateNodeRightSideData
@@ -18,43 +20,48 @@ export default function RightSideBody() {
   };
 
   useEffect(() => {
-
     const loadComponent = async () => {
       setIsLoading(true);
-      console.log(
-        `./right-side-elements/${clickedElement.data.nodeType}-elements/${camelToDashCase(
-          clickedElement.type
-        )}-form/${camelToDashCase(clickedElement.type)}-form.tsx`
-      );
 
-      // Dynamically import the component with TypeScript typing
-      const module = await import(
-        `./right-side-elements/${clickedElement.data.nodeType}-elements/${camelToDashCase(
-          clickedElement.type
-        )}-form/${camelToDashCase(clickedElement.type)}-form.tsx`
-      );
+      const path = `./${clickedElement.data.nodeType}-elements/${camelToDashCase(
+        clickedElement.type
+      )}-form/${camelToDashCase(clickedElement.type)}-form.tsx`;
 
-      setComponent(() => module.default);
-      setIsLoading(false);
+      try {
+        const context = require.context(
+          "./right-side-elements",
+          true,
+          /-form\.tsx$/
+        );
+
+        const module = context(path);
+        setComponent(() => module.default);
+      } catch (error) {
+        console.error("Dynamic import failed for path:", path, error);
+        setComponent(null);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    if (clickedElement?.type) loadComponent();
-  }, [clickedElement?.type]);
+
+    if (clickedElement?.type && clickedElement?.data?.nodeType) {
+      loadComponent();
+    }
+  }, [clickedElement?.type, clickedElement?.data?.nodeType]);
 
   const selectedNode = useNodesData(clickedElement?.id);
 
-  if (!selectedNode) return <></>;
+  if (!selectedNode) return null;
 
   return (
     <div>
       {isLoading && <>Loading ........</>}
-      {Component &&
-        Component.name === `${selectedNode.type}Form` &&
-        !isLoading && (
-          <Component
-            selectedNode={selectedNode}
-            handleRightSideDataUpdate={handleRightSideDataUpdate}
-          />
-        )}
+      {Component && !isLoading && (
+        <Component
+          selectedNode={selectedNode}
+          handleRightSideDataUpdate={handleRightSideDataUpdate}
+        />
+      )}
     </div>
   );
 }
