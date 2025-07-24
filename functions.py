@@ -227,7 +227,7 @@ async def handle_multiple_choice(sio, sid, conversation, conversation_id, dialog
             await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
 
-async def handle_router(sio, sid, conversation, dialogue,content):
+async def handle_router(sio, sid, conversation, conversation_id, dialogue,content):
     """
     Handle advanced conditional logic with Router elements.
     """
@@ -236,7 +236,7 @@ async def handle_router(sio, sid, conversation, dialogue,content):
     next_step = router.find_next_step()
     if next_step:
         conversation['current_step'] = next_step
-        await execute_process(sio, sid, conversation, dialogue)
+        await execute_process(sio, sid, conversation, conversation_id, dialogue)
     else: # next is None
         conversation['current_step'] = dialogue['firstElementId']['next']
         conversation['variables'] = {}
