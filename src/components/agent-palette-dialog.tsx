@@ -24,7 +24,7 @@ import { SlackJson } from "../elements/regular-elements/SlackJson";
 
 const agentTypes = [
   // BasicLLMJson,
-  SlackJson,
+  // SlackJson,
   {
     type: "ReactAgent",
     label: "React Agent",
@@ -353,99 +353,100 @@ export function AgentPaletteDialog({
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[80vh]">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">
-            Choose an Agent
-          </DialogTitle>
-        </DialogHeader>
+   <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col">
+  <DialogHeader>
+    <DialogTitle className="text-xl font-semibold">
+      Choose an Agent
+    </DialogTitle>
+  </DialogHeader>
 
-        <div className="space-y-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search agents..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+  <div className="flex flex-col gap-4 flex-1 overflow-hidden">
+    {/* Sticky Header Section */}
+    <div className="sticky top-0 z-10 bg-white pt-2 pb-4 space-y-4">
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+        <Input
+          placeholder="Search agents..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-10"
+        />
+      </div>
 
-          {/* Category filters */}
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <Badge
-                key={category}
-                variant={
-                  selectedCategory === category ? "default" : "secondary"
-                }
-                className="cursor-pointer text-xs hover:bg-primary/80"
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </Badge>
-            ))}
-          </div>
+      {/* Category filters */}
+      <div className="flex flex-wrap gap-2">
+        {categories.map((category) => (
+          <Badge
+            key={category}
+            variant={selectedCategory === category ? "default" : "secondary"}
+            className="cursor-pointer text-xs hover:bg-primary/80"
+            onClick={() => setSelectedCategory(category)}
+          >
+            {category}
+          </Badge>
+        ))}
+      </div>
+    </div>
 
-          {/* Agent Grid */}
-          <ScrollArea className="h-96">
-            <div className="grid grid-cols-2 gap-3 p-1">
-              {filteredAgents.map((agent) => {
-                const IconComponent = agent.icon;
-                return (
-                  <div
-                    key={agent.type}
-                    className="p-4 bg-white border border-gray-200 rounded-lg cursor-pointer hover:shadow-md hover:border-blue-300 transition-all duration-200 group"
-                    onClick={() => handleAgentSelect(agent)}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div
-                        className={`w-10 h-10 ${agent.color} rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}
-                      >
-                        {agent.type === "attache" ? (
-                          <img
-                            src="/images/attache-logo.png"
-                            alt="Gmail"
-                            className="w-6 h-6 object-contain"
-                          />
-                        ) : (
-                          IconComponent && (
-                            <IconComponent className="w-5 h-5 text-white" />
-                          )
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h4 className="text-sm font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
-                          {agent.label}
-                        </h4>
-                        <p className="text-xs text-gray-500 mt-1 leading-relaxed line-clamp-2">
-                          {agent.description}
-                        </p>
-                        <Badge variant="outline" className="mt-2 text-xs">
-                          {agent.category}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {filteredAgents.length === 0 && (
-              <div className="text-center py-12">
-                <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Search className="w-5 h-5 text-gray-400" />
+    {/* Scrollable Area that fills the rest */}
+    <ScrollArea className="flex-1 overflow-y-auto">
+      <div className="grid grid-cols-2 gap-3 p-1">
+        {filteredAgents.map((agent) => {
+          const IconComponent = agent.icon;
+          return (
+            <div
+              key={agent.type}
+              className="p-4 bg-white border border-gray-200 rounded-lg cursor-pointer hover:shadow-md hover:border-blue-300 transition-all duration-200 group"
+              onClick={() => handleAgentSelect(agent)}
+            >
+              <div className="flex items-start space-x-3">
+                <div
+                  className={`w-10 h-10 ${agent.color} rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}
+                >
+                  {agent.type === "attache" ? (
+                    <img
+                      src="/images/attache-logo.png"
+                      alt="Gmail"
+                      className="w-6 h-6 object-contain"
+                    />
+                  ) : (
+                    IconComponent && (
+                      <IconComponent className="w-5 h-5 text-white" />
+                    )
+                  )}
                 </div>
-                <p className="text-sm text-gray-500">No agents found</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  Try adjusting your search or filters
-                </p>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+                    {agent.label}
+                  </h4>
+                  <p className="text-xs text-gray-500 mt-1 leading-relaxed line-clamp-2">
+                    {agent.description}
+                  </p>
+                  <Badge variant="outline" className="mt-2 text-xs">
+                    {agent.category}
+                  </Badge>
+                </div>
               </div>
-            )}
-          </ScrollArea>
+            </div>
+          );
+        })}
+      </div>
+
+      {filteredAgents.length === 0 && (
+        <div className="text-center py-12">
+          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Search className="w-5 h-5 text-gray-400" />
+          </div>
+          <p className="text-sm text-gray-500">No agents found</p>
+          <p className="text-xs text-gray-400 mt-1">
+            Try adjusting your search or filters
+          </p>
         </div>
-      </DialogContent>
+      )}
+    </ScrollArea>
+  </div>
+</DialogContent>
     </Dialog>
   );
 }
