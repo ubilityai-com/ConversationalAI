@@ -3,7 +3,7 @@
 import json
 import os
 from dialogues.dialogues import active_dialogues
-from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from app import http_app
 from models.credentials import get_credential,get_credentials_by_names
@@ -42,7 +42,7 @@ def test_node(payload: TestNodeRequest):
         result = AppIntegration(payload.app_type,json.loads(credential_obj['data']),payload.operation,payload.content_json).run_process()
         return {"output": result}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error test node: {str(e)}")
+        return JSONResponse(status_code=500, content={"Error": str(e)})
     
 
 class jiu(BaseModel):
@@ -60,27 +60,26 @@ def testing(payload: jiu):
             "bot":payload.param['bot']
         }
         active_dialogues['khaled']=obj
-        print(obj)
         return {"Message":"Successfully activated!"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error : {str(e)}")
+        return JSONResponse(status_code=500, content={"Error": str(e)})
     
-
-
 
 @http_app.get('/activate')
 def activate_chatbot_view(chatbot_id: int = Query(None)):
     try:
         """
-        Activate dialogue
+        Activate chatbot
         1- get dialogue json from db
         2- get credentials values
         3- replace credentials array in dialogue object by real creds values
         4- create json file 
         5- add dialogue to dialogues.py
-        6- update db status to be active
+        6- update db status to be Active
         """
         chatbot_obj = get_chatbot(chatbot_id)
+        if chatbot_obj['status'] == "Active":
+            return JSONResponse(status_code=500, content={"Error": "Chatbot already active"})
 
         cred_obj = get_credentials_by_names(chatbot_obj['dialogue']['credentials'])
 
@@ -91,18 +90,49 @@ def activate_chatbot_view(chatbot_id: int = Query(None)):
         file_name = chatbot_obj['name']+".json"
         create_json_file = save_json_to_file(new_dialogue,file_name)
         if not create_json_file:
-            raise HTTPException(status_code=500, detail=f"Fail activating chatbot")
+            return JSONResponse(status_code=500, content={"Error": "Fail activating chatbot"})
         
         active_dialogues[chatbot_obj['name']] = new_dialogue
 
         update_status = update_chatbot(chatbot_id,{"status":"Active"})
         if not update_status:
-            raise HTTPException(status_code=500, detail=f"Fail activating chatbot")
+            return JSONResponse(status_code=500, content={"Error": "Fail activating chatbot"})
         
         return {"Message":"Chatbot successfully activated"}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        return JSONResponse(status_code=500, content={"Error": str(e)})
+    
+
+@http_app.get('/deactivate')
+def deactivate_chatbot_view(chatbot_id: int = Query(None)):
+    try:
+        """
+        Deactivate chatbot
+        1- delete json file 
+        2- remove dialogue to dialogues.py
+        3- update db status to be Inactive
+        """
+        chatbot_obj = get_chatbot(chatbot_id)
+        if chatbot_obj['status'] == "Inactive":
+            return JSONResponse(status_code=500, content={"Error": "Chatbot not active"})
+        
+        file_name = chatbot_obj['name']+".json"
+        remove_json_file = delete_json_file(file_name)
+        if not remove_json_file:
+            return JSONResponse(status_code=500, content={"Error": "Fail deactivating chatbot"})
+        
+        del active_dialogues[chatbot_obj['name']]
+
+        update_status = update_chatbot(chatbot_id,{"status":"Inactive"})
+        if not update_status:
+            return JSONResponse(status_code=500, content={"Error": "Fail deactivating chatbot"})
+        
+        return {"Message":"Chatbot successfully deactivated"}
+
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"Error": str(e)})
+
 
 
 def save_json_to_file(data, filename):
@@ -122,5 +152,24 @@ def save_json_to_file(data, filename):
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
         return True
+    except Exception as e:
+        return False
+
+def delete_json_file(filename):
+    """
+    Delete a JSON file from the dialogues directory.
+
+    Args:
+        filename (str): The name of the file to delete.
+    """
+    try:
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        dialogues_dir = os.path.abspath(os.path.join(current_dir, '..', 'dialogues'))
+        file_path = os.path.join(dialogues_dir, filename)
+
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            return True
+        return False  # File doesn't exist
     except Exception as e:
         return False
