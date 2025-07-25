@@ -145,10 +145,6 @@ export default function AutomationSimple({
             case "textfield":
                 return (
                     <div className="space-y-2">
-                        <Label className="text-sm font-medium">
-                            {item.label}
-                            {item.required && <span className="text-red-500 ml-1">*</span>}
-                        </Label>
                         <FieldWrapper
                             field={item}
                             value={getFieldValue(item) || ""}
@@ -203,10 +199,6 @@ export default function AutomationSimple({
             case "dropdown":
                 return (
                     <div className="space-y-2">
-                        <Label className="text-sm font-medium">
-                            {item.label}
-                            {item.required && <span className="text-red-500 ml-1">*</span>}
-                        </Label>
                         <FieldWrapper
                             field={item}
                             value={getFieldValue(item) || ""}
@@ -265,10 +257,6 @@ export default function AutomationSimple({
 
                 return (
                     <div className="space-y-2">
-                        <Label className="text-sm font-medium">
-                            {item.label}
-                            {item.required && <span className="text-red-500 ml-1">*</span>}
-                        </Label>
                         <FieldWrapper
                             field={item}
 

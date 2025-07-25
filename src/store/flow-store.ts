@@ -45,9 +45,9 @@ interface FlowState extends VariablesSlice {
   isPopoverInteracting: boolean;
   setIsPopoverInteracting: (open: boolean) => void;
   setVarPicker: (value: boolean) => void;
-  varPickerProps: { onSelectVariable: (value: string) => void } | null;
+  varPickerProps: {allowedNodeIds:string[] } | null;
   setVarPickerProps: (
-    props: { onSelectVariable: (value: string) => void } | null
+    props: { allowedNodeIds:string[]} | null
   ) => void;
   addVariable: (
     variable: Omit<WorkflowVariable, "id" | "createdAt" | "updatedAt">

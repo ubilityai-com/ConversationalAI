@@ -75,6 +75,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
 
   const handleSave = () => {
     if (!formData.name.trim()) return;
+    console.log({ formData, editingVariable });
 
     let processedValue: any;
 
@@ -116,11 +117,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
     if (editingVariable) {
       console.log({ formData });
 
-      updateVariable("global", editingVariable.name, {
-        name: formData.name,
-        type: formData.type,
-        value: processedValue,
-      });
+      updateConstantVariable(editingVariable, formData);
     } else {
       console.log({ formData });
 
@@ -132,17 +129,28 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
 
   const handleEdit = (
     name: string,
-    value: "string" | "number" | "boolean" | "object" | "array"
+    value: string | number | boolean | object
   ) => {
+    const jsType = typeof value;
+    let normalizedType: "string" | "number" | "boolean" | "object" | "array";
+
+    if (jsType === "object") {
+      normalizedType = Array.isArray(value) ? "array" : "object";
+    } else if (jsType === "string" || jsType === "number" || jsType === "boolean") {
+      normalizedType = jsType;
+    } else {
+      // Fallback for unexpected types (though your parameter type should prevent this)
+      normalizedType = "string";
+    }
     setEditingVariable(name);
-    // setFormData({
-    //   name: name,
-    //   type: typeof value,
-    //   value:
-    //     typeof value === "object"
-    //       ? JSON.stringify(value, null, 2)
-    //       : String(value),
-    // });
+    setFormData({
+      name: name,
+      type: normalizedType,
+      value:
+        typeof value === "object"
+          ? JSON.stringify(value, null, 2)
+          : String(value),
+    });
     setShowAddForm(true);
   };
 
@@ -204,29 +212,6 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
     return colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
 
-  const getCategoryInfo = (category: VariableCategory) => {
-    const categoryInfo = {
-      global: {
-        label: "Global Variables",
-        description: "Variables accessible across the entire workflow",
-        icon: Globe,
-        color: "text-purple-600",
-      },
-      ai: {
-        label: "AI Variables",
-        description: "Variables used for AI model configuration and prompts",
-        icon: Bot,
-        color: "text-blue-600",
-      },
-      dialogue: {
-        label: "Dialogue Variables",
-        description: "Variables for conversation flow and user interactions",
-        icon: MessageSquare,
-        color: "text-green-600",
-      },
-    };
-    return categoryInfo[category];
-  };
 
   const formatValue = (value: any, type: WorkflowVariable["type"]) => {
     if (type === "object" || type === "array") {
@@ -319,81 +304,6 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
     }
   };
 
-  const renderVariablesList = (category: VariableCategory) => {
-    const categoryVariables = getVariablesByCategory(category);
-    const categoryInfo = getCategoryInfo(category);
-
-    return (
-      <div className="space-y-3">
-        {categoryVariables.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center text-gray-500">
-              <div className="flex flex-col items-center space-y-2">
-                <categoryInfo.icon
-                  className={`w-8 h-8 ${categoryInfo.color}`}
-                />
-                <div className="text-lg font-medium">
-                  No {categoryInfo.label.toLowerCase()}
-                </div>
-                <div className="text-sm">{categoryInfo.description}</div>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          categoryVariables.map((variable) => (
-            <Card
-              key={variable.id}
-              className="hover:shadow-md transition-shadow"
-            >
-              <CardContent className="py-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="font-medium text-lg">{variable.name}</h3>
-                      <Badge className={getTypeColor(variable.type)}>
-                        {variable.type}
-                      </Badge>
-                    </div>
-
-                    {variable.description && (
-                      <p className="text-sm text-gray-600 mb-2">
-                        {variable.description}
-                      </p>
-                    )}
-
-                    <div className="bg-gray-50 rounded p-3">
-                      <div className="text-xs text-gray-500 mb-1">Value:</div>
-                      <pre className="font-mono text-sm text-gray-900 whitespace-pre-wrap">
-                        {formatValue(variable.value, variable.type)}
-                      </pre>
-                    </div>
-                  </div>
-
-                  <div className="flex space-x-2 ml-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      // onClick={() => handleEdit(variable)}
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDelete(variable.name)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
-    );
-  };
-
   const renderConstantVariables = () => {
     return (
       <div className="space-y-3">
@@ -435,7 +345,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
                     <Button
                       variant="outline"
                       size="sm"
-                      //   onClick={() => handleEdit(name, value)}
+                      onClick={() => handleEdit(name, value)}
                     >
                       <Edit2 className="w-4 h-4" />
                     </Button>
@@ -508,7 +418,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
   };
 
   const renderDialogueVariables = () => {
-    const handleEyeClick = (nodeName: string, varName: string) => {};
+    const handleEyeClick = (nodeName: string, varName: string) => { };
     console.log({ dialogueVariables });
 
     return (
@@ -526,27 +436,22 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
             </CardContent>
           </Card>
         ) : (
-          Object.entries(dialogueVariables).map(([nodeName, variables]) => (
-            <Card key={nodeName} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <CardTitle className="text-lg">{nodeName}</CardTitle>
-              </CardHeader>
+          Object.entries(dialogueVariables).map(([nodeId, varName]) => (
+            <Card key={nodeId} className="hover:shadow-md transition-shadow">
               <CardContent className="py-4">
-                {Object.entries(variables).map(([varName, value]) => (
-                  <div key={varName} className="mb-4 last:mb-0">
-                    <div className="flex items-center justify-between space-x-3 mb-2">
-                      <div className="flex items-center space-x-3">
-                        <h4 className="font-medium">{varName}</h4>
-                        <Badge className={`bg-blue-100 text-blue-800`}>
-                          {typeof value}
-                        </Badge>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <Eye className="w-4 h-4" />
-                      </Button>
+                <div key={varName} className="mb-4 last:mb-0">
+                  <div className="flex items-center justify-between space-x-3 mb-2">
+                    <div className="flex items-center space-x-3">
+                      <h4 className="font-medium">{varName}</h4>
+                      <Badge className={`bg-blue-100 text-blue-800`}>
+                        {typeof varName}
+                      </Badge>
                     </div>
+                    <Button variant="ghost" size="sm">
+                      <Eye className="w-4 h-4" />
+                    </Button>
                   </div>
-                ))}
+                </div>
               </CardContent>
             </Card>
           ))
@@ -569,7 +474,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
               className="mr-4"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Add Variable
+              Add Global Variable
             </Button>
           </DialogTitle>
         </DialogHeader>
@@ -582,10 +487,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
                 <CardTitle className="text-lg flex items-center justify-between">
                   {editingVariable
                     ? "Edit Variable"
-                    : `Add New ${getCategoryInfo(activeTab).label.slice(
-                        0,
-                        -1
-                      )}`}
+                    : `Add New Global Variable`}
                   <Button variant="ghost" size="sm" onClick={resetForm}>
                     <X className="w-4 h-4" />
                   </Button>
@@ -654,9 +556,9 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
                 <Globe className="w-4 h-4" />
                 <span>Global Variables</span>
               </TabsTrigger>
-              <TabsTrigger value="ai" className="flex items-center space-x-2">
+              <TabsTrigger value="Output" className="flex items-center space-x-2">
                 <Bot className="w-4 h-4" />
-                <span>AI Variables</span>
+                <span>Output Variables</span>
               </TabsTrigger>
               <TabsTrigger
                 value="dialogue"
@@ -671,7 +573,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
               <TabsContent value="global" className="mt-0">
                 {renderConstantVariables()}
               </TabsContent>
-              <TabsContent value="ai" className="mt-0">
+              <TabsContent value="Output" className="mt-0">
                 {renderOutputVariables()}
               </TabsContent>
               <TabsContent value="dialogue" className="mt-0">

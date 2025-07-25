@@ -348,7 +348,7 @@ export function AgentPaletteDialog({
             Choose an Agent
           </DialogTitle>
         </DialogHeader>
-
+        
         <div className="space-y-4">
           {/* Search */}
           <div className="relative">

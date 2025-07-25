@@ -2,11 +2,13 @@
 import { useFlowStore } from "../../store/flow-store";
 import { AgentPaletteDialog } from "../agent-palette-dialog";
 import { ChangeNameDialog } from "./change-name-dialog";
+import { CreateOutputVariableDialog } from "./create-output-variable";
 import { CreateCredentialDialog } from "./credential-dialog/create-credential-dialog";
 import { ItemsListDialog } from "./langchain-dialog";
 import { PublishDialog } from "./save-dialog";
 import { ValidationDialog } from "./validation-dialog";
 import { VariablesDialog } from "./variables-dialog";
+
 
 export const dialogRegistry: Record<string, React.FC<any>> = {
     publish: PublishDialog,
@@ -15,7 +17,8 @@ export const dialogRegistry: Record<string, React.FC<any>> = {
     langchain: ItemsListDialog,
     addNode: AgentPaletteDialog,
     createCred: CreateCredentialDialog,
-    variables: VariablesDialog
+    variables: VariablesDialog,
+    createOutputVariable:CreateOutputVariableDialog
 };
 export default function DialogManager() {
     const { isFormDialogOpen, formDialogStatus, dialogProps, setIsFormDialogOpen } = useFlowStore();

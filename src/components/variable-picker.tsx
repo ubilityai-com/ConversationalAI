@@ -3,14 +3,49 @@
 import type React from "react"
 import { useRef, useState } from "react"
 
-import { ChevronLeft, ChevronRight, Search, Variable, X } from "lucide-react"
+import { Braces, ChevronDown, ChevronLeft, ChevronRight, ExternalLink, MessageSquare, Search, Variable, X } from "lucide-react"
 import { useFlowStore, VariableCategory } from "../store/flow-store"
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 import { CardContent, CardHeader, CardTitle } from "./ui/card"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible"
 import { Input } from "./ui/input"
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
+import { ScrollArea } from "./ui/scroll-area"
+import { Separator } from "./ui/separator"
 import { Textarea } from "./ui/textarea"
+
+
+interface Variable {
+  name: string;
+  type: "constant" | "output" | "dialogue";
+  value?: "string" | "number" | "boolean" | "object" | "array" | string;
+  path?: string;
+  nodeId?: string;
+}
+
+
+
+const typeConfig = {
+  constant: {
+    icon: Braces,
+    label: "Constants",
+    description: "Fixed values and configuration settings",
+    badgeClass: "bg-constant-bg text-constant border-constant",
+  },
+  output: {
+    icon: Variable,
+    label: "Outputs",
+    description: "Generated values and computation results",
+    badgeClass: "bg-output-bg text-output border-output",
+  },
+  dialogue: {
+    icon: MessageSquare,
+    label: "Dialogue",
+    description: "Conversation flow and user interaction data",
+    badgeClass: "bg-dialogue-bg text-dialogue border-dialogue",
+  },
+};
 
 interface VariablesPanelProps {
   isOpen: boolean
@@ -29,6 +64,7 @@ export interface WorkflowVariable {
   createdAt: Date
   updatedAt: Date
 }
+let timeout: NodeJS.Timeout | string | number | undefined
 export function VariablesPanel({
   isOpen,
   isMinimized,
@@ -36,8 +72,6 @@ export function VariablesPanel({
   onToggleMinimize,
   right
 }: VariablesPanelProps) {
-  const variables = useFlowStore(state => state.variables)
-  const [searchTerm, setSearchTerm] = useState("")
   const varPickerProps = useFlowStore(state => state.varPickerProps)
   const isPopoverInteracting = useFlowStore(state => state.isPopoverInteracting)
   const setIsPopoverInteracting = useFlowStore(state => state.setIsPopoverInteracting)
@@ -48,52 +82,84 @@ export function VariablesPanel({
     blurTimeoutRef,
     setBlurTimeoutRef,
     focusedField,
-    setSelectedOutputOrVariable
+    setSelectedOutputOrVariable, constantVariables, outputVariables, dialogueVariables
   } = useFlowStore()
+
   const onVariableSelect = (varName: string) => {
-    console.log({ varPickerProps,varName });
+    console.log({ varPickerProps, varName });
     setSelectedOutputOrVariable(varName)
   }
-  const filteredVariables = variables.filter(
-    (variable) =>
-      variable.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (variable.description && variable.description.toLowerCase().includes(searchTerm.toLowerCase())),
-  )
+  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case "string":
-        return "bg-blue-100 text-blue-800"
-      case "number":
-        return "bg-green-100 text-green-800"
-      case "boolean":
-        return "bg-purple-100 text-purple-800"
-      case "object":
-        return "bg-orange-100 text-orange-800"
-      case "array":
-        return "bg-pink-100 text-pink-800"
-      default:
-        return "bg-gray-100 text-gray-800"
+  const allowedNodeIds = varPickerProps?.allowedNodeIds ?? [];
+
+const allVariables: Variable[] = [
+  // Include all constant variables
+  ...Object.entries(constantVariables).map(([name, type]) => ({
+    name,
+    type: "constant" as const,
+    value: type,
+  })),
+
+  // Include only output variables for allowed node IDs
+  ...Object.entries(outputVariables)
+    .filter(([nodeId]) => allowedNodeIds.includes(nodeId))
+    .flatMap(([nodeId, variables]) =>
+      Object.entries(variables).map(([name, path]) => ({
+        name,
+        type: "output" as const,
+        path,
+        nodeId,
+      }))
+    ),
+
+  // Include only dialogue variables for allowed node IDs
+  ...Object.entries(dialogueVariables)
+    .filter(([nodeId]) => allowedNodeIds.includes(nodeId))
+    .map(([nodeId, name]) => ({
+      name,
+      type: "dialogue" as const,
+      path: nodeId,
+    })),
+];
+
+  const groupedVariables = allVariables.reduce((acc, variable) => {
+    if (!acc[variable.type]) {
+      acc[variable.type] = [];
     }
-  }
+    acc[variable.type].push(variable);
+    return acc;
+  }, {} as Record<string, Variable[]>);
 
-  const formatValue = (value: any, type: string) => {
-    if (type === "object" || type === "array") {
-      return JSON.stringify(value).substring(0, 30) + "..."
+  // Filter by search term first, then by type
+  const searchFilteredVariables = Object.keys(groupedVariables).reduce((acc, type) => {
+    const filteredVars = groupedVariables[type].filter(variable =>
+      variable.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    if (filteredVars.length > 0) {
+      acc[type] = filteredVars;
     }
-    return String(value).substring(0, 30)
-  }
-  console.log({ variables });
+    return acc;
+  }, {} as Record<string, Variable[]>);
+
+  const filteredVariables = selectedType
+    ? { [selectedType]: searchFilteredVariables[selectedType] || [] }
+    : searchFilteredVariables;
 
 
-  const handlePopoverInteraction = (interacting: boolean) => {
+
+  const handlePopoverInteraction = (interacting: boolean, event?: React.FocusEvent<HTMLElement>) => {
     setIsPopoverInteracting(interacting)
+    clearTimeout(timeout)
     if (!interacting) {
-      setTimeout(() => {
+      timeout = setTimeout(() => {
         if (
           !document.activeElement ||
           !fieldRefs[focusedField || ""]?.contains(document.activeElement)
         ) {
+
           setVarPicker(false)
         }
       }, 100)
@@ -112,8 +178,8 @@ export function VariablesPanel({
       <PopoverContent
         onOpenAutoFocus={(e) => e.preventDefault()}
         onMouseEnter={() => handlePopoverInteraction(true)}
-        onFocusCapture={() => handlePopoverInteraction(true)}
-        onBlurCapture={() => handlePopoverInteraction(false)}
+        onFocusCapture={(event) => handlePopoverInteraction(true, event)}
+        onBlurCapture={(event) => handlePopoverInteraction(false, event)}
         side="left" className="w-80 p-0 h-[calc(100vh-160px)]"
       >
 
@@ -154,10 +220,10 @@ export function VariablesPanel({
               </div>
             </CardHeader>
 
-            <CardContent className="flex-1 overflow-y-auto p-4">
-              {filteredVariables.length === 0 ? (
+            <CardContent className="flex-1 p-4">
+              {Object.keys(filteredVariables).length === 0 ? (
                 <div className="text-center text-gray-500 py-8">
-                  {variables.length === 0 ? (
+                  {allVariables.length === 0 ? (
                     <div>
                       <Variable className="w-8 h-8 mx-auto mb-2 text-gray-400" />
                       <p className="text-sm">No variables defined</p>
@@ -172,38 +238,118 @@ export function VariablesPanel({
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {filteredVariables.map((variable) => {
-                    console.log({ variable });
+                  <ScrollArea className="h-[calc(100vh-200px)]">
+                    <div className="space-y-6">
+                      {Object.entries(filteredVariables).map(([type, variables]) => {
+                        const config = typeConfig[type as keyof typeof typeConfig];
+                        const IconComponent = config.icon;
 
-                    return (
-                      <div
-                        key={variable.id}
-                        className="p-3 rounded-lg border border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors group"
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => onVariableSelect(`\${${variable.name}}`)}
-                      >
+                        return (
+                          <Collapsible
+                            key={type}
+                            open={openSections[type]}
+                            onOpenChange={(open) => setOpenSections(prev => ({ ...prev, [type]: open }))}
+                          >
+                            <CollapsibleTrigger className="w-full group">
+                              <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-accent/50 transition-colors">
+                                <IconComponent className="h-5 w-5 text-muted-foreground" />
+                                <h3 className="font-semibold text-lg">{config.label}</h3>
+                                <Badge variant="secondary" className="ml-auto">
+                                  {variables.length}
+                                </Badge>
+                                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                              </div>
+                            </CollapsibleTrigger>
 
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium text-sm truncate">{variable.name}</span>
-                          <Badge className={`text-xs flex-shrink-0 ml-2 ${getTypeColor(variable.type)}`}>
-                            {variable.type}
-                          </Badge>
-                        </div>
-                        {variable.description && (
-                          <p className="text-xs text-gray-600 mb-1 line-clamp-2">{variable.description}</p>
-                        )}
-                        <div className="flex items-center justify-between">
-                          <code className="text-xs text-gray-500 bg-gray-100 px-1 rounded truncate flex-1">
-                            {formatValue(variable.value, variable.type)}
-                          </code>
-                          <span className="text-xs text-gray-400 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            Click to insert
-                          </span>
-                        </div>
-                      </div>
-                    )
-                  })}
+                            <CollapsibleContent className="space-y-3">
+                              <p className="text-sm text-muted-foreground mb-3 px-2">
+                                {config.description}
+                              </p>
+
+                              <div className="space-y-2">
+                                {variables.map((variable, index) => (
+                                  <div
+                                    key={`${variable.name}-${index}`}
+                                    className="p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer group"
+                                    role="button"
+                                    tabIndex={0}
+                                    onClick={(event) => {
+                                      event.preventDefault()
+                                      onVariableSelect(`\${${variable.name}}`)
+                                    }}
+                                  >
+                                    <div className="flex items-start justify-between gap-2">
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 mb-1">
+                                          <code className="font-mono text-sm font-medium">
+                                            {variable.name}
+                                          </code>
+                                          <Badge
+                                            variant="outline"
+                                            className={`text-xs ${config.badgeClass}`}
+                                          >
+                                            {type}
+                                          </Badge>
+                                        </div>
+
+                                        {variable.value && (
+                                          <div className="text-xs text-muted-foreground mb-1">
+                                            <span className="font-medium">
+                                              {variable.type === "constant" ? "Type: " : "Value: "}
+                                            </span>
+                                            <code className="bg-muted px-1 py-0.5 rounded">
+                                              {variable.value}
+                                            </code>
+                                          </div>
+                                        )}
+
+                                        {variable.path && (
+                                          <div className="text-xs text-muted-foreground mb-1">
+                                            <span className="font-medium">Path: </span>
+                                            <code className="bg-muted px-1 py-0.5 rounded">
+                                              {variable.path}
+                                            </code>
+                                          </div>
+                                        )}
+
+                                        {variable.nodeId && (
+                                          <div className="text-xs text-muted-foreground">
+                                            <span className="font-medium">Node: </span>
+                                            <code className="bg-muted px-1 py-0.5 rounded">
+                                              {variable.nodeId}
+                                            </code>
+                                          </div>
+                                        )}
+                                      </div>
+
+                                      {(variable.type === "output" || variable.type === "dialogue") && (
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            console.log(`Navigate to origin of ${variable.name} at ${variable.path}`);
+                                            // Add navigation logic here
+                                          }}
+                                        >
+                                          <ExternalLink className="h-3 w-3" />
+                                        </Button>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </CollapsibleContent>
+
+                            {Object.keys(filteredVariables).length > 1 && (
+                              <Separator className="mt-4" />
+                            )}
+                          </Collapsible>
+                        );
+                      })}
+                    </div>
+                  </ScrollArea>
                 </div>
               )}
             </CardContent>

@@ -611,3 +611,25 @@ export async function loadElementByKey(key: string) {
 function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
+export function getAllPreviousNodes(nodeId: string): string[] {
+  const edges = useFlowStore.getState().reactFlowInstance?.getEdges() || [];
+  const visited = new Set<string>();
+  const result: string[] = [];
+
+  function dfs(currentId: string) {
+      if (visited.has(currentId)) return;
+      visited.add(currentId);
+
+      const incomingEdges = edges.filter(edge => edge.target === currentId);
+
+      for (const edge of incomingEdges) {
+          const sourceId = edge.source;
+          result.push(sourceId);
+          dfs(sourceId); // recursively check the source node
+      }
+  }
+
+  dfs(nodeId);
+
+  return [...new Set(result)];
+}

@@ -1,16 +1,16 @@
-import { create, StateCreator } from "zustand";
+import { StateCreator } from "zustand";
 
-interface ConstantVariable {
+export interface ConstantVariable {
   [key: string]: "string" | "number" | "boolean" | "object" | "array";
 }
 
-interface OutputVariables {
+export interface OutputVariables {
   [nodeId: string]: {
     [variableName: string]: string; // path
   };
 }
 
-interface DialogueVariables {
+export interface DialogueVariables {
   [variableName: string]: string;
 }
 
@@ -71,10 +71,18 @@ export const createVariablesSlice: StateCreator<VariablesSlice> = (set) => ({
       constantVariables: { ...state.constantVariables, [name]: value },
     })),
 
-  updateConstantVariable: (name, value) =>
-    set((state) => ({
-      constantVariables: { ...state.constantVariables, [name]: value },
-    })),
+  updateConstantVariable: (oldName, variable) =>
+    set((state) => {
+      const newConstantVariables = { ...state.constantVariables }
+      if (oldName !== variable.name) {
+        delete newConstantVariables[oldName]
+        newConstantVariables[variable.name] = variable.value
+      } else newConstantVariables[oldName] = variable.value
+
+      return ({
+        constantVariables: newConstantVariables
+      })
+    }),
 
   deleteConstantVariable: (name) =>
     set((state) => {
