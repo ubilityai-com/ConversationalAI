@@ -5,14 +5,16 @@ Main entry point for the FastAPI + Socket.IO chatbot server.
 
 """
 
-import json,socketio,uvicorn
-from datetime import datetime
+import json,socketio
+from datetime import datetime,timedelta
 from fastapi import FastAPI
 from elements.message import Message
 from functions import execute_process, save_user_input,save_file_input
 from logger_config import logger, setup_logger
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
+import asyncio
+from uvicorn import Config, Server
 
 
 # Initialize logging
@@ -189,10 +191,34 @@ async def disconnect(sid):
                     del session[dialogue_id]
                 return  # exit after first match
 
-# ---------------------------
-# Uvicorn Entry Point
-# ---------------------------
 
-if __name__ == '__main__':
+IDLE_TIMEOUT_MINUTES = 3 # 3 minutes
+
+async def check_idle_sessions():
+    while True:
+        now = datetime.now()
+        for dialogue_id, conversations in list(session.items()):
+            for conversation_id, conv in list(conversations.items()):
+                try:
+                    last_reply_at = datetime.fromisoformat(conv['last_reply_at'])
+                except (ValueError, KeyError):
+                    continue  # Skip malformed sessions
+
+                if now - last_reply_at > timedelta(minutes=IDLE_TIMEOUT_MINUTES):
+                    sid = conv['sid']
+                    logger.info(f"Disconnecting idle session: {conversation_id} in dialogue {dialogue_id}")
+                    await sio.emit('force_disconnect', 'Session disconnected due to inactivity', room=sid)
+                    await sio.disconnect(sid)
+
+        await asyncio.sleep(180)  # Run every 3 minutes
+
+
+async def main():
+    asyncio.create_task(check_idle_sessions())
+    config = Config(app, host="0.0.0.0", port=8031)
+    server = Server(config)
+    await server.serve()
+
+if __name__ == "__main__":
     logger.info("Starting Ubility bot server")
-    uvicorn.run(app, host='0.0.0.0', port=8031)
+    asyncio.run(main())
