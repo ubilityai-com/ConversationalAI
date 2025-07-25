@@ -1,6 +1,9 @@
 import { applyEdgeChanges, applyNodeChanges, Edge, getConnectedEdges, Node, type ReactFlowInstance } from "@xyflow/react";
+import axios from "axios";
 import { v4 } from "uuid";
 import { create } from "zustand";
+import { getContent } from "../components/right-side-elements/regular-elements/slack-form/slack-form";
+import { camelToDashCase } from "../lib/utils";
 
 type SubNodesValidation = {
     [parentId: string]: {
@@ -203,9 +206,109 @@ interface FlowState {
     limitArray: string[]
     scoreArray: string[]
     components: any[]
+    loading: boolean
+    error: string | null;
+    runningNodeIds: Set<string>; // replace single runningNodeId with Set
+
+    testNode: (id: string) => Promise<void>;
+    deleteFlow: (id: string) => Promise<void>;
+    importFlow: (data: any) => Promise<void>;
+
+    addRunningNodeId: (id: string) => void;
+    removeRunningNodeId: (id: string) => void;
+    nodeResults: Record<string, any>;
+    setNodeResult: (id: string, result: any) => void;
+
 }
 
+
 export const useFlowStore = create<FlowState>((set, get) => ({
+    loading: false,
+    error: null,
+    runningNodeIds: new Set(),
+    nodeResults: {},
+
+    setNodeResult: (id, result) => set((state) => ({
+        nodeResults: {
+            ...state.nodeResults,
+            [id]: result,
+        }
+    })),
+    addRunningNodeId: (id) =>
+        set((state) => {
+            const updated = new Set(state.runningNodeIds);
+            updated.add(id);
+            return { runningNodeIds: updated };
+        }),
+
+    removeRunningNodeId: (id) =>
+        set((state) => {
+            const updated = new Set(state.runningNodeIds);
+            updated.delete(id);
+            return { runningNodeIds: updated };
+        }),
+    testNode: async (id) => {
+        const { addRunningNodeId, removeRunningNodeId, nodes, edges, setNodeResult } = get();
+        set({ error: null });
+        addRunningNodeId(id);
+        const selectedNode = nodes.find(el => el.id === id)
+        const { content, cred } = require(`../components/right-side-elements/${selectedNode.data.nodeType as string}-elements/${camelToDashCase(selectedNode.type as string)}-form/${camelToDashCase(selectedNode.type as string)}-form`).getContent(
+            selectedNode,
+            { edges, nodes }
+        );
+
+        try {
+            const res = await axios.post(process.env.REACT_APP_DNS_URL + `test_node`, {
+                app_type: content.data.app,
+                credential: cred,
+                operation: content.data.operation,
+                content_json: content.data.content_json
+            });
+            setNodeResult(id, res.data?.output);
+            console.log("Run node response:", res.data);
+            return res.data;
+        } catch (error: any) {
+            console.error(error);
+
+            const errorMessage =
+                error?.response?.data?.message ||
+                error.message ||
+                "Failed to run flow";
+
+            set({ error: errorMessage });
+
+            throw error;
+        } finally {
+            removeRunningNodeId(id);
+        }
+    },
+
+
+    deleteFlow: async (id) => {
+        set({ loading: true, error: null });
+        try {
+            const res = await axios.delete(`/deleteFlow/${id}`);
+            // optionally handle res.data if needed
+        } catch (error: any) {
+            console.error(error);
+            set({ error: error?.response?.data?.message || error.message || "Failed to delete flow" });
+        } finally {
+            set({ loading: false });
+        }
+    },
+
+    importFlow: async (data) => {
+        set({ loading: true, error: null });
+        try {
+            const res = await axios.post(`/importFlow`, data);
+            // optionally handle res.data if needed
+        } catch (error: any) {
+            console.error(error);
+            set({ error: error?.response?.data?.message || error.message || "Failed to import flow" });
+        } finally {
+            set({ loading: false });
+        }
+    },
     fieldRefs: {},
     setFieldRef: (key, ref) =>
         set((state) => ({

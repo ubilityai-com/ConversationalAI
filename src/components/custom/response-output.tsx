@@ -183,6 +183,7 @@ const ResponseOutput = React.forwardRef<HTMLDivElement, ResponseOutputProps>(
                     collapsed={collapsed}
                     style={{
                         ...customTheme,
+                        wordWrap: "break-word",
                         padding: "15px",
                         borderRadius: "5px",
                         fontSize: "1rem"

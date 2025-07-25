@@ -11,6 +11,7 @@ export default function RightSideBody() {
   const [Component, setComponent] = useState<ComponentType<any> | null>(null);
 
   const clickedElement = useFlowStore((state) => state.clickedElement);
+  const nodeResults = useFlowStore((state) => state.nodeResults);
   const updateNodeRightSideData = useRightDrawerStore(
     (state) => state.updateNodeRightSideData
   );
@@ -52,24 +53,6 @@ export default function RightSideBody() {
   const selectedNode = useNodesData(clickedElement?.id);
 
   if (!selectedNode) return null;
-  const runResult = {
-    Status: "PASS",
-    Output: {
-      name: "John Doe",
-      age: 30,
-      hobbies: ["reading", "coding", "gaming"],
-      address: {
-        street: "123 Main St",
-        city: "New York",
-        zipCode: "10001",
-      },
-      metadata: {
-        timestamp: "2024-01-15T10:30:00Z",
-        version: "1.0.0",
-      },
-    },
-    ExecutionTime: "1.2s",
-  }
 
 
   const handleCopy = (event: any) => {
@@ -101,15 +84,15 @@ export default function RightSideBody() {
           handleRightSideDataUpdate={handleRightSideDataUpdate}
         />
       )}
-      {/* <ResponseOutput
-        runResult={runResult}
+      {nodeResults && <ResponseOutput
+        runResult={nodeResults[selectedNode.id]}
         onCopy={handleCopy}
         onExport={handleExport}
         onMaximize={handleMaximize}
         onCreateVariable={handleCreateVariable}
         collapsed={1}
         hasDivider
-      /> */}
+      />}
     </div>
   );
 }

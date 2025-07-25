@@ -1,22 +1,19 @@
-import { useState } from "react"
-
-import { Settings, Trash2, X } from "lucide-react"
-
+import { Loader2, Play, Settings, Trash2, X } from "lucide-react"
 // Import all config components
 import { useFlowStore } from "../store/flow-store"
-// import { ConditionConfig } from "./properties/configs/condition-config"
-// import { LLMConfig } from "./properties/configs/llm-config"
-// import { RouterConfig } from "./properties/configs/router-config"
 import RightSideBody from "./right-side-body"
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
+import { RegularElements } from "../elements/regular-elements"
 
-
+const runnableNodes = [...RegularElements.map(elt => elt.type)]
 export function PropertiesPanel() {
     const selectedNode = useFlowStore(state => state.clickedElement)
     const setClickedElement = useFlowStore(state => state.setClickedElement)
     const deleteNode = useFlowStore(state => state.deleteNode)
+    const testNode = useFlowStore(state => state.testNode)
+    const isThisNodeRunning = useFlowStore(state => state.runningNodeIds.has(selectedNode?.id));
 
     if (!selectedNode)
         return <></>
@@ -44,7 +41,6 @@ export function PropertiesPanel() {
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
   `
-
     // Add the style tag in the return statement before the Card
     return (
         <div className="bg-white border-l border-gray-200 flex flex-col">
@@ -59,6 +55,15 @@ export function PropertiesPanel() {
                     </h2>
                 </div>
                 <div className="flex items-center space-x-2 flex-shrink-0">
+                    {runnableNodes.includes(selectedNode.type) && <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => testNode(selectedNode?.id)}
+                        className="text-green-500 hover:text-green-600 w-8 h-8 p-0"
+                    >
+                        {isThisNodeRunning ? <Loader2 className="w-4 h-4 animate-spin" />
+                            : <Play className="w-4 h-4" />}
+                    </Button>}
                     {selectedNode?.type !== "Handler" && <Button variant="ghost" size="sm" onClick={() => deleteNode(selectedNode?.id)} className="text-red-500 hover:text-red-600 w-8 h-8 p-0">
                         <Trash2 className="w-4 h-4" />
                     </Button>}
