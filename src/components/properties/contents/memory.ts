@@ -17,8 +17,8 @@ export const ConversationalBufferMemory = (selectedNode: any) => {
     const content = memory.content
     return {
         type: "ConversationBufferMemory",
-        historyId: memory.id,
-        context: (content.historyId)
+        historyId: selectedNode.id,
+        // context: []
     }
 }
 export const ConversationSummaryBufferMemory = (selectedNode: any) => {
@@ -27,8 +27,8 @@ export const ConversationSummaryBufferMemory = (selectedNode: any) => {
     return {
         type: memory.type,
         historyId: selectedNode.id,
-        max_token_limit: content.maxTokenLimit,
-        context: []
+        max_token_limit: parseInt(content.maxTokenLimit),
+        // context: []
 
     }
 }

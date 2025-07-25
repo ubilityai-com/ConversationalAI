@@ -595,20 +595,6 @@ export function extractCreds(obj: any): string[] {
 
   return creds;
 }
-export async function loadElementByKey(key: string) {
-
-  try {
-    const module = await import(`../elements/${key}-elements`);
-    return module.default || module[`${capitalize(key)}Elements`];
-  } catch (error) {
-    console.warn(`No elements found for ${key}, skipping dynamic import.`, error);
-    return null;
-  }
-}
-
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
 
 interface NodeType {
   id: string;

@@ -817,7 +817,7 @@ export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record
         //   ? list.find((c) => c.option === valueToSend)?.cred ?? ""
         //   : "";
       } else {
-        obj[variableName!] = processValue(valueToSend);
+        obj[variableName!] = valueToSend;
       }
       mergeOptionFields();
     }

@@ -9,15 +9,15 @@ export const McpToolJson = {
             {
                 type: "dropdown",
                 label: "Get MCP By",
-                value: "name",
+                value: "url",
                 variableName: "getMcpBy",
                 required: true,
                 hasDynamicVariable: false,
                 list: [
-                    {
-                        option: "Name",
-                        value: "name",
-                    },
+                    // {
+                    //     option: "Name",
+                    //     value: "name",
+                    // },
                     {
                         option: "Url",
                         value: "url",

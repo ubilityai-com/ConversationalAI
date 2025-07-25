@@ -96,7 +96,6 @@ export function getContent(selectedNode: any, params: any) {
     const rightSideData = selectedNode.data.rightSideData
     const { edges, nodes } = params
     const json = rightSideData.json
-    console.log({ rightSideData, json });
 
     let jsonToSend = {};
     if (json.type === "Message") {

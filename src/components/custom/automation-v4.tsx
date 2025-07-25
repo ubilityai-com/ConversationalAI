@@ -21,6 +21,7 @@ import { SearchableSelect } from "./searchable-select"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import ReactQuillEditor from "./textFormatter"
+import { JsonEditor } from "./output-json"
 
 // Validation functions
 const validateNumberGreaterThanZero = (value: string) => {
@@ -617,6 +618,19 @@ export default function AutomationSimple({
                         )}
                     </div>
                 )
+            // case "outputJson":
+            //     return (
+            //         <div className="space-y-2">
+            //             <JsonEditor
+            //                 onChange={() => { }}
+            //                 value={item.value}
+            //                 stopAdd={true}
+            //                 stopEdit={true}
+            //                 stopDelete
+            //             />
+            //         </div>
+            //     )
+
 
             default:
                 return (
