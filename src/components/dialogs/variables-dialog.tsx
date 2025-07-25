@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import {
+  AlertTriangle,
   Bot,
   Code,
   Edit2,
@@ -31,6 +32,8 @@ import {
 } from "../ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { WorkflowVariable } from "../variable-picker";
+import { doesVariableExist } from "../../lib/variable-utils";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 interface VariablesDialogProps {
   open: boolean;
@@ -45,6 +48,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
     addConstantVariable,
     updateConstantVariable,
     deleteConstantVariable,
+    deleteOutputVariable,
   } = useFlowStore();
 
   const {
@@ -57,6 +61,9 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
   const [editingVariable, setEditingVariable] = useState<any | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [activeTab, setActiveTab] = useState<VariableCategory>("global");
+  const [variableExistsError, setVariableExistsError] = useState<string | null>(
+    null
+  );
   const [formData, setFormData] = useState({
     name: "",
     type: "string" as "string" | "number" | "boolean" | "object" | "array",
@@ -71,10 +78,44 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
     });
     setShowAddForm(false);
     setEditingVariable(null);
+    setVariableExistsError(null);
+  };
+
+  const checkVariableExists = (name: string, isEditing: boolean = false) => {
+    // If editing, allow the same name
+    if (isEditing && editingVariable === name) {
+      return false;
+    }
+
+    return doesVariableExist(
+      name,
+      constantVariables,
+      outputVariables,
+      dialogueVariables
+    );
   };
 
   const handleSave = () => {
-    if (!formData.name.trim()) return;
+    if (!formData.name.trim()) {
+      setVariableExistsError("Variable name is required");
+      return;
+    }
+
+    // Check if variable exists
+    const variableExists = checkVariableExists(
+      formData.name,
+      !!editingVariable
+    );
+    if (variableExists) {
+      setVariableExistsError(
+        `Variable "${formData.name}" already exists. Please choose a different name.`
+      );
+      return;
+    }
+
+    // Clear any existing error
+    setVariableExistsError(null);
+
     console.log({ formData, editingVariable });
 
     let processedValue: any;
@@ -85,7 +126,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
         case "number":
           processedValue = formData.value ? Number(formData.value) : 0;
           if (isNaN(processedValue)) {
-            alert("Please enter a valid number");
+            setVariableExistsError("Please enter a valid number");
             return;
           }
           break;
@@ -110,21 +151,36 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
           processedValue = formData.value;
       }
     } catch (error) {
-      alert("Invalid JSON format. Please check your input.");
+      setVariableExistsError("Invalid JSON format. Please check your input.");
       return;
     }
 
     if (editingVariable) {
       console.log({ formData });
-
       updateConstantVariable(editingVariable, formData);
     } else {
       console.log({ formData });
-
       addConstantVariable(formData.name, formData.value);
     }
 
     resetForm();
+  };
+
+  const handleNameChange = (name: string) => {
+    setFormData({ ...formData, name });
+
+    // Clear error when user starts typing
+    if (variableExistsError) {
+      setVariableExistsError(null);
+    }
+
+    // Check if variable exists as user types (for immediate feedback)
+    if (name.trim()) {
+      const exists = checkVariableExists(name, !!editingVariable);
+      if (exists) {
+        setVariableExistsError(`Variable "${name}" already exists`);
+      }
+    }
   };
 
   const handleEdit = (
@@ -136,7 +192,11 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
 
     if (jsType === "object") {
       normalizedType = Array.isArray(value) ? "array" : "object";
-    } else if (jsType === "string" || jsType === "number" || jsType === "boolean") {
+    } else if (
+      jsType === "string" ||
+      jsType === "number" ||
+      jsType === "boolean"
+    ) {
       normalizedType = jsType;
     } else {
       // Fallback for unexpected types (though your parameter type should prevent this)
@@ -152,6 +212,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
           : String(value),
     });
     setShowAddForm(true);
+    setVariableExistsError(null);
   };
 
   const handleDelete = (id: string) => {
@@ -211,7 +272,6 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
     };
     return colors[type as keyof typeof colors] || "bg-gray-100 text-gray-800";
   };
-
 
   const formatValue = (value: any, type: WorkflowVariable["type"]) => {
     if (type === "object" || type === "array") {
@@ -365,8 +425,13 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
       </div>
     );
   };
+  console.log({ outputVariables });
 
   const renderOutputVariables = () => {
+    const handleDeleteOutputVariable = (nodeId: string, varName: string) => {
+      deleteOutputVariable(nodeId, varName);
+    };
+
     return (
       <div className="space-y-3">
         {Object.entries(outputVariables).length === 0 ? (
@@ -384,22 +449,31 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
         ) : (
           Object.entries(outputVariables).map(([nodeName, variables]) => (
             <Card key={nodeName} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <CardTitle className="text-lg">{nodeName}</CardTitle>
-              </CardHeader>
               <CardContent className="py-4">
                 {Object.entries(variables).map(([varName, value]) => (
                   <div key={varName} className="mb-4 last:mb-0">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h4 className="font-medium">{varName}</h4>
-                      <Badge
-                      //    className={getTypeColor(typeof value)}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-3">
+                        <h4 className="font-medium">{varName}</h4>
+                        <Badge
+                        //    className={getTypeColor(typeof value)}
+                        >
+                          {typeof value}
+                        </Badge>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() =>
+                          handleDeleteOutputVariable(nodeName, varName)
+                        }
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
-                        {typeof value}
-                      </Badge>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                     <div className="bg-gray-50 rounded p-3">
-                      <div className="text-xs text-gray-500 mb-1">Value:</div>
+                      <div className="text-xs text-gray-500 mb-1">Path:</div>
                       <pre className="font-mono text-sm text-gray-900 whitespace-pre-wrap">
                         {formatValue(
                           value,
@@ -418,7 +492,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
   };
 
   const renderDialogueVariables = () => {
-    const handleEyeClick = (nodeName: string, varName: string) => { };
+    const handleEyeClick = (nodeName: string, varName: string) => {};
     console.log({ dialogueVariables });
 
     return (
@@ -494,16 +568,28 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Error Alert */}
+                {variableExistsError && (
+                  <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertTitle className="font-medium">
+                      {"Variable Exist"}
+                    </AlertTitle>
+                    <AlertDescription>{variableExistsError}</AlertDescription>
+                  </Alert>
+                )}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name">Variable Name</Label>
                     <Input
                       id="name"
                       value={formData.name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, name: e.target.value })
-                      }
+                      onChange={(e) => {
+                        setFormData({ ...formData, name: e.target.value });
+                        setVariableExistsError(null);
+                      }}
                       placeholder="e.g., userEmail, maxRetries"
+                      className={variableExistsError ? "border-red-500" : ""}
                     />
                   </div>
                   <div>
@@ -535,7 +621,10 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
                   <Button variant="outline" onClick={resetForm}>
                     Cancel
                   </Button>
-                  <Button onClick={handleSave} disabled={!formData.name.trim()}>
+                  <Button
+                    onClick={handleSave}
+                    disabled={!formData.name.trim() || !!variableExistsError}
+                  >
                     <Save className="w-4 h-4 mr-2" />
                     {editingVariable ? "Update" : "Add"} Variable
                   </Button>
@@ -556,7 +645,10 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
                 <Globe className="w-4 h-4" />
                 <span>Global Variables</span>
               </TabsTrigger>
-              <TabsTrigger value="Output" className="flex items-center space-x-2">
+              <TabsTrigger
+                value="Output"
+                className="flex items-center space-x-2"
+              >
                 <Bot className="w-4 h-4" />
                 <span>Output Variables</span>
               </TabsTrigger>

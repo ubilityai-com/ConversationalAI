@@ -73,15 +73,15 @@ export const createVariablesSlice: StateCreator<VariablesSlice> = (set) => ({
 
   updateConstantVariable: (oldName, variable) =>
     set((state) => {
-      const newConstantVariables = { ...state.constantVariables }
+      const newConstantVariables = { ...state.constantVariables };
       if (oldName !== variable.name) {
-        delete newConstantVariables[oldName]
-        newConstantVariables[variable.name] = variable.value
-      } else newConstantVariables[oldName] = variable.value
+        delete newConstantVariables[oldName];
+        newConstantVariables[variable.name] = variable.value;
+      } else newConstantVariables[oldName] = variable.value;
 
-      return ({
-        constantVariables: newConstantVariables
-      })
+      return {
+        constantVariables: newConstantVariables,
+      };
     }),
 
   deleteConstantVariable: (name) =>
@@ -111,7 +111,18 @@ export const createVariablesSlice: StateCreator<VariablesSlice> = (set) => ({
     set((state) => {
       const nodeVariables = state.outputVariables[nodeId];
       if (!nodeVariables) return state;
+
       const { [variableName]: _, ...rest } = nodeVariables;
+
+      // If no variables left for this node, remove the entire nodeId key
+      if (Object.keys(rest).length === 0) {
+        const { [nodeId]: __, ...remainingNodes } = state.outputVariables;
+        return {
+          outputVariables: remainingNodes,
+        };
+      }
+
+      // Otherwise, just remove the variable
       return {
         outputVariables: {
           ...state.outputVariables,
