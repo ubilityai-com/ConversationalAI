@@ -78,6 +78,10 @@ def activate_chatbot_view(chatbot_id: int = Query(None)):
         6- update db status to be Active
         """
         chatbot_obj = get_chatbot(chatbot_id)
+
+        if not chatbot_obj:
+            return JSONResponse(status_code=500, content={"Error": "Chatbot does not exist"})
+        
         if chatbot_obj['status'] == "Active":
             return JSONResponse(status_code=500, content={"Error": "Chatbot already active"})
 
@@ -114,6 +118,10 @@ def deactivate_chatbot_view(chatbot_id: int = Query(None)):
         3- update db status to be Inactive
         """
         chatbot_obj = get_chatbot(chatbot_id)
+
+        if not chatbot_obj:
+            return JSONResponse(status_code=500, content={"Error": "Chatbot does not exist"})
+        
         if chatbot_obj['status'] == "Inactive":
             return JSONResponse(status_code=500, content={"Error": "Chatbot not active"})
         
