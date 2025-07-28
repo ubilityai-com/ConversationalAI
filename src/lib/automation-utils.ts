@@ -809,69 +809,70 @@ export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record
         obj = { ...obj, ...objToReturnValuesToSend(options[valueToSend], fieldValues) };
       }
     };
+    if (valueToSend) {
+      if (["dropdown", "api"].includes(type) && valueToSend !== "None" || valueToSend) {
+        if (credential && list) {
+          obj[variableName!] = valueToSend
+          // list.length > 1
+          //   ? list.find((c) => c.option === valueToSend)?.cred ?? ""
+          //   : "";
+        } else {
+          obj[variableName!] = valueToSend;
+        }
+        mergeOptionFields();
+      }
 
-    if (["dropdown", "api"].includes(type) && valueToSend !== "None" || valueToSend) {
-      if (credential && list) {
+      if (type === "textfield" || type === "editor") {
+        if (valueToSend?.toString().trim()) {
+          obj[variableName!] = processValue(valueToSend);
+        }
+      }
+
+      if (type === "textFormatter" && valueToSend?.trim()) {
+        obj[variableName!] = item.custom ?
+          replaceMultipleOccurrences(valueToSend, item.formats)
+          : valueToSend.replace(/\n/g, "\\n");
+
+
+      }
+
+      if (type === "multiselect" && Array.isArray(valueToSend) && valueToSend.length > 0) {
         obj[variableName!] = valueToSend
-        // list.length > 1
-        //   ? list.find((c) => c.option === valueToSend)?.cred ?? ""
-        //   : "";
-      } else {
+      }
+
+      if (type === "array" && Array.isArray(valueToSend) && valueToSend.length > 0) {
         obj[variableName!] = valueToSend;
       }
-      mergeOptionFields();
-    }
 
-    if (type === "textfield" || type === "editor") {
-      if (valueToSend?.toString().trim()) {
-        obj[variableName!] = processValue(valueToSend);
+      if (type === "json" && valueToSend && Object.keys(valueToSend).length > 0) {
+        obj[variableName!] = valueToSend;
       }
-    }
 
-    if (type === "textFormatter" && valueToSend?.trim()) {
-      obj[variableName!] = item.custom ?
-        replaceMultipleOccurrences(valueToSend, item.formats)
-        : valueToSend.replace(/\n/g, "\\n");
+      if (type === "checkbox") {
+        obj[variableName!] =
+          typeOfValue === "string" ? valueToSend?.toString() : valueToSend;
+      }
 
+      if (type === "radiobutton") {
+        obj[variableName!] = valueToSend;
+        mergeOptionFields();
+      }
 
-    }
+      if (type === "color" && valueToSend?.trim()) {
+        obj[variableName!] = valueToSend;
+      }
 
-    if (type === "multiselect" && Array.isArray(valueToSend) && valueToSend.length > 0) {
-      obj[variableName!] = valueToSend
-    }
+      if (type === "accordion" && fieldsArray?.[0]) {
+        obj[variableName!] = objToReturnValuesToSend(fieldsArray[0], fieldValues[variableName]);
+      }
 
-    if (type === "array" && Array.isArray(valueToSend) && valueToSend.length > 0) {
-      obj[variableName!] = valueToSend;
-    }
-
-    if (type === "json" && valueToSend && Object.keys(valueToSend).length > 0) {
-      obj[variableName!] = valueToSend;
-    }
-
-    if (type === "checkbox") {
-      obj[variableName!] =
-        typeOfValue === "string" ? valueToSend?.toString() : valueToSend;
-    }
-
-    if (type === "radiobutton") {
-      obj[variableName!] = valueToSend;
-      mergeOptionFields();
-    }
-
-    if (type === "color" && valueToSend?.trim()) {
-      obj[variableName!] = valueToSend;
-    }
-
-    if (type === "accordion" && fieldsArray?.[0]) {
-      obj[variableName!] = objToReturnValuesToSend(fieldsArray[0], fieldValues[variableName]);
-    }
-
-    if (type === "dynamic") {
-      const target = json ?? item;
-      const arrayData = target.fieldsArray?.map((arr) =>
-        objToReturnValuesToSend(arr, fieldValues)
-      );
-      obj[target.variableName!] = arrayData ?? [];
+      if (type === "dynamic") {
+        const target = json ?? item;
+        const arrayData = target.fieldsArray?.map((arr) =>
+          objToReturnValuesToSend(arr, fieldValues)
+        );
+        obj[target.variableName!] = arrayData ?? [];
+      }
     }
   });
 
