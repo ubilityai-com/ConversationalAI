@@ -147,12 +147,18 @@ export const createVariablesSlice: StateCreator<VariablesSlice> = (set) => ({
     })),
 
   updateDialogueVariable: (nodeId, variableName) =>
-    set((state) => ({
-      dialogueVariables: {
-        ...state.dialogueVariables,
-        [nodeId]: variableName,
-      },
-    })),
+    set((state) => {
+      if (variableName.trim() === "") {
+        const { [nodeId]: _, ...rest } = state.dialogueVariables;
+        return { dialogueVariables: rest }
+      }
+      return ({
+        dialogueVariables: {
+          ...state.dialogueVariables,
+          [nodeId]: variableName,
+        },
+      })
+    }),
 
   deleteDialogueVariable: (nodeId) =>
     set((state) => {

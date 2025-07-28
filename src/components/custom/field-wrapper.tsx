@@ -1,14 +1,13 @@
+import { useReactFlow } from "@xyflow/react";
+import { Variable } from "lucide-react";
+import { useEffect, useState } from "react";
+import { cn, getAllPreviousNodes } from "../../lib/utils";
+import { useFlowStore } from "../../store/flow-store";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
-import { useFlowStore } from "../../store/flow-store";
-import { Textarea } from "../ui/textarea";
-import { Variable } from "lucide-react";
-import { cn } from "../../lib/utils";
-import { useEffect, useState } from "react";
 import { Label } from "../ui/label";
-import { getAllPreviousNodes } from "../../lib/utils";
-import { useRightDrawerStore } from "../../store/right-drawer-store";
-import { useReactFlow } from "@xyflow/react";
+import { Textarea } from "../ui/textarea";
+
 
 interface EditableFieldWrapperProps {
   children: React.ReactNode;
@@ -19,6 +18,11 @@ interface EditableFieldWrapperProps {
   field: any;
   path?: string;
 }
+function hasTemplateVariable(str: string): boolean {
+  return /\$\{[^}]+\}/.test(str);
+}
+
+
 
 export function FieldWrapper({
   children,
@@ -40,15 +44,11 @@ export function FieldWrapper({
   const clickedElement = useFlowStore((state) => state.clickedElement);
   const updateNodeData = useReactFlow().updateNodeData;
 
-  // Get initial editing state from customizedInputs
   const getInitialEditingState = () => {
-    const customizedInputs = clickedElement?.data?.customizedInputs;
-    if (customizedInputs && customizedInputs.hasOwnProperty(variableName)) {
-      return customizedInputs[variableName];
-    }
-    // Fallback to checking if value is a variable
-    const regex = /\$\{[^}]+\}/;
-    return regex.test(value.toString());
+
+    return typeof value === "string" &&
+      value.trim() &&
+      hasTemplateVariable(value);
   };
 
   const [isEditing, setIsEditing] = useState(getInitialEditingState);
@@ -73,13 +73,8 @@ export function FieldWrapper({
   >(null);
   console.log({ isPopoverInteracting, focusedField, blurTimeoutRef });
 
-  let valueIsVariable =
-    typeof value === "string" &&
-    value.trim() &&
-    value.startsWith("${") &&
-    value.endsWith("}");
 
-  const handleSave = () => {};
+  const handleSave = () => { };
 
   const handleCancel = () => {
     setEditValue(String(value));
@@ -95,7 +90,6 @@ export function FieldWrapper({
   };
 
   const handleFieldFocus = (event: React.FocusEvent<HTMLElement>) => {
-    console.log("focusssssssssss fieldwrapper", blurTimeoutRef);
 
     if (blurTimeoutRef) {
       clearTimeout(blurTimeoutRef);
@@ -111,7 +105,6 @@ export function FieldWrapper({
   };
 
   const handleFieldBlur = () => {
-    console.log("focusssssssssss          blur");
 
     const timeout = setTimeout(() => {
       if (!isPopoverInteracting) {
@@ -138,11 +131,6 @@ export function FieldWrapper({
     }
   };
 
-  console.log({
-    SelectedOutputOrVariable,
-    inputNameOnContextMenu,
-    focusedField,
-  });
   useEffect(() => {
     return () => {
       console.log("unmountsssssssssssssssssssssss");
@@ -171,9 +159,8 @@ export function FieldWrapper({
     <Button
       size="sm"
       variant="ghost"
-      className={`h-8 w-8 p-0 text-cyan-700 hover:text-cyan-900 ${
-        isEditing ? "bg-slate-200" : ""
-      }`}
+      className={`h-8 w-8 p-0 text-cyan-700 hover:text-cyan-900 ${isEditing ? "bg-slate-200" : ""
+        }`}
       aria-label="Set dynamic value"
       onClick={handleVariableIconClick}
     >
@@ -201,10 +188,10 @@ export function FieldWrapper({
               field.password
                 ? "password"
                 : field.numberField
-                ? "number"
-                : field.date
-                ? "date"
-                : "text"
+                  ? "number"
+                  : field.date
+                    ? "date"
+                    : "text"
             }
             placeholder={field.placeholder}
             value={value}
@@ -231,7 +218,6 @@ export function FieldWrapper({
     </div>
   );
 
-  console.log({ field });
 
   return (
     <div className={`space-y-1 ${className}`}>
@@ -246,7 +232,7 @@ export function FieldWrapper({
         </div>
       )}
       <div className="flex-1">
-        {valueIsVariable || isEditing || field.type === "textfield"
+        {isEditing || field.type === "textfield"
           ? inputWithVariables()
           : inputWithoutVariables()}
       </div>
