@@ -7,6 +7,7 @@ import { getNextNodeId, removeHTMLTags, stringifyAndExtractVariables } from "../
 import { useFlowStore } from "../../../../store/flow-store"
 import { LoopFromForm } from "../../../common/loop-from-end"
 import { EditableField } from "../../../custom/editable-field"
+import { FieldWrapper } from "../../../custom/field-wrapper"
 import { Button } from "../../../ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../ui/card"
 import { Input } from "../../../ui/input"
@@ -162,7 +163,14 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
             {/* ── basic node meta ──────────────────────────────────────────────── */}
             <div>
                 <Label htmlFor="botSays">Bot says</Label>
-                <Input id="botSays" value={botSays} onChange={(e) => updateNestedConfig("botSays", e.target.value)} />
+                <FieldWrapper
+                    field={{ type: "textfield", placeholder: "Message" }}
+                    value={botSays || ""}
+                    onChange={(value) => updateNestedConfig("botSays", value)}
+                    variableName={"botSays"}
+                >
+                    <Input id="botSays" value={botSays} onChange={(e) => updateNestedConfig("botSays", e.target.value)} />
+                </FieldWrapper>
             </div>
 
 
@@ -204,12 +212,20 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
                                     <Label htmlFor={`label-${choice.id}`} className="text-xs">
                                         Label
                                     </Label>
-                                    <Input
-                                        id={`label-${choice.id}`}
+                                    <FieldWrapper
+                                        field={{ type: "textfield", placeholder: "Choice" }}
                                         value={choice.label}
-                                        onChange={(e) => updateChoice(choice.id, { label: e.target.value })}
+                                        onChange={(value) => updateChoice(choice.id, { label: value })}
+                                        variableName={`label-${choice.id}`}
                                         className="h-8 text-xs"
-                                    />
+                                    >
+                                        <Input
+                                            id={`label-${choice.id}`}
+                                            value={choice.label}
+                                            onChange={(e) => updateChoice(choice.id, { label: e.target.value })}
+                                            className="h-8 text-xs"
+                                        />
+                                    </FieldWrapper>
                                 </div>
                             </CardContent>
                         </Card>

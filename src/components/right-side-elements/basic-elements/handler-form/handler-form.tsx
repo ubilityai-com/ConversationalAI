@@ -1,6 +1,7 @@
 import { Node, NodeProps } from "@xyflow/react"
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
 import { useFlowStore } from "../../../../store/flow-store"
+import { FieldWrapper } from "../../../custom/field-wrapper"
 import { Input } from "../../../ui/input"
 import { Label } from "../../../ui/label"
 import { Switch } from "../../../ui/switch"
@@ -55,23 +56,37 @@ export default function HandlerForm({ selectedNode, handleRightSideDataUpdate }:
 
       <div>
         <Label className="block text-sm mb-2 font-normal">Greet</Label>
-        <Input
-          name="greet"
-          placeholder="Welcome message"
+        <FieldWrapper
+          field={{ type: "textfield", placeholder: "Welcome message" }}
           value={localConfig.greet || ""}
-          onChange={(event) => updateNestedConfig("greet", event.target.value)}
-        />
+          onChange={(value) => updateNestedConfig("greet", value)}
+          variableName={"greet"}
+        >
+          <Input
+            name="greet"
+            placeholder="Welcome message"
+            value={localConfig.greet || ""}
+            onChange={(event) => updateNestedConfig("greet", event.target.value)}
+          />
+        </FieldWrapper>
       </div>
 
 
       <div>
         <Label className="block text-sm mb-2 font-normal">Cancel</Label>
-        <Input
-          name="cancel"
-          placeholder="Message displayed when user cancels conversation"
+        <FieldWrapper
+          field={{ type: "textfield", placeholder: "Message displayed when user cancels conversation" }}
           value={localConfig.cancel || ""}
-          onChange={(event) => updateNestedConfig("cancel", event.target.value)}
-        />
+          onChange={(value) => updateNestedConfig("cancel", value)}
+          variableName={"cancel"}
+        >
+          <Input
+            name="cancel"
+            placeholder="Message displayed when user cancels conversation"
+            value={localConfig.cancel || ""}
+            onChange={(event) => updateNestedConfig("cancel", event.target.value)}
+          />
+        </FieldWrapper>
       </div>
 
       <div className="flex items-center space-x-2 mx-2 mb-2">
