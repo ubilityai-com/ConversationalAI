@@ -521,9 +521,9 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
                         {typeof varName}
                       </Badge>
                     </div>
-                    <Button variant="ghost" size="sm">
+                    {/* <Button variant="ghost" size="sm">
                       <Eye className="w-4 h-4" />
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
               </CardContent>

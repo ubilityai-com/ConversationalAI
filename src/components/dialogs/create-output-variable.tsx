@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { doesVariableExist } from "../../lib/variable-utils";
+import { doesVariableExist, reformatCreatedVariablePath } from "../../lib/variable-utils";
 import { useFlowStore } from "../../store/flow-store";
 import { Button } from "../ui/button";
 import {
@@ -16,11 +16,13 @@ import { Label } from "../ui/label";
 interface ConfigurationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  path:string
 }
 
 export function CreateOutputVariableDialog({
   open,
   onOpenChange,
+  path
 }: ConfigurationDialogProps) {
   const {
     constantVariables,
@@ -32,7 +34,8 @@ export function CreateOutputVariableDialog({
 
   const [variableName, setVariableName] = useState("");
   const [error, setError] = useState("");
-
+  console.log({path});
+  
   const handleVariableNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -69,7 +72,7 @@ export function CreateOutputVariableDialog({
     }
 
     // Create the output variable
-    addOutputVariable(nodeId, variableName, "output"); // Using "output" as default path
+    addOutputVariable(nodeId, variableName, path); // Using "output" as default path
 
     // Reset form and close dialog
     setVariableName("");
@@ -82,6 +85,14 @@ export function CreateOutputVariableDialog({
     setError("");
     onOpenChange(false);
   };
+  const convertPathToBreadcrumbs = () => {
+    let newPath = reformatCreatedVariablePath(path);
+
+    newPath = clickedElement.type + '.' + newPath;
+    newPath = newPath.replaceAll('.', ' / ');
+
+    return newPath;
+}
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -94,7 +105,7 @@ export function CreateOutputVariableDialog({
         </DialogHeader>
         <form className="space-y-6" onSubmit={handleSave}>
           <div className="space-y-2">
-            <Label htmlFor="variableName">Variable Name</Label>
+            <Label htmlFor="variableName" className="text-muted-foreground">{convertPathToBreadcrumbs()}</Label>
             <Input
               id="variableName"
               placeholder="Enter variable name"

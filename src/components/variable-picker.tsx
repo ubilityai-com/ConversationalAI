@@ -370,7 +370,7 @@ export function VariablesPanel({
                                             </div>
                                           )}
 
-                                          {variable.nodeId && (
+                                          {/* {variable.nodeId && (
                                             <div className="text-xs text-muted-foreground">
                                               <span className="font-medium">
                                                 Node:{" "}
@@ -379,10 +379,10 @@ export function VariablesPanel({
                                                 {variable.nodeId}
                                               </code>
                                             </div>
-                                          )}
+                                          )} */}
                                         </div>
 
-                                        {(variable.type === "output" ||
+                                        {/* {(variable.type === "output" ||
                                           variable.type === "dialogue") && (
                                           <Button
                                             variant="ghost"
@@ -398,7 +398,7 @@ export function VariablesPanel({
                                           >
                                             <ExternalLink className="h-3 w-3" />
                                           </Button>
-                                        )}
+                                        )} */}
                                       </div>
                                     </div>
                                   ))}
