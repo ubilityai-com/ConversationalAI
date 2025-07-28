@@ -16,6 +16,7 @@ import { useFlowStore } from './store/flow-store';
 import { EndNode } from './components/nodes/end-node';
 import { LlmNode } from './components/nodes/llm-node';
 import { ConditionAgentNode } from './components/nodes/condition-agent-node';
+import { RegularNode } from './components/nodes/regular-node';
 
 const FlowZone = () => {
   const nodeTypes = {
@@ -29,7 +30,8 @@ const FlowZone = () => {
     BasicLlm: Chain,
     End: EndNode,
     ReactAgent: LlmNode,
-    ConditionAgent: ConditionAgentNode
+    ConditionAgent: ConditionAgentNode,
+    Slack: RegularNode
   };
   const edgeTypes = {
     buttonEdge: ButtonEdge

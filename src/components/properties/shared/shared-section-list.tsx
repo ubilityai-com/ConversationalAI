@@ -1,8 +1,7 @@
 import { FileJson, PenToolIcon, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { v4 } from "uuid"
-import { objToReturnDynamicv2 } from "../../../lib/automation-utils"
-import { type ApiResItem, keyBy } from "../../../lib/utils"
+import { keyBy, validateArray } from "../../../lib/utils"
 import { useFlowStore } from "../../../store/flow-store"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../ui/accordion"
 import { Button } from "../../ui/button"
@@ -11,6 +10,7 @@ import { Label } from "../../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
 import { Switch } from "../../ui/switch"
 import { SharedListItemSection } from "./shared-section-list-tem"
+import { objToReturnDynamicv2 } from "../../../lib/automation-utils"
 
 interface SectionProps {
     config: any
@@ -25,7 +25,6 @@ interface SectionProps {
 
 export function SharedListSection({
     config,
-    defaultType,
     onConfigUpdate,
     id,
     title,
@@ -47,14 +46,12 @@ export function SharedListSection({
 
     const addTool = () => {
         const currentTools = list
-        const newTool = elements.find((o) => o.type === defaultType) as any
-        const newToolDefaultInputs = objToReturnDynamicv2(newTool?.rightSideData?.json as ApiResItem[])
-        console.log({ ss: { ...newTool.rightSideData, json: newToolDefaultInputs }, newTool })
+
         const newToolId = v4()
-        add(id, newToolId, newTool.defaultValid)
+        add(id, newToolId, false)
         onConfigUpdate(`extras.${variableName}.list`, [
             ...currentTools,
-            { content: { ...newTool.rightSideData, json: newToolDefaultInputs }, type: "GoogleSearchTool", id: newToolId },
+            { content: {}, type: "", id: newToolId },
         ])
     }
 
@@ -112,19 +109,22 @@ export function SharedListSection({
                                         onValueChange={(value) => {
                                             console.log({ value })
                                             const currentTools = list
+                                            const selectedOption = elements.find((opt) => opt.type === value)
+                                            const defaultValues = objToReturnDynamicv2((selectedOption.rightSideData.json))
+
                                             const updatedTools = currentTools.map((tool: any, index: number) =>
                                                 toolIndex === index
                                                     ? {
                                                         id: tool.id,
                                                         type: value,
-                                                        content: {},
+                                                        content: { json: defaultValues },
                                                     }
                                                     : tool,
                                             )
                                             console.log({ updatedTools })
-                                            const selectedOption = elements.find((opt) => opt.type === value)
                                             onConfigUpdate(`extras.${variableName}.list`, updatedTools)
                                             updateSubNodeValidationById(id, tool.id, selectedOption.defaultValid)
+
                                         }}
                                     >
                                         <SelectTrigger id={`tool-type-${tool.id}`} className="h-8 text-xs">
@@ -139,7 +139,7 @@ export function SharedListSection({
                                         </SelectContent>
                                     </Select>
                                 </div>
-                                {schemas && (
+                                {schemas && tool.type && (
                                     <SharedListItemSection
                                         key={toolIndex}
                                         content={tool.content}
@@ -179,7 +179,7 @@ export function SharedListSection({
                         <Switch
                             checked={enabled}
                             onCheckedChange={(checked) => {
-                                onConfigUpdate(`extras.${variableName}.type`, defaultType)
+                                onConfigUpdate(`extras.${variableName}.type`, "")
                                 onConfigUpdate(`extras.${variableName}.enabled`, checked)
                             }}
                             aria-label="Enable output parser"

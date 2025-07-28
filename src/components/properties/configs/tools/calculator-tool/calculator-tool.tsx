@@ -13,7 +13,7 @@ interface CalculatorProps {
 
 
 
-const Calculator: React.FC<CalculatorProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter }) => {
+const CalculatorTool: React.FC<CalculatorProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter }) => {
     const { localConfig, updateNestedConfig } =
         useDebounceConfig<any>(
             content,
@@ -46,4 +46,4 @@ const Calculator: React.FC<CalculatorProps> = ({ selectedNodeId, content, onCont
     )
 }
 
-export default Calculator
+export default CalculatorTool

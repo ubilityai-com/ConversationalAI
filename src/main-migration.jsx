@@ -140,6 +140,7 @@ const Main = () => {
         id: id,
         type: "Handler",
         data: {
+          nodeType: "basic",
           color: "#68b04b",
           label: "Start Dialog",
           description: "Begin your Chatbot journey",

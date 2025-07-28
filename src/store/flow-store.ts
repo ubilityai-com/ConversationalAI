@@ -6,8 +6,10 @@ import {
   Node,
   type ReactFlowInstance,
 } from "@xyflow/react";
+import axios from "axios";
 import { v4 } from "uuid";
 import { create } from "zustand";
+import { camelToDashCase } from "../lib/utils";
 import { createVariablesSlice, VariablesSlice } from "./variables-store";
 
 type SubNodesValidation = {
@@ -45,9 +47,9 @@ interface FlowState extends VariablesSlice {
   isPopoverInteracting: boolean;
   setIsPopoverInteracting: (open: boolean) => void;
   setVarPicker: (value: boolean) => void;
-  varPickerProps: {allowedNodeIds:string[] } | null;
+  varPickerProps: { allowedNodeIds: string[] } | null;
   setVarPickerProps: (
-    props: { allowedNodeIds:string[]} | null
+    props: { allowedNodeIds: string[] } | null
   ) => void;
   addVariable: (
     variable: Omit<WorkflowVariable, "id" | "createdAt" | "updatedAt">
@@ -203,26 +205,26 @@ interface FlowState extends VariablesSlice {
   }) => void;
 
   showSnackBarMessage:
-    | {
+  | {
+    open: true;
+    message: string;
+    color: "default" | "destructive" | "success" | "warning" | "info";
+    duration: number;
+  }
+  | {
+    open: false;
+  };
+  setShowSnackBarMessage: (
+    message:
+      | {
         open: true;
         message: string;
         color: "default" | "destructive" | "success" | "warning" | "info";
         duration: number;
       }
-    | {
+      | {
         open: false;
-      };
-  setShowSnackBarMessage: (
-    message:
-      | {
-          open: true;
-          message: string;
-          color: "default" | "destructive" | "success" | "warning" | "info";
-          duration: number;
-        }
-      | {
-          open: false;
-        }
+      }
   ) => void;
 
   handleFlowZoneCheckIfAllHandlesAreConnected: () => boolean;
@@ -243,13 +245,112 @@ interface FlowState extends VariablesSlice {
   setEntities: (entities: string[]) => void;
 
   // Constants
-  operations: string[];
-  limitArray: string[];
-  scoreArray: string[];
-  components: any[];
+  operations: string[]
+  limitArray: string[]
+  scoreArray: string[]
+  components: any[]
+  loading: boolean
+  error: string | null;
+  runningNodeIds: Set<string>; // replace single runningNodeId with Set
+
+  testNode: (id: string) => Promise<void>;
+  deleteFlow: (id: string) => Promise<void>;
+  importFlow: (data: any) => Promise<void>;
+
+  addRunningNodeId: (id: string) => void;
+  removeRunningNodeId: (id: string) => void;
+  nodeResults: Record<string, any>;
+  setNodeResult: (id: string, result: any) => void;
+
 }
 export const useFlowStore = create<FlowState>()((set, get, store) => ({
   ...createVariablesSlice(set, get, store),
+  loading: false,
+  error: null,
+  runningNodeIds: new Set(),
+  nodeResults: {},
+
+  setNodeResult: (id, result) => set((state) => ({
+    nodeResults: {
+      ...state.nodeResults,
+      [id]: result,
+    }
+  })),
+  addRunningNodeId: (id) =>
+    set((state) => {
+      const updated = new Set(state.runningNodeIds);
+      updated.add(id);
+      return { runningNodeIds: updated };
+    }),
+
+  removeRunningNodeId: (id) =>
+    set((state) => {
+      const updated = new Set(state.runningNodeIds);
+      updated.delete(id);
+      return { runningNodeIds: updated };
+    }),
+  testNode: async (id) => {
+    const { addRunningNodeId, removeRunningNodeId, nodes, edges, setNodeResult } = get();
+    set({ error: null });
+    addRunningNodeId(id);
+    const selectedNode = nodes.find(el => el.id === id)
+    const { content, cred } = require(`../components/right-side-elements/${selectedNode.data.nodeType as string}-elements/${camelToDashCase(selectedNode.type as string)}-form/${camelToDashCase(selectedNode.type as string)}-form`).getContent(
+      selectedNode,
+      { edges, nodes }
+    );
+
+    try {
+      const res = await axios.post(process.env.REACT_APP_DNS_URL + `test_node`, {
+        app_type: content.data.app,
+        credential: cred,
+        operation: content.data.operation,
+        content_json: content.data.content_json
+      });
+      setNodeResult(id, res.data?.output);
+      console.log("Run node response:", res.data);
+      return res.data;
+    } catch (error: any) {
+      console.error(error);
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error.message ||
+        "Failed to run flow";
+
+      set({ error: errorMessage });
+
+      throw error;
+    } finally {
+      removeRunningNodeId(id);
+    }
+  },
+
+
+  deleteFlow: async (id) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await axios.delete(`/deleteFlow/${id}`);
+      // optionally handle res.data if needed
+    } catch (error: any) {
+      console.error(error);
+      set({ error: error?.response?.data?.message || error.message || "Failed to delete flow" });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  importFlow: async (data) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await axios.post(`/importFlow`, data);
+      // optionally handle res.data if needed
+    } catch (error: any) {
+      console.error(error);
+      set({ error: error?.response?.data?.message || error.message || "Failed to import flow" });
+    } finally {
+      set({ loading: false });
+    }
+  },
   fieldRefs: {},
   setFieldRef: (key, ref) =>
     set((state) => ({
@@ -287,11 +388,8 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-
-    set((state) => ({
-      variables: [...state.variables, newVariable],
-    }));
   },
+
 
   updateVariable: (origin, name, updates) => {
     console.log({ origin, name, updates, va: get().variables });
@@ -385,20 +483,24 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
 
   nodesValidation: {},
   setNodesValidation: (nodeId) => {
-    set((state) => ({}));
+    set((state) => ({
+    }))
   },
   addNodesValidation: (nodeId, valid) => {
     set((state) => ({
       nodesValidation: { ...state.nodesValidation, [nodeId]: valid },
-    }));
+    }))
   },
   deleteNodesValidationById: (nodeId) => {
-    set((state) => ({}));
+    set((state) => {
+      const { [nodeId]: _, ...rest } = state.nodesValidation;
+      return { nodesValidation: rest };
+    });
   },
   updateNodesValidationById: (nodeId, valid) => {
     set((state) => ({
       nodesValidation: { ...state.nodesValidation, [nodeId]: valid },
-    }));
+    }))
   },
   subNodesValidation: {},
 
@@ -601,7 +703,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
           allAreSources = false;
         }
 
-        element.data.dynamicDataHandler.forEach(({}, index: number) => {
+        element.data.dynamicDataHandler.forEach(({ }, index: number) => {
           const isSource = edges.find(
             (edge) =>
               element.id === edge.source && edge.sourceHandle === index + 1 + ""

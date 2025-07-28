@@ -1,7 +1,7 @@
+import { Edge, Node } from "@xyflow/react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useFlowStore } from "../store/flow-store";
-import { Edge, Node } from "@xyflow/react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -40,7 +40,6 @@ export type ApiResItem = DropdownItem | DynamicItem | TextFieldItem;
 
 export const objToReturnDynamic = (apiRes: ApiResItem[]): Record<string, any> => {
   let obj: Record<string, any> = {};
-  console.log({ apiRes });
 
   apiRes.forEach((item1) => {
     if (item1.type === "dropdown") {
@@ -468,7 +467,7 @@ export const validateArray = (items: FormItem[], values: FormValues): boolean =>
     switch (type) {
       case "dropdown":
       case "api":
-        if ((required && value === "None") || (required && multiselect && Array.isArray(value) && value.length === 0)) {
+        if ((required && (value === "None" || !value)) || (required && multiselect && Array.isArray(value) && value.length === 0)) {
           return false;
         }
         if (options && typeof value === "string" && options[value]) {
@@ -477,11 +476,12 @@ export const validateArray = (items: FormItem[], values: FormValues): boolean =>
         break;
 
       case "textfield":
-      case "textFormatter":
       case "editor":
         if (required && (!value || !value.toString().trim())) return false;
         break;
-
+      case "textFormatter":
+        if (required && (!value || !removeHTMLTags(value).toString().trim())) return false;
+        break;
       case "multiselect":
       case "array":
         if (required && (!Array.isArray(value) || value.length < 1)) return false;
@@ -595,21 +595,99 @@ export function extractCreds(obj: any): string[] {
 
   return creds;
 }
-export async function loadElementByKey(key: string) {
-  //  import ModelsElements from "../elements/model-elements"
-  // import { MemoryElements } from "../elements/memory-elements"
-  // import { ToolsElements } from "../elements/tools-elements"
-  try {
-    const module = await import(`../elements/${key}-elements`);
-    return module.default || module[`${capitalize(key)}Elements`];
-  } catch (error) {
-    console.warn(`No elements found for ${key}, skipping dynamic import.`, error);
-    return null;
-  }
+
+interface NodeType {
+  id: string;
+  type: string;
+  data: any;
 }
 
-function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+interface EdgeType {
+  source: string;
+  target: string;
+  sourceHandle?: string | null;
+  targetHandle?: string | null;
+}
+
+
+export function checkIfAllNodesConnected(nodes: NodeType[], edges: EdgeType[]): boolean {
+
+  // Build maps for fast lookup
+  const incomingEdgesMap = new Map<string, EdgeType[]>();
+  const outgoingEdgesMap = new Map<string, EdgeType[]>();
+  const outgoingEdgesByHandle = new Map<string, Set<string>>();
+
+  edges.forEach((edge) => {
+    if (!incomingEdgesMap.has(edge.target)) {
+      incomingEdgesMap.set(edge.target, []);
+    }
+    incomingEdgesMap.get(edge.target)!.push(edge);
+
+    if (!outgoingEdgesMap.has(edge.source)) {
+      outgoingEdgesMap.set(edge.source, []);
+    }
+    outgoingEdgesMap.get(edge.source)!.push(edge);
+
+    const handleMapKey = `${edge.source}`;
+    if (!outgoingEdgesByHandle.has(handleMapKey)) {
+      outgoingEdgesByHandle.set(handleMapKey, new Set());
+    }
+    outgoingEdgesByHandle.get(handleMapKey)!.add(edge.sourceHandle ?? "default");
+  });
+
+  for (const node of nodes) {
+    const incoming = incomingEdgesMap.get(node.id) ?? [];
+    const outgoing = outgoingEdgesMap.get(node.id) ?? [];
+
+    if (node.type === "Handler") {
+      // Should have at least 1 outgoing edge
+      if (outgoing.length === 0) {
+        console.warn(`Node ${node.id} of type Handler has no outgoing connections.`);
+        return false;
+      }
+    } else if (node.type === "End") {
+      // Should have at least 1 incoming edge
+      if (incoming.length === 0) {
+        console.warn(`Node ${node.id} of type End has no incoming connections.`);
+        return false;
+      }
+    } else if (node.type === "ChoicePrompt") {
+      // Must have at least 1 incoming edge
+      if (incoming.length === 0) {
+        console.warn(`Node ${node.id} of type ChoicePrompt has no incoming connections.`);
+        return false;
+      }
+      // Must have outgoing edges for all choices + "choice-default"
+      const choiceIds: string[] = (node.data?.rightSideData?.choices ?? []).map(
+        (choice: any) => choice.id
+      );
+      const requiredHandles = new Set([...choiceIds, "choice-default"]);
+      const connectedHandles = outgoing
+        .map((edge) => edge.sourceHandle ?? "default")
+        .filter((handle) => handle !== null);
+
+      for (const handle of requiredHandles) {
+        if (!connectedHandles.includes(handle)) {
+          console.warn(
+            `Node ${node.id} of type ChoicePrompt is missing outgoing connection for handle: ${handle}`
+          );
+          return false;
+        }
+      }
+    } else {
+      // Default: should have at least 1 incoming and 1 outgoing edge
+      if (incoming.length === 0) {
+        console.warn(`Node ${node.id} of type ${node.type} has no incoming connections.`);
+        return false;
+      }
+      if (outgoing.length === 0) {
+        console.warn(`Node ${node.id} of type ${node.type} has no outgoing connections.`);
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 export function getAllPreviousNodes(nodeId: string): string[] {
   const edges = useFlowStore.getState().reactFlowInstance?.getEdges() || [];

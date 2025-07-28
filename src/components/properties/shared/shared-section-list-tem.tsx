@@ -1,3 +1,5 @@
+/// <reference types="webpack-env" />
+
 import { ComponentType, useEffect, useState } from "react";
 import { useFlowStore } from "../../../store/flow-store";
 import { camelToDashCase } from "../../../lib/utils";
@@ -7,9 +9,9 @@ interface SectionProps {
     onConfigUpdate: (key: string, value: any) => void;
     id: string;
     type: string;
-    schema: any[]
-    path: string
-    parentId: string
+    schema: any[];
+    path: string;
+    parentId: string;
 }
 
 export function SharedListItemSection({
@@ -25,55 +27,50 @@ export function SharedListItemSection({
     const updateSubNodeValidationById = useFlowStore((s) => s.updateSubNodeValidationById);
 
     const [Component, setComponent] = useState<ComponentType<any> | null>(null);
+
     const onContentUpdate = (value: any) => {
-        onConfigUpdate(`${path}`, value)
-    }
+        onConfigUpdate(`${path}`, value);
+    };
+
     const validate = (valid: boolean) => {
-        updateSubNodeValidationById(parentId, id, valid)
-    }
+        updateSubNodeValidationById(parentId, id, valid);
+    };
 
     useEffect(() => {
-        const loadComponent = async () => {
-            setIsLoading(true);
-            console.log(
-                `../configs/tools/${camelToDashCase(
-                    type
-                )}/${camelToDashCase(type)}.tsx`
+        setIsLoading(true);
+
+        try {
+            const context = require.context(
+                "../configs/tools",
+                true, // Enable subdirectory search
+                /\.tsx$/
             );
 
-            // Dynamically import the component with TypeScript typing
-            const module = await import(
-                `../configs/tools/${camelToDashCase(
-                    type
-                )}/${camelToDashCase(type)}.tsx`
-            );
+            const path = `./${camelToDashCase(type)}/${camelToDashCase(type)}.tsx`;
+
+            const module = context(path);
 
             setComponent(() => module.default);
-            setIsLoading(false);
-        };
-        if (type) try {
-            loadComponent()
         } catch (error) {
-            console.log({ error });
-
-        };
+            console.error(`Could not dynamically load component for type: ${type}`, error);
+            setComponent(null);
+        } finally {
+            setIsLoading(false);
+        }
     }, [type]);
-    return (
 
+    return (
         <div>
             {isLoading && <>Loading ........</>}
-            {Component &&
-                Component.name === `${type}` &&
-                !isLoading && (
-                    <Component
-                        selectedNodeId={id}
-                        schema={schema}
-                        content={content}
-                        onContentUpdate={onContentUpdate}
-                        validate={validate}
-                    />
-                )}
+            {Component && !isLoading && (
+                <Component
+                    selectedNodeId={parentId}
+                    schema={schema}
+                    content={content}
+                    onContentUpdate={onContentUpdate}
+                    validate={validate}
+                />
+            )}
         </div>
-
     );
 }

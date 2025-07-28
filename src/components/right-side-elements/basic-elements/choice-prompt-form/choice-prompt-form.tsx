@@ -2,16 +2,16 @@
 
 import { Node, NodeProps } from "@xyflow/react"
 import { ListChecks, Plus, Trash2 } from "lucide-react"
-import { useDebounceConfig } from "../../../hooks/use-debounced-config"
-import { getNextNodeId, removeHTMLTags, stringifyAndExtractVariables } from "../../../lib/utils"
-import { useFlowStore } from "../../../store/flow-store"
-import { LoopFromForm } from "../../common/loop-from-end"
-import { EditableField } from "../../custom/editable-field"
-import { Button } from "../../ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card"
-import { Input } from "../../ui/input"
-import { Label } from "../../ui/label"
-import { Switch } from "../../ui/switch"
+import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
+import { getNextNodeId, removeHTMLTags, stringifyAndExtractVariables } from "../../../../lib/utils"
+import { useFlowStore } from "../../../../store/flow-store"
+import { LoopFromForm } from "../../../common/loop-from-end"
+import { EditableField } from "../../../custom/editable-field"
+import { Button } from "../../../ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../ui/card"
+import { Input } from "../../../ui/input"
+import { Label } from "../../../ui/label"
+import { Switch } from "../../../ui/switch"
 
 /* -------------------------------------------------------------------------- */
 /*                                    TYPES                                   */
@@ -70,7 +70,7 @@ export function getContent(selectedNode: any, params: any) {
         }, {})
     };
     const handlerObj = {
-        type: "MC_Handler",
+        type: "Handler",
         usedVariables: [saveUserInputAs],
         saveUserInputAs: null,
         content: {

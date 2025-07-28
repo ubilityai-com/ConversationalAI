@@ -49,7 +49,7 @@ export const SerpApiToolJson = {
                             {
                                 type: "static",
                                 value:
-                                    process.env.REACT_APP_DNS_URL + "cloud/azure/credential/list",
+                                    process.env.REACT_APP_DNS_URL + "credentials",
                             },
                         ],
                     },
@@ -58,10 +58,10 @@ export const SerpApiToolJson = {
                     path: "data",
                     keys: {
                         option: {
-                            fields: ["credName"],
+                            fields: ["name"],
                         },
                         value: {
-                            fields: ["credName"],
+                            fields: ["name"],
                         },
                         type: { fields: ["type"] },
                     },

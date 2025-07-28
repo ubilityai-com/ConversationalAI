@@ -6,19 +6,21 @@ import {
   MessageCircle,
   MessageSquare,
   Search,
+  Slack,
   Square,
   Workflow,
 } from "lucide-react";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { BasicLLMJson } from "../elements/langchain-elements/BasicLLMJson";
-import { setAutomationArray } from "../lib/automation-utils";
+import { objToReturnDynamicv2, setAutomationArray } from "../lib/automation-utils";
 import { ApiResItem, objToReturnDynamic } from "../lib/utils";
 import { useFlowStore } from "../store/flow-store";
 import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
+import { SlackJson } from "../elements/regular-elements/SlackJson";
 
 const agentTypes = [
   // BasicLLMJson,
@@ -29,6 +31,7 @@ const agentTypes = [
     icon: Bot,
     category: "AI",
     color: "bg-purple-500",
+    nodeType: "langchain",
     automated: "json",
     defaults: {
       extras: {
@@ -41,7 +44,7 @@ const agentTypes = [
         },
         memory: {
           enabled: true,
-          type: "ConversationalBufferMemory",
+          type: "",
           content: {},
           description: "Select the memory that fits your use case",
           title: "Memory",
@@ -50,7 +53,6 @@ const agentTypes = [
         tool: {
           multiple: true,
           enabled: true,
-          type: "GoogleSearchTool",
           list: [],
           description: "Configure tools for the LLM agent to use",
           title: "Tools",
@@ -89,6 +91,7 @@ const agentTypes = [
     description: "Branch workflow based on conditions",
     icon: GitBranch,
     category: "AI",
+    nodeType: "langchain",
     color: "bg-yellow-500",
     defaults: {
       save: false,
@@ -132,6 +135,7 @@ const agentTypes = [
     icon: GitBranch,
     defaultValid: true,
     category: "Logic",
+    nodeType: "basic",
     color: "bg-cyan-500",
     defaults: {
       branches: [],
@@ -149,6 +153,7 @@ const agentTypes = [
     description: "Present multiple options for user selection",
     icon: CheckSquare,
     category: "Logic",
+    nodeType: "basic",
     color: "bg-pink-500",
     defaults: {
       botSays: "Hello please choose a choice",
@@ -181,11 +186,12 @@ const agentTypes = [
     color: "bg-emerald-500",
     defaultValid: true,
     category: "Logic",
+    nodeType: "basic",
     label: "Message",
     description: "Send messages and notifications",
     icon: MessageCircle,
     defaults: {
-      botSays: "Hello how can i help you",
+      botSays: "",
       advanced: false,
       regex: "",
       errorMessage: "",
@@ -203,12 +209,14 @@ const agentTypes = [
   //   category: "Communication",
   //   color: "bg-gray-500",
   // },
+  SlackJson,
   {
     type: "End",
     label: "End",
     description: "Terminates the chat with a custom message",
     icon: Square,
     category: "Control",
+    nodeType: "basic",
     color: "bg-red-500",
     defaults: {
       botSays: "",
@@ -288,6 +296,8 @@ export function AgentPaletteDialog({
       const clonedElement = JSON.parse(JSON.stringify(element));
       const generateID = uuidv4();
       let newDefaults = { ...clonedElement.defaults };
+      console.log({ clonedElement });
+
       if (clonedElement.automated) {
         console.log({
           sss: objToReturnDynamic(
@@ -299,10 +309,10 @@ export function AgentPaletteDialog({
 
         newDefaults = {
           ...newDefaults,
-          [clonedElement.automated]: objToReturnDynamic(
-            setAutomationArray(
-              clonedElement.defaults[clonedElement.automated]
-            ) as ApiResItem[]
+          [clonedElement.automated]: objToReturnDynamicv2(
+
+            clonedElement.defaults[clonedElement.automated]
+
           ),
         };
       }
@@ -316,8 +326,9 @@ export function AgentPaletteDialog({
         data: {
           label: clonedElement.label,
           description: clonedElement.description,
-          nodeType: clonedElement.category,
+          nodeType: clonedElement.nodeType,
           rightSideData: newDefaults,
+          color: clonedElement.color
         },
       };
       console.log(newElement);
@@ -342,43 +353,44 @@ export function AgentPaletteDialog({
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[80vh]">
+      <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
             Choose an Agent
           </DialogTitle>
         </DialogHeader>
-        
-        <div className="space-y-4">
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <Input
-              placeholder="Search agents..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
+
+        <div className="flex flex-col gap-4 flex-1 overflow-hidden">
+          {/* Sticky Header Section */}
+          <div className="sticky top-0 z-10 bg-white pt-2 pb-4 space-y-4">
+            {/* Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input
+                placeholder="Search agents..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+
+            {/* Category filters */}
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <Badge
+                  key={category}
+                  variant={selectedCategory === category ? "default" : "secondary"}
+                  className="cursor-pointer text-xs hover:bg-primary/80"
+                  onClick={() => setSelectedCategory(category)}
+                >
+                  {category}
+                </Badge>
+              ))}
+            </div>
           </div>
 
-          {/* Category filters */}
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
-              <Badge
-                key={category}
-                variant={
-                  selectedCategory === category ? "default" : "secondary"
-                }
-                className="cursor-pointer text-xs hover:bg-primary/80"
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category}
-              </Badge>
-            ))}
-          </div>
-
-          {/* Agent Grid */}
-          <ScrollArea className="h-96">
+          {/* Scrollable Area that fills the rest */}
+          <ScrollArea className="flex-1 overflow-y-auto">
             <div className="grid grid-cols-2 gap-3 p-1">
               {filteredAgents.map((agent) => {
                 const IconComponent = agent.icon;

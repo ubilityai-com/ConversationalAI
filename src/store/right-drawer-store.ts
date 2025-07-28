@@ -71,7 +71,7 @@ export const useRightDrawerStore = create<RightDrawerStore>()(
             })),
         setNodeFilledDataByKey: (id, key, data) => {
             console.log({ id, data, key });
-
+            
             set((state) => ({
                 ...state,
                 automation: {

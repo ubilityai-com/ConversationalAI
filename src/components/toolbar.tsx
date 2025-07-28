@@ -3,15 +3,34 @@ import { Button } from "./ui/button"
 import { useFlowStore } from "../store/flow-store"
 import { useCredentialStore } from "../store/credentials-store"
 import { createFlowObject } from "../lib/build-json"
+import { checkIfAllNodesConnected } from "../lib/utils"
 
 
 export function Toolbar() {
   const isRunning = false
-  const setFormDialogStatus = useFlowStore(state => state.setFormDialogStatus)
-  const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
+
+  const { nodesValidation, setFormDialogStatus, setIsFormDialogOpen, setDialogProps, setShowSnackBarMessage, nodes, edges } = useFlowStore()
   const { activate, loading, error, success } = useCredentialStore()
-
-
+  function hasFalseValue(obj: Record<string, boolean>): boolean {
+    return Object.values(obj).includes(false);
+  }
+  const handleRun = () => {
+    const connected = checkIfAllNodesConnected(nodes, edges)
+    if (!connected) {
+      // setIsFormDialogOpen(true);
+      // setFormDialogStatus("validation");
+      setShowSnackBarMessage({ open: true, message: "Please make sure all nodes are connected!", color: "destructive", duration: 3000 })
+    }
+    else if (hasFalseValue(nodesValidation)) {
+      setShowSnackBarMessage({ open: true, message: "Please make sure all nodes are valid!", color: "destructive", duration: 3000 })
+    }
+    else {
+      const data = createFlowObject()
+      activate({
+        param: data
+      })
+    }
+  }
   return (
     <>
       <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4">
@@ -26,14 +45,6 @@ export function Toolbar() {
 
         <div className="flex items-center space-x-2">
 
-          <Button variant="outline" size="sm" onClick={() => {
-            setFormDialogStatus("createOutputVariable")
-            setIsFormDialogOpen(true)
-          }
-          }>
-            <Key className="w-4 h-4 mr-2" />
-            Create Cred
-          </Button>
           <Button variant="outline" size="sm" onClick={() => { }}>
             <Upload className="w-4 h-4 mr-2" />
             Import
@@ -53,20 +64,15 @@ export function Toolbar() {
 
 
           <Button variant="outline" size="sm" onClick={() => {
-             setIsFormDialogOpen(true);
-             setFormDialogStatus("variables");
+            setIsFormDialogOpen(true);
+            setFormDialogStatus("variables");
           }}>
             <Variable className="w-4 h-4 mr-2" />
             Variables
           </Button>
 
           <Button
-            onClick={() => {
-              const data = createFlowObject()
-              activate({
-                param: data
-              })
-            }}
+            onClick={handleRun}
             variant={isRunning ? "destructive" : "default"}
             size="sm"
           >
@@ -84,7 +90,7 @@ export function Toolbar() {
           </Button>
 
         </div>
-      </div>
+      </div >
     </>
   )
 }

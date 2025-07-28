@@ -1,4 +1,6 @@
 import { useDebounceConfig } from "../../../../../hooks/use-debounced-config";
+import { validateArray } from "../../../../../lib/utils";
+import { useFlowStore } from "../../../../../store/flow-store";
 import AutomationSimple from "../../../../custom/automation-v4";
 
 
@@ -7,13 +9,15 @@ interface McpToolProps {
     content: any,
     schema: any[]
     onContentUpdate: (value: any) => void;
-    counter: number
+    counter: number,
+    validate: (value: any) => void
 
 }
 
 
 
-const McpTool: React.FC<McpToolProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter }) => {
+const McpTool: React.FC<McpToolProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter, validate }) => {
+
     const { localConfig, updateNestedConfig } =
         useDebounceConfig<any>(
             content,
@@ -22,6 +26,7 @@ const McpTool: React.FC<McpToolProps> = ({ selectedNodeId, content, onContentUpd
                 onSave: (savedConfig) => {
                     // Save label changes
                     onContentUpdate(savedConfig);
+                    validate(validateArray(schema, savedConfig.json))
                 },
             }
         );

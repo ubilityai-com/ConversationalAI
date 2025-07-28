@@ -1,37 +1,27 @@
 import { Node, NodeProps } from "@xyflow/react";
-import { useState } from "react";
-import { ConditionAgentJson } from "../../../elements/langchain-elements/ConditionAgentJson";
-import { useDebounceConfig } from "../../../hooks/use-debounced-config";
+import { ListChecks, Plus, Trash2 } from "lucide-react";
+import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
 import {
   extractCreds,
   getNextNodeId,
   stringifyAndExtractVariables,
-} from "../../../lib/utils";
-import { useFlowStore } from "../../../store/flow-store";
-import { useRightDrawerStore } from "../../../store/right-drawer-store";
-import AutomationSimple from "../../custom/automation-v4";
-import { SharedSection } from "../../properties/shared/shared-section";
-import { SharedListSection } from "../../properties/shared/shared-section-list";
-import { objToReturnDynamicv2 } from "../../../lib/automation-utils";
-import { Label } from "../../ui/label";
-import { LoopFromForm } from "../../common/loop-from-end";
-import { EditableField } from "../../custom/editable-field";
-import { Switch } from "../../ui/switch";
+} from "../../../../lib/utils";
+import { useFlowStore } from "../../../../store/flow-store";
+import { LoopFromForm } from "../../../common/loop-from-end";
+import { EditableField } from "../../../custom/editable-field";
+import { DynamicElementLoader } from "../../../properties/shared/DynamicElementLoader";
+import { Button } from "../../../ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../../ui/card";
-import { ListChecks, Plus, Trash2 } from "lucide-react";
-import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
-import { Textarea } from "../../ui/textarea";
-import ModelsElements from "../../../elements/model-elements";
-import { ToolsElements } from "../../../elements/tools-elements";
-import { MemoryElements } from "../../../elements/memory-elements";
-import { DynamicElementLoader } from "../../properties/shared/DynamicElementLoader";
+} from "../../../ui/card";
+import { Input } from "../../../ui/input";
+import { Label } from "../../../ui/label";
+import { Switch } from "../../../ui/switch";
+import { Textarea } from "../../../ui/textarea";
 
 interface Scenario {
   id: string;
@@ -65,7 +55,6 @@ interface LlmFormProps {
 export function getContent(selectedNode: any, params: any) {
   const rightSideData = selectedNode.data.rightSideData;
   const model = rightSideData.extras.model;
-  console.log({ rightSideData });
 
   const { edges, nodes } = params;
   const content = {
@@ -76,7 +65,7 @@ export function getContent(selectedNode: any, params: any) {
         input: rightSideData.input,
         instruction: rightSideData.instruction,
       },
-      model: require("../../properties/contents/model")[model.type](
+      model: require("../../../properties/contents/model")[model.type](
         selectedNode
       ),
       params: { stream: false },
@@ -107,7 +96,7 @@ export function getContent(selectedNode: any, params: any) {
     }, {}),
   };
   const handlerObj = {
-    type: "MC_Handler",
+    type: "Handler",
     usedVariables: [selectedNode.id + "-var"],
     saveUserInputAs: null,
     content: {

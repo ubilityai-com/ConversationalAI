@@ -19,6 +19,8 @@ export function createFlowObject(): Flow {
     };
 
     nodes.forEach((element: Node & { data: any }) => {
+        console.log({ element });
+
         if (element.type === "Handler") {
             const { greet, cancel, start } = element.data.rightSideData;
             flow.bot.firstElementId = {
@@ -29,7 +31,7 @@ export function createFlowObject(): Flow {
             };
         } else {
 
-            const result = require(`../components/right-side-elements/${camelToDashCase(element.type as string)}-form/${camelToDashCase(element.type as string)}-form`).getContent(
+            const result = require(`../components/right-side-elements/${element.data.nodeType as string}-elements/${camelToDashCase(element.type as string)}-form/${camelToDashCase(element.type as string)}-form`).getContent(
                 element,
                 { edges, nodes }
             );
