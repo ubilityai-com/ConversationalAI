@@ -383,9 +383,10 @@ export default function AutomationSimple({
 
       case "checkbox":
         return (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center flex-1">
             <FieldWrapper
               field={item}
+              inlineLabel
               variableName={item.variableName}
               value={getFieldValue(item) || ""}
               onChange={(newValue) => {
@@ -393,6 +394,7 @@ export default function AutomationSimple({
                   [item.variableName]: newValue,
                 });
               }}
+              className="flex-1"
             >
               <Checkbox
                 id={`checkbox-${index}`}
@@ -404,13 +406,6 @@ export default function AutomationSimple({
                 }
                 {...commonProps}
               />
-              <Label
-                htmlFor={`checkbox-${index}`}
-                className="text-sm font-medium"
-              >
-                {item.label || item.innerLabel}
-                {item.required && <span className="text-red-500 ml-1">*</span>}
-              </Label>
             </FieldWrapper>
           </div>
         );

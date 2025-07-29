@@ -16,6 +16,8 @@ interface EditableFieldWrapperProps {
   variableName: string;
   field: any;
   path?: string;
+  inlineLabel?: boolean; // If true, label is shown next to input
+
 }
 function hasTemplateVariable(str: string): boolean {
   return /\$\{[^}]+\}/.test(str);
@@ -28,6 +30,7 @@ export function FieldWrapper({
   onChange,
   variableName,
   field,
+  inlineLabel,
   path,
 }: EditableFieldWrapperProps) {
   const setVarPicker = useFlowStore((state) => state.setVarPicker);
@@ -195,16 +198,21 @@ export function FieldWrapper({
 
   const inputWithoutVariables = () => (
     <div className={`flex items-center gap-2 ${className}`}>
-      <div className="flex-1">{children}</div>
+      <div className="flex-1">{children}
+      {inlineLabel&&  <Label className="text-sm font-medium">
+            {field.label}
+            {field.required && <span className="text-red-500 ml-1">*</span>}
+          </Label>}
+          </div>
       {/* Show variable button next to input when no label */}
-      {!field.label && field.type !== "textfield" && variableButton}
+      {(!field.label || inlineLabel) && field.type !== "textfield" && variableButton}
     </div>
   );
 
   return (
     <div className={`space-y-1 ${className}`}>
       {/* Only show label row if label exists */}
-      {field.label && (
+      {(!inlineLabel || isEditing) && field.label && (
         <div className="flex justify-between items-center">
           <Label className="text-sm font-medium">
             {field.label}
