@@ -18,7 +18,7 @@ interface McpToolProps {
 
 const McpTool: React.FC<McpToolProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter, validate }) => {
 
-    const { localConfig, updateNestedConfig } =
+    const { localConfig, updateConfig } =
         useDebounceConfig<any>(
             content,
             {
@@ -38,8 +38,14 @@ const McpTool: React.FC<McpToolProps> = ({ selectedNodeId, content, onContentUpd
             <AutomationSimple
                 schema={schema}
                 flowZoneSelectedId={selectedNodeId}
-                onFieldChange={({ path, value }) => {
-                    updateNestedConfig(`json.${path}`, value)
+                onFieldChange={(partialState, replace) => {
+
+                    if (replace) updateConfig(partialState);
+                    else
+                        updateConfig({
+                            ...localConfig.json,
+                            ...partialState,
+                        });
                 }}
                 filledDataName={`McpTool_${counter}`}
                 fieldValues={json}

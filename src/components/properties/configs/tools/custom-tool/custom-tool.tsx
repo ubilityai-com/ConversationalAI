@@ -32,7 +32,7 @@ const checkIfKeysValuesFilled = (inputs: Record<string, any>): boolean => {
 }
 
 const CustomTool: React.FC<CustomToolProps> = ({ selectedNodeId, content, onContentUpdate, validate, schema, counter }) => {
-  const { localConfig, updateNestedConfig } =
+  const { localConfig, updateConfig,updateNestedConfig } =
     useDebounceConfig<any>(
       content,
       {
@@ -60,9 +60,15 @@ const CustomTool: React.FC<CustomToolProps> = ({ selectedNodeId, content, onCont
         filledDataName="json"
         schema={schema}
         flowZoneSelectedId={selectedNodeId}
-        onFieldChange={({ path, value }) => {
-          updateNestedConfig(`json.${path}`, value)
-        }}
+        onFieldChange={(partialState, replace) => {
+
+          if (replace) updateConfig(partialState);
+          else
+              updateConfig({
+                  ...localConfig.json,
+                  ...partialState,
+              });
+      }}
         fieldValues={json}
         path="json"
 

@@ -14,7 +14,7 @@ interface WikipediaToolProps {
 
 
 const WikipediaTool: React.FC<WikipediaToolProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter }) => {
-  const { localConfig, updateNestedConfig } =
+  const { localConfig, updateConfig } =
     useDebounceConfig<any>(
       content,
       {
@@ -33,9 +33,15 @@ const WikipediaTool: React.FC<WikipediaToolProps> = ({ selectedNodeId, content, 
       <AutomationSimple
         schema={schema}
         flowZoneSelectedId={selectedNodeId}
-        onFieldChange={({ path, value }) => {
-          updateNestedConfig(`json.${path}`, value)
-        }}
+        onFieldChange={(partialState, replace) => {
+
+          if (replace) updateConfig(partialState);
+          else
+              updateConfig({
+                  ...localConfig.json,
+                  ...partialState,
+              });
+      }}
         filledDataName={`WikipediaTool_${counter}`}
         fieldValues={json}
         path="json"

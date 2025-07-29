@@ -1,5 +1,5 @@
 import { FileJson } from "lucide-react"
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import { useDebounceConfig } from "../../../hooks/use-debounced-config"
 import { objToReturnDynamicv2 } from "../../../lib/automation-utils"
 import { validateArray } from "../../../lib/utils"
@@ -36,15 +36,15 @@ export function SharedSection({
 }: SectionProps) {
     const setNodeFilledDataByKey = useRightDrawerStore((state) => state.setNodeFilledDataByKey)
     const setValidationByKey = useRightDrawerStore((state) => state.setValidationByKey)
-    const { localConfig,updateConfig, updateNestedConfig } =
+    const { localConfig, updateConfig, updateNestedConfig } =
         useDebounceConfig<any>(
             config.content,
             {
                 delay: 300,
                 onSave: (savedConfig) => {
                     // Save label changes   
-                    console.log({schema,savedConfig});
-                    
+                    console.log({ schema, savedConfig });
+
                     console.log({ savedConfig, validateArray: validateArray(schema.current.rightSideData.json, savedConfig) });
                     onConfigUpdate(`extras.${variableName}.content`, savedConfig);
                     updateSubNodeValidationById(id, variableName, validateArray(schema.current.rightSideData.json, savedConfig))
@@ -95,7 +95,7 @@ export function SharedSection({
                                             const op = elements.find((o) => o.type === value) as any
                                             const defaultValues = objToReturnDynamicv2((op.rightSideData.json))
                                             console.log({ defaultValues });
-                                            schema.current=op
+                                            schema.current = op
                                             onConfigUpdate(`extras.${variableName}.type`, value)
                                             setTimeout(() => {
                                                 updateConfig(defaultValues)
@@ -123,11 +123,16 @@ export function SharedSection({
                                         AllJson={schema.current?.rightSideData?.json}
                                         fieldValues={content}
                                         firstCall={true}
-                                        onFieldChange={({ path, value }) => {
-                                            console.log({ path, value });
-                                            console.log({ path, value, content });
-                                            updateNestedConfig(`${path}`, value)
+                                        onFieldChange={(partialState, replace) => {
+
+                                            if (replace) updateNestedConfig(`${"content"}`, partialState);
+                                            else
+                                                updateNestedConfig(`${"content"}`, {
+                                                    ...localConfig.content,
+                                                    ...partialState,
+                                                });
                                         }}
+                    
                                     />
                                 )}
                             </AccordionContent>

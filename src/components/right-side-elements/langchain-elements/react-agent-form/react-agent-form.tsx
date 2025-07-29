@@ -115,10 +115,13 @@ export default function ReactAgentForm({
                 fieldValues={localConfig.json}
                 setSchema={setSchema}
                 flowZoneSelectedId={selectedNode.id}
-                onFieldChange={({ path, value }) => {
-                    console.log({ path, value });
-                    updateNestedConfig(`${"json"}.${path}`, value)
-
+                onFieldChange={(partialState, replace) => {
+                    if (replace) updateNestedConfig(`${"json"}`, partialState);
+                    else
+                        updateNestedConfig(`${"json"}`, {
+                            ...localConfig.json,
+                            ...partialState,
+                        });
                 }}
             />
             {Object.keys(extras).map(key => (

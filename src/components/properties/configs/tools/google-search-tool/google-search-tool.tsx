@@ -16,7 +16,7 @@ interface GoogleSearchToolProps {
 
 
 const GoogleSearchTool: React.FC<GoogleSearchToolProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter, validate }) => {
-    const { localConfig, updateNestedConfig } =
+    const { localConfig, updateConfig } =
         useDebounceConfig<any>(
             content,
             {
@@ -37,8 +37,14 @@ const GoogleSearchTool: React.FC<GoogleSearchToolProps> = ({ selectedNodeId, con
             <AutomationSimple
                 schema={schema}
                 flowZoneSelectedId={selectedNodeId}
-                onFieldChange={({ path, value }) => {
-                    updateNestedConfig(`json.${path}`, value)
+                onFieldChange={(partialState, replace) => {
+
+                    if (replace) updateConfig(partialState);
+                    else
+                        updateConfig({
+                            ...localConfig.json,
+                            ...partialState,
+                        });
                 }}
                 filledDataName={`GoogleSearchTool_${counter}`}
                 fieldValues={json}

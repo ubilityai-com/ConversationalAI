@@ -16,7 +16,7 @@ interface SerpApiToolProps {
 
 
 const SerpApiTool: React.FC<SerpApiToolProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter, validate }) => {
-  const { localConfig, updateNestedConfig } =
+  const { localConfig, updateConfig } =
     useDebounceConfig<any>(
       content,
       {
@@ -37,9 +37,15 @@ const SerpApiTool: React.FC<SerpApiToolProps> = ({ selectedNodeId, content, onCo
       <AutomationSimple
         schema={schema}
         flowZoneSelectedId={selectedNodeId}
-        onFieldChange={({ path, value }) => {
-          updateNestedConfig(`json.${path}`, value)
-        }}
+        onFieldChange={(partialState, replace) => {
+
+          if (replace) updateConfig(partialState);
+          else
+              updateConfig({
+                  ...localConfig.json,
+                  ...partialState,
+              });
+      }}
         filledDataName={`SerpApiTool_${counter}`}
         fieldValues={json}
         path="json"
