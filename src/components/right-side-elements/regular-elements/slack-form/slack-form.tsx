@@ -527,8 +527,8 @@ export default function SlackForm({
                     setNodeFilledDataByKey(selectedNode.id, "json", savedConfig.json)
 
                     // Save label changes
-                    const nodeValid = useRightDrawerStore.getState().automation.validation[selectedNode.id].json
-                    updateNodesValidationById(selectedNode.id, nodeValid)
+                    const nodeValid = useRightDrawerStore.getState().automation.validation[selectedNode.id]?.json
+                    updateNodesValidationById(selectedNode.id, !!nodeValid)
                     // updateNodesValidationById(selectedNode.id, validateArray(schema, savedConfig.json))
                     handleRightSideDataUpdate({
                         ...savedConfig,

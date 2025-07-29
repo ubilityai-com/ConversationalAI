@@ -15,11 +15,9 @@ export const setAutomationArray = (
   child?: string[]
 ) => {
   const result: AutomationItem[] = [];
-  console.log({ apiRes, child });
   console.trace("innn");
   apiRes.forEach((item) => {
     const childArray = Array.isArray(child) ? child : [];
-    console.log({ item, childArray });
 
     switch (item.type) {
       case "dropdown": {
@@ -40,7 +38,6 @@ export const setAutomationArray = (
               ...childArray,
               item.value,
             ]);
-            console.log({ nestedItems });
 
             result.push(...nestedItems);
           }
@@ -131,7 +128,6 @@ export const setAutomationArray = (
       }
     }
   });
-  console.log({ result });
 
   return result;
 };
@@ -584,9 +580,11 @@ type FieldItem = {
   list?: { option: string; cred: string }[];
   options?: Record<string, FieldItem[]>;
   fieldsArray?: FieldItem[][];
+  structure?:ApiResponse
   json?: {
     variableName: string;
     fieldsArray: FieldItem[][];
+    structure?:ApiResponse
   };
   custom?: boolean;
   formats?: Record<string, string>;
@@ -877,14 +875,14 @@ export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record
       obj[variableName!] = valueToSend;
     }
 
-    if (type === "accordion" && fieldsArray?.[0]) {
+    if (type === "accordion" && fieldsArray?.[0] && fieldValues[variableName]) {
       obj[variableName!] = objToReturnValuesToSend(fieldsArray[0], fieldValues[variableName]);
     }
 
     if (type === "dynamic") {
       const target = json ?? item;
-      const arrayData = target.fieldsArray?.map((arr) =>
-        objToReturnValuesToSend(arr, fieldValues)
+      const arrayData = fieldValues[target.variableName]?.map((arr:Record<string,any>) =>
+        objToReturnValuesToSend(target?.structure as ApiResponse, arr)
       );
       obj[target.variableName!] = arrayData ?? [];
     }
@@ -894,7 +892,6 @@ export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record
 }
 export function objToReturnDefaultValues(apiRes: ApiResponse, fieldValues: Record<string, any>): Record<string, any> {
   let obj: Record<string, any> = {};
-  console.log({ fieldValues, apiRes });
   if (fieldValues) {
     apiRes.forEach((item) => {
       const {
@@ -973,8 +970,8 @@ export function objToReturnDefaultValues(apiRes: ApiResponse, fieldValues: Recor
 
       if (type === "dynamic") {
         const target = json ?? item;
-        const arrayData = target.fieldsArray?.map((arr) =>
-          objToReturnDefaultValues(arr, fieldValues)
+        const arrayData =fieldValues[target.variableName]?.map((arr:any) =>
+          objToReturnDefaultValues(target.structure as ApiResponse, arr)
         );
         obj[target.variableName!] = arrayData ?? [];
       }

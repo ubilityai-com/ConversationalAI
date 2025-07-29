@@ -53,7 +53,6 @@ export function FieldWrapper({
 
   const [isEditing, setIsEditing] = useState(getInitialEditingState);
   const [editValue, setEditValue] = useState(String(value));
-  console.log({ path, variableName });
 
   const {
     setIsPopoverInteracting,
@@ -71,7 +70,6 @@ export function FieldWrapper({
   const [inputNameOnContextMenu, setInputNameOnContextMenu] = useState<
     string | null
   >(null);
-  console.log({ isPopoverInteracting, focusedField, blurTimeoutRef });
 
 
   const handleSave = () => { };
@@ -133,7 +131,6 @@ export function FieldWrapper({
 
   useEffect(() => {
     return () => {
-      console.log("unmountsssssssssssssssssssssss");
       setVarPicker(false);
       setIsPopoverInteracting(false);
     };
@@ -145,7 +142,6 @@ export function FieldWrapper({
         let newValue = SelectedOutputOrVariable.startsWith("$")
           ? value + SelectedOutputOrVariable
           : SelectedOutputOrVariable;
-        console.log({ SelectedOutputOrVariable, newValue });
 
         onChange(newValue);
 

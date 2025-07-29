@@ -27,14 +27,51 @@ interface DynamicInputFieldsProps {
         [key: string]: any
     }
     disabled?: boolean
-    filledDataName:string
+    filledDataName: string
     flowZoneSelectedId: string
     // New props for external field values
     fieldValues?: Record<string, any>
     onFieldChange: ({ path, value }: { path: string, value: any }) => void
     [key: string]: any
 }
-
+function updateByPathImmutable<T>(
+    obj: T,
+    path: string,
+    value: any
+  ): T {
+    const keys = path.split(".");
+  
+    const recursiveUpdate = (current: any, i: number): any => {
+      const key = keys[i];
+      const isIndex = /^\d+$/.test(key);
+      const isLast = i === keys.length - 1;
+  
+      const currentVal = current ?? (isIndex ? [] : {});
+  
+      if (isLast) {
+        if (Array.isArray(currentVal)) {
+          const clone = [...currentVal];
+          clone[Number(key)] = value;
+          return clone;
+        } else {
+          return { ...currentVal, [key]: value };
+        }
+      }
+  
+      const nextVal = recursiveUpdate(currentVal[key], i + 1);
+  
+      if (Array.isArray(currentVal)) {
+        const clone = [...currentVal];
+        clone[Number(key)] = nextVal;
+        return clone;
+      } else {
+        return { ...currentVal, [key]: nextVal };
+      }
+    };
+  
+    return recursiveUpdate(obj, 0);
+  }
+  
 const UseAIIcon: React.FC<{
     isUsingVariable: boolean
     onClick: () => void
@@ -67,7 +104,7 @@ const UseAIIcon: React.FC<{
 
 
 const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
-    const { json, disabled, flowZoneSelectedId, fieldValues, onFieldChange, filledArray,filledDataName } = props
+    const { json, disabled, flowZoneSelectedId, fieldValues, onFieldChange, filledArray, filledDataName } = props
 
     // Mock selector - replace with your actual Redux selector
     const selectedRPA = { status: "Inactive" } // useSelector((state) => state.updateRPA.selectedRPA)
@@ -93,6 +130,8 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
     const [isUsingAI, setIsUsingAI] = useState(valueIsAIOrEmpty)
 
     const updateFieldsArray = (newValue: any) => {
+        console.log({newValue});
+        
         if (onFieldChange && json.variableName) {
             // Use external field change handler
             console.log({ json, newValue });
@@ -238,9 +277,10 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
                                             InDynamic={true}
                                             flowZoneSelectedId={flowZoneSelectedId}
                                             onFieldChange={({ path, value }) => {
-                                                console.log({ path, value });
-                                                onFieldChange({ path: `${json.variableName}.${!isAccordion ? `${fieldSetInd}.` : ``}${path}`, value: value })
-
+                                                const newFilledData = updateByPathImmutable(filledArray, `${!isAccordion ? `${fieldSetInd}.` : ``}${path}`, value)
+                                                console.log({ path:`${!isAccordion ? `${fieldSetInd}.` : ``}${path}`, value, fieldValues, filledArray ,newFilledData});
+                                                
+                                                onFieldChange({ path: `${json.variableName}`, value: newFilledData })
                                             }}
                                             fieldValues={fieldSet}
                                         />
