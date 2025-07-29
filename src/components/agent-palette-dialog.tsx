@@ -138,7 +138,7 @@ const agentTypes = [
     nodeType: "basic",
     color: "bg-cyan-500",
     defaults: {
-      branches: [],
+      branches: [{ label: "branch 1", id: `branch-${Date.now()}` }],
       defaultBranch: { name: "Default", description: "" },
       save: false,
       variableName: "",

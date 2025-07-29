@@ -14,6 +14,8 @@ export function PropertiesPanel() {
     const deleteNode = useFlowStore(state => state.deleteNode)
     const testNode = useFlowStore(state => state.testNode)
     const isThisNodeRunning = useFlowStore(state => state.runningNodeIds.has(selectedNode?.id));
+    const nodesValidation = useFlowStore(state => state.nodesValidation);
+
 
     if (!selectedNode)
         return <></>
@@ -54,13 +56,13 @@ export function PropertiesPanel() {
                         </Badge>
                     </h2>
                 </div>
-                <div className="flex items-center space-x-2 flex-shrink-0">
+                <div className="flex items-center space-x-2 flex-shrink-0 ">
                     {runnableNodes.includes(selectedNode.type) && <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => testNode(selectedNode?.id)}
-                        className="text-green-500 hover:text-green-600 w-8 h-8 p-0"
-                    >
+                        disabled={isThisNodeRunning || !nodesValidation[selectedNode.id]}
+                        className={`w-8 h-8 p-0 text-green-500 hover:text-green-600 disabled:text-gray-400 disabled:hover:text-gray-400`}                    >
                         {isThisNodeRunning ? <Loader2 className="w-4 h-4 animate-spin" />
                             : <Play className="w-4 h-4" />}
                     </Button>}
