@@ -12,7 +12,7 @@ export type BaseNodeData<T = Record<string, any>> = {
 }
 
 export type BaseNodeProps = NodeProps<Node<BaseNodeData>> & {
-  icon: React.ComponentType<{ className?: string }>
+  icon: React.ComponentType<{ className?: string }> | null
   color: string
   backgroundColor: string
   children?: React.ReactNode
@@ -99,11 +99,12 @@ export function BaseNode({
               <div
                 className={`w-12 h-12 ${color} rounded-full flex items-center justify-center shadow-md flex-shrink-0`}
               >
-                {type === "attache" ? (
-                  <img src="/images/attache-logo.png" alt="Attache" className="w-7 h-7 object-contain" />
-                ) : (
-                  <IconComponent className="w-6 h-6 text-white" />
-                )}
+                {
+                  IconComponent ? <IconComponent className="w-6 h-6 text-white" />
+                    :
+                    <img src={"/components-icons/" + type + ".png"} alt="img" className="w-7 h-7 object-contain" />
+
+                }
               </div>
 
               {header}

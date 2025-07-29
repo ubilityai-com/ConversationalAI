@@ -47,7 +47,7 @@ export function PropertiesPanel() {
     return (
         <div className="bg-white border-l border-gray-200 flex flex-col">
             <style>{sliderStyles}</style>
-            <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+            <div className="sticky bg-white top-0 z-10 p-4 border-b border-gray-200 flex items-center justify-between">
                 <div className="flex items-center min-w-0">
                     <h2 className="text-lg font-semibold text-gray-900 flex items-center truncate">
                         <Settings className="w-5 h-5 mr-2 flex-shrink-0" />
@@ -57,15 +57,19 @@ export function PropertiesPanel() {
                     </h2>
                 </div>
                 <div className="flex items-center space-x-2 flex-shrink-0 ">
-                    {runnableNodes.includes(selectedNode.type) && <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => testNode(selectedNode?.id)}
-                        disabled={isThisNodeRunning || !nodesValidation[selectedNode.id]}
-                        className={`w-8 h-8 p-0 text-green-500 hover:text-green-600 disabled:text-gray-400 disabled:hover:text-gray-400`}                    >
-                        {isThisNodeRunning ? <Loader2 className="w-4 h-4 animate-spin" />
-                            : <Play className="w-4 h-4" />}
-                    </Button>}
+                    {runnableNodes.includes(selectedNode.type) &&
+                        <Button
+                            size="sm"
+                            onClick={() => testNode(selectedNode?.id)}
+                            disabled={isThisNodeRunning || !nodesValidation[selectedNode.id]}
+                            className="h-8 px-3 bg-green-50 text-green-600 hover:bg-green-100 disabled:text-gray-400 disabled:bg-gray-100 flex items-center gap-1"
+                        >
+                            {isThisNodeRunning && <Loader2 className="w-4 h-4 animate-spin" />}
+                            {isThisNodeRunning ? "Testing..." : "Test Node"}
+                        </Button>
+
+
+                    }
                     {selectedNode?.type !== "Handler" && <Button variant="ghost" size="sm" onClick={() => deleteNode(selectedNode?.id)} className="text-red-500 hover:text-red-600 w-8 h-8 p-0">
                         <Trash2 className="w-4 h-4" />
                     </Button>}

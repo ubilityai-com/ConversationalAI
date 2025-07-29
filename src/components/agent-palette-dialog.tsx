@@ -386,6 +386,7 @@ export function AgentPaletteDialog({
             <div className="grid grid-cols-2 gap-3 p-1">
               {filteredAgents.map((agent: any) => {
                 const IconComponent = agent.icon;
+
                 return (
                   <div
                     key={agent.type}
@@ -397,19 +398,12 @@ export function AgentPaletteDialog({
                         className={`w-10 h-10 ${agent.color} rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}
                       >
                         {
-                          // agent.type === "attache" ? (
                           IconComponent ? <IconComponent className="w-5 h-5 text-white" /> :
                             <img
                               src={"/components-icons/" + agent.type + ".png"}
-                              alt="Gmail"
+                              alt="img"
                               className="w-6 h-6 object-contain"
                             />
-                          // )
-                          //   : (
-                          //   IconComponent && (
-                          //     <IconComponent className="w-5 h-5 text-white" />
-                          //   )
-                          // )
                         }
                       </div>
                       <div className="flex-1 min-w-0">

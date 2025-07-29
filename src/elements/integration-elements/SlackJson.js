@@ -2,7 +2,7 @@ export const SlackJson = {
   "nodeType": "integration",
   "type": "Slack",
   "label": "Slack",
-  "color": "#E91E63 ",
+  "color": "#53D2E2 ",
   "docsPath": "Connectors/Slack/getting_started",
   description: "Slack integration",
   defaultValid: false,

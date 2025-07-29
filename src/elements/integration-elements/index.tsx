@@ -5,6 +5,6 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
-    GmailJson,
+    // GmailJson,
     SlackJson
 ];

@@ -60,7 +60,7 @@ export function getContent(selectedNode: any, params: any) {
             model: require("../../../properties/contents/model")[model.type](selectedNode),
             chainMemory: require("../../../properties/contents/memory")[memory.type](selectedNode),
             cred: extractCreds(selectedNode?.data.rightSideData.extras),
-            paramsTools: tool.list.map((el: any) => {
+            tools: tool.list.map((el: any) => {
                 return require("../../../properties/contents/tool")[el.type](el.content)
             })
         }
@@ -97,9 +97,6 @@ export default function ReactAgentForm({
                     const subNodesValidation = useFlowStore.getState().subNodesValidation
                     const subsValid = subNodesValidation[selectedNode.id]?.valid
                     const subs = subNodesValidation[selectedNode.id]?.subs
-
-                    console.log({ st, vvv: isExtrasValid(savedConfig.extras, subs) });
-                    console.log({ nodeValid, subNodesValidation, subsValid, vvv: nodeValid && isExtrasValid(savedConfig.extras, subs) });
 
                     updateNodesValidationById(selectedNode.id, nodeValid && isExtrasValid(savedConfig.extras, subs))
                     handleRightSideDataUpdate(savedConfig);
