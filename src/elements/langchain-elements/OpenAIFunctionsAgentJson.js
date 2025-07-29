@@ -5,7 +5,7 @@ export const OpenAIFunctionsAgentJson = {
   "nodeType": "langchain",
   "new": true,
   extra: { nodeRobotType: "AiAgent" },
-  normalHandle: ["regular", "basic", "automationTools", "langchain"],
+  normalHandle: ["integration", "basic", "automationTools", "langchain"],
   rightSideData: {
     nodesCanConnectWith: {
       '1': { nodeType: "model", title: "Chat Model", required: true },

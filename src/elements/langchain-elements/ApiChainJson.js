@@ -3,7 +3,7 @@ export const ApiChainJson = {
     type: "ApiChain",
     label: "API Chain",
     color: "#72797b",
-    normalHandle: ["regular", "basic", "automationTools", "langchain"],
+    normalHandle: ["integration", "basic", "automationTools", "langchain"],
     rightSideData: {
         nodesCanConnectWith: {
             "1": { nodeType: "model", title: "Chat Model", required: true },

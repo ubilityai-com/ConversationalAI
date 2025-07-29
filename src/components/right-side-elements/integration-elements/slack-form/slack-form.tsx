@@ -1,6 +1,6 @@
 import { Node, NodeProps } from "@xyflow/react";
 import { useState } from "react";
-import { SlackJson } from "../../../../elements/regular-elements/SlackJson";
+import { SlackJson } from "../../../../elements/integration-elements/SlackJson";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
 import { objToReturnDefaultValues, objToReturnValuesToSend } from "../../../../lib/automation-utils";
 import { getNextNodeId, stringifyAndExtractVariables, validateArray } from "../../../../lib/utils";
@@ -8,13 +8,13 @@ import { useFlowStore } from "../../../../store/flow-store";
 import { useRightDrawerStore } from "../../../../store/right-drawer-store";
 import AutomationSimple from "../../../custom/automation-v4";
 
-interface RegularConfigProps extends Record<string, any> {
+interface IntegrationConfigProps extends Record<string, any> {
     label: string;
     description: string;
     rightSideData: Record<string, any>;
 }
-interface RegularFormProps {
-    selectedNode: NodeProps<Node<RegularConfigProps>>;
+interface IntegrationFormProps {
+    selectedNode: NodeProps<Node<IntegrationConfigProps>>;
     handleRightSideDataUpdate: (value: any) => void;
 }
 const getAccvalue = (finaleObj: any, name: string) => {
@@ -508,28 +508,28 @@ export function getContent(selectedNode: any, params: any) {
 export default function SlackForm({
     selectedNode,
     handleRightSideDataUpdate,
-}: RegularFormProps) {
+}: IntegrationFormProps) {
     const [schema, setSchema] = useState<any[]>(SlackJson.defaults.json);
     const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
     const setNodeFilledDataByKey = useRightDrawerStore((state) => state.setNodeFilledDataByKey)
 
-    const { localConfig, updateNestedConfig } =
-        useDebounceConfig<RegularConfigProps["rightSideData"]>(
+    const { localConfig, updateNestedConfig, setLocalConfig } =
+        useDebounceConfig<IntegrationConfigProps["rightSideData"]>(
             {
                 ...selectedNode.data.rightSideData,
                 json: objToReturnDefaultValues(schema, selectedNode.data.rightSideData.json),
+
+
             },
             {
                 delay: 300,
                 onSave: (savedConfig) => {
                     setNodeFilledDataByKey(selectedNode.id, "json", savedConfig.json)
-
                     // Save label changes
                     updateNodesValidationById(selectedNode.id, validateArray(schema, savedConfig.json))
                     handleRightSideDataUpdate({
                         ...savedConfig,
                         json: objToReturnValuesToSend(schema, savedConfig.json)
-
                     });
                 },
             }
@@ -544,7 +544,6 @@ export default function SlackForm({
                 setSchema={setSchema}
                 flowZoneSelectedId={selectedNode.id}
                 onFieldChange={({ path, value }) => {
-                    console.log({ path, value });
                     updateNestedConfig(`${"json"}.${path}`, value)
                 }}
             />

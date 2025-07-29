@@ -20,7 +20,9 @@ import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
-import { SlackJson } from "../elements/regular-elements/SlackJson";
+import { SlackJson } from "../elements/integration-elements/SlackJson";
+import { GmailJson } from "../elements/integration-elements/GmailJson";
+import { IntegrationElements } from "../elements/integration-elements";
 
 const agentTypes = [
   // BasicLLMJson,
@@ -184,7 +186,7 @@ const agentTypes = [
     name: "Message",
     type: "Message",
     color: "bg-emerald-500",
-    defaultValid: true,
+    defaultValid: false,
     category: "Logic",
     nodeType: "basic",
     label: "Message",
@@ -209,7 +211,7 @@ const agentTypes = [
   //   category: "Communication",
   //   color: "bg-gray-500",
   // },
-  SlackJson,
+  ...IntegrationElements,
   {
     type: "End",
     label: "End",
@@ -253,15 +255,8 @@ export function AgentPaletteDialog({
   source,
   sourceHandle,
 }: AgentPaletteDialogProps) {
-  const reactFlowInstance = useFlowStore((state) => state.reactFlowInstance);
-  const nodes = useFlowStore((state) => state.nodes);
-  const droppedElement = useFlowStore((state) => state.droppedElement);
-  const setNodes = useFlowStore((state) => state.setNodes);
-  const setIsFormDialogOpen = useFlowStore(
-    (state) => state.setIsFormDialogOpen
-  );
-  const addNodesValidation = useFlowStore((state) => state.addNodesValidation);
 
+  const { reactFlowInstance, nodes, setIsFormDialogOpen, addNodesValidation } = useFlowStore()
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -275,7 +270,6 @@ export function AgentPaletteDialog({
   });
 
   const handleAgentSelect = (agent: any) => {
-    console.log({ agent, x, y });
 
     addNewElementToFlowZone(agent, x + 500, y);
     // Reset filters when closing
@@ -288,7 +282,6 @@ export function AgentPaletteDialog({
     clientX: number,
     clientY: number
   ) => {
-    console.log({ element, reactFlowInstance });
 
     if (element && reactFlowInstance) {
       const sourceNode = reactFlowInstance.getNode(source);
@@ -331,7 +324,6 @@ export function AgentPaletteDialog({
           color: clonedElement.color
         },
       };
-      console.log(newElement);
 
       reactFlowInstance.addNodes(newElement);
       const edge = {
@@ -392,7 +384,7 @@ export function AgentPaletteDialog({
           {/* Scrollable Area that fills the rest */}
           <ScrollArea className="flex-1 overflow-y-auto">
             <div className="grid grid-cols-2 gap-3 p-1">
-              {filteredAgents.map((agent) => {
+              {filteredAgents.map((agent: any) => {
                 const IconComponent = agent.icon;
                 return (
                   <div
@@ -404,17 +396,21 @@ export function AgentPaletteDialog({
                       <div
                         className={`w-10 h-10 ${agent.color} rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}
                       >
-                        {agent.type === "attache" ? (
-                          <img
-                            src="/images/attache-logo.png"
-                            alt="Gmail"
-                            className="w-6 h-6 object-contain"
-                          />
-                        ) : (
-                          IconComponent && (
-                            <IconComponent className="w-5 h-5 text-white" />
-                          )
-                        )}
+                        {
+                          // agent.type === "attache" ? (
+                          IconComponent ? <IconComponent className="w-5 h-5 text-white" /> :
+                            <img
+                              src={"/components-icons/" + agent.type + ".png"}
+                              alt="Gmail"
+                              className="w-6 h-6 object-contain"
+                            />
+                          // )
+                          //   : (
+                          //   IconComponent && (
+                          //     <IconComponent className="w-5 h-5 text-white" />
+                          //   )
+                          // )
+                        }
                       </div>
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm font-medium text-gray-900 truncate group-hover:text-blue-600 transition-colors">

@@ -3,7 +3,7 @@ export const SqlDatabaseChainJson = {
   "label": "SQL Database Chain",
   "color": "black",
   "nodeType": "langchain",
-  normalHandle: ["regular", "basic", "automationTools", "langchain"],
+  normalHandle: ["integration", "basic", "automationTools", "langchain"],
   "rightSideData": {
     "nodesCanConnectWith": {
       "1": { nodeType: "model", title: "Chat Model", required: true },

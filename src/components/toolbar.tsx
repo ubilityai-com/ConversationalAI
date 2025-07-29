@@ -1,27 +1,27 @@
 import { Download, Key, Play, Save, Square, Upload, Variable } from "lucide-react"
-import { Button } from "./ui/button"
-import { useFlowStore } from "../store/flow-store"
-import { useCredentialStore } from "../store/credentials-store"
 import { createFlowObject } from "../lib/build-json"
-import { checkIfAllNodesConnected } from "../lib/utils"
+import { useCredentialStore } from "../store/credentials-store"
+import { useFlowStore } from "../store/flow-store"
+import { Button } from "./ui/button"
 
 
 export function Toolbar() {
   const isRunning = false
 
-  const { nodesValidation, setFormDialogStatus, setIsFormDialogOpen, setDialogProps, setShowSnackBarMessage, nodes, edges } = useFlowStore()
+  const { nodesValidation, setFormDialogStatus, setIsFormDialogOpen, setDialogProps, setShowSnackBarMessage, nodes, edges, handleFlowZoneCheckIfAllHandlesAreConnected } = useFlowStore()
   const { activate, loading, error, success } = useCredentialStore()
   function hasFalseValue(obj: Record<string, boolean>): boolean {
     return Object.values(obj).includes(false);
   }
   const handleRun = () => {
-    const connected = checkIfAllNodesConnected(nodes, edges)
-    if (!connected) {
-      // setIsFormDialogOpen(true);
-      // setFormDialogStatus("validation");
-      setShowSnackBarMessage({ open: true, message: "Please make sure all nodes are connected!", color: "destructive", duration: 3000 })
-    }
-    else if (hasFalseValue(nodesValidation)) {
+    // const connected = handleFlowZoneCheckIfAllHandlesAreConnected()
+    // if (!connected) {
+    //   // setIsFormDialogOpen(true);
+    //   // setFormDialogStatus("validation");
+    //   setShowSnackBarMessage({ open: true, message: "Please make sure all nodes are connected!", color: "destructive", duration: 3000 })
+    // }
+    // else
+    if (hasFalseValue(nodesValidation)) {
       setShowSnackBarMessage({ open: true, message: "Please make sure all nodes are valid!", color: "destructive", duration: 3000 })
     }
     else {
@@ -45,14 +45,14 @@ export function Toolbar() {
 
         <div className="flex items-center space-x-2">
 
-          {/* <Button variant="outline" size="sm" onClick={() => {
-            setFormDialogStatus("createCred")
+          <Button variant="outline" size="sm" onClick={() => {
+            setFormDialogStatus("ManageCred")
             setIsFormDialogOpen(true)
           }
           }>
-            <Key className="w-4 h-4 mr-2" />
-            Create Cred
-          </Button> */}
+            <Key className="w-4 h-4" />
+            Credentials
+          </Button>
           <Button variant="outline" size="sm" onClick={() => { }}>
             <Upload className="w-4 h-4 mr-2" />
             Import

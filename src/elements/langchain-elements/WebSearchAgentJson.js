@@ -4,7 +4,7 @@ export const WebSearchAgentJson = {
   color: "black",
   nodeType: "langchain",
   new: true,
-  normalHandle: ["regular", "basic", "automationTools", "langchain"],
+  normalHandle: ["integration", "basic", "automationTools", "langchain"],
   rightSideData: {
     nodesCanConnectWith: {
       "1": { nodeType: "model", title: "Chat Model", required: true },

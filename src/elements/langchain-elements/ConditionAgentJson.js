@@ -3,7 +3,7 @@ export const ConditionAgentJson = {
     type: "ConditionAgent",
     label: "Condition agent",
     color: "#ccd3d5",
-    normalHandle: ["regular", "basic", "automationTools", "langchain"],
+    normalHandle: ["integration", "basic", "automationTools", "langchain"],
     rightSideData: {
         save: false,
         variableName: "",

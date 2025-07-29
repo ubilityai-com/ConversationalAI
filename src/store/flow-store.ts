@@ -2,7 +2,6 @@ import { applyEdgeChanges, applyNodeChanges, Edge, getConnectedEdges, Node, type
 import axios from "axios";
 import { v4 } from "uuid";
 import { create } from "zustand";
-import { getContent } from "../components/right-side-elements/regular-elements/slack-form/slack-form";
 import { camelToDashCase } from "../lib/utils";
 
 type SubNodesValidation = {
@@ -614,40 +613,87 @@ export const useFlowStore = create<FlowState>((set, get) => ({
 
     // Check if all handles are connected
     handleFlowZoneCheckIfAllHandlesAreConnected: () => {
-        let allAreConnected = true
-        const nodes = get().nodes
-        const edges = get().edges
-        nodes.forEach((element) => {
-            console.log({ element });
+        const { nodes, edges } = get();
 
-            if (element.type === "Handler") {
-                let allAreSources = true
+        // Maps for quick lookup
+        const incomingEdgesMap = new Map<string, Edge[]>();
+        const outgoingEdgesMap = new Map<string, Edge[]>();
 
-                const isDefaultSource = edges.find((edge) => element.id === edge.source && edge.sourceHandle === "0")
+        edges.forEach(edge => {
+            if (!incomingEdgesMap.has(edge.target)) incomingEdgesMap.set(edge.target, []);
+            incomingEdgesMap.get(edge.target)!.push(edge);
 
-                if (!isDefaultSource) {
-                    allAreSources = false
-                }
+            if (!outgoingEdgesMap.has(edge.source)) outgoingEdgesMap.set(edge.source, []);
+            outgoingEdgesMap.get(edge.source)!.push(edge);
+        });
 
-                element.data.dynamicDataHandler.forEach(({ }, index: number) => {
-                    const isSource = edges.find((edge) => element.id === edge.source && edge.sourceHandle === index + 1 + "")
+        // Node type configs
+        const nodeTypeRules: Record<string, {
+            requireIncoming: boolean;
+            requireOutgoing: boolean;
+            getRequiredHandles?: (node: any) => string[];
+            defaultHandle?: string;
+        }> = {
+            "Handler": { requireIncoming: false, requireOutgoing: true },
+            "End": { requireIncoming: true, requireOutgoing: false },
+            "ChoicePrompt": {
+                requireIncoming: true,
+                requireOutgoing: true,
+                getRequiredHandles: node => [
+                    ...(node.data?.rightSideData?.choices ?? []).map((c: any) => c.id),
+                    "choice-default",
+                ],
+            },
+            "Router": {
+                requireIncoming: true,
+                requireOutgoing: true,
+                getRequiredHandles: node => [
+                    ...(node.data?.rightSideData?.branches ?? []).map((b: any) => b.id),
+                    "branch-default",
+                ],
+            },
+            "ConditionAgent": {
+                requireIncoming: true,
+                requireOutgoing: true,
+                getRequiredHandles: node => [
+                    ...(node.data?.rightSideData?.scenarios ?? []).map((s: any) => s.id),
+                    "condition-agent-default",
+                ],
+            }
+        };
 
-                    if (!isSource) {
-                        allAreSources = false
+        for (const node of nodes) {
+            const incoming = incomingEdgesMap.get(node.id) ?? [];
+            const outgoing = outgoingEdgesMap.get(node.id) ?? [];
+            const config = nodeTypeRules[node.type] ?? { requireIncoming: true, requireOutgoing: true };
+
+            if (config.requireIncoming && incoming.length === 0) {
+                console.warn(`Node ${node.id} (${node.type}) is missing incoming connection.`);
+                return false;
+            }
+
+            if (config.requireOutgoing && outgoing.length === 0) {
+                console.warn(`Node ${node.id} (${node.type}) is missing outgoing connection.`);
+                return false;
+            }
+
+            if (config.getRequiredHandles) {
+                const required = new Set(config.getRequiredHandles(node));
+                const connected = new Set(outgoing.map(e => e.sourceHandle ?? config.defaultHandle ?? "default"));
+
+                for (const handle of required) {
+                    if (!connected.has(handle)) {
+                        console.warn(
+                            `Node ${node.id} (${node.type}) is missing outgoing connection for handle: ${handle}`
+                        );
+                        return false;
                     }
-                })
-
-                if (!allAreSources) {
-                    allAreConnected = false
                 }
             }
-            // Additional element type checks omitted for brevity
-            // The full implementation would include all the cases from the original component
-        })
+        }
 
-        return allAreConnected
+        return true;
     },
-
     // Check if web URL is empty
     checkIfWebUrlIsEmpty: () => {
         const userData = get().userData

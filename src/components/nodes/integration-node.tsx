@@ -2,7 +2,7 @@ import { Node, NodeProps } from "@xyflow/react"
 import { Bot, Slack } from "lucide-react"
 import { BaseNode } from "./base-node"
 
-export function RegularNode(props: NodeProps<Node<any>>) {
+export function IntegrationNode(props: NodeProps<Node<any>>) {
   const data = props.data
   const { label, description, color } = data
 

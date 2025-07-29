@@ -4,7 +4,7 @@ export const AiAgentJson = {
   label: "AI Agent",
   color: "#72797b",
   hidden: true,
-  normalHandle: ["regular", "basic", "automationTools", "langchain"],
+  normalHandle: ["integration", "basic", "automationTools", "langchain"],
   rightSideData: {
     nodesCanConnectWith: {
       '1': { nodeType: "model", title: "Chat Model", required: true },

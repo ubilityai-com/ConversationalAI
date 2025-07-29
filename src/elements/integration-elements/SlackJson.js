@@ -1,14 +1,11 @@
-import { Slack } from "lucide-react";
-
 export const SlackJson = {
-  "nodeType": "regular",
+  "nodeType": "integration",
   "type": "Slack",
   "label": "Slack",
-  "color": "bg-red-500",
+  "color": "#E91E63 ",
   "docsPath": "Connectors/Slack/getting_started",
   description: "Slack integration",
   defaultValid: false,
-  icon: Slack,
   category: "Control",
   automated: "json",
   "defaults": {

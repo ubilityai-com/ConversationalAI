@@ -3,11 +3,11 @@ export const ConversationChainJson = {
   type: "ConversationChain",
   label: "Conversational Chain",
   color: "#72797b",
-  normalHandle: ["regular", "basic", "automationTools", "langchain"],
+  normalHandle: ["integration", "basic", "automationTools", "langchain"],
   rightSideData: {
     nodesCanConnectWith: {
       1: { nodeType: "model", title: "Chat Model", required: true },
-      2: { nodeType: "memory", title: "Memory" ,required: true},
+      2: { nodeType: "memory", title: "Memory", required: true },
     },
     json: [
       {
@@ -99,7 +99,7 @@ export const ConversationChainJson = {
         value: {
           Output: {
             "answer": "",
-        },
+          },
           Error: "",
           Status: "",
         },

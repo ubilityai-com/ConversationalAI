@@ -5,9 +5,9 @@ import RightSideBody from "./right-side-body"
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
-import { RegularElements } from "../elements/regular-elements"
+import { IntegrationElements } from "../elements/integration-elements"
 
-const runnableNodes = [...RegularElements.map(elt => elt.type)]
+const runnableNodes = [...IntegrationElements.map(elt => elt.type)]
 export function PropertiesPanel() {
     const selectedNode = useFlowStore(state => state.clickedElement)
     const setClickedElement = useFlowStore(state => state.setClickedElement)

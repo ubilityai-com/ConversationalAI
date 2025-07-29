@@ -3,7 +3,7 @@ export const ConversationalRetrievalQaChainJson = {
   "label": "Conversational Retrieval QA Chain",
   "color": "black",
   "nodeType": "langchain",
-  "normalHandle": ["regular", "basic", "automationTools", "langchain"],
+  "normalHandle": ["integration", "basic", "automationTools", "langchain"],
   "new": true,
   "rightSideData": {
     "nodesCanConnectWith": {
