@@ -580,11 +580,11 @@ type FieldItem = {
   list?: { option: string; cred: string }[];
   options?: Record<string, FieldItem[]>;
   fieldsArray?: FieldItem[][];
-  structure?:ApiResponse
+  structure?: ApiResponse;
   json?: {
     variableName: string;
     fieldsArray: FieldItem[][];
-    structure?:ApiResponse
+    structure?: ApiResponse;
   };
   custom?: boolean;
   formats?: Record<string, string>;
@@ -691,7 +691,44 @@ export function objToReturnDynamicv2(apiRes: ApiResponse): Record<string, any> {
 
   return obj;
 }
+export function selectedOptionKeys(
+  apiRes: ApiResponse,
+  fieldsValue: Record<string, any>
+): string[] {
+  let keys: string[] = [];
 
+  apiRes.forEach((item) => {
+    const { type, value, variableName, options, json } = item;
+    if (type === "outputJson") return;
+    console.log({ item, keys, variableName });
+    const mergeOptionFields = () => {
+      if (
+        options &&
+        fieldsValue[variableName] &&
+        options[fieldsValue[variableName]]
+      ) {
+        keys = [
+          ...keys,
+          ...selectedOptionKeys(
+            options[fieldsValue[variableName]],
+            fieldsValue
+          ),
+        ];
+      }
+    };
+    if (["dropdown", "radiobutton"].includes(type)) {
+      mergeOptionFields();
+    }
+    if (type === "dynamic") {
+      const target = json ?? item;
+      console.log({ target });
+
+      keys.push(target.variableName);
+    } else keys.push(variableName);
+  });
+
+  return keys;
+}
 export function replaceTags(
   inputString: string,
   tagToReplace: string,
@@ -702,12 +739,15 @@ export function replaceTags(
   return inputString.replace(pattern, (_, content: string) => {
     const trimmedText = content.trim();
     const spacesCount = content.length - trimmedText.length;
-    return `${replacementChars}${trimmedText}${replacementChars}${" ".repeat(spacesCount)}`;
+    return `${replacementChars}${trimmedText}${replacementChars}${" ".repeat(
+      spacesCount
+    )}`;
   });
 }
 
 export function replaceLink(inputString: string): string {
-  const pattern = /<a href="([^"]+)"[^>]*>(?:<(?:strong|em|s)>){0,3}([^<]+)(?:<\/(?:strong|em|s)>){0,3}<\/a>/g;
+  const pattern =
+    /<a href="([^"]+)"[^>]*>(?:<(?:strong|em|s)>){0,3}([^<]+)(?:<\/(?:strong|em|s)>){0,3}<\/a>/g;
   return inputString.replace(pattern, "<$1|$2>");
 }
 
@@ -718,7 +758,6 @@ export function replaceParandBr(inputString: string): string {
     return p1 ? p1.trim() + "\n" : "\n";
   });
 }
-
 
 export function replaceCodeBlock(inputString: string): string {
   const pattern = /<pre.*?>([\s\S]*?)<\/pre>/g; // replaced (.*?) with ([\s\S]*?)
@@ -750,10 +789,7 @@ export function replaceMultipleOccurrences(
 /**
  * Reverts the result of replaceMultipleOccurrences back to its approximate original HTML structure.
  */
-function reverseMultipleOccurrences(
-  inputString: string,
-  array: any
-): string {
+function reverseMultipleOccurrences(inputString: string, array: any): string {
   let str = inputString;
   // 1️⃣ Reverse `replaceCodeBlock`: ```code``` => <pre>code</pre>
   const codeBlockPattern = /```([\s\S]*?)```/g;
@@ -770,10 +806,16 @@ function reverseMultipleOccurrences(
   // 3️⃣ Reverse replaceTags: **text** => <b>text</b>, etc.
   array.forEach((opt: any) => {
     if (opt.toSearch && opt.toReplace) {
-      const escapedReplace = opt.toReplace.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'); // escape special chars
+      const escapedReplace = opt.toReplace.replace(
+        /[-/\\^$*+?.()|[\]{}]/g,
+        "\\$&"
+      ); // escape special chars
       const tag = opt.toSearch;
 
-      const tagPattern = new RegExp(`${escapedReplace}(.*?)${escapedReplace}`, 'gs');
+      const tagPattern = new RegExp(
+        `${escapedReplace}(.*?)${escapedReplace}`,
+        "gs"
+      );
       str = str.replace(tagPattern, (_match, innerContent) => {
         return `<${tag}>${innerContent}</${tag}>`;
       });
@@ -786,7 +828,10 @@ function reverseMultipleOccurrences(
   return str;
 }
 
-export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record<string, any>): Record<string, any> {
+export function objToReturnValuesToSend(
+  apiRes: ApiResponse,
+  fieldValues: Record<string, any>
+): Record<string, any> {
   let obj: Record<string, any> = {};
 
   apiRes.forEach((item) => {
@@ -801,7 +846,7 @@ export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record
       fieldsArray,
       json,
     } = item;
-    const valueToSend: string = fieldValues[variableName]
+    const valueToSend: string = fieldValues[variableName];
     const hasValue = value !== undefined && value !== null;
 
     const processValue = (val: any): any => {
@@ -819,13 +864,19 @@ export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record
 
     const mergeOptionFields = () => {
       if (options && valueToSend && options[valueToSend]) {
-        obj = { ...obj, ...objToReturnValuesToSend(options[valueToSend], fieldValues) };
+        obj = {
+          ...obj,
+          ...objToReturnValuesToSend(options[valueToSend], fieldValues),
+        };
       }
     };
 
-    if (["dropdown", "api"].includes(type) && valueToSend !== "None" || valueToSend) {
+    if (
+      (["dropdown", "api"].includes(type) && valueToSend !== "None") ||
+      valueToSend
+    ) {
       if (credential && list) {
-        obj[variableName!] = valueToSend
+        obj[variableName!] = valueToSend;
         // list.length > 1
         //   ? list.find((c) => c.option === valueToSend)?.cred ?? ""
         //   : "";
@@ -842,18 +893,24 @@ export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record
     }
 
     if (type === "textFormatter" && valueToSend?.trim()) {
-      obj[variableName!] = item.custom ?
-        replaceMultipleOccurrences(valueToSend, item.formats)
+      obj[variableName!] = item.custom
+        ? replaceMultipleOccurrences(valueToSend, item.formats)
         : valueToSend.replace(/\n/g, "\\n");
-
-
     }
 
-    if (type === "multiselect" && Array.isArray(valueToSend) && valueToSend.length > 0) {
-      obj[variableName!] = valueToSend
+    if (
+      type === "multiselect" &&
+      Array.isArray(valueToSend) &&
+      valueToSend.length > 0
+    ) {
+      obj[variableName!] = valueToSend;
     }
 
-    if (type === "array" && Array.isArray(valueToSend) && valueToSend.length > 0) {
+    if (
+      type === "array" &&
+      Array.isArray(valueToSend) &&
+      valueToSend.length > 0
+    ) {
       obj[variableName!] = valueToSend;
     }
 
@@ -876,13 +933,17 @@ export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record
     }
 
     if (type === "accordion" && fieldsArray?.[0] && fieldValues[variableName]) {
-      obj[variableName!] = objToReturnValuesToSend(fieldsArray[0], fieldValues[variableName]);
+      obj[variableName!] = objToReturnValuesToSend(
+        fieldsArray[0],
+        fieldValues[variableName]
+      );
     }
 
     if (type === "dynamic") {
       const target = json ?? item;
-      const arrayData = fieldValues[target.variableName]?.map((arr:Record<string,any>) =>
-        objToReturnValuesToSend(target?.structure as ApiResponse, arr)
+      const arrayData = fieldValues[target.variableName]?.map(
+        (arr: Record<string, any>) =>
+          objToReturnValuesToSend(target?.structure as ApiResponse, arr)
       );
       obj[target.variableName!] = arrayData ?? [];
     }
@@ -890,7 +951,10 @@ export function objToReturnValuesToSend(apiRes: ApiResponse, fieldValues: Record
 
   return obj;
 }
-export function objToReturnDefaultValues(apiRes: ApiResponse, fieldValues: Record<string, any>): Record<string, any> {
+export function objToReturnDefaultValues(
+  apiRes: ApiResponse,
+  fieldValues: Record<string, any>
+): Record<string, any> {
   let obj: Record<string, any> = {};
   if (fieldValues) {
     apiRes.forEach((item) => {
@@ -906,18 +970,24 @@ export function objToReturnDefaultValues(apiRes: ApiResponse, fieldValues: Recor
         json,
       } = item;
 
-      const valueToSend: string = fieldValues[variableName]
+      const valueToSend: string = fieldValues[variableName];
       const hasValue = value !== undefined && value !== null;
 
       const mergeOptionFields = () => {
         if (options && valueToSend && options[valueToSend]) {
-          obj = { ...obj, ...objToReturnDefaultValues(options[valueToSend], fieldValues) };
+          obj = {
+            ...obj,
+            ...objToReturnDefaultValues(options[valueToSend], fieldValues),
+          };
         }
       };
 
-      if (["dropdown", "api"].includes(type) && valueToSend !== "None" || valueToSend) {
+      if (
+        (["dropdown", "api"].includes(type) && valueToSend !== "None") ||
+        valueToSend
+      ) {
         if (credential && list) {
-          obj[variableName!] = valueToSend
+          obj[variableName!] = valueToSend;
         } else {
           obj[variableName!] = valueToSend;
         }
@@ -931,22 +1001,32 @@ export function objToReturnDefaultValues(apiRes: ApiResponse, fieldValues: Recor
       }
 
       if (type === "textFormatter" && valueToSend?.trim()) {
-        obj[variableName!] =
-          item.custom ?
-            reverseMultipleOccurrences(valueToSend, item.formats)
-            : valueToSend.replace(/\n/g, "\\n");
-
+        obj[variableName!] = item.custom
+          ? reverseMultipleOccurrences(valueToSend, item.formats)
+          : valueToSend.replace(/\n/g, "\\n");
       }
 
-      if (type === "multiselect" && Array.isArray(valueToSend) && valueToSend.length > 0) {
-        obj[variableName!] = valueToSend
-      }
-
-      if (type === "array" && Array.isArray(valueToSend) && valueToSend.length > 0) {
+      if (
+        type === "multiselect" &&
+        Array.isArray(valueToSend) &&
+        valueToSend.length > 0
+      ) {
         obj[variableName!] = valueToSend;
       }
 
-      if (type === "json" && valueToSend && Object.keys(valueToSend).length > 0) {
+      if (
+        type === "array" &&
+        Array.isArray(valueToSend) &&
+        valueToSend.length > 0
+      ) {
+        obj[variableName!] = valueToSend;
+      }
+
+      if (
+        type === "json" &&
+        valueToSend &&
+        Object.keys(valueToSend).length > 0
+      ) {
         obj[variableName!] = valueToSend;
       }
 
@@ -965,12 +1045,15 @@ export function objToReturnDefaultValues(apiRes: ApiResponse, fieldValues: Recor
       }
 
       if (type === "accordion" && fieldsArray?.[0]) {
-        obj[variableName!] = objToReturnDefaultValues(fieldsArray[0], fieldValues[variableName]);
+        obj[variableName!] = objToReturnDefaultValues(
+          fieldsArray[0],
+          fieldValues[variableName]
+        );
       }
 
       if (type === "dynamic") {
         const target = json ?? item;
-        const arrayData =fieldValues[target.variableName]?.map((arr:any) =>
+        const arrayData = fieldValues[target.variableName]?.map((arr: any) =>
           objToReturnDefaultValues(target.structure as ApiResponse, arr)
         );
         obj[target.variableName!] = arrayData ?? [];

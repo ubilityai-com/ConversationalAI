@@ -8,7 +8,6 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 
-
 interface EditableFieldWrapperProps {
   children: React.ReactNode;
   value: string | number;
@@ -21,8 +20,6 @@ interface EditableFieldWrapperProps {
 function hasTemplateVariable(str: string): boolean {
   return /\$\{[^}]+\}/.test(str);
 }
-
-
 
 export function FieldWrapper({
   children,
@@ -45,10 +42,9 @@ export function FieldWrapper({
   const updateNodeData = useReactFlow().updateNodeData;
 
   const getInitialEditingState = () => {
-
-    return typeof value === "string" &&
-      value.trim() &&
-      hasTemplateVariable(value);
+    return (
+      typeof value === "string" && value.trim() && hasTemplateVariable(value)
+    );
   };
 
   const [isEditing, setIsEditing] = useState(getInitialEditingState);
@@ -71,8 +67,7 @@ export function FieldWrapper({
     string | null
   >(null);
 
-
-  const handleSave = () => { };
+  const handleSave = () => {};
 
   const handleCancel = () => {
     setEditValue(String(value));
@@ -88,7 +83,6 @@ export function FieldWrapper({
   };
 
   const handleFieldFocus = (event: React.FocusEvent<HTMLElement>) => {
-
     if (blurTimeoutRef) {
       clearTimeout(blurTimeoutRef);
       setBlurTimeoutRef(null);
@@ -103,7 +97,6 @@ export function FieldWrapper({
   };
 
   const handleFieldBlur = () => {
-
     const timeout = setTimeout(() => {
       if (!isPopoverInteracting) {
         setVarPicker(false);
@@ -115,18 +108,11 @@ export function FieldWrapper({
   const handleVariableIconClick = () => {
     const newIsEditing = !isEditing;
     setIsEditing(newIsEditing);
+    if (!newIsEditing) {
+      onChange(field?.value || undefined);
+    }
     setInputNameOnContextMenu(variableName);
     setFocusedField(variableName);
-
-    // Update node data customizedInputs
-    if (clickedElement?.id) {
-      updateNodeData(clickedElement.id, {
-        customizedInputs: {
-          ...clickedElement.data?.customizedInputs,
-          [variableName]: newIsEditing,
-        },
-      });
-    }
   };
 
   useEffect(() => {
@@ -155,8 +141,9 @@ export function FieldWrapper({
     <Button
       size="sm"
       variant="ghost"
-      className={`h-8 w-8 p-0 text-cyan-700 hover:text-cyan-900 ${isEditing ? "bg-slate-200" : ""
-        }`}
+      className={`h-8 w-8 p-0 text-cyan-700 hover:text-cyan-900 ${
+        isEditing ? "bg-slate-200" : ""
+      }`}
       aria-label="Set dynamic value"
       onClick={handleVariableIconClick}
     >
@@ -184,10 +171,10 @@ export function FieldWrapper({
               field.password
                 ? "password"
                 : field.numberField
-                  ? "number"
-                  : field.date
-                    ? "date"
-                    : "text"
+                ? "number"
+                : field.date
+                ? "date"
+                : "text"
             }
             placeholder={field.placeholder}
             value={value}
@@ -213,7 +200,6 @@ export function FieldWrapper({
       {!field.label && field.type !== "textfield" && variableButton}
     </div>
   );
-
 
   return (
     <div className={`space-y-1 ${className}`}>
