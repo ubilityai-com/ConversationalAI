@@ -240,3 +240,11 @@ code {
   pointer-events: all;
   transform-origin: center;
 }
+
+.mention {
+  background: #eef2ff;
+  color: #4f46e5;
+  padding: 0 4px;
+  border-radius: 4px;
+  font-weight: 600;
+}

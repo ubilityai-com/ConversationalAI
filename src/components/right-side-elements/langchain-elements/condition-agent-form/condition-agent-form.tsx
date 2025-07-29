@@ -9,6 +9,7 @@ import {
 import { useFlowStore } from "../../../../store/flow-store";
 import { LoopFromForm } from "../../../common/loop-from-end";
 import { EditableField } from "../../../custom/editable-field";
+import { FieldWrapper } from "../../../custom/field-wrapper";
 import { DynamicElementLoader } from "../../../properties/shared/DynamicElementLoader";
 import { Button } from "../../../ui/button";
 import {
@@ -202,27 +203,44 @@ export default function ConditionAgentForm({
         >
           Instructions
         </Label>
-        <Textarea
-          id={`instruction`}
-          placeholder="instructions"
+        <FieldWrapper
+          field={{ type: "textfield", placeholder: "Instructions", multiline: true }}
           value={instruction || ""}
-          onChange={(e) => updateNestedConfig("instruction", e.target.value)}
+          onChange={(value) => updateNestedConfig("instruction", value)}
+          variableName={"instruction"}
           className="text-xs resize-none"
-          rows={2}
-        />
+
+        >
+          <Textarea
+            id={`instruction`}
+            placeholder="Instructions"
+            value={instruction || ""}
+            onChange={(e) => updateNestedConfig("instruction", e.target.value)}
+            className="text-xs resize-none"
+            rows={2}
+          />
+        </FieldWrapper>
       </div>
       <div>
         <Label htmlFor={`input`} className="block text-sm mb-2 font-normal">
           Input
         </Label>
-        <Textarea
-          id={`input`}
-          placeholder="Input"
+        <FieldWrapper
+          field={{ type: "textfield", placeholder: "Input", multiline: true }}
           value={input || ""}
-          onChange={(e) => updateNestedConfig("input", e.target.value)}
+          onChange={(value) => updateNestedConfig("input", value)}
+          variableName={"input"}
           className="text-xs resize-none"
-          rows={2}
-        />
+        >
+          <Textarea
+            id={`input`}
+            placeholder="Input"
+            value={input || ""}
+            onChange={(e) => updateNestedConfig("input", e.target.value)}
+            className="text-xs resize-none"
+            rows={2}
+          />
+        </FieldWrapper>
       </div>
 
       {/* ── dynamic scenarios list ─────────────────────────────────────────── */}
@@ -271,14 +289,23 @@ export default function ConditionAgentForm({
                   <Label htmlFor={`label-${scenario.id}`} className="text-xs">
                     Label
                   </Label>
-                  <Input
-                    id={`label-${scenario.id}`}
+                  <FieldWrapper
+                    field={{ type: "textfield", placeholder: "" }}
                     value={scenario.label}
-                    onChange={(e) =>
-                      updateScenario(scenario.id, { label: e.target.value })
+                    onChange={(value) => updateScenario(scenario.id, { label: value })
                     }
+                    variableName={`label-${scenario.id}`}
                     className="h-8 text-xs"
-                  />
+                  >
+                    <Input
+                      id={`label-${scenario.id}`}
+                      value={scenario.label}
+                      onChange={(e) =>
+                        updateScenario(scenario.id, { label: e.target.value })
+                      }
+                      className="h-8 text-xs"
+                    />
+                  </FieldWrapper>
                 </div>
               </CardContent>
             </Card>

@@ -1,12 +1,13 @@
 import { Node, NodeProps } from "@xyflow/react"
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
+import { removeHTMLTags } from "../../../../lib/utils"
 import { useFlowStore } from "../../../../store/flow-store"
+import { FieldWrapper } from "../../../custom/field-wrapper"
 import { Input } from "../../../ui/input"
 import { Label } from "../../../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../ui/select"
 import { Separator } from "../../../ui/separator"
 import { Switch } from "../../../ui/switch"
-import { removeHTMLTags, stringifyAndExtractVariables } from "../../../../lib/utils"
 
 interface RightSideData {
   botSays: string,
@@ -85,12 +86,19 @@ export default function EndForm({
     // Message and End Components
     <div className="mt-4">
       <Label className="block text-sm p-1 mb-1 font-normal">Bot Says</Label>
-      <Input
-        name="botSays"
-        placeholder="Message"
+      <FieldWrapper
+        field={{ type: "textfield", placeholder: "Message" }}
         value={botSays || ""}
-        onChange={(event) => updateNestedConfig("botSays", event.target.value)}
-      />
+        onChange={(value) => updateNestedConfig("botSays", value)}
+        variableName={"botSays"}
+      >
+        <Input
+          name="botSays"
+          placeholder="Message"
+          value={botSays || ""}
+          onChange={(event) => updateNestedConfig("botSays", event.target.value)}
+        />
+      </FieldWrapper>
       <Separator orientation="horizontal" className="my-6" />
       <div className="flex items-center space-x-2 mx-2 mb-2">
         <Switch

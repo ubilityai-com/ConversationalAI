@@ -1,4 +1,3 @@
-// Dynamically import ReactQuill to avoid SSR issues
 import { Edge, Node, NodeProps } from "@xyflow/react"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
@@ -19,7 +18,7 @@ interface RightSideData {
   save?: boolean;
   variableName: string;
   loopFromSwitch: boolean;
-  loopFromName: string
+  loopFromName: string;
 }
 interface RightSideData {
   botSays?: string;
@@ -29,47 +28,44 @@ interface RightSideData {
   save?: boolean;
   variableName: string;
   loopFromSwitch: boolean;
-  loopFromName: string
+  loopFromName: string;
 }
 interface MessageConfigProps extends Record<string, unknown> {
   /* node.data passed from <PropertiesPanel /> */
-  label: string
-  description: string
-  rightSideData: RightSideData
+  label: string;
+  description: string;
+  rightSideData: RightSideData;
 }
 interface MessageFormProps {
-  selectedNode: NodeProps<Node<MessageConfigProps>>
-  handleRightSideDataUpdate: (
-    value: any
-  ) => void
+  selectedNode: NodeProps<Node<MessageConfigProps>>;
+  handleRightSideDataUpdate: (value: any) => void;
 }
 export function getContent(selectedNode: any, params: any) {
-  const rightSideData: RightSideData = selectedNode.data.rightSideData
+  const rightSideData: RightSideData = selectedNode.data.rightSideData;
   const content = {
     type: "data",
     data: {
-      text: rightSideData.botSays
-    }
-  }
+      text: rightSideData.botSays,
+    },
+  };
   return {
     type: "Message",
     content: content,
     next: getNextNodeId(selectedNode.id, params.edges, params.nodes, null),
     saveUserInputAs: rightSideData.save ? rightSideData.variableName : null,
-    usedVariables: stringifyAndExtractVariables(content)
+    usedVariables: stringifyAndExtractVariables(content),
   };
 }
 
 function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
   let allInputsAreFilled = true;
   if (data) {
-    if (!removeHTMLTags(data.botSays || '')) {
+    if (!removeHTMLTags(data.botSays || "")) {
       allInputsAreFilled = false;
     }
     if (data.save && !data.variableName) {
       allInputsAreFilled = false;
     }
-
   }
   return allInputsAreFilled;
 }
@@ -87,37 +83,47 @@ const formats = [
   "indent",
   "link",
   "image",
-]
+];
 
 const modules = {
   toolbar: [
     [{ header: [1, 2, false] }],
     ["bold", "italic", "underline", "strike", "blockquote"],
-    [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+    [
+      { list: "ordered" },
+      { list: "bullet" },
+      { indent: "-1" },
+      { indent: "+1" },
+    ],
     ["link"],
     ["clean"],
   ],
-}
+};
 
 export default function MessageForm({
   selectedNode,
   handleRightSideDataUpdate,
 }: MessageFormProps) {
-  const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
-  const addVariable = useFlowStore(state => state.addVariable)
-  const updateVariable = useFlowStore(state => state.updateVariable)
-  const { localConfig, updateNestedConfig } = useDebounceConfig<MessageConfigProps["rightSideData"]>(
-    selectedNode.data.rightSideData,
-    {
-      delay: 300,
-      onSave: (savedConfig) => {
-        // Save label changes
-        updateNodesValidationById(selectedNode.id, checkIfAllRequiredDataIsFilled(savedConfig))
-        handleRightSideDataUpdate(savedConfig)
-
-      },
+  const updateNodesValidationById = useFlowStore(
+    (state) => state.updateNodesValidationById
+  );
+  const addVariable = useFlowStore((state) => state.addVariable);
+  const updateDialogueVariable = useFlowStore(
+    (state) => state.updateDialogueVariable
+  );
+  const { localConfig, updateNestedConfig } = useDebounceConfig<
+    MessageConfigProps["rightSideData"]
+  >(selectedNode.data.rightSideData, {
+    delay: 300,
+    onSave: (savedConfig) => {
+      // Save label changes
+      updateNodesValidationById(
+        selectedNode.id,
+        checkIfAllRequiredDataIsFilled(savedConfig)
+      );
+      handleRightSideDataUpdate(savedConfig);
     },
-  )
+  });
   console.log({ selectedNode });
 
   return (
@@ -125,7 +131,6 @@ export default function MessageForm({
       <div>
         <Label className="block text-sm mb-1 font-normal">Bot says</Label>
         <div className="custom-editor w-[93%] mb-2">
-
           <ReactQuill
             theme="snow"
             value={localConfig.botSays || ""}
@@ -134,7 +139,6 @@ export default function MessageForm({
             modules={modules}
             className="my-4 text-foreground dark:border-border rounded-md dark:text-foreground"
           />
-
         </div>
       </div>
 
@@ -142,8 +146,14 @@ export default function MessageForm({
         <Switch
           checked={localConfig.save || false}
           onCheckedChange={(checked) => {
-            addVariable({ category: "dialogue", name: "", type: "string", value: "", origin: selectedNode.id })
-            updateNestedConfig("save", checked)
+            addVariable({
+              category: "dialogue",
+              name: "",
+              type: "string",
+              value: "",
+              origin: selectedNode.id,
+            });
+            updateNestedConfig("save", checked);
           }}
           id="save-switch"
         />
@@ -154,20 +164,24 @@ export default function MessageForm({
 
       {localConfig.save && (
         <div>
-          <Label className="block text-sm mb-1 font-normal">Variable Name</Label>
+          <Label className="block text-sm mb-1 font-normal">
+            Variable Name
+          </Label>
           <EditableField
             name="variableName"
             placeholder="Variable Name"
             value={localConfig.variableName || ""}
             onChange={(newValue) => {
-              updateVariable("dialogue", localConfig.variableName, { category: "dialogue", name: newValue })
-              updateNestedConfig("variableName", newValue)
+              updateDialogueVariable(selectedNode.id, newValue);
+              updateNestedConfig("variableName", newValue);
             }}
           />
         </div>
       )}
 
-      <Label className="block text-sm mb-1 font-normal">Enable the bot to handle user messages.</Label>
+      <Label className="block text-sm mb-1 font-normal">
+        Enable the bot to handle user messages.
+      </Label>
 
       <LoopFromForm
         loopFromName={localConfig.loopFromName}
@@ -175,5 +189,5 @@ export default function MessageForm({
         handleChange={updateNestedConfig}
       />
     </div>
-  )
+  );
 }

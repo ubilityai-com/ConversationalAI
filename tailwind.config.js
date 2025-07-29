@@ -22,7 +22,7 @@ module.exports = {
         foreground: "hsl(var(--foreground))",
         canvas: "hsl(var(--canvas))",
         primary: {
-          DEFAULT: "#72afdd", // Blue color
+          DEFAULT: "#0707D3", // Blue color
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {

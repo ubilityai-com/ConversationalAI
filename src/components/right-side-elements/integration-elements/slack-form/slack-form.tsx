@@ -2,8 +2,15 @@ import { Node, NodeProps } from "@xyflow/react";
 import { useState } from "react";
 import { SlackJson } from "../../../../elements/integration-elements/SlackJson";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
-import { objToReturnDefaultValues, objToReturnValuesToSend } from "../../../../lib/automation-utils";
-import { getNextNodeId, stringifyAndExtractVariables, validateArray } from "../../../../lib/utils";
+import {
+    objToReturnDefaultValues,
+    objToReturnValuesToSend,
+} from "../../../../lib/automation-utils";
+import {
+    getNextNodeId,
+    stringifyAndExtractVariables,
+    validateArray,
+} from "../../../../lib/utils";
 import { useFlowStore } from "../../../../store/flow-store";
 import { useRightDrawerStore } from "../../../../store/right-drawer-store";
 import AutomationSimple from "../../../custom/automation-v4";
@@ -29,7 +36,9 @@ const getAccvalue = (finaleObj: any, name: string) => {
             : undefined;
     } else
         return finaleObj[name]
-            ? finaleObj[name][name] ? finaleObj[name][name] || undefined : undefined
+            ? finaleObj[name][name]
+                ? finaleObj[name][name] || undefined
+                : undefined
             : undefined;
 };
 function isJsonString(str: string) {
@@ -93,15 +102,14 @@ const getOperationName = (type: string, operation: string) => {
     return opToReturn;
 };
 export function getContent(selectedNode: any, params: any) {
-    const rightSideData = selectedNode.data.rightSideData
-    const { edges, nodes } = params
-    const json = rightSideData.json
+    const rightSideData = selectedNode.data.rightSideData;
+    const { edges, nodes } = params;
+    const json = rightSideData.json;
 
     let jsonToSend = {};
     if (json.type === "Message") {
         if (json.operation === "Send") {
-            if (json.receiverType === "User")
-                jsonToSend = { channel: json.user };
+            if (json.receiverType === "User") jsonToSend = { channel: json.user };
             else jsonToSend = { channel: json.channel };
             if (json.messageType === "Blocks") {
                 jsonToSend = {
@@ -120,8 +128,7 @@ export function getContent(selectedNode: any, params: any) {
                 jsonToSend = {
                     ...jsonToSend,
                     attachments:
-                        json.hasOwnProperty("Attachments") &&
-                            json.Attachments.length > 0
+                        json.hasOwnProperty("Attachments") && json.Attachments.length > 0
                             ? json.Attachments.map((attach: any) => {
                                 return {
                                     fallback: attach.fallbackText,
@@ -144,44 +151,32 @@ export function getContent(selectedNode: any, params: any) {
             }
             if (
                 json.hasOwnProperty("replyToMessageMessageSend") &&
-                json.replyToMessageMessageSend
-                    .messageTimestampToReplyToMessageSend &&
+                json.replyToMessageMessageSend.messageTimestampToReplyToMessageSend &&
                 json.replyToMessageMessageSend.messageTimestampToReplyToMessageSend.trim()
             )
                 jsonToSend = {
                     ...jsonToSend,
                     thread_ts:
-                        json.replyToMessageMessageSend
-                            .messageTimestampToReplyToMessageSend,
+                        json.replyToMessageMessageSend.messageTimestampToReplyToMessageSend,
                     reply_broadcast:
                         json.replyToMessageMessageSend.replyToThreadMessageSend,
                 };
             jsonToSend = {
                 ...jsonToSend,
-                link_names: getAccvalue(
-                    json,
-                    "linkUserAndChannelNameMessageSend"
-                ),
+                link_names: getAccvalue(json, "linkUserAndChannelNameMessageSend"),
                 mrkdwn: getAccvalue(json, "useMarkDownMessageSend"),
                 unfurl_links: getAccvalue(json, "unfurlLinksMessageSend"),
                 unfurl_media: getAccvalue(json, "unfurlMediaMessageSend"),
                 as_user: getAccvalue(json, "sendAsUserMessageSend"),
             };
         } else if (json.operation === "Update") {
-            if (json.receiverType === "User")
-                jsonToSend = { channel: json.user };
+            if (json.receiverType === "User") jsonToSend = { channel: json.user };
             else jsonToSend = { channel: json.channel };
             jsonToSend = {
                 ...jsonToSend,
                 ts: json.messageTimestamp.toString(),
-                link_names: getAccvalue(
-                    json,
-                    "linkUserAndChannelNameMessageUpdate"
-                ),
-                reply_broadcast: getAccvalue(
-                    json,
-                    "replyBroadcastMessageUpdate"
-                ),
+                link_names: getAccvalue(json, "linkUserAndChannelNameMessageUpdate"),
+                reply_broadcast: getAccvalue(json, "replyBroadcastMessageUpdate"),
                 as_user: getAccvalue(json, "asUserMessageUpdate"),
             };
             if (json.textMessage && json.textMessage.trim())
@@ -196,8 +191,7 @@ export function getContent(selectedNode: any, params: any) {
                 };
             }
         } else if (json.operation === "Delete") {
-            if (json.receiverType === "User")
-                jsonToSend = { channel: json.user };
+            if (json.receiverType === "User") jsonToSend = { channel: json.user };
             else jsonToSend = { channel: json.channel };
             jsonToSend = {
                 ...jsonToSend,
@@ -207,10 +201,7 @@ export function getContent(selectedNode: any, params: any) {
             jsonToSend = {
                 ...jsonToSend,
                 message_ts: json.messageTimestamp.toString(),
-                channel:
-                    json.getFrom === "Channel"
-                        ? json.channel
-                        : json.userID,
+                channel: json.getFrom === "Channel" ? json.channel : json.userID,
             };
         }
     } else if (json.type === "Channel") {
@@ -218,10 +209,7 @@ export function getContent(selectedNode: any, params: any) {
             jsonToSend = {
                 ...jsonToSend,
                 channel: json.channel,
-                include_num_members: getAccvalue(
-                    json,
-                    "includeNumOfMembersChannelGet"
-                ),
+                include_num_members: getAccvalue(json, "includeNumOfMembersChannelGet"),
             };
         } else if (json.operation === "Get Many") {
             jsonToSend = {
@@ -231,10 +219,7 @@ export function getContent(selectedNode: any, params: any) {
                         return o.option?.toLowerCase();
                     })
                     : [],
-                exclude_archived: getAccvalue(
-                    json,
-                    "excludeArchivedChannelGetMany"
-                ),
+                exclude_archived: getAccvalue(json, "excludeArchivedChannelGetMany"),
             };
         } else if (json.operation === "Create") {
             jsonToSend = {
@@ -267,10 +252,7 @@ export function getContent(selectedNode: any, params: any) {
             };
         }
     } else if (json.type === "User") {
-        if (
-            json.operation === "Get" ||
-            json.operation === "Get User Status"
-        ) {
+        if (json.operation === "Get" || json.operation === "Get User Status") {
             jsonToSend = { user: json.user };
         }
     } else if (json.type === "File") {
@@ -279,7 +261,10 @@ export function getContent(selectedNode: any, params: any) {
                 file: json.fileID,
                 user_id: "${u1s2e3r4i5d6}",
                 flow_id: "${f1l2o3w4i5d6}",
-                download_file: getAccvalue(json, "downloadFile_GetFile.downloadFile_Optional_GetFile"),
+                download_file: getAccvalue(
+                    json,
+                    "downloadFile_GetFile.downloadFile_Optional_GetFile"
+                ),
             };
         } else if (json.operation === "Get Many") {
             if (
@@ -304,10 +289,7 @@ export function getContent(selectedNode: any, params: any) {
             )
                 jsonToSend = {
                     ...jsonToSend,
-                    ts_from: getAccvalue(
-                        json,
-                        "messageTimestampFromFileGetMany"
-                    ),
+                    ts_from: getAccvalue(json, "messageTimestampFromFileGetMany"),
                 };
             if (
                 getAccvalue(json, "messageTimestampToFileGetMany") &&
@@ -326,9 +308,7 @@ export function getContent(selectedNode: any, params: any) {
                 types: Array.isArray(getAccvalue(json, "typesFileGetMany"))
                     ? getAccvalue(json, "typesFileGetMany").length === 6
                         ? ["all"]
-                        : getAccvalue(json, "typesFileGetMany").map(
-                            (o: any) => o.option
-                        )
+                        : getAccvalue(json, "typesFileGetMany").map((o: any) => o.option)
                     : [],
             };
         } else if (json.operation === "Upload") {
@@ -336,7 +316,7 @@ export function getContent(selectedNode: any, params: any) {
                 ...jsonToSend,
                 channel: json["channelNameOrIDFileUpload"],
                 user_id: "${u1s2e3r4i5d6}",
-                flow_id: "${f1l2o3w4i5d6}"
+                flow_id: "${f1l2o3w4i5d6}",
             };
             if (
                 getAccvalue(json, "titleFileUpload") &&
@@ -352,10 +332,7 @@ export function getContent(selectedNode: any, params: any) {
             )
                 jsonToSend = {
                     ...jsonToSend,
-                    initial_comment: getAccvalue(
-                        json,
-                        "initialCommentFileUpload"
-                    ),
+                    initial_comment: getAccvalue(json, "initialCommentFileUpload"),
                 };
             if (
                 getAccvalue(json, "threadTimestampFileUpload") &&
@@ -363,10 +340,7 @@ export function getContent(selectedNode: any, params: any) {
             )
                 jsonToSend = {
                     ...jsonToSend,
-                    thread_ts: getAccvalue(
-                        json,
-                        "threadTimestampFileUpload"
-                    ).toString(),
+                    thread_ts: getAccvalue(json, "threadTimestampFileUpload").toString(),
                 }; // String => timestamp
             if (json.uploadType === "Url")
                 jsonToSend = {
@@ -385,19 +359,13 @@ export function getContent(selectedNode: any, params: any) {
         if (json.operation === "Get Many") {
             jsonToSend = {
                 include_count: getAccvalue(json, "includeCountUserGroupGet"),
-                include_disabled: getAccvalue(
-                    json,
-                    "includeDisabledUserGroupGet"
-                ),
+                include_disabled: getAccvalue(json, "includeDisabledUserGroupGet"),
                 include_users: getAccvalue(json, "includeUsersUserGroupGet"),
             };
         } else if (json.operation === "Create") {
             jsonToSend = {
                 name: json.name,
-                include_count: getAccvalue(
-                    json,
-                    "includeCountUserGroupCreate"
-                ),
+                include_count: getAccvalue(json, "includeCountUserGroupCreate"),
             };
             if (
                 getAccvalue(json, "channelNameOrIDUserGroupCreate") &&
@@ -426,10 +394,7 @@ export function getContent(selectedNode: any, params: any) {
         } else if (json.operation == "Update") {
             jsonToSend = {
                 usergroup: json.userGroupID,
-                include_count: getAccvalue(
-                    json,
-                    "includeCountUserGroupUpdate"
-                ),
+                include_count: getAccvalue(json, "includeCountUserGroupUpdate"),
             };
             if (
                 getAccvalue(json, "channelNameOrIDUserGroupUpdate") &&
@@ -437,10 +402,7 @@ export function getContent(selectedNode: any, params: any) {
             )
                 jsonToSend = {
                     ...jsonToSend,
-                    channels: getAccvalue(
-                        json,
-                        "channelNameOrIDUserGroupUpdate"
-                    ),
+                    channels: getAccvalue(json, "channelNameOrIDUserGroupUpdate"),
                 };
             if (
                 getAccvalue(json, "descriptionUserGroupUpdate") &&
@@ -470,18 +432,12 @@ export function getContent(selectedNode: any, params: any) {
         } else if (json.operation === "Enable") {
             jsonToSend = {
                 usergroup: json.userGroupIDGroupEnable,
-                include_count: getAccvalue(
-                    json,
-                    "includeCountUserGroupEnable"
-                ),
+                include_count: getAccvalue(json, "includeCountUserGroupEnable"),
             };
         } else if (json.operation === "Disable") {
             jsonToSend = {
                 usergroup: json.userGroupIDGroupDisable,
-                include_count: getAccvalue(
-                    json,
-                    "includeCountUserGroupDisable"
-                ),
+                include_count: getAccvalue(json, "includeCountUserGroupDisable"),
             };
         }
     }
@@ -492,16 +448,16 @@ export function getContent(selectedNode: any, params: any) {
             app: "slack",
             credential: json.cred,
             operation: getOperationName(json.type, json.operation),
-            saveOutputAs: []
-        }
-    }
+            saveOutputAs: [],
+        },
+    };
     return {
         cred: json?.cred,
         type: "AppIntegration",
         content: content,
         saveUserInputAs: null,
         next: getNextNodeId(selectedNode.id, edges, nodes, null),
-        usedVariables: stringifyAndExtractVariables(content)
+        usedVariables: stringifyAndExtractVariables(content),
     };
 }
 
@@ -510,30 +466,39 @@ export default function SlackForm({
     handleRightSideDataUpdate,
 }: IntegrationFormProps) {
     const [schema, setSchema] = useState<any[]>(SlackJson.defaults.json);
-    const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
-    const setNodeFilledDataByKey = useRightDrawerStore((state) => state.setNodeFilledDataByKey)
+    const updateNodesValidationById = useFlowStore(
+        (state) => state.updateNodesValidationById
+    );
+    const setNodeFilledDataByKey = useRightDrawerStore(
+        (state) => state.setNodeFilledDataByKey
+    );
 
-    const { localConfig, updateNestedConfig, setLocalConfig } =
-        useDebounceConfig<IntegrationConfigProps["rightSideData"]>(
-            {
-                ...selectedNode.data.rightSideData,
-                json: objToReturnDefaultValues(schema, selectedNode.data.rightSideData.json),
+    const { localConfig, updateNestedConfig, setLocalConfig } = useDebounceConfig<
+        IntegrationConfigProps["rightSideData"]
+    >(
+        {
+            ...selectedNode.data.rightSideData,
+            json: objToReturnDefaultValues(
+                schema,
+                selectedNode.data.rightSideData.json
+            ),
+        },
+        {
+            delay: 300,
+            onSave: (savedConfig) => {
+                setNodeFilledDataByKey(selectedNode.id, "json", savedConfig.json);
 
+                // Save label changes
+                const nodeValid = validateArray(schema, savedConfig.json);
 
+                updateNodesValidationById(selectedNode.id, !!nodeValid);
+                handleRightSideDataUpdate({
+                    ...savedConfig,
+                    json: objToReturnValuesToSend(schema, savedConfig.json),
+                });
             },
-            {
-                delay: 300,
-                onSave: (savedConfig) => {
-                    setNodeFilledDataByKey(selectedNode.id, "json", savedConfig.json)
-                    // Save label changes
-                    updateNodesValidationById(selectedNode.id, validateArray(schema, savedConfig.json))
-                    handleRightSideDataUpdate({
-                        ...savedConfig,
-                        json: objToReturnValuesToSend(schema, savedConfig.json)
-                    });
-                },
-            }
-        );
+        }
+    );
 
     return (
         <div className="space-y-6">
@@ -543,8 +508,14 @@ export default function SlackForm({
                 fieldValues={localConfig.json}
                 setSchema={setSchema}
                 flowZoneSelectedId={selectedNode.id}
-                onFieldChange={({ path, value }) => {
-                    updateNestedConfig(`${"json"}.${path}`, value)
+                onFieldChange={(partialState, replace) => {
+
+                    if (replace) updateNestedConfig(`${"json"}`, partialState);
+                    else
+                        updateNestedConfig(`${"json"}`, {
+                            ...localConfig.json,
+                            ...partialState,
+                        });
                 }}
             />
         </div>

@@ -4,10 +4,10 @@ import { twMerge } from "tailwind-merge";
 import { useFlowStore } from "../store/flow-store";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 interface DropdownItem {
-  id: string
+  id: string;
   type: "dropdown";
   value: string;
   typeOfValue?: "integer" | "array" | string;
@@ -16,7 +16,7 @@ interface DropdownItem {
 }
 
 interface DynamicItem {
-  id: string
+  id: string;
   type: "dynamic";
   variableName: string;
   fieldsArray: ApiResItem[][];
@@ -27,25 +27,30 @@ interface DynamicItem {
 }
 
 interface TextFieldItem {
-  id: string
+  id: string;
   type: "textfield" | "textFormatter";
   value: string;
   typeOfValue?: "integer" | "float" | string;
   variableName: string;
-  required?: boolean,
-  maxLength?: number
+  required?: boolean;
+  maxLength?: number;
 }
 
 export type ApiResItem = DropdownItem | DynamicItem | TextFieldItem;
 
-export const objToReturnDynamic = (apiRes: ApiResItem[]): Record<string, any> => {
+export const objToReturnDynamic = (
+  apiRes: ApiResItem[]
+): Record<string, any> => {
   let obj: Record<string, any> = {};
 
   apiRes.forEach((item1) => {
     if (item1.type === "dropdown") {
       if (item1.value !== "None") {
         if (item1.typeOfValue === "integer") {
-          obj = { ...obj, [item1.variableName]: parseInt(item1.value) || item1.value };
+          obj = {
+            ...obj,
+            [item1.variableName]: parseInt(item1.value) || item1.value,
+          };
         } else if (item1.typeOfValue === "array") {
           obj = { ...obj, [item1.variableName]: [item1.value] };
         } else {
@@ -76,13 +81,16 @@ export const objToReturnDynamic = (apiRes: ApiResItem[]): Record<string, any> =>
 
       obj = {
         ...obj,
-        [variableName]: fieldsArray.map(arr => objToReturnDynamic(arr)),
+        [variableName]: fieldsArray.map((arr) => objToReturnDynamic(arr)),
       };
     }
 
     if (item1.type === "textfield" || item1.type === "textFormatter") {
       if (item1.typeOfValue === "integer") {
-        obj = { ...obj, [item1.variableName]: parseInt(item1.value) || item1.value };
+        obj = {
+          ...obj,
+          [item1.variableName]: parseInt(item1.value) || item1.value,
+        };
       } else if (item1.typeOfValue === "float") {
         obj = { ...obj, [item1.variableName]: parseFloat(item1.value) };
       } else {
@@ -99,291 +107,340 @@ export const objToReturnDynamic = (apiRes: ApiResItem[]): Record<string, any> =>
  */
 export function handleFlowZoneCheckIfAllHandlesAreConnected() {
   // Get nodes and edges from the flow store
-  const { nodes, edges } = useFlowStore.getState()
+  const { nodes, edges } = useFlowStore.getState();
 
-  let allAreConnected = true
+  let allAreConnected = true;
   console.log({ nodes, edges });
 
   nodes.forEach((element) => {
     console.log({ element, allAreConnected });
 
-    if (element.type === 'Handler') {
-      let allAreSources = true
+    if (element.type === "Handler") {
+      let allAreSources = true;
 
-      let isDefaultSource = edges.find(edge => ((element.id === edge.source) && edge.sourceHandle === '0'))
+      let isDefaultSource = edges.find(
+        (edge) => element.id === edge.source && edge.sourceHandle === "0"
+      );
       console.log({ isDefaultSource });
 
       if (!isDefaultSource) {
-        allAreSources = false
+        allAreSources = false;
       }
 
       element.data.dynamicDataHandler.forEach((elt: any, index: number) => {
-        let isSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === (index + 1) + '')
+        let isSource = edges.find(
+          (edge) =>
+            element.id === edge.source && edge.sourceHandle === index + 1 + ""
+        );
 
         if (!isSource) {
-          allAreSources = false
+          allAreSources = false;
         }
-      })
+      });
 
       if (!allAreSources) {
-        allAreConnected = false
+        allAreConnected = false;
       }
-    }
-    else if (element.type === 'RPAList' || element.type === 'Card') {
-      let isSource = false
+    } else if (element.type === "RPAList" || element.type === "Card") {
+      let isSource = false;
       edges.forEach((edge) => {
-        if ((element.id === edge.source)) {
-          isSource = true
+        if (element.id === edge.source) {
+          isSource = true;
         }
-      })
+      });
 
       if (!isSource) {
-        allAreConnected = false
+        allAreConnected = false;
       }
 
-      let isTarget = false
+      let isTarget = false;
       edges.forEach((edge) => {
-        if ((element.id === edge.target)) {
-          isTarget = true
+        if (element.id === edge.target) {
+          isTarget = true;
         }
-      })
+      });
 
       if (!isTarget) {
-        allAreConnected = false
+        allAreConnected = false;
       }
-    }
-    else if (element.type === 'Message' || element.type === 'DatePrompt' || element.type === 'NumberPrompt') {
-      let allAreSources = true
+    } else if (
+      element.type === "Message" ||
+      element.type === "DatePrompt" ||
+      element.type === "NumberPrompt"
+    ) {
+      let allAreSources = true;
 
-      let isDefaultSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === '0')
+      let isDefaultSource = edges.find(
+        (edge) => element.id === edge.source && edge.sourceHandle === "0"
+      );
 
       if (!isDefaultSource) {
-        allAreSources = false
+        allAreSources = false;
       }
       element.data.dynamicDataHandler.forEach((elt: any, index: number) => {
-        let isSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === (index + 1) + '')
+        let isSource = edges.find(
+          (edge) =>
+            element.id === edge.source && edge.sourceHandle === index + 1 + ""
+        );
 
         if (!isSource) {
-          allAreSources = false
+          allAreSources = false;
         }
-      })
+      });
 
       if (!allAreSources) {
-        allAreConnected = false
+        allAreConnected = false;
       }
 
-      let isTarget = edges.find(edge => (element.id === edge.target))
+      let isTarget = edges.find((edge) => element.id === edge.target);
 
       if (!isTarget) {
-        allAreConnected = false
+        allAreConnected = false;
       }
-    }
-    else if (element.type === 'ConfirmPrompt' || element.type === 'KnowledgeBase') {
-      let isSourceOnHandle0 = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === '0')
-      let isSourceOnHandle1 = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === '1')
+    } else if (
+      element.type === "ConfirmPrompt" ||
+      element.type === "KnowledgeBase"
+    ) {
+      let isSourceOnHandle0 = edges.find(
+        (edge) => element.id === edge.source && edge.sourceHandle === "0"
+      );
+      let isSourceOnHandle1 = edges.find(
+        (edge) => element.id === edge.source && edge.sourceHandle === "1"
+      );
 
       if (!isSourceOnHandle0 || !isSourceOnHandle1) {
-        allAreConnected = false
+        allAreConnected = false;
       }
 
-      let isTarget = edges.find(edge => (element.id === edge.target))
+      let isTarget = edges.find((edge) => element.id === edge.target);
 
       if (!isTarget) {
-        allAreConnected = false
+        allAreConnected = false;
       }
-    }
-    else if (element.type === 'ChoicePrompt') {
-      let allAreSources = true
+    } else if (element.type === "ChoicePrompt") {
+      let allAreSources = true;
 
       element.data.formData.forEach((elt: any, index: number) => {
-        let isSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === (index + 1) + '')
+        let isSource = edges.find(
+          (edge) =>
+            element.id === edge.source && edge.sourceHandle === index + 1 + ""
+        );
 
         if (!isSource) {
-          allAreSources = false
+          allAreSources = false;
         }
-      })
+      });
 
-      let isDefaultSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === '0')
+      let isDefaultSource = edges.find(
+        (edge) => element.id === edge.source && edge.sourceHandle === "0"
+      );
 
       if (!isDefaultSource) {
-        allAreSources = false
+        allAreSources = false;
       }
 
       element.data.dynamicDataHandler.forEach((elt: any, index: number) => {
-        let isSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === 'h-' + (index + 1))
+        let isSource = edges.find(
+          (edge) =>
+            element.id === edge.source &&
+            edge.sourceHandle === "h-" + (index + 1)
+        );
 
         if (!isSource) {
-          allAreSources = false
+          allAreSources = false;
         }
-      })
+      });
 
       if (!allAreSources) {
-        allAreConnected = false
+        allAreConnected = false;
       }
 
-      let isTarget = edges.find(edge => (element.id === edge.target))
+      let isTarget = edges.find((edge) => element.id === edge.target);
 
       if (!isTarget) {
-        allAreConnected = false
+        allAreConnected = false;
       }
-    }
-    else if (element.type === 'WebListCard') {
-      let allAreSources = true
+    } else if (element.type === "WebListCard") {
+      let allAreSources = true;
 
       element.data.formData.forEach((elt: any, index: number) => {
-        let isSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === (index + 1) + '')
+        let isSource = edges.find(
+          (edge) =>
+            element.id === edge.source && edge.sourceHandle === index + 1 + ""
+        );
 
         if (!isSource) {
-          allAreSources = false
+          allAreSources = false;
         }
-      })
+      });
 
-      let isDefaultSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === '0')
+      let isDefaultSource = edges.find(
+        (edge) => element.id === edge.source && edge.sourceHandle === "0"
+      );
 
       if (!isDefaultSource) {
-        allAreSources = false
+        allAreSources = false;
       }
 
       element.data.dynamicDataHandler.forEach((elt: any, index: number) => {
-        let isSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === 'h-' + (index + 1))
+        let isSource = edges.find(
+          (edge) =>
+            element.id === edge.source &&
+            edge.sourceHandle === "h-" + (index + 1)
+        );
 
         if (!isSource) {
-          allAreSources = false
+          allAreSources = false;
         }
-      })
+      });
 
       if (!allAreSources) {
-        allAreConnected = false
+        allAreConnected = false;
       }
 
-      let isTarget = edges.find(edge => (element.id === edge.target))
+      let isTarget = edges.find((edge) => element.id === edge.target);
 
       if (!isTarget) {
-        allAreConnected = false
+        allAreConnected = false;
       }
-    }
-    else if (element.type === 'ListCard') {
-      let allAreSources = true
+    } else if (element.type === "ListCard") {
+      let allAreSources = true;
 
       element.data.formData.forEach((elt: any, index: number) => {
         if (!elt.urlSwitch) {
-          let isSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === (index + 1) + '')
+          let isSource = edges.find(
+            (edge) =>
+              element.id === edge.source && edge.sourceHandle === index + 1 + ""
+          );
 
           if (!isSource) {
-            allAreSources = false
+            allAreSources = false;
           }
         }
-      })
+      });
 
-      let isDefaultSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === '0')
+      let isDefaultSource = edges.find(
+        (edge) => element.id === edge.source && edge.sourceHandle === "0"
+      );
 
       if (!isDefaultSource) {
-        allAreSources = false
+        allAreSources = false;
       }
 
       element.data.dynamicDataHandler.forEach((elt: any, index: number) => {
-        let isSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === 'h-' + (index + 1))
+        let isSource = edges.find(
+          (edge) =>
+            element.id === edge.source &&
+            edge.sourceHandle === "h-" + (index + 1)
+        );
 
         if (!isSource) {
-          allAreSources = false
+          allAreSources = false;
         }
-      })
+      });
 
       if (!allAreSources) {
-        allAreConnected = false
+        allAreConnected = false;
       }
 
-      let isTarget = edges.find(edge => (element.id === edge.target))
-
-      if (!isTarget) {
-        allAreConnected = false
-      }
-    }
-    else if (element.type === 'End') {
-      let isTarget = edges.find(edge => (element.id === edge.target))
+      let isTarget = edges.find((edge) => element.id === edge.target);
 
       if (!isTarget) {
-        allAreConnected = false
+        allAreConnected = false;
       }
-    }
-    else if (element.type === 'RPA') {
-      let allAreSources = true
+    } else if (element.type === "End") {
+      let isTarget = edges.find((edge) => element.id === edge.target);
+
+      if (!isTarget) {
+        allAreConnected = false;
+      }
+    } else if (element.type === "RPA") {
+      let allAreSources = true;
 
       if (element.data.outputs) {
         if (Object.keys(element.data.outputs).length > 0) {
           // eslint-disable-next-line
-          Array.from(Array(Object.keys(element.data.outputs).length), (e, index) => {
-            let isSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === index + '')
+          Array.from(
+            Array(Object.keys(element.data.outputs).length),
+            (e, index) => {
+              let isSource = edges.find(
+                (edge) =>
+                  element.id === edge.source && edge.sourceHandle === index + ""
+              );
 
-            if (!isSource) {
-              allAreSources = false
+              if (!isSource) {
+                allAreSources = false;
+              }
             }
-          })
+          );
 
           if (!allAreSources) {
-            allAreConnected = false
+            allAreConnected = false;
           }
-        }
-        else {
-          let isSource = edges.find(edge => (element.id === edge.source))
+        } else {
+          let isSource = edges.find((edge) => element.id === edge.source);
 
           if (!isSource) {
-            allAreSources = false
+            allAreSources = false;
           }
 
           if (!allAreSources) {
-            allAreConnected = false
+            allAreConnected = false;
           }
         }
       }
 
-      let isTarget = edges.find(edge => (element.id === edge.target))
+      let isTarget = edges.find((edge) => element.id === edge.target);
 
       if (!isTarget) {
-        allAreConnected = false
+        allAreConnected = false;
       }
-    }
-    else if (element.type === 'Switch') {
-      let allAreSources = true
-      const finaleObj = objToReturnDynamic(element.data.json)
+    } else if (element.type === "Switch") {
+      let allAreSources = true;
+      const finaleObj = objToReturnDynamic(element.data.json);
 
       finaleObj.conditions.forEach((_: any, index: number) => {
-        let isSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === (index + 1) + '')
+        let isSource = edges.find(
+          (edge) =>
+            element.id === edge.source && edge.sourceHandle === index + 1 + ""
+        );
 
         if (!isSource) {
-          allAreSources = false
+          allAreSources = false;
         }
-      })
+      });
 
-      let isDefaultSource = edges.find(edge => (element.id === edge.source) && edge.sourceHandle === '0')
+      let isDefaultSource = edges.find(
+        (edge) => element.id === edge.source && edge.sourceHandle === "0"
+      );
 
       if (!isDefaultSource) {
-        allAreSources = false
+        allAreSources = false;
       }
 
       if (!allAreSources) {
-        allAreConnected = false
+        allAreConnected = false;
       }
 
-      let isTarget = edges.find(edge => (element.id === edge.target))
+      let isTarget = edges.find((edge) => element.id === edge.target);
 
       if (!isTarget) {
-        allAreConnected = false
+        allAreConnected = false;
       }
     }
-  })
+  });
 
-  return allAreConnected
+  return allAreConnected;
 }
 
 // Assuming these helper functions exist (you should also type these)
 declare function checkLength(value: string, maxLength: number): boolean;
 // declare function removeHTMLTags(html: string): string;
 
-
-
-
-export const getValueOptions = (apiRes: DropdownItem[], children: string[] = []): any => {
+export const getValueOptions = (
+  apiRes: DropdownItem[],
+  children: string[] = []
+): any => {
   let ch: string[] = [...children];
   let a: any = apiRes;
 
@@ -414,7 +471,11 @@ export const getValueOptions = (apiRes: DropdownItem[], children: string[] = [])
   });
   return a;
 };
-export function insertArrayAtIndex<T>(originalArray: T[], index: number, newArray: T[]): T[] {
+export function insertArrayAtIndex<T>(
+  originalArray: T[],
+  index: number,
+  newArray: T[]
+): T[] {
   // Create a new array by spreading the items before the index,
   // then adding the items from the new array,
   // and finally, spreading the items after the index.
@@ -437,9 +498,8 @@ export function keyBy<T extends Record<string, any>, K extends keyof T>(
   }, {} as Record<string, T>);
 }
 export function isPlainObject<T extends any>(value: T) {
-  return typeof (value) === "object" && !Array.isArray(value)
+  return typeof value === "object" && !Array.isArray(value);
 }
-
 
 type OptionMap = Record<string, FormItem[]>;
 
@@ -458,16 +518,33 @@ interface FormItem {
 
 type FormValues = Record<string, any>;
 
-export const validateArray = (items: FormItem[], values: FormValues): boolean => {
+export const validateArray = (
+  items: FormItem[],
+  values: FormValues
+): boolean => {
   for (const item of items) {
-    const { type, variableName, required, multiselect, options, json, fieldsArray } = item;
+    const {
+      type,
+      variableName,
+      required,
+      multiselect,
+      options,
+      json,
+      fieldsArray,
+    } = item;
     const value = values[variableName];
     console.log({ item, value, values });
 
     switch (type) {
       case "dropdown":
       case "api":
-        if ((required && (value === "None" || !value)) || (required && multiselect && Array.isArray(value) && value.length === 0)) {
+        if (
+          (required && (value === "None" || !value)) ||
+          (required &&
+            multiselect &&
+            Array.isArray(value) &&
+            value.length === 0)
+        ) {
           return false;
         }
         if (options && typeof value === "string" && options[value]) {
@@ -480,15 +557,21 @@ export const validateArray = (items: FormItem[], values: FormValues): boolean =>
         if (required && (!value || !value.toString().trim())) return false;
         break;
       case "textFormatter":
-        if (required && (!value || !removeHTMLTags(value).toString().trim())) return false;
+        if (required && (!value || !removeHTMLTags(value).toString().trim()))
+          return false;
         break;
       case "multiselect":
       case "array":
-        if (required && (!Array.isArray(value) || value.length < 1)) return false;
+        if (required && (!Array.isArray(value) || value.length < 1))
+          return false;
         break;
 
       case "json":
-        if (required && (!value || typeof value !== "object" || Object.keys(value).length < 1)) return false;
+        if (
+          required &&
+          (!value || typeof value !== "object" || Object.keys(value).length < 1)
+        )
+          return false;
         break;
 
       case "radiobutton":
@@ -502,7 +585,8 @@ export const validateArray = (items: FormItem[], values: FormValues): boolean =>
           if (json.required && json.fieldsArray.length < 1) return false;
           if (!validateArray(json.fieldsArray, values)) return false;
         } else {
-          if (required && (!fieldsArray || fieldsArray.length < 1)) return false;
+          if (required && (!fieldsArray || fieldsArray.length < 1))
+            return false;
           if (!validateArray(fieldsArray!, values)) return false;
         }
         break;
@@ -519,8 +603,8 @@ export const validateArray = (items: FormItem[], values: FormValues): boolean =>
   return true;
 };
 export function removeHTMLTags(htmlCode: string): string {
-  const withoutHTMLTags = htmlCode.replace(/<[^>]*>/g, '');
-  return withoutHTMLTags.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+  const withoutHTMLTags = htmlCode.replace(/<[^>]*>/g, "");
+  return withoutHTMLTags.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 }
 export function camelToDashCase(str: string): string {
   return str
@@ -529,14 +613,15 @@ export function camelToDashCase(str: string): string {
     .toLowerCase();
 }
 export const generateRandomString = (length = 32): string => {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-  let result = ""
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
   for (let i = 0; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * characters.length)
-    result += characters[randomIndex]
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
   }
-  return result
-}
+  return result;
+};
 
 export function getNextNodeId(
   nodeId: string,
@@ -545,16 +630,16 @@ export function getNextNodeId(
   handleId?: string | null
 ): string | null {
   const foundEdge = edges.find(
-    edge => edge.source === nodeId && (!handleId || edge.sourceHandle === handleId)
+    (edge) =>
+      edge.source === nodeId && (!handleId || edge.sourceHandle === handleId)
   );
 
   if (!foundEdge) return null;
 
-  const nextNode = nodes.find(node => node.id === foundEdge.target);
+  const nextNode = nodes.find((node) => node.id === foundEdge.target);
 
   return nextNode?.type === "End" ? null : foundEdge.target;
 }
-
 
 export function stringifyAndExtractVariables(json: unknown): string[] | null {
   const jsonString = JSON.stringify(json, null, 2);
@@ -594,4 +679,36 @@ export function extractCreds(obj: any): string[] {
   }
 
   return creds;
+}
+
+export function getAllPreviousNodes(nodeId: string): string[] {
+  const edges = useFlowStore.getState().reactFlowInstance?.getEdges() || [];
+  const visited = new Set<string>();
+  const result: string[] = [];
+
+  function dfs(currentId: string) {
+    if (visited.has(currentId)) return;
+    visited.add(currentId);
+
+    const incomingEdges = edges.filter((edge) => edge.target === currentId);
+
+    for (const edge of incomingEdges) {
+      const sourceId = edge.source;
+      result.push(sourceId);
+      dfs(sourceId); // recursively check the source node
+    }
+  }
+
+  dfs(nodeId);
+
+  return [...new Set(result)];
+}
+export function omitKeys<T extends Record<string, any>, K extends keyof T>(
+  obj: T,
+  keys: K[]
+): Omit<T, K> {
+  const entries = Object.entries(obj).filter(
+    ([key]) => !keys.includes(key as K)
+  );
+  return Object.fromEntries(entries) as Omit<T, K>;
 }

@@ -11,7 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../..
 import { Label } from "../../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
 import { Switch } from "../../ui/switch"
-
 interface SectionProps {
     config: any
     onConfigUpdate: (key: string, value: any) => void
@@ -22,11 +21,9 @@ interface SectionProps {
     description: string
     elements: any[]
 }
-
 function getSchema(type: string, elements: any[]) {
     return elements.find((o) => o.type === type) as any
 }
-
 export function SharedSection({
     config,
     defaultType,
@@ -39,7 +36,6 @@ export function SharedSection({
 }: SectionProps) {
     const setNodeFilledDataByKey = useRightDrawerStore((state) => state.setNodeFilledDataByKey)
     const setValidationByKey = useRightDrawerStore((state) => state.setValidationByKey)
-
     const { localConfig,updateConfig, updateNestedConfig } =
         useDebounceConfig<any>(
             config.content,
@@ -53,13 +49,9 @@ export function SharedSection({
                     onConfigUpdate(`extras.${variableName}.content`, savedConfig);
                     updateSubNodeValidationById(id, variableName, validateArray(schema.current.rightSideData.json, savedConfig))
                     setNodeFilledDataByKey(id, variableName, savedConfig)
-
-
-
                 },
             }
         );
-
     const enabled = config.enabled === true
     const type = config.type
     const optional = config.optional || false
@@ -69,8 +61,6 @@ export function SharedSection({
     const del = useFlowStore((s) => s.deleteSubNodeById)
     console.log({ defaultType, type, localConfig, content });
     const schema = useRef(getSchema(type, elements));
-
-
     return (
         <Card>
             <CardHeader className="pb-3">
@@ -105,7 +95,6 @@ export function SharedSection({
                                             const op = elements.find((o) => o.type === value) as any
                                             const defaultValues = objToReturnDynamicv2((op.rightSideData.json))
                                             console.log({ defaultValues });
-
                                             schema.current=op
                                             onConfigUpdate(`extras.${variableName}.type`, value)
                                             setTimeout(() => {
@@ -137,7 +126,6 @@ export function SharedSection({
                                         onFieldChange={({ path, value }) => {
                                             console.log({ path, value });
                                             console.log({ path, value, content });
-
                                             updateNestedConfig(`${path}`, value)
                                         }}
                                     />

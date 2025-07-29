@@ -1,7 +1,9 @@
-import * as React from "react"
 import JsonView from "@uiw/react-json-view"
 import { TriangleSolidArrow } from "@uiw/react-json-view/triangle-solid-arrow"
+import * as React from "react"
 import { cn } from "../../lib/utils"
+import { pathExistsInOutputVariables } from "../../lib/variable-utils"
+import { useFlowStore } from "../../store/flow-store"
 
 const customTheme = {
     "--w-rjv-font-family": "monospace",
@@ -49,32 +51,6 @@ const CopyIcon: React.FC = () => {
     )
 }
 
-const DownloadIcon: React.FC = () => {
-    return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-        </svg>
-    )
-}
-
-const ExpandIcon: React.FC = () => {
-    return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-            />
-        </svg>
-    )
-}
-
 interface ResponseOutputProps {
     runResult?: any
     stopCopy?: boolean
@@ -109,74 +85,50 @@ const ResponseOutput = React.forwardRef<HTMLDivElement, ResponseOutputProps>(
         },
         ref,
     ) => {
+        const { setFormDialogStatus, setIsFormDialogOpen, setDialogProps, setShowSnackBarMessage, clickedElement, outputVariables } = useFlowStore()
+
         const Copied = JsonView.Copied
-
-        const handleExport = (jsonData: any) => {
-            if (onExport) {
-                onExport(jsonData)
-            } else {
-                const fileData = JSON.stringify(jsonData, null, 2)
-                const blob = new Blob([fileData], { type: "application/json" })
-                const url = URL.createObjectURL(blob)
-                const link = document.createElement("a")
-                link.href = url
-                link.download = "result.json"
-                document.body.appendChild(link)
-                link.click()
-                document.body.removeChild(link)
-                URL.revokeObjectURL(url)
-            }
-        }
-
-        const handleCopy = (event: any) => {
-            if (onCopy) {
-                onCopy(event)
-            }
-        }
-
         const handleCreateVariable = (copyEvent: any) => {
-            if (onCreateVariable) {
-                onCreateVariable(copyEvent)
+            console.log({copyEvent});
+            
+            if (copyEvent.name !== false) {
+                let copiedPath = reformatPathArray(copyEvent.namespace);
+
+                let isCopiedPathAlreadyExists =
+                    pathExistsInOutputVariables(
+                        copiedPath,
+                        clickedElement.id,
+                        outputVariables
+                    );
+                if (isCopiedPathAlreadyExists) {
+
+                    setShowSnackBarMessage({
+                        color: "destructive",
+                        duration: 1000,
+                        open: true,
+                        message:
+                            "Path already assigned to ${" + isCopiedPathAlreadyExists + "}",
+                    })
+                } else {
+                    setFormDialogStatus("createOutputVariable")
+                    setIsFormDialogOpen(true)
+                    setDialogProps({ path: copiedPath })
+                }
             }
-        }
+        };
+        const reformatPathArray = (pathArray: any[]) => {
+            if (pathArray.length > 0) {
+                pathArray.shift()
+                return pathArray.join(".")
+            }
+            return "";
+        };
 
         if (!runResult) return null
 
         return (
             <div ref={ref} className={cn("w-full", className)} {...props}>
                 {hasDivider && <hr className="border-gray-300 my-5 h-0.5" />}
-
-
-                {/* <div className="absolute top-2 right-2 flex items-center gap-2">
-                        <button
-                            onClick={() => handleExport(runResult)}
-                            className="p-1 text-blue-400 hover:text-blue-300 cursor-pointer"
-                            title="Export Result"
-                        >
-                            <DownloadIcon />
-                        </button>
-
-                        {!showMaximize && (
-                            <button
-                                onClick={onMaximize}
-                                className="p-1 text-blue-400 hover:text-blue-300 cursor-pointer"
-                                title="Maximize"
-                            >
-                                <ExpandIcon />
-                            </button>
-                        )}
-
-                        {runResult.Status && (
-                            <div
-                                className={cn(
-                                    "px-2 py-1 text-xs rounded",
-                                    runResult.Status === "PASS" ? "bg-green-800 text-green-200" : "bg-red-800 text-red-200",
-                                )}
-                            >
-                                {runResult.Status}
-                            </div>
-                        )}
-                    </div> */}
 
                 <JsonView
                     value={runResult}
@@ -193,7 +145,7 @@ const ResponseOutput = React.forwardRef<HTMLDivElement, ResponseOutputProps>(
                 >
                     <Copied
                         render={(props: any, rowData: any) => {
-                            const { style, onClick, ...restProps } = props
+                            const { style } = props
                             return (
                                 <div className="inline-flex">
                                     {!stopCopy && (
