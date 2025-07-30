@@ -63,13 +63,14 @@ export function getContent(selectedNode: any, params: any) {
 function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
   if (!data) return false;
 
-  if (data.loopFromSwitch && data.loopFromName.trim().length === 0) {
-    return false;
-  }
+  // if (data.loopFromSwitch && data.loopFromName.trim().length === 0) {
+  //   return false;
+  // }
 
   for (const item of data.branches) {
+    console.log({ data, item });
     if (
-      !item.name || item.name.trim() === '' ||
+      !item.label || item.label.trim() === '' ||
       !item.firstOperator || item.firstOperator.trim() === '' ||
       !item.secondOperator || item.secondOperator.trim() === ''
     ) {
@@ -100,7 +101,7 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
   const addBranch = () => {
     const newBranch = {
       id: `branch-${Date.now()}`,
-      name: `Branch ${branches.length + 1}`,
+      label: `Branch ${branches.length + 1}`,
       description: "",
       operatorType: "number",
       firstOperator: "",
@@ -114,14 +115,15 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
     const updatedBranches = [...branches]
     updatedBranches[index] = { ...updatedBranches[index], ...updates }
     updateNestedConfig("branches", updatedBranches)
+    console.log({ updatedBranches });
+
   }
 
   const removeBranch = (index: number) => {
     const updatedBranches = branches.filter((_: any, i: number) => i !== index)
     updateNestedConfig("branches", updatedBranches)
   }
-  const edges = useFlowStore(state => state.edges)
-  const nodes = useFlowStore(state => state.nodes)
+
 
 
   return (
@@ -210,10 +212,11 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
                           Operator Type
                         </Label>
                         <Select
-                          value={branch.operatorType || "number"}
+                          value={branch.operatorType}
                           onValueChange={(value) => {
+
                             updateBranch(index, { operatorType: value })
-                            updateBranch(index, { checkType: "equal" })
+                            // updateBranch(index, { checkType: "equal" })
                           }
                           }
                         >
@@ -328,10 +331,10 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
                 <FieldWrapper
                   field={{ type: "textfield" }}
                   variableName={`default-branch-name`}
-                  value={localConfig.defaultBranch?.name || "Default"}
+                  value={localConfig.defaultBranch?.label || "Default"}
                   onChange={(e) => {
                     const currentDefault = localConfig.defaultBranch || {}
-                    updateNestedConfig("defaultBranch", { ...currentDefault, name: e })
+                    updateNestedConfig("defaultBranch", { ...currentDefault, label: e })
                   }
                   }
                   className="h-8 text-xs"
@@ -339,7 +342,7 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
                   <Input
                     id="default-branch-name"
                     placeholder="Default branch name"
-                    value={localConfig.defaultBranch?.name || "Default"}
+                    value={localConfig.defaultBranch?.label || "Default"}
                     onChange={(e) => {
                       const currentDefault = localConfig.defaultBranch || {}
                       updateNestedConfig("defaultBranch", { ...currentDefault, name: e })

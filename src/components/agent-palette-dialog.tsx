@@ -140,8 +140,15 @@ const agentTypes = [
     nodeType: "basic",
     color: "bg-cyan-500",
     defaults: {
-      branches: [{ label: "branch 1", id: `branch-${Date.now()}` }],
-      defaultBranch: { name: "Default", description: "" },
+      branches: [{
+        label: "branch 1", id: `branch-${Date.now()}`,
+        description: "",
+        operatorType: "number",
+        firstOperator: "",
+        secondOperator: "",
+        checkType: "equal",
+      }],
+      defaultBranch: { label: "Default", description: "" },
       save: false,
       variableName: "",
       loopFromSwitch: false,

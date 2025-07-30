@@ -4,12 +4,12 @@ import { GitBranch } from "lucide-react";
 import { NodeHandle } from "../handles/handle";
 import { BaseNode } from "./base-node";
 export interface RouterDefaultBranch {
-  name: string
+  label: string
   description: string
 }
 export interface RouterBranch {
   id: string
-  name: string
+  label: string
   description: string
   operatorType: "number" | "string"
   firstOperator: string
@@ -62,7 +62,7 @@ export function RouterNode(props: NodeProps<Node<RouterConfig>>) {
           {/* Branch Label Row */}
           <div className="flex items-center mb-2">
             <div className="w-2 h-2 bg-cyan-500 rounded-full mr-2 flex-shrink-0"></div>
-            <span className="font-medium text-cyan-700 truncate">{branch.name || `Branch ${index + 1}`}</span>
+            <span className="font-medium text-cyan-700 truncate">{branch.label || `Branch ${index + 1}`}</span>
           </div>
 
           {/* Condition Row */}
@@ -95,7 +95,7 @@ export function RouterNode(props: NodeProps<Node<RouterConfig>>) {
         <div className="flex items-center mb-2">
           <div className="w-2 h-2 bg-gray-400 rounded-full mr-2 flex-shrink-0"></div>
           <span className="font-medium text-gray-600 truncate">
-            {data.rightSideData.defaultBranch?.name || "Default Branch"}
+            {data.rightSideData.defaultBranch?.label || "Default Branch"}
           </span>
         </div>
 
