@@ -582,13 +582,13 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
                 nodes,
                 edges
             );
-
+            const deleteNodesValidationById=state.deleteNodesValidationById
+            deleteNodesValidationById(id)
             // Check clickedElement
             const newClickedElement =
                 state.clickedElement?.id === id ? null : state.clickedElement;
-
+            
             return {
-                ...state,
                 nodes: updatedNodes,
                 edges: updatedEdges,
                 clickedElement: newClickedElement,
