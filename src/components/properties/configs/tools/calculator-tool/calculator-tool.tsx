@@ -14,7 +14,7 @@ interface CalculatorProps {
 
 
 const CalculatorTool: React.FC<CalculatorProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter }) => {
-    const { localConfig, updateConfig } =
+    const { localConfig, updateNestedConfig } =
         useDebounceConfig<any>(
             content,
             {
@@ -36,10 +36,10 @@ const CalculatorTool: React.FC<CalculatorProps> = ({ selectedNodeId, content, on
                 flowZoneSelectedId={selectedNodeId}
                 onFieldChange={(partialState, replace) => {
 
-                    if (replace) updateConfig(partialState);
+                    if (replace) updateNestedConfig("json",partialState);
                     else
-                        updateConfig({
-                            ...localConfig,
+                    updateNestedConfig("json",{
+                            ...localConfig.json,
                             ...partialState,
                         });
                 }}

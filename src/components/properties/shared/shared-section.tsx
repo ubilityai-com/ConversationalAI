@@ -36,7 +36,7 @@ export function SharedSection({
 }: SectionProps) {
     const setNodeFilledDataByKey = useRightDrawerStore((state) => state.setNodeFilledDataByKey)
     const setValidationByKey = useRightDrawerStore((state) => state.setValidationByKey)
-    const { localConfig, updateConfig, updateNestedConfig } =
+    const { localConfig, updateConfig,  } =
         useDebounceConfig<any>(
             config.content,
             {
@@ -124,11 +124,12 @@ export function SharedSection({
                                         fieldValues={content}
                                         firstCall={true}
                                         onFieldChange={(partialState, replace) => {
-
-                                            if (replace) updateNestedConfig(`${"content"}`, partialState);
+                                            console.log({partialState,replace,content});
+                                            
+                                            if (replace) updateConfig(partialState);
                                             else
-                                                updateNestedConfig(`${"content"}`, {
-                                                    ...localConfig.content,
+                                                updateConfig({
+                                                    ...content,
                                                     ...partialState,
                                                 });
                                         }}

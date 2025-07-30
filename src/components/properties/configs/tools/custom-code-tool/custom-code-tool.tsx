@@ -14,7 +14,7 @@ interface CustomCodeToolProps {
 
 
 const CustomCodeTool: React.FC<CustomCodeToolProps> = ({ selectedNodeId, content, onContentUpdate, schema, counter }) => {
-  const { localConfig,updateConfig } =
+  const { localConfig,updateNestedConfig } =
     useDebounceConfig<any>(
       content,
       {
@@ -35,10 +35,10 @@ const CustomCodeTool: React.FC<CustomCodeToolProps> = ({ selectedNodeId, content
         flowZoneSelectedId={selectedNodeId}
         onFieldChange={(partialState, replace) => {
 
-          if (replace) updateConfig(partialState);
+          if (replace) updateNestedConfig("json",partialState);
           else
-          updateConfig({
-                  ...localConfig,
+          updateNestedConfig("json",{
+                  ...localConfig.json,
                   ...partialState,
               });
       }}

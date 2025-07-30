@@ -62,9 +62,9 @@ const CustomTool: React.FC<CustomToolProps> = ({ selectedNodeId, content, onCont
         flowZoneSelectedId={selectedNodeId}
         onFieldChange={(partialState, replace) => {
 
-          if (replace) updateConfig(partialState);
+          if (replace) updateNestedConfig("json",partialState);
           else
-              updateConfig({
+          updateNestedConfig("json",{
                   ...localConfig.json,
                   ...partialState,
               });
