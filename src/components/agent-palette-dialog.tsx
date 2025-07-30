@@ -23,9 +23,11 @@ import { ScrollArea } from "./ui/scroll-area";
 import { SlackJson } from "../elements/integration-elements/SlackJson";
 import { GmailJson } from "../elements/integration-elements/GmailJson";
 import { IntegrationElements } from "../elements/integration-elements";
+import { ConversationalRetrievalQaChainJson } from "../elements/langchain-elements/ConversationalRetrievalQaChainJson";
 
 const agentTypes = [
   // BasicLLMJson,
+  ConversationalRetrievalQaChainJson,
   {
     type: "ReactAgent",
     label: "React Agent",

@@ -15,7 +15,7 @@ import { OpenAIChatModelJson } from "./OpenAIChatModelJson";
 import { TogetherAIChatModelJson } from "./TogetherAIChatModelJson";
 import { VertexAIChatModelJson } from "./VertexAIChatModelJson";
 
-const ModelsElements = [
+const ModelElements = [
     AnthropicChatModelJson,
     AzureChatModelJson,
     OpenAIChatModelJson,
@@ -33,4 +33,4 @@ const ModelsElements = [
     FireworksChatModelJson,
     NvidiaChatModelJson
 ];
-export default ModelsElements
+export default ModelElements
