@@ -1,33 +1,23 @@
-import { addEdge, Background, Controls, MarkerType, MiniMap, ReactFlow, useReactFlow } from '@xyflow/react';
+import { addEdge, Background, Controls, MarkerType, MiniMap, ReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { v4 as uuidv4 } from "uuid";
 import ButtonEdge from './components/edgeTypes/button-edge';
 import connectionLine from './components/edgeTypes/connection-line';
 import { ChoiceNode } from './components/nodes/choice-node';
+import { ConditionAgentNode } from './components/nodes/condition-agent-node';
+import { EndNode } from './components/nodes/end-node';
 import { InputNode } from './components/nodes/input-node';
+import { IntegrationNode } from './components/nodes/integration-node';
+import { LlmNode } from './components/nodes/llm-node';
 import { MessageNode } from './components/nodes/message-node';
 import { RouterNode } from './components/nodes/router-node';
-import AgentNode from './components/nodesTypes/AgentNode';
-import Chain from './components/nodesTypes/Chain';
-import RPANode from './components/nodesTypes/RPA';
-import SwitchNode from './components/nodesTypes/Switch';
-import { setAutomationArray } from './lib/automation-utils';
 import { useFlowStore } from './store/flow-store';
-import { EndNode } from './components/nodes/end-node';
-import { LlmNode } from './components/nodes/llm-node';
-import { ConditionAgentNode } from './components/nodes/condition-agent-node';
-import { IntegrationNode } from './components/nodes/integration-node';
 
 const FlowZone = () => {
   const nodeTypes = {
     Handler: InputNode,
     Message: MessageNode,
     ChoicePrompt: ChoiceNode,
-    Agent: AgentNode,
-    Switch: SwitchNode,
     Router: RouterNode,
-    RPA: RPANode,
-    BasicLlm: Chain,
     End: EndNode,
     ReactAgent: LlmNode,
     ConditionAgent: ConditionAgentNode,

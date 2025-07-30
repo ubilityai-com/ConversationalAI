@@ -1,8 +1,9 @@
-import { Node, NodeProps } from "@xyflow/react";
 import { useState } from "react";
 import { SlackJson } from "../../../../elements/integration-elements/SlackJson";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
 import {
+    getAccvalue,
+    isJsonString,
     objToReturnDefaultValues,
     objToReturnValuesToSend,
 } from "../../../../lib/automation-utils";
@@ -13,43 +14,11 @@ import {
 } from "../../../../lib/utils";
 import { useFlowStore } from "../../../../store/flow-store";
 import { useRightDrawerStore } from "../../../../store/right-drawer-store";
+import { NodeConfigProps, NodeFormProps } from "../../../../types/automation-types";
 import AutomationSimple from "../../../custom/automation-v4";
 import { convertOutputVariablesByNodeId } from "../../../../lib/variable-utils";
 
-interface IntegrationConfigProps extends Record<string, any> {
-    label: string;
-    description: string;
-    rightSideData: Record<string, any>;
-}
-interface IntegrationFormProps {
-    selectedNode: NodeProps<Node<IntegrationConfigProps>>;
-    handleRightSideDataUpdate: (value: any) => void;
-}
-const getAccvalue = (finaleObj: any, name: string) => {
-    if (name.includes(".")) {
-        const properties = name.split(".");
-        const firstPart = properties[0];
-        const secondPart = properties[1];
-        return finaleObj[firstPart]
-            ? finaleObj[firstPart][secondPart]
-                ? finaleObj[firstPart][secondPart] || undefined
-                : undefined
-            : undefined;
-    } else
-        return finaleObj[name]
-            ? finaleObj[name][name]
-                ? finaleObj[name][name] || undefined
-                : undefined
-            : undefined;
-};
-function isJsonString(str: string) {
-    try {
-        JSON.parse(str);
-    } catch (e) {
-        return false;
-    }
-    return true;
-}
+
 const getOperationName = (type: string, operation: string) => {
     let opToReturn;
 
@@ -465,7 +434,7 @@ export function getContent(selectedNode: any, params: any) {
 export default function SlackForm({
     selectedNode,
     handleRightSideDataUpdate,
-}: IntegrationFormProps) {
+}: NodeFormProps) {
     const [schema, setSchema] = useState<any[]>(SlackJson.defaults.json);
     const updateNodesValidationById = useFlowStore(
         (state) => state.updateNodesValidationById
@@ -474,8 +443,8 @@ export default function SlackForm({
         (state) => state.setNodeFilledDataByKey
     );
 
-    const { localConfig, updateNestedConfig, setLocalConfig } = useDebounceConfig<
-        IntegrationConfigProps["rightSideData"]
+    const { localConfig, updateNestedConfig } = useDebounceConfig<
+        NodeConfigProps["rightSideData"]
     >(
         {
             ...selectedNode.data.rightSideData,

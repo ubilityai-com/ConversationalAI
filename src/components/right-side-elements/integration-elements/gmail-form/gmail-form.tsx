@@ -1,65 +1,40 @@
-import { Node, NodeProps } from "@xyflow/react";
 import { useState } from "react";
+import { GmailJson } from "../../../../elements/integration-elements/GmailJson";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
-import { objToReturnDefaultValues, objToReturnValuesToSend } from "../../../../lib/automation-utils";
+import { getAccvalue, objToReturnDefaultValues, objToReturnValuesToSend } from "../../../../lib/automation-utils";
 import { getNextNodeId, stringifyAndExtractVariables, validateArray } from "../../../../lib/utils";
 import { useFlowStore } from "../../../../store/flow-store";
 import { useRightDrawerStore } from "../../../../store/right-drawer-store";
+import { NodeConfigProps, NodeFormProps } from "../../../../types/automation-types";
 import AutomationSimple from "../../../custom/automation-v4";
-import { GmailJson } from "../../../../elements/integration-elements/GmailJson";
-
-interface IntegrationConfigProps extends Record<string, any> {
-    label: string;
-    description: string;
-    rightSideData: Record<string, any>;
-}
-interface IntegrationFormProps {
-    selectedNode: NodeProps<Node<IntegrationConfigProps>>;
-    handleRightSideDataUpdate: (value: any) => void;
-}
-const getAccvalue = (finaleObj: any, name: string) => {
-    if (name.includes(".")) {
-        const properties = name.split(".");
-        const firstPart = properties[0];
-        const secondPart = properties[1];
-        return finaleObj[firstPart]
-            ? finaleObj[firstPart][secondPart]
-                ? finaleObj[firstPart][secondPart] || undefined
-                : undefined
-            : undefined;
-    } else
-        return finaleObj[name]
-            ? finaleObj[name][name] ? finaleObj[name][name] || undefined : undefined
-            : undefined;
-};
 
 
 export function getContent(selectedNode: any, params: any) {
     const rightSideData = selectedNode.data.rightSideData
     const { edges, nodes } = params
-    const finaleObj = rightSideData.json
+    const json = rightSideData.json
 
     let jsonToSend = {};
-    if (finaleObj.type === "Message") {
+    if (json.type === "Message") {
         jsonToSend = {
-            message_id: finaleObj.messageID,
+            message_id: json.messageID,
         };
 
         if (
-            finaleObj.operation === "addLabel" ||
-            finaleObj.operation === "removeLabel"
+            json.operation === "addLabel" ||
+            json.operation === "removeLabel"
         ) {
             jsonToSend = {
                 ...jsonToSend,
-                label_id: finaleObj.labelNamesOrIDs,
+                label_id: json.labelNamesOrIDs,
             };
-        } else if (finaleObj.operation === "getMessage") {
-            jsonToSend = { ...jsonToSend, scope: finaleObj.scope };
-            if (finaleObj.scope === "all") {
+        } else if (json.operation === "getMessage") {
+            jsonToSend = { ...jsonToSend, scope: json.scope };
+            if (json.scope === "all") {
                 jsonToSend = {
-                    scope: finaleObj.scope,
+                    scope: json.scope,
                     includeSpamTrash: getAccvalue(
-                        finaleObj,
+                        json,
                         "includeSpamAndTrashMessageGet"
                     ),
                 };
@@ -68,34 +43,34 @@ export function getContent(selectedNode: any, params: any) {
                     { option: "labelNamesOrIDsMessageGet", value: "label_ids" },
                 ].forEach((f) => {
                     if (
-                        getAccvalue(finaleObj, f.option) &&
-                        getAccvalue(finaleObj, f.option).trim()
+                        getAccvalue(json, f.option) &&
+                        getAccvalue(json, f.option).trim()
                     )
                         jsonToSend = {
                             ...jsonToSend,
-                            [f.value]: f.type === "number" ? parseInt(getAccvalue(finaleObj, f.option)) : getAccvalue(finaleObj, f.option),
+                            [f.value]: f.type === "number" ? parseInt(getAccvalue(json, f.option)) : getAccvalue(json, f.option),
                         };
                 });
             }
-        } else if (finaleObj.operation === "replyToMessage") {
+        } else if (json.operation === "replyToMessage") {
             jsonToSend = {
                 ...jsonToSend,
-                in_reply_to: finaleObj.messageID,
+                in_reply_to: json.messageID,
                 user_id: "${u1s2e3r4i5d6}",
                 flow_id: "${f1l2o3w4i5d6}"
             };
-            if (finaleObj.textMessage && finaleObj.textMessage.trim())
+            if (json.textMessage && json.textMessage.trim())
                 jsonToSend = {
                     ...jsonToSend,
                     type: "html",
-                    message: finaleObj.textMessage,
+                    message: json.textMessage,
                 };
 
-            if (finaleObj.attachmentsMessageReply.length > 0) {
+            if (json.attachmentsMessageReply.length > 0) {
                 jsonToSend = {
                     ...jsonToSend,
                     attachments_list:
-                        finaleObj.attachmentsMessageReply?.map((attach: any) => {
+                        json.attachmentsMessageReply?.map((attach: any) => {
                             if (attach.uploadType == "ByteString") {
                                 return {
                                     type: attach.uploadType,
@@ -117,29 +92,29 @@ export function getContent(selectedNode: any, params: any) {
                 { option: "ccMessageReply", value: "cc_recipients" },
             ].forEach((f) => {
                 if (
-                    getAccvalue(finaleObj, f.option) &&
-                    getAccvalue(finaleObj, f.option).trim()
+                    getAccvalue(json, f.option) &&
+                    getAccvalue(json, f.option).trim()
                 )
                     jsonToSend = {
                         ...jsonToSend,
-                        [f.value]: getAccvalue(finaleObj, f.option),
+                        [f.value]: getAccvalue(json, f.option),
                     };
             });
-        } else if (finaleObj.operation === "sendMessage") {
+        } else if (json.operation === "sendMessage") {
             jsonToSend = {
-                subject: finaleObj.subject,
-                to: finaleObj.to,
-                // type: finaleObj.emailType,
+                subject: json.subject,
+                to: json.to,
+                // type: json.emailType,
                 type: "html",
-                body: finaleObj.textMessage,
+                body: json.textMessage,
                 user_id: "${u1s2e3r4i5d6}",
                 flow_id: "${f1l2o3w4i5d6}"
             };
-            if (finaleObj.attachmentsMessageSend.length > 0) {
+            if (json.attachmentsMessageSend.length > 0) {
                 jsonToSend = {
                     ...jsonToSend,
                     attachments_list:
-                        finaleObj.attachmentsMessageSend?.map((attach: any) => {
+                        json.attachmentsMessageSend?.map((attach: any) => {
                             if (attach.uploadType == "File") {
                                 return {
                                     type: attach.uploadType,
@@ -163,46 +138,46 @@ export function getContent(selectedNode: any, params: any) {
                 // { option: "senderNameMessageSend", value: "from" },
             ].forEach((f) => {
                 if (
-                    getAccvalue(finaleObj, f.option) &&
-                    getAccvalue(finaleObj, f.option).trim()
+                    getAccvalue(json, f.option) &&
+                    getAccvalue(json, f.option).trim()
                 )
                     jsonToSend = {
                         ...jsonToSend,
-                        [f.value]: getAccvalue(finaleObj, f.option),
+                        [f.value]: getAccvalue(json, f.option),
                     };
             });
-        } else if (finaleObj.operation === "listAttachments") {
+        } else if (json.operation === "listAttachments") {
             jsonToSend = {
-                message_id: finaleObj.messageID,
+                message_id: json.messageID,
             };
-        } else if (finaleObj.operation === "downloadAttachment") {
+        } else if (json.operation === "downloadAttachment") {
             jsonToSend = {
-                message_id: finaleObj.messageID,
-                attachment_id: finaleObj.attachmentID,
+                message_id: json.messageID,
+                attachment_id: json.attachmentID,
                 user_id: "${u1s2e3r4i5d6}",
                 flow_id: "${f1l2o3w4i5d6}"
             };
         }
-    } else if (finaleObj.type === "Thread") {
-        jsonToSend = { thread_id: finaleObj.threadID };
-        if (finaleObj.operation === "deleteThread")
-            jsonToSend = { thread_id: finaleObj.threadID };
+    } else if (json.type === "Thread") {
+        jsonToSend = { thread_id: json.threadID };
+        if (json.operation === "deleteThread")
+            jsonToSend = { thread_id: json.threadID };
         if (
-            finaleObj.operation === "addLabelToThread" ||
-            finaleObj.operation === "removeLabelFromThread"
+            json.operation === "addLabelToThread" ||
+            json.operation === "removeLabelFromThread"
         ) {
-            jsonToSend = { ...jsonToSend, label_ids: finaleObj.labelNamesOrIDs };
-        } else if (finaleObj.operation === "getThreads") {
-            if (finaleObj.scope === "single")
+            jsonToSend = { ...jsonToSend, label_ids: json.labelNamesOrIDs };
+        } else if (json.operation === "getThreads") {
+            if (json.scope === "single")
                 jsonToSend = {
                     ...jsonToSend,
                     scope: "single",
                 };
-            else if (finaleObj.scope === "all") {
+            else if (json.scope === "all") {
                 jsonToSend = {
-                    scope: finaleObj.scope,
+                    scope: json.scope,
                     include_spam_trash: getAccvalue(
-                        finaleObj,
+                        json,
                         "includeSpamAndTrashThreadGet"
                     ),
                 };
@@ -215,34 +190,34 @@ export function getContent(selectedNode: any, params: any) {
                     { option: "readStatusThreadGet", value: "read_status" },
                 ].forEach((f) => {
                     if (
-                        getAccvalue(finaleObj, f.option) &&
-                        getAccvalue(finaleObj, f.option).trim()
+                        getAccvalue(json, f.option) &&
+                        getAccvalue(json, f.option).trim()
                     )
                         jsonToSend = {
                             ...jsonToSend,
-                            [f.value]: f.type === "number" ? parseInt(getAccvalue(finaleObj, f.option)) : getAccvalue(finaleObj, f.option),
+                            [f.value]: f.type === "number" ? parseInt(getAccvalue(json, f.option)) : getAccvalue(json, f.option),
                         };
                 });
             }
-        } else if (finaleObj.operation === "replyToThread") {
+        } else if (json.operation === "replyToThread") {
             jsonToSend = {
                 ...jsonToSend,
-                in_reply_to: finaleObj.replyToThread_messageId,
-                subject: getAccvalue(finaleObj, "replyToThread_subject"),
+                in_reply_to: json.replyToThread_messageId,
+                subject: getAccvalue(json, "replyToThread_subject"),
                 user_id: "${u1s2e3r4i5d6}",
                 flow_id: "${f1l2o3w4i5d6}"
             };
-            if (finaleObj.textMessage && finaleObj.textMessage.trim())
+            if (json.textMessage && json.textMessage.trim())
                 jsonToSend = {
                     ...jsonToSend,
                     email_type: "html",
-                    message_body: finaleObj.textMessage,
+                    message_body: json.textMessage,
                 };
-            if (finaleObj.attachmentsThreadReply.length > 0) {
+            if (json.attachmentsThreadReply.length > 0) {
                 jsonToSend = {
                     ...jsonToSend,
                     attachments_list:
-                        finaleObj.attachmentsThreadReply?.map((attach: any) => {
+                        json.attachmentsThreadReply?.map((attach: any) => {
                             if (attach.uploadType == "ByteString") {
                                 return {
                                     type: attach.uploadType,
@@ -265,53 +240,53 @@ export function getContent(selectedNode: any, params: any) {
                 { option: "ccThreadReply", value: "cc_recipients" },
             ].forEach((f) => {
                 if (
-                    getAccvalue(finaleObj, f.option) &&
-                    getAccvalue(finaleObj, f.option).trim()
+                    getAccvalue(json, f.option) &&
+                    getAccvalue(json, f.option).trim()
                 )
                     jsonToSend = {
                         ...jsonToSend,
-                        [f.value]: getAccvalue(finaleObj, f.option),
+                        [f.value]: getAccvalue(json, f.option),
                     };
             });
         }
-    } else if (finaleObj.type === "Draft") {
-        if (finaleObj.operation === "deleteDraft")
-            jsonToSend = { draft_id: finaleObj.draftID };
-        else if (finaleObj.operation === "getDraft") {
-            if (finaleObj.scope === "single")
+    } else if (json.type === "Draft") {
+        if (json.operation === "deleteDraft")
+            jsonToSend = { draft_id: json.draftID };
+        else if (json.operation === "getDraft") {
+            if (json.scope === "single")
                 jsonToSend = {
-                    draft_id: finaleObj.draftID,
-                    scope: finaleObj.scope,
+                    draft_id: json.draftID,
+                    scope: json.scope,
                 };
-            else if (finaleObj.scope === "all") {
-                jsonToSend = { ...jsonToSend, scope: finaleObj.scope };
+            else if (json.scope === "all") {
+                jsonToSend = { ...jsonToSend, scope: json.scope };
                 if (
-                    getAccvalue(finaleObj, "limitDraftGet") &&
-                    getAccvalue(finaleObj, "limitDraftGet").trim()
+                    getAccvalue(json, "limitDraftGet") &&
+                    getAccvalue(json, "limitDraftGet").trim()
                 )
                     jsonToSend = {
                         ...jsonToSend,
-                        limit: parseInt(getAccvalue(finaleObj, "limitDraftGet")),
+                        limit: parseInt(getAccvalue(json, "limitDraftGet")),
                     };
             }
-        } else if (finaleObj.operation === "createDraft") {
+        } else if (json.operation === "createDraft") {
             jsonToSend = {
-                subject: finaleObj.subject,
-                to: finaleObj.toEmailDraftCreate,
+                subject: json.subject,
+                to: json.toEmailDraftCreate,
                 user_id: "${u1s2e3r4i5d6}",
                 flow_id: "${f1l2o3w4i5d6}"
             };
-            if (finaleObj.textMessage && finaleObj.textMessage.trim())
+            if (json.textMessage && json.textMessage.trim())
                 jsonToSend = {
                     ...jsonToSend,
                     type: "html",
-                    body: finaleObj.textMessage,
+                    body: json.textMessage,
                 };
-            if (finaleObj.attachmentsDraftCreate.length > 0) {
+            if (json.attachmentsDraftCreate.length > 0) {
                 jsonToSend = {
                     ...jsonToSend,
                     attachments_list:
-                        finaleObj.attachmentsDraftCreate?.map((attach: any) => {
+                        json.attachmentsDraftCreate?.map((attach: any) => {
                             if (attach.uploadType == "ByteString") {
                                 return {
                                     type: attach.uploadType,
@@ -335,46 +310,46 @@ export function getContent(selectedNode: any, params: any) {
                 // { option: "toEmailDraftCreate", value: "to" },
             ].forEach((f) => {
                 if (
-                    getAccvalue(finaleObj, f.option) &&
-                    getAccvalue(finaleObj, f.option).trim()
+                    getAccvalue(json, f.option) &&
+                    getAccvalue(json, f.option).trim()
                 )
                     jsonToSend = {
                         ...jsonToSend,
 
-                        [f.value]: getAccvalue(finaleObj, f.option),
+                        [f.value]: getAccvalue(json, f.option),
                     };
             });
         }
-    } else if (finaleObj.type === "Label") {
-        if (finaleObj.operation === "createLabel") {
+    } else if (json.type === "Label") {
+        if (json.operation === "createLabel") {
             jsonToSend = {
-                name: finaleObj.name,
+                name: json.name,
                 labelListVisibility: getAccvalue(
-                    finaleObj,
+                    json,
                     "labelListVisibilityLabelCreate"
                 ),
                 messageListVisibility: getAccvalue(
-                    finaleObj,
+                    json,
                     "messageListVisibilityLabelCreate"
                 ),
             };
-        } else if (finaleObj.operation === "deleteLabel") {
-            jsonToSend = { label_id: finaleObj.labelID };
-        } else if (finaleObj.operation === "getLabels") {
-            if (finaleObj.scope === "single")
+        } else if (json.operation === "deleteLabel") {
+            jsonToSend = { label_id: json.labelID };
+        } else if (json.operation === "getLabels") {
+            if (json.scope === "single")
                 jsonToSend = {
-                    label_id: finaleObj.labelID,
-                    scope: finaleObj.scope,
+                    label_id: json.labelID,
+                    scope: json.scope,
                 };
-            else if (finaleObj.scope === "all") {
-                jsonToSend = { scope: finaleObj.scope };
+            else if (json.scope === "all") {
+                jsonToSend = { scope: json.scope };
                 if (
-                    getAccvalue(finaleObj, "limitLabelGet") &&
-                    getAccvalue(finaleObj, "limitLabelGet").trim()
+                    getAccvalue(json, "limitLabelGet") &&
+                    getAccvalue(json, "limitLabelGet").trim()
                 )
                     jsonToSend = {
                         ...jsonToSend,
-                        limit: parseInt(getAccvalue(finaleObj, "limitLabelGet")),
+                        limit: parseInt(getAccvalue(json, "limitLabelGet")),
                     };
             }
         }
@@ -384,13 +359,13 @@ export function getContent(selectedNode: any, params: any) {
         data: {
             content_json: jsonToSend,
             app: "gmail",
-            credential: finaleObj.cred,
-            operation: finaleObj.operation,
+            credential: json.cred,
+            operation: json.operation,
             saveOutputAs: []
         }
     }
     return {
-        cred: finaleObj?.cred,
+        cred: json?.cred,
         type: "AppIntegration",
         content: content,
         saveUserInputAs: null,
@@ -402,13 +377,13 @@ export function getContent(selectedNode: any, params: any) {
 export default function GmailForm({
     selectedNode,
     handleRightSideDataUpdate,
-}: IntegrationFormProps) {
+}: NodeFormProps) {
     const [schema, setSchema] = useState<any[]>(GmailJson.defaults.json);
     const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
     const setNodeFilledDataByKey = useRightDrawerStore((state) => state.setNodeFilledDataByKey)
 
     const { localConfig, updateNestedConfig } =
-        useDebounceConfig<IntegrationConfigProps["rightSideData"]>(
+        useDebounceConfig<NodeConfigProps["rightSideData"]>(
             {
                 ...selectedNode.data.rightSideData,
                 json: objToReturnDefaultValues(schema, selectedNode.data.rightSideData.json),
@@ -420,7 +395,8 @@ export default function GmailForm({
                     setNodeFilledDataByKey(selectedNode.id, "json", savedConfig.json)
 
                     // Save label changes
-                    updateNodesValidationById(selectedNode.id, validateArray(schema, savedConfig.json))
+                    const nodeValid = validateArray(schema, savedConfig.json);
+                    updateNodesValidationById(selectedNode.id, !!nodeValid);
                     handleRightSideDataUpdate({
                         ...savedConfig,
                         json: objToReturnValuesToSend(schema, savedConfig.json)
@@ -438,8 +414,14 @@ export default function GmailForm({
                 fieldValues={localConfig.json}
                 setSchema={setSchema}
                 flowZoneSelectedId={selectedNode.id}
-                onFieldChange={({ path, value }) => {
-                    updateNestedConfig(`${"json"}.${path}`, value)
+                onFieldChange={(partialState, replace) => {
+
+                    if (replace) updateNestedConfig(`${"json"}`, partialState);
+                    else
+                        updateNestedConfig(`${"json"}`, {
+                            ...localConfig.json,
+                            ...partialState,
+                        });
                 }}
             />
         </div>
