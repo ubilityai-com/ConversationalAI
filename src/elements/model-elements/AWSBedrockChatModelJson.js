@@ -1,9 +1,9 @@
 export const AWSBedrockChatModelJson = {
-    "nodeType": "model",
+    "category": "model",
     type: "AWSBedrockChatModel",
     label: "AWS Bedrock Chat Model",
     color: "#72797b",
-    description: "Language Model AWS Bedrock" ,
+    description: "Language Model AWS Bedrock",
     rightSideData: {
         json: [
             {
@@ -100,17 +100,17 @@ export const AWSBedrockChatModelJson = {
                 accTitle: "Max Tokens",
                 variableName: "maximumNumberOfTokens",
                 fieldsArray: [
-                  [
-                    {
-                      type: "textfield",
-                      variableName: "maximumNumberOfTokens",
-                      numberField: true,
-                      value: "4096",
-                      hasDynamicVariable: true,
-                    },
-                  ],
+                    [
+                        {
+                            type: "textfield",
+                            variableName: "maximumNumberOfTokens",
+                            numberField: true,
+                            value: "4096",
+                            hasDynamicVariable: true,
+                        },
+                    ],
                 ],
-              },
+            },
         ],
     },
 };

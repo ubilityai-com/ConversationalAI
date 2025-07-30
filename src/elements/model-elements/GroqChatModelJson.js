@@ -1,5 +1,5 @@
 export const GroqChatModelJson = {
-  nodeType: "model",
+  category: "model",
   type: "GroqChatModel",
   label: "Groq Chat Model",
   color: "#72797b",

@@ -1,5 +1,5 @@
 export const OllamaChatModelJson = {
-  nodeType: "model",
+  category: "model",
   type: "OllamaChatModel",
   label: "Ollama Chat Model",
   color: "#72797b",

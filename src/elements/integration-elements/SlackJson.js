@@ -1,12 +1,11 @@
 export const SlackJson = {
-  "nodeType": "integration",
+  "category": "integration",
   "type": "Slack",
   "label": "Slack",
   "color": "#53D2E2 ",
   "docsPath": "Connectors/Slack/getting_started",
   description: "Slack integration",
   defaultValid: false,
-  category: "Control",
   automated: "json",
   "defaults": {
     "json": [

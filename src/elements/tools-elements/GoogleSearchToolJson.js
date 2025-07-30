@@ -1,6 +1,6 @@
 
 export const GoogleSearchToolJson = {
-    "nodeType": "tool",
+    "category": "tool",
     type: "GoogleSearchTool",
     label: "Google Search",
     color: "#72797b",
@@ -77,7 +77,7 @@ export const GoogleSearchToolJson = {
                 value: "",
                 placeholder: "Name of the tool",
                 hasDynamicVariable: true,
-                required:true,
+                required: true,
             },
             {
                 type: "textfield",
@@ -88,7 +88,7 @@ export const GoogleSearchToolJson = {
                 minRows: 3,
                 placeholder: "e.g Useful to get real-time access to Google search results",
                 hasDynamicVariable: true,
-                required:true,
+                required: true,
             },
         ]
     },

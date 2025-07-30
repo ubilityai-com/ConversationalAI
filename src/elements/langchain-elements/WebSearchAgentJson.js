@@ -2,13 +2,13 @@ export const WebSearchAgentJson = {
   type: "WebSearchAgent",
   label: "Web Search Agent",
   color: "black",
-  nodeType: "langchain",
+  category: "langchain",
   new: true,
   normalHandle: ["integration", "basic", "automationTools", "langchain"],
   rightSideData: {
     nodesCanConnectWith: {
-      "1": { nodeType: "model", title: "Chat Model", required: true },
-      "2": { nodeType: "embedding", title: "Embedding", required: true },
+      "1": { category: "model", title: "Chat Model", required: true },
+      "2": { category: "embedding", title: "Embedding", required: true },
     },
     json: [
       {

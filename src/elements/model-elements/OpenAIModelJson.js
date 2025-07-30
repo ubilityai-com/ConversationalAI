@@ -1,6 +1,6 @@
 
 export const OpenAIModelJson = {
-    "nodeType": "model",
+    "category": "model",
     type: "OpenAIModel",
     label: "OpenAI Model",
     color: "#72797b",

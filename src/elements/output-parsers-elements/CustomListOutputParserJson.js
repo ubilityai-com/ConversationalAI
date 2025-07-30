@@ -1,5 +1,5 @@
 export const customListOutputParserJson = {
-    "nodeType": "outputParser",
+    "category": "outputParser",
     type: "CustomListOutputParser",
     label: "Comma Separated List Output Parser",
     defaultValid: true,

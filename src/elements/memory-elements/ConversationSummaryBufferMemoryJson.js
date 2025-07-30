@@ -2,7 +2,7 @@ export const ConversationSummaryBufferMemoryJson = {
   "type": "ConversationSummaryBufferMemory",
   "label": "Conversation Summary Buffer Memory",
   "color": "black",
-  "nodeType": "memory",
+  "category": "memory",
   "new": true,
   defaultValid: false,
   "rightSideData": {

@@ -11,7 +11,7 @@ interface Scenario {
 interface FormNodeData extends Record<string, unknown> {
   label: string;
   description: string;
-  nodeType: string;
+  category: string;
   rightSideData: {
     scenarios?: Scenario[];
     save: boolean;

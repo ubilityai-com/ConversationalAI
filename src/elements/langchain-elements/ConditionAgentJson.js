@@ -1,5 +1,5 @@
 export const ConditionAgentJson = {
-    "nodeType": "langchain",
+    "category": "langchain",
     type: "ConditionAgent",
     label: "Condition agent",
     color: "#ccd3d5",
@@ -10,8 +10,8 @@ export const ConditionAgentJson = {
         loopFromSwitch: false,
         loopFromName: "",
         nodesCanConnectWith: {
-            '1': { nodeType: "model", title: "Chat Model", required: true },
-            "2": { nodeType: "outputParser", title: "Output Parser" },
+            '1': { category: "model", title: "Chat Model", required: true },
+            "2": { category: "outputParser", title: "Output Parser" },
         },
         json: [
             {

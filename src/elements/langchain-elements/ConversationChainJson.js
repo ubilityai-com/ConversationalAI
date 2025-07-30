@@ -1,13 +1,13 @@
 export const ConversationChainJson = {
-  nodeType: "langchain",
+  category: "langchain",
   type: "ConversationChain",
   label: "Conversational Chain",
   color: "#72797b",
   normalHandle: ["integration", "basic", "automationTools", "langchain"],
   rightSideData: {
     nodesCanConnectWith: {
-      1: { nodeType: "model", title: "Chat Model", required: true },
-      2: { nodeType: "memory", title: "Memory", required: true },
+      1: { category: "model", title: "Chat Model", required: true },
+      2: { category: "memory", title: "Memory", required: true },
     },
     json: [
       {

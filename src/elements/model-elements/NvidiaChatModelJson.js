@@ -1,5 +1,5 @@
 export const NvidiaChatModelJson = {
-  nodeType: "model",
+  category: "model",
   type: "NvidiaChatModel",
   label: "Nvidia Chat Model",
   color: "#72797b",

@@ -1,5 +1,5 @@
 export const TogetherAIChatModelJson = {
-  nodeType: "model",
+  category: "model",
   type: "TogetherAIChatModel",
   label: "Together AI Chat Model",
   color: "#72797b",

@@ -1,5 +1,5 @@
 export const StructuredOutputParserJson = {
-    "nodeType": "outputParser",
+    "category": "outputParser",
     type: "StructuredOutputParser",
     label: "Structured Output Parser",
     defaultValid: true,

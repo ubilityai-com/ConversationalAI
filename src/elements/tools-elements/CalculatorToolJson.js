@@ -1,6 +1,6 @@
 
 export const CalculatorToolJson = {
-    "nodeType": "tool",
+    "category": "tool",
     type: "CalculatorTool",
     label: "Calculator",
     defaultValid: true,

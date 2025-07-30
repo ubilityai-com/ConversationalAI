@@ -1,13 +1,13 @@
 export const QuestionAndAnswerJson = {
-  nodeType: "langchain",
+  category: "langchain",
   type: "QuestionAndAnswer",
   label: "Question & Answer",
   color: "#72797b",
   normalHandle: ["integration", "basic", "automationTools", "langchain"],
   rightSideData: {
     nodesCanConnectWith: {
-      1: { nodeType: "model", title: "Chat Model", required: true },
-      2: { nodeType: "vectorStore", title: "Vector Store", required: true },
+      1: { category: "model", title: "Chat Model", required: true },
+      2: { category: "vectorStore", title: "Vector Store", required: true },
     },
     json: [
       {

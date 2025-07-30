@@ -5,7 +5,7 @@ import { removeHTMLTags } from "../../lib/utils"
 interface Data extends Record<string, unknown> {
   label: string
   description: string
-  nodeType: string
+  category: string
   rightSideData: {
     botSays: string;
     advanced?: boolean;

@@ -1,6 +1,6 @@
 
 export const XataMemoryJson = {
-    "nodeType": "memory",
+    "category": "memory",
     type: "XataMemory",
     label: "Xata Memory",
     color: "#72797b",

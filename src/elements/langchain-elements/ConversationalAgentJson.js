@@ -2,16 +2,16 @@ export const ConversationalAgentJson = {
   "type": "ConversationalAgent",
   "label": "Conversational Agent",
   "color": "black",
-  "nodeType": "langchain",
+  "category": "langchain",
   "new": true,
   extra: { nodeRobotType: "AiAgent" },
   normalHandle: ["integration", "basic", "automationTools", "langchain"],
   rightSideData: {
     nodesCanConnectWith: {
-      '1': { nodeType: "model", title: "Chat Model", required: true },
-      '2': { nodeType: "memory", title: "Memory" },
-      '3': { nodeType: "tool", title: "Tool", multiple: true, required: true },
-      "4": { nodeType: "outputParser", title: "Output Parser" },
+      '1': { category: "model", title: "Chat Model", required: true },
+      '2': { category: "memory", title: "Memory" },
+      '3': { category: "tool", title: "Tool", multiple: true, required: true },
+      "4": { category: "outputParser", title: "Output Parser" },
 
     },
     "json": [

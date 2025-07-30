@@ -1,5 +1,5 @@
 export const VertexAIChatModelJson = {
-  nodeType: "model",
+  category: "model",
   type: "VertexAIChatModel",
   label: "Vertex AI Chat Model",
   color: "#72797b",

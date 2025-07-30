@@ -1,5 +1,5 @@
 export const OpenAIChatModelJson = {
-  nodeType: "model",
+  category: "model",
   type: "OpenAIChatModel",
   label: "OpenAI Chat Model",
   color: "#72797b",
@@ -71,7 +71,7 @@ export const OpenAIChatModelJson = {
         conditionOnFirstTime: [],
         conditionOnRefresh: [],
       },
-    
+
       {
         type: "api",
         label: "Model",

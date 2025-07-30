@@ -1,5 +1,5 @@
 export const AI21ChatModelJson = {
-  nodeType: "model",
+  category: "model",
   type: "AI21ChatModel",
   label: "AI21 Chat Model",
   color: "#72797b",

@@ -24,7 +24,7 @@ export default function RightSideBody() {
     const loadComponent = async () => {
       setIsLoading(true);
 
-      const path = `./${clickedElement.data.nodeType}-elements/${camelToDashCase(
+      const path = `./${clickedElement.data.category}-elements/${camelToDashCase(
         clickedElement.type
       )}-form/${camelToDashCase(clickedElement.type)}-form.tsx`;
 
@@ -45,10 +45,10 @@ export default function RightSideBody() {
       }
     };
 
-    if (clickedElement?.type && clickedElement?.data?.nodeType) {
+    if (clickedElement?.type && clickedElement?.data?.category) {
       loadComponent();
     }
-  }, [clickedElement?.type, clickedElement?.data?.nodeType]);
+  }, [clickedElement?.type, clickedElement?.data?.category]);
 
   const selectedNode = useNodesData(clickedElement?.id);
 

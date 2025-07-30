@@ -1,5 +1,5 @@
 export const GooglePalmGeminiChatModelJson = {
-  nodeType: "model",
+  category: "model",
   type: "GooglePalmGeminiChatModel",
   label: "Google PaLM/Gemini Chat Model",
   color: "#72797b",

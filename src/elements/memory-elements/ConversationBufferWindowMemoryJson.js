@@ -2,7 +2,7 @@ export const ConversationBufferWindowMemoryJson = {
   "type": "ConversationBufferWindowMemory",
   "label": "Conversation Buffer Window Memory",
   "color": "black",
-  "nodeType": "memory",
+  "category": "memory",
   "new": true,
   defaultValid: false,
   "rightSideData": {

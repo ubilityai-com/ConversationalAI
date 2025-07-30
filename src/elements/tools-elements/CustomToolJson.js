@@ -1,6 +1,6 @@
 
 export const CustomToolJson = {
-    "nodeType": "tool",
+    "category": "tool",
     type: "CustomTool",
     label: "Custom Tool",
     color: "#72797b",

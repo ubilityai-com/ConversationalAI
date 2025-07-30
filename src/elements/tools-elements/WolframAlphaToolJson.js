@@ -1,6 +1,6 @@
 
 export const WolframAlphaToolJson = {
-    "nodeType": "tool",
+    "category": "tool",
     type: "WolframAlphaTool",
     label: "Wolfram Alpha",
     color: "#72797b",

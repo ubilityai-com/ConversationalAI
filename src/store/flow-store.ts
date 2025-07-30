@@ -294,7 +294,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
         set({ error: null });
         addRunningNodeId(id);
         const selectedNode = nodes.find(el => el.id === id)
-        const { content, cred } = require(`../components/right-side-elements/${selectedNode.data.nodeType as string}-elements/${camelToDashCase(selectedNode.type as string)}-form/${camelToDashCase(selectedNode.type as string)}-form`).getContent(
+        const { content, cred } = require(`../components/right-side-elements/${selectedNode.data.category as string}-elements/${camelToDashCase(selectedNode.type as string)}-form/${camelToDashCase(selectedNode.type as string)}-form`).getContent(
             selectedNode,
             { edges, nodes }
         );

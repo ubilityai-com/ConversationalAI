@@ -1,6 +1,6 @@
 
 export const MotorheadMemoryJson = {
-    "nodeType": "memory",
+    "category": "memory",
     type: "MotorheadMemory",
     label: "Motorhead Memory",
     color: "#72797b",

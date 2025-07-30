@@ -7,7 +7,7 @@ import { NodeHandle } from "../handles/handle"
 export type BaseNodeData<T = Record<string, any>> = {
   label: string
   description: string
-  nodeType: string
+  category: string
   rightSideData: T
 }
 

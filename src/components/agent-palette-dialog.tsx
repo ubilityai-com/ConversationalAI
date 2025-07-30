@@ -31,9 +31,8 @@ const agentTypes = [
     label: "React Agent",
     description: "Large Language Model for text processing",
     icon: Bot,
-    category: "AI",
     color: "bg-purple-500",
-    nodeType: "langchain",
+    category: "langchain",
     automated: "json",
     defaults: {
       extras: {
@@ -92,8 +91,7 @@ const agentTypes = [
     label: "Condition Agent",
     description: "Branch workflow based on conditions",
     icon: GitBranch,
-    category: "AI",
-    nodeType: "langchain",
+    category: "langchain",
     color: "bg-yellow-500",
     defaults: {
       save: false,
@@ -136,8 +134,7 @@ const agentTypes = [
     description: "Route workflow based on multiple conditions",
     icon: GitBranch,
     defaultValid: true,
-    category: "Logic",
-    nodeType: "basic",
+    category: "basic",
     color: "bg-cyan-500",
     defaults: {
       branches: [{
@@ -161,8 +158,7 @@ const agentTypes = [
     defaultValid: true,
     description: "Present multiple options for user selection",
     icon: CheckSquare,
-    category: "Logic",
-    nodeType: "basic",
+    category: "basic",
     color: "bg-pink-500",
     defaults: {
       botSays: "Hello please choose a choice",
@@ -194,8 +190,7 @@ const agentTypes = [
     type: "Message",
     color: "bg-emerald-500",
     defaultValid: false,
-    category: "Logic",
-    nodeType: "basic",
+    category: "basic",
     label: "Message",
     description: "Send messages and notifications",
     icon: MessageCircle,
@@ -224,8 +219,7 @@ const agentTypes = [
     label: "End",
     description: "Terminates the chat with a custom message",
     icon: Square,
-    category: "Control",
-    nodeType: "basic",
+    category: "basic",
     color: "bg-red-500",
     defaults: {
       botSays: "",
@@ -237,12 +231,9 @@ const agentTypes = [
 
 const categories = [
   "All",
-  "AI",
-  "Integration",
-  "Logic",
-  "IO",
-  "Control",
-  "Communication",
+  "basic",
+  "langchain",
+  "integration",
 ];
 
 interface AgentPaletteDialogProps {
@@ -326,7 +317,7 @@ export function AgentPaletteDialog({
         data: {
           label: clonedElement.label,
           description: clonedElement.description,
-          nodeType: clonedElement.nodeType,
+          category: clonedElement.category,
           rightSideData: newDefaults,
           color: clonedElement.color
         },

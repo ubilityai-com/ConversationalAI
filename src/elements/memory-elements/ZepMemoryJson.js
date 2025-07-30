@@ -1,6 +1,6 @@
 
 export const ZepMemoryJson = {
-    "nodeType": "memory",
+    "category": "memory",
     type: "ZepMemory",
     label: "Zep Memory",
     color: "#72797b",

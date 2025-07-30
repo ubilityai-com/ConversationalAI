@@ -1,5 +1,5 @@
 export const McpToolJson = {
-    "nodeType": "tool",
+    "category": "tool",
     type: "McpTool",
     label: "MCP",
     color: "#72797b",

@@ -1063,3 +1063,28 @@ export function objToReturnDefaultValues(
 
   return obj;
 }
+export const getAccvalue = (finaleObj: any, name: string) => {
+  if (name.includes(".")) {
+    const properties = name.split(".");
+    const firstPart = properties[0];
+    const secondPart = properties[1];
+    return finaleObj[firstPart]
+      ? finaleObj[firstPart][secondPart]
+        ? finaleObj[firstPart][secondPart] || undefined
+        : undefined
+      : undefined;
+  } else
+    return finaleObj[name]
+      ? finaleObj[name][name]
+        ? finaleObj[name][name] || undefined
+        : undefined
+      : undefined;
+};
+export function isJsonString(str: string) {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
+}

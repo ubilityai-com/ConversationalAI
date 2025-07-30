@@ -2,14 +2,14 @@ export const ConversationalRetrievalQaChainJson = {
   "type": "ConversationalRetrievalQaChain",
   "label": "Conversational Retrieval QA Chain",
   "color": "black",
-  "nodeType": "langchain",
+  "category": "langchain",
   "normalHandle": ["integration", "basic", "automationTools", "langchain"],
   "new": true,
   "rightSideData": {
     "nodesCanConnectWith": {
-      "1": { "nodeType": "model", "title": "Chat Model", "required": true },
-      "2": { "nodeType": "memory", "title": "Memory", "required": true },
-      "3": { "nodeType": "vectorStore", "title": "Vector Store", "required": true },
+      "1": { "category": "model", "title": "Chat Model", "required": true },
+      "2": { "category": "memory", "title": "Memory", "required": true },
+      "3": { "category": "vectorStore", "title": "Vector Store", "required": true },
     },
     "json": [
       {

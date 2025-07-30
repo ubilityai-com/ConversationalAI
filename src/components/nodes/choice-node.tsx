@@ -11,7 +11,7 @@ interface Choice {
 interface FormNodeData extends Record<string, unknown> {
   label: string;
   description: string;
-  nodeType: string;
+  category: string;
   rightSideData: {
     choices?: Choice[];
     botSays: string;

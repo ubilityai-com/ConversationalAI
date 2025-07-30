@@ -1,6 +1,6 @@
 
 export const SerpApiToolJson = {
-    "nodeType": "tool",
+    "category": "tool",
     type: "SerpApiTool",
     label: "SerpApi",
     color: "#72797b",

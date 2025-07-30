@@ -1,9 +1,9 @@
 export const AzureChatModelJson = {
-  nodeType: "model",
+  category: "model",
   type: "AzureChatModel",
   label: "Azure OpenAI Chat Model",
   color: "#72797b",
-  description: "For advanced usage with an AI chain", 
+  description: "For advanced usage with an AI chain",
   rightSideData: {
     json: [
       {

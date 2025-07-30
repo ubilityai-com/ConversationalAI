@@ -1,13 +1,13 @@
 export const UpsertJson = {
-    "nodeType": "langchain",
+    "category": "langchain",
     type: "Upsert",
     label: "Upsert",
     color: "#72797b",
     normalHandle: ["integration", "basic", "automationTools", "langchain"],
     rightSideData: {
         nodesCanConnectWith: {
-            '1': { nodeType: "docLoader", title: "Loader", required: true },
-            '2': { nodeType: "vectorStore", title: "Vector Store", required: true },
+            '1': { category: "docLoader", title: "Loader", required: true },
+            '2': { category: "vectorStore", title: "Vector Store", required: true },
         },
         json: [
             // {

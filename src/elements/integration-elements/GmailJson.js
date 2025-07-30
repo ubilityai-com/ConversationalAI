@@ -1,11 +1,10 @@
 export const GmailJson = {
-  nodeType: "integration",
+  category: "integration",
   type: "Gmail",
   label: "Gmail",
   color: "orange",
   description: "Gmail integration",
   defaultValid: false,
-  category: "Control",
   automated: "json",
   defaults: {
     json: [

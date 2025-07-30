@@ -1,10 +1,10 @@
 
 export const WikipediaToolJson = {
-    "nodeType": "tool",
+    "category": "tool",
     type: "WikipediaTool",
     label: "Wikipedia",
     color: "#72797b",
-    defaultValid:true,
+    defaultValid: true,
     description: "Search In Wikipedia",
     rightSideData: {
         json: [

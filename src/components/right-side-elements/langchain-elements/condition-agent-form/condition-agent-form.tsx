@@ -28,10 +28,6 @@ interface Scenario {
   id: string;
   label: string;
 }
-interface Choice {
-  id: string;
-  label: string;
-}
 interface RightSideData {
   extras: any;
   scenarios: Scenario[];

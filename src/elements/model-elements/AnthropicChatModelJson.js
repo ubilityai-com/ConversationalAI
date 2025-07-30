@@ -1,5 +1,5 @@
 export const AnthropicChatModelJson = {
-  nodeType: "model",
+  category: "model",
   type: "AnthropicChatModel",
   label: "Anthropic Chat Model",
   description: "Language Model Anthropic",

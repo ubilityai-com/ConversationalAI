@@ -27,7 +27,7 @@ export interface RouterBranch {
 export interface RouterConfig extends Record<string, unknown> {
   label: string
   description: string
-  nodeType: string
+  category: string
   rightSideData: {
     branches: RouterBranch[]
     defaultBranch: RouterDefaultBranch

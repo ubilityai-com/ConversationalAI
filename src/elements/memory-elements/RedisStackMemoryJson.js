@@ -1,6 +1,6 @@
 
 export const RedisStackMemoryJson = {
-  "nodeType": "memory",
+  "category": "memory",
   type: "RedisStackMemory",
   label: "Redis Stack Memory",
   color: "#72797b",

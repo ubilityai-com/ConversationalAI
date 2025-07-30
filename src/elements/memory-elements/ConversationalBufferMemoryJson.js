@@ -1,6 +1,6 @@
 
 export const ConversationalBufferMemoryJson = {
-    "nodeType": "memory",
+    "category": "memory",
     type: "ConversationalBufferMemory",
     label: "Conversational Buffer Memory",
     color: "#72797b",
