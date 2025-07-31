@@ -2,8 +2,8 @@ export const ConversationalRetrievalQaChainJson = {
   "type": "ConversationalRetrievalQaChain",
   "label": "Conversational Retrieval QA Chain",
   "color": "black",
-  "category": "langchain",
-  "normalHandle": ["integration", "basic", "automationTools", "langchain"],
+  "category": "ai",
+  "normalHandle": ["integration", "basic", "automationTools", "ai"],
   "new": true,
   "rightSideData": {
     "nodesCanConnectWith": {

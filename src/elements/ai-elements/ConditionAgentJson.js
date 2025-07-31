@@ -1,9 +1,9 @@
 export const ConditionAgentJson = {
-    "category": "langchain",
+    "category": "ai",
     type: "ConditionAgent",
     label: "Condition agent",
     color: "#ccd3d5",
-    normalHandle: ["integration", "basic", "automationTools", "langchain"],
+    normalHandle: ["integration", "basic", "automationTools", "ai"],
     rightSideData: {
         save: false,
         variableName: "",

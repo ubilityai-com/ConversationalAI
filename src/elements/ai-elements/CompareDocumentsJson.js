@@ -1,9 +1,9 @@
 export const CompareDocumentsJson = {
-  category: "langchain",
+  category: "ai",
   type: "CompareDocuments",
   label: "Compare Documents",
   color: "#72797b",
-  normalHandle: ["integration", "basic", "automationTools", "langchain"],
+  normalHandle: ["integration", "basic", "automationTools", "ai"],
   rightSideData: {
     nodesCanConnectWith: {
       1: { category: "model", title: "Chat Model", required: true },

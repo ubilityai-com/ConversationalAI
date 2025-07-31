@@ -4,15 +4,12 @@ import {
   CheckSquare,
   GitBranch,
   MessageCircle,
-  MessageSquare,
   Search,
-  Slack,
-  Square,
-  Workflow,
+  Square
 } from "lucide-react";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { BasicLLMJson } from "../elements/langchain-elements/BasicLLMJson";
+import { IntegrationElements } from "../elements/integration-elements";
 import { objToReturnDynamicv2, setAutomationArray } from "../lib/automation-utils";
 import { ApiResItem, objToReturnDynamic } from "../lib/utils";
 import { useFlowStore } from "../store/flow-store";
@@ -20,19 +17,15 @@ import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
-import { SlackJson } from "../elements/integration-elements/SlackJson";
-import { GmailJson } from "../elements/integration-elements/GmailJson";
-import { IntegrationElements } from "../elements/integration-elements";
 
 const agentTypes = [
-  // BasicLLMJson,
   {
     type: "ReactAgent",
     label: "React Agent",
     description: "Large Language Model for text processing",
     icon: Bot,
     color: "bg-purple-500",
-    category: "langchain",
+    category: "ai",
     automated: "json",
     defaults: {
       extras: {
@@ -49,7 +42,6 @@ const agentTypes = [
           content: {},
           description: "Select the memory that fits your use case",
           title: "Memory",
-          // optional: true,
         },
         tool: {
           multiple: true,
@@ -73,16 +65,6 @@ const agentTypes = [
           placeholder: "e.g Whats going on your mind ?",
           hasDynamicVariable: true,
         },
-        {
-          type: "outputJson",
-          value: {
-            Output: {
-              answer: "",
-            },
-            Error: "",
-            Status: "",
-          },
-        },
       ],
     },
   },
@@ -91,14 +73,10 @@ const agentTypes = [
     label: "Condition Agent",
     description: "Branch workflow based on conditions",
     icon: GitBranch,
-    category: "langchain",
+    category: "ai",
     color: "bg-yellow-500",
     defaults: {
-      save: false,
-      variableName: "",
       scenarios: [{ label: "scenario 1", id: `scenario-${Date.now()}` }],
-      loopFromSwitch: false,
-      loopFromName: "",
       instruction: "",
       input: "",
       extras: {
@@ -112,22 +90,6 @@ const agentTypes = [
       },
     },
   },
-  // {
-  //   type: "tool",
-  //   label: "Tool Agent",
-  //   description: "Execute external tools and APIs",
-  //   icon: Database,
-  //   category: "Integration",
-  //   color: "bg-orange-500",
-  // },
-  // {
-  //   type: "condition",
-  //   label: "Condition",
-  //   description: "Branch workflow based on conditions",
-  //   icon: GitBranch,
-  //   category: "Logic",
-  //   color: "bg-yellow-500",
-  // },
   {
     type: "Router",
     label: "Router",
@@ -169,22 +131,6 @@ const agentTypes = [
       loopFromName: "",
     },
   },
-  // {
-  //   type: "output",
-  //   label: "Output",
-  //   description: "Final output of the workflow",
-  //   icon: MessageSquare,
-  //   category: "IO",
-  //   color: "bg-blue-500",
-  // },
-  // {
-  //   type: "orchestrator",
-  //   label: "Orchestrator",
-  //   description: "Coordinate multiple agents",
-  //   icon: Workflow,
-  //   category: "Control",
-  //   color: "bg-indigo-500",
-  // },
   {
     name: "Message",
     type: "Message",
@@ -205,14 +151,6 @@ const agentTypes = [
       loopFromName: "",
     },
   },
-  // {
-  //   type: "attache",
-  //   label: "Gmail",
-  //   description: "Send and receive emails",
-  //   icon: null,
-  //   category: "Communication",
-  //   color: "bg-gray-500",
-  // },
   ...IntegrationElements,
   {
     type: "End",
@@ -232,7 +170,7 @@ const agentTypes = [
 const categories = [
   "All",
   "basic",
-  "langchain",
+  "ai",
   "integration",
 ];
 
@@ -283,11 +221,9 @@ export function AgentPaletteDialog({
 
     if (element && reactFlowInstance) {
       const sourceNode = reactFlowInstance.getNode(source);
-      console.log({ element });
       const clonedElement = JSON.parse(JSON.stringify(element));
       const generateID = uuidv4();
       let newDefaults = { ...clonedElement.defaults };
-      console.log({ clonedElement });
 
       if (clonedElement.automated) {
         console.log({
@@ -346,7 +282,7 @@ export function AgentPaletteDialog({
       <DialogContent className="max-w-3xl max-h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
-            Choose an Agent
+            Select a Node
           </DialogTitle>
         </DialogHeader>
 
@@ -354,10 +290,10 @@ export function AgentPaletteDialog({
           {/* Sticky Header Section */}
           <div className="sticky top-0 z-10 bg-white pt-2 pb-4 space-y-4">
             {/* Search */}
-            <div className="relative">
+            <div className="relative p-0.5">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <Input
-                placeholder="Search agents..."
+                placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -370,10 +306,10 @@ export function AgentPaletteDialog({
                 <Badge
                   key={category}
                   variant={selectedCategory === category ? "default" : "secondary"}
-                  className="cursor-pointer text-xs hover:bg-primary/80"
+                  className="cursor-pointer text-xs hover:bg-primary/80 hover:text-white"
                   onClick={() => setSelectedCategory(category)}
                 >
-                  {category}
+                  {category.toUpperCase()}
                 </Badge>
               ))}
             </div>
@@ -412,7 +348,7 @@ export function AgentPaletteDialog({
                           {agent.description}
                         </p>
                         <Badge variant="outline" className="mt-2 text-xs">
-                          {agent.category}
+                          {agent.category.toUpperCase()}
                         </Badge>
                       </div>
                     </div>

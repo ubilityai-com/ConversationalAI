@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../..
 import { Label } from "../../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
 import { Switch } from "../../ui/switch"
+import { SearchableSelect } from "../../custom/searchable-select"
 interface SectionProps {
     config: any
     onConfigUpdate: (key: string, value: any) => void
@@ -36,7 +37,7 @@ export function SharedSection({
 }: SectionProps) {
     const setNodeFilledDataByKey = useRightDrawerStore((state) => state.setNodeFilledDataByKey)
     const setValidationByKey = useRightDrawerStore((state) => state.setValidationByKey)
-    const { localConfig, updateConfig,  } =
+    const { localConfig, updateConfig, } =
         useDebounceConfig<any>(
             config.content,
             {
@@ -61,86 +62,94 @@ export function SharedSection({
     const del = useFlowStore((s) => s.deleteSubNodeById)
     console.log({ defaultType, type, localConfig, content });
     const schema = useRef(getSchema(type, elements));
+    console.log({ elements });
+
     return (
         <Card>
-            <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm flex items-center">
-                        <FileJson className="w-4 h-4 mr-2" />
-                        {title}
-                    </CardTitle>
-                    {optional && (
-                        <Switch
-                            checked={enabled}
-                            onCheckedChange={(checked) => {
-                                onConfigUpdate(`extras.${variableName}.enabled`, checked)
-                            }}
-                            aria-label="Enable output parser"
-                        />
-                    )}
-                </div>
-                <CardDescription>{description}</CardDescription>
-            </CardHeader>
-            {(!optional || optional && enabled) && (
-                <CardContent className="pt-0">
-                    <Accordion type="single" collapsible className="w-full">
-                        <AccordionItem value="configuration">
-                            <AccordionTrigger className="text-sm">Configuration</AccordionTrigger>
-                            <AccordionContent className="space-y-4">
-                                <div>
-                                    <Label htmlFor={variableName}>{title} Type</Label>
-                                    <Select
-                                        value={type}
-                                        onValueChange={(value) => {
-                                            const op = elements.find((o) => o.type === value) as any
-                                            const defaultValues = objToReturnDynamicv2((op.rightSideData.json))
-                                            console.log({ defaultValues });
-                                            schema.current = op
-                                            onConfigUpdate(`extras.${variableName}.type`, value)
-                                            setTimeout(() => {
-                                                updateConfig(defaultValues)
-                                            }, 1000);
-                                            add(id, variableName, validateArray(op.rightSideData.json, {}))
-                                        }}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={"Select a type"} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {elements.map((op) => (
-                                                <SelectItem key={op.type} value={op.type}>
-                                                    {op.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                                {schema.current && (
-                                    <AutomationSimple
-                                        filledDataName={`${variableName}`}
-                                        schema={schema.current?.rightSideData?.json}
-                                        flowZoneSelectedId={id}
-                                        AllJson={schema.current?.rightSideData?.json}
-                                        fieldValues={content}
-                                        firstCall={true}
-                                        onFieldChange={(partialState, replace) => {
-                                            console.log({partialState,replace,content});
-                                            
-                                            if (replace) updateConfig(partialState);
-                                            else
-                                                updateConfig({
-                                                    ...content,
-                                                    ...partialState,
-                                                });
-                                        }}
-                    
-                                    />
-                                )}
-                            </AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
-                </CardContent>
-            )}
+
+            {/* {(!optional || optional && enabled) && ( */}
+            <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="configuration">
+                    <AccordionTrigger className="text-sm">
+                        <CardHeader className="pb-3">
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-sm flex items-center">
+                                    <FileJson className="w-4 h-4 mr-2" />
+                                    {title}
+                                </CardTitle>
+                                {/* {optional && (
+                                        <Switch
+                                            checked={enabled}
+                                            onCheckedChange={(checked) => {
+                                                onConfigUpdate(`extras.${variableName}.enabled`, checked)
+                                            }}
+                                            aria-label="Enable output parser"
+                                        />
+                                    )} */}
+                            </div>
+                            <CardDescription>{description}</CardDescription>
+                        </CardHeader>
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4">
+                        <div>
+                            <Label htmlFor={variableName}>{title} Type</Label>
+                            <SearchableSelect
+                                name="type"
+                                placeholder="Select a type"
+                                value={type}
+                                onChange={(value) => {
+                                    const op = elements.find((o) => o.type === value) as any
+                                    const defaultValues = objToReturnDynamicv2((op.rightSideData.json))
+                                    console.log({ defaultValues });
+                                    schema.current = op
+                                    onConfigUpdate(`extras.${variableName}.type`, value)
+                                    setTimeout(() => {
+                                        updateConfig(defaultValues)
+                                    }, 1000);
+                                    add(id, variableName, validateArray(op.rightSideData.json, {}))
+                                }}
+                                options={elements.map((el) => ({
+                                    label: el.label,
+                                    value: el.type
+                                }))}
+                            />
+                            {/* <SelectTrigger>
+                                    <SelectValue placeholder={"Select a type"} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {elements.map((op) => (
+                                        <SelectItem key={op.type} value={op.type}>
+                                            {op.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </SearchableSelect> */}
+                        </div>
+                        {schema.current && (
+                            <AutomationSimple
+                                filledDataName={`${variableName}`}
+                                schema={schema.current?.rightSideData?.json}
+                                flowZoneSelectedId={id}
+                                AllJson={schema.current?.rightSideData?.json}
+                                fieldValues={content}
+                                firstCall={true}
+                                onFieldChange={(partialState, replace) => {
+                                    console.log({ partialState, replace, content });
+
+                                    if (replace) updateConfig(partialState);
+                                    else
+                                        updateConfig({
+                                            ...content,
+                                            ...partialState,
+                                        });
+                                }}
+
+                            />
+                        )}
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+            {/* ) } */}
         </Card>
     )
 }

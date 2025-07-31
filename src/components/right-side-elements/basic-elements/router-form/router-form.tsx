@@ -68,7 +68,6 @@ function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
   // }
 
   for (const item of data.branches) {
-    console.log({ data, item });
     if (
       !item.label || item.label.trim() === '' ||
       !item.firstOperator || item.firstOperator.trim() === '' ||
@@ -115,7 +114,6 @@ export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: 
     const updatedBranches = [...branches]
     updatedBranches[index] = { ...updatedBranches[index], ...updates }
     updateNestedConfig("branches", updatedBranches)
-    console.log({ updatedBranches });
 
   }
 

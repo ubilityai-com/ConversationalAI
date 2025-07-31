@@ -1,9 +1,9 @@
 export const ConversationChainJson = {
-  category: "langchain",
+  category: "ai",
   type: "ConversationChain",
   label: "Conversational Chain",
   color: "#72797b",
-  normalHandle: ["integration", "basic", "automationTools", "langchain"],
+  normalHandle: ["integration", "basic", "automationTools", "ai"],
   rightSideData: {
     nodesCanConnectWith: {
       1: { category: "model", title: "Chat Model", required: true },

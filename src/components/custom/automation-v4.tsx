@@ -220,10 +220,10 @@ export default function AutomationSimple({
                     item.password
                       ? "password"
                       : item.numberField
-                      ? "number"
-                      : item.date
-                      ? "date"
-                      : "text"
+                        ? "number"
+                        : item.date
+                          ? "date"
+                          : "text"
                   }
                   placeholder={item.placeholder}
                   value={getFieldValue(item) || ""}
@@ -528,13 +528,13 @@ export default function AutomationSimple({
               json={
                 item.hasOwnProperty("json")
                   ? {
-                      ...item.json,
-                      fieldsArray: dynamicValue,
-                    }
+                    ...item.json,
+                    fieldsArray: dynamicValue,
+                  }
                   : {
-                      ...item,
-                      fieldsArray: dynamicValue,
-                    }
+                    ...item,
+                    fieldsArray: dynamicValue,
+                  }
               }
               filledDataName={filledDataName}
               onFieldChange={(partialState: any, replace?: boolean) => {
@@ -564,11 +564,11 @@ export default function AutomationSimple({
                   json={
                     item.hasOwnProperty("json")
                       ? {
-                          ...item.json,
-                        }
+                        ...item.json,
+                      }
                       : {
-                          ...item,
-                        }
+                        ...item,
+                      }
                   }
                   onFieldChange={(partialState: any, replace?: boolean) => {
                     if (fieldValues && item.variableName) {
@@ -621,7 +621,7 @@ export default function AutomationSimple({
       case "textFormatter":
         return (
           <div className="space-y-2">
-            <div className="custom-editor w-[93%] mb-2">
+            <div className="custom-editor w-full mb-2">
               <ReactQuillEditor
                 item={item}
                 value={getFieldValue(item) || ""}

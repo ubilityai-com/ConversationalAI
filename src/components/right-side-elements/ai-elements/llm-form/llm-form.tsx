@@ -2,7 +2,7 @@
 
 import { Node, NodeProps } from "@xyflow/react";
 import { useState } from "react";
-import { BasicLLMJson } from "../../../../elements/langchain-elements/BasicLLMJson";
+import { BasicLLMJson } from "../../../../elements/ai-elements/BasicLLMJson";
 import ModelsElements from "../../../../elements/model-elements";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
 import AutomationSimple from "../../../custom/automation-v4";

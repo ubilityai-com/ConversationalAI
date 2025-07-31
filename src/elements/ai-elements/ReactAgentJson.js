@@ -2,9 +2,9 @@ export const ReactAgentJson = {
   "type": "ReactAgent",
   "label": "React Agent",
   "color": "black",
-  "category": "langchain",
+  "category": "ai",
   "new": true,
-  normalHandle: ["integration", "basic", "automationTools", "langchain"],
+  normalHandle: ["integration", "basic", "automationTools", "ai"],
   rightSideData: {
     nodesCanConnectWith: {
       '1': { category: "model", title: "Chat Model", required: true },
@@ -22,16 +22,6 @@ export const ReactAgentJson = {
         value: "",
         placeholder: "e.g Whats going on your mind ?",
         hasDynamicVariable: true,
-      },
-      {
-        type: "outputJson",
-        value: {
-          Output: {
-            "answer": ""
-          },
-          Error: "",
-          Status: "",
-        },
       },
     ]
   }

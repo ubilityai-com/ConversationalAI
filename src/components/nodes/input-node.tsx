@@ -15,6 +15,7 @@ export function InputNode(props: NodeProps<Node<BaseNodeData>>) {
         </div>
 
         <p className="text-sm text-gray-600 mt-1 leading-relaxed">{data.description}</p>
+        <p className="text-sm text-gray-600 mt-1 leading-relaxed">{data.rightSideData.greet}</p>
       </div>} >
     </BaseNode>)
 }

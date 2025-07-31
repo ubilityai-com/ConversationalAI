@@ -50,7 +50,6 @@ const FlowZone = () => {
 
 
   const onDragOver = (event, node) => {
-    //console.log('drag over')
     event.preventDefault();
   };
   const handleRightDrawerClose = () => {
@@ -84,49 +83,34 @@ const FlowZone = () => {
     setShowSnackBarMessage({ open: true, message: message, color: color, duration: duration })
   }
   const onConnect = (params) => {
-    console.log({ params });
-    if (params.source === params.target) {
-      handleSnackBarMessageOpen("Couldn't connect component with itself !", "#ce3a32", 3000)
-    } else {
-      const isSource = edges.find(
-        (element) => element.source === params.source && element.sourceHandle === params.sourceHandle,
-      )
+    const { source, target, sourceHandle } = params;
 
-      if (isSource) {
-        handleSnackBarMessageOpen("Source already connected !", "#ce3a32", 3000)
-      } else {
-        const sourceElement = nodes.find((element) => element.id === params.source)
-        if (
-          sourceElement.type === "ListCard" &&
-          !params.sourceHandle.startsWith("h-") &&
-          params.sourceHandle !== "0" &&
-          sourceElement.data.formData[Number.parseInt(params.sourceHandle) - 1].urlSwitch
-        ) {
-          handleSnackBarMessageOpen(
-            "Source can not be connencted, Please disable URL so you can connect !",
-            "#ce3a32",
-            4000,
-          )
-        } else {
-          const edgeColor = sourceElement.data.color
-
-          setEdges((prevEdges) =>
-            addEdge(
-              {
-                ...params,
-                arrowHeadType: "arrowclosed",
-                type: "buttonEdge",
-                markerEnd: { type: MarkerType.ArrowClosed },
-                style: { stroke: "#afafb5", strokeWidth: 2 },
-              },
-              prevEdges,
-            )
-          )
-
-        }
-      }
+    if (source === target) {
+      handleSnackBarMessageOpen("Couldn't connect component with itself!", "destructive", 3000);
+      return;
     }
-  }
+
+    const isSourceConnected = edges.some(
+      (edge) => edge.source === source && edge.sourceHandle === sourceHandle
+    );
+    console.log({ isSourceConnected, params });
+
+    if (isSourceConnected) {
+      handleSnackBarMessageOpen("This source is already connected!", "destructive", 3000);
+      return;
+    }
+
+    const newEdge = {
+      ...params,
+      arrowHeadType: "arrowclosed",
+      type: "buttonEdge",
+      markerEnd: { type: MarkerType.ArrowClosed },
+      style: { stroke: "#afafb5", strokeWidth: 2 },
+    };
+
+    setEdges((prevEdges) => addEdge(newEdge, prevEdges));
+  };
+
   const onNodeDragStop = (event, node) => {
     const elementsIndex = nodes.findIndex((element) => element.id === node.id)
 

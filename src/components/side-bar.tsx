@@ -1,6 +1,6 @@
 import { Bot, CircleSmall, Link, MessageCircle, Workflow } from 'lucide-react';
 import { ReactNode } from 'react';
-import { LangchainElements } from '../elements/langchain-elements';
+import { AIElements } from '../elements/ai-elements';
 import { useFlowStore } from '../store/flow-store';
 import { ScrollArea } from './ui/scroll-area';
 // import {  ScrollBar } from './ui/scroll-area';
@@ -44,7 +44,7 @@ const SideMenu = () => {
                         </div>
                     }>
                         <ScrollArea className="h-64 rounded">
-                            {LangchainElements.map((rpa: any) => (
+                            {AIElements.map((rpa: any) => (
                                 <div
                                     draggable="true"
                                     key={rpa.label}

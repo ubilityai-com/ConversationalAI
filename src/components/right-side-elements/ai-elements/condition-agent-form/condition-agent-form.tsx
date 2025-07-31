@@ -33,10 +33,6 @@ interface RightSideData {
   scenarios: Scenario[];
   instruction: string;
   input: string;
-  save: boolean;
-  variableName: string;
-  loopFromSwitch: boolean;
-  loopFromName: string;
 }
 interface LLMConfigProps extends Record<string, any> {
   label: string;
@@ -123,12 +119,6 @@ function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
       return false;
     }
   }
-
-  // Check variableName if save is true
-  if (data.save && !data.variableName) {
-    return false;
-  }
-
   return true;
 }
 export default function ConditionAgentForm({
@@ -138,7 +128,6 @@ export default function ConditionAgentForm({
   const updateNodesValidationById = useFlowStore(
     (state) => state.updateNodesValidationById
   );
-  const updateVariable = useFlowStore((state) => state.updateVariable);
   const addVariable = useFlowStore((state) => state.addVariable);
 
   const { localConfig, updateNestedConfig } = useDebounceConfig<
@@ -164,12 +153,8 @@ export default function ConditionAgentForm({
 
   const extras = localConfig.extras || {};
   const scenarios: Scenario[] = localConfig.scenarios ?? [];
-  const save = localConfig.save ?? "";
-  const variableName = localConfig.variableName ?? "";
   const instruction = localConfig.instruction ?? "";
   const input = localConfig.input ?? "";
-  const loopFromName = localConfig.loopFromName ?? "";
-  const loopFromSwitch = localConfig.loopFromSwitch ?? false;
   const addScenario = () => {
     const newScenario: Scenario = {
       id: `scenario-${Date.now()}`,
@@ -328,55 +313,6 @@ export default function ConditionAgentForm({
           updateNestedConfig={updateNestedConfig}
         />
       ))}
-      <div className="flex items-center space-x-2 mx-2 mb-2">
-        <Switch
-          checked={save || false}
-          onCheckedChange={(checked) => {
-            updateNestedConfig("save", checked);
-            if (checked)
-              addVariable({
-                origin: selectedNode.id,
-                category: "dialogue",
-                name: "",
-                type: "string",
-                value: "",
-              });
-          }}
-          id="save-switch"
-        />
-        <Label htmlFor="save-switch" className="text-xs font-normal">
-          Save user's reply in a variable
-        </Label>
-      </div>
-      {save && (
-        <>
-          <Label className="block text-sm p-1 mb-1 font-normal">
-            Variable Name
-          </Label>
-          <EditableField
-            name="variableName"
-            placeholder="Variable Name"
-            value={variableName || ""}
-            onChange={(newValue) => {
-              updateVariable("dialogue", variableName, {
-                category: "dialogue",
-                name: newValue,
-              });
-              updateNestedConfig("variableName", newValue);
-            }}
-          />
-        </>
-      )}
-
-      <Label className="block text-sm p-1 mb-1 font-normal">
-        Enable the bot to handle user messages.
-      </Label>
-
-      <LoopFromForm
-        loopFromSwitch={loopFromSwitch}
-        loopFromName={loopFromName}
-        handleChange={updateNestedConfig}
-      />
     </div>
   );
 }

@@ -14,7 +14,7 @@ export default function ReactQuillEditor({
     onChange,
 }: ReactQuillEditorProps) {
     return (
-        <div className="custom-editor w-[93%] mb-2">
+        <div className="custom-editor w-full mb-2">
             <ReactQuill
                 theme="snow"
                 value={value || ""}

@@ -1,10 +1,10 @@
 export const AiAgentJson = {
-  "category": "langchain",
+  "category": "ai",
   type: "AiAgent",
   label: "AI Agent",
   color: "#72797b",
   hidden: true,
-  normalHandle: ["integration", "basic", "automationTools", "langchain"],
+  normalHandle: ["integration", "basic", "automationTools", "ai"],
   rightSideData: {
     nodesCanConnectWith: {
       '1': { category: "model", title: "Chat Model", required: true },

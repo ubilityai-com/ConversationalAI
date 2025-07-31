@@ -15,7 +15,7 @@ import { SummarizationChainJson } from "./SummarizationChainJson";
 import { UpsertJson } from "./UpsertJson";
 import { WebSearchAgentJson } from "./WebSearchAgentJson";
 
-export const LangchainElements = [
+export const AIElements = [
     //add Component
     ReactAgentJson,
     OpenAIFunctionsAgentJson,

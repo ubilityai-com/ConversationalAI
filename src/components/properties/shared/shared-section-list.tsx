@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Switch } from "../../ui/switch"
 import { SharedListItemSection } from "./shared-section-list-tem"
 import { objToReturnDynamicv2 } from "../../../lib/automation-utils"
+import { SearchableSelect } from "../../custom/searchable-select"
 
 interface SectionProps {
     config: any
@@ -104,7 +105,35 @@ export function SharedListSection({
                                     <Label htmlFor={`tool-type-${tool.id}`} className="text-xs">
                                         Tool Type
                                     </Label>
-                                    <Select
+                                    <SearchableSelect
+                                        name="type"
+                                        placeholder="Select a type"
+                                        value={tool.type}
+                                        onChange={(value) => {
+                                            const currentTools = list
+                                            const selectedOption = elements.find((opt) => opt.type === value)
+                                            const defaultValues = objToReturnDynamicv2((selectedOption.rightSideData.json))
+
+                                            const updatedTools = currentTools.map((tool: any, index: number) =>
+                                                toolIndex === index
+                                                    ? {
+                                                        id: tool.id,
+                                                        type: value,
+                                                        content: { json: defaultValues },
+                                                    }
+                                                    : tool,
+                                            )
+                                            console.log({ updatedTools })
+                                            onConfigUpdate(`extras.${variableName}.list`, updatedTools)
+                                            updateSubNodeValidationById(id, tool.id, selectedOption.defaultValid)
+
+                                        }}
+                                        options={elements.map((el) => ({
+                                            label: el.label,
+                                            value: el.type
+                                        }))}
+                                    />
+                                    {/* <Select
                                         value={tool.type}
                                         onValueChange={(value) => {
                                             console.log({ value })
@@ -137,7 +166,7 @@ export function SharedListSection({
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>
-                                    </Select>
+                                    </Select> */}
                                 </div>
                                 {schemas && tool.type && (
                                     <SharedListItemSection
@@ -169,35 +198,38 @@ export function SharedListSection({
 
     return (
         <Card>
-            <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm flex items-center">
-                        <FileJson className="w-4 h-4 mr-2" />
-                        {title}
-                    </CardTitle>
-                    {optional && (
-                        <Switch
-                            checked={enabled}
-                            onCheckedChange={(checked) => {
-                                onConfigUpdate(`extras.${variableName}.type`, "")
-                                onConfigUpdate(`extras.${variableName}.enabled`, checked)
-                            }}
-                            aria-label="Enable output parser"
-                        />
-                    )}
-                </div>
-                <CardDescription>{description}</CardDescription>
-            </CardHeader>
-            {shouldShowContent && (
-                <CardContent className="pt-0">
+
+
+            {
+                // shouldShowContent &&
+                (
                     <Accordion type="single" collapsible className="w-full">
                         <AccordionItem value="configuration">
-                            <AccordionTrigger className="text-sm">Configuration</AccordionTrigger>
+                            <AccordionTrigger className="text-sm">
+                                <CardHeader className="pb-3">
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle className="text-sm flex items-center">
+                                            <FileJson className="w-4 h-4 mr-2" />
+                                            {title}
+                                        </CardTitle>
+                                        {/* {optional && (
+                                            <Switch
+                                                checked={enabled}
+                                                onCheckedChange={(checked) => {
+                                                    onConfigUpdate(`extras.${variableName}.type`, "")
+                                                    onConfigUpdate(`extras.${variableName}.enabled`, checked)
+                                                }}
+                                                aria-label="Enable output parser"
+                                            />
+                                        )} */}
+                                    </div>
+                                    <CardDescription>{description}</CardDescription>
+                                </CardHeader>
+                            </AccordionTrigger>
                             <AccordionContent>{renderContent()}</AccordionContent>
                         </AccordionItem>
                     </Accordion>
-                </CardContent>
-            )}
+                )}
         </Card>
     )
 }

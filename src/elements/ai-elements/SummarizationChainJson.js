@@ -2,8 +2,8 @@ export const SummarizationChainJson = {
   "type": "SummarizationChain",
   "label": "Summarization Chain",
   "color": "black",
-  "category": "langchain",
-  normalHandle: ["integration", "basic", "automationTools", "langchain"],
+  "category": "ai",
+  normalHandle: ["integration", "basic", "automationTools", "ai"],
   "rightSideData": {
     "nodesCanConnectWith": {
       "1": { category: "model", title: "Chat Model", required: true },

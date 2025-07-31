@@ -1,17 +1,18 @@
-export const OpenAIFunctionsAgentJson = {
-  "type": "OpenAIFunctionsAgent",
-  "label": "OpenAI Functions Agent",
+export const ConversationalAgentJson = {
+  "type": "ConversationalAgent",
+  "label": "Conversational Agent",
   "color": "black",
-  "category": "langchain",
+  "category": "ai",
   "new": true,
   extra: { nodeRobotType: "AiAgent" },
-  normalHandle: ["integration", "basic", "automationTools", "langchain"],
+  normalHandle: ["integration", "basic", "automationTools", "ai"],
   rightSideData: {
     nodesCanConnectWith: {
       '1': { category: "model", title: "Chat Model", required: true },
       '2': { category: "memory", title: "Memory" },
       '3': { category: "tool", title: "Tool", multiple: true, required: true },
       "4": { category: "outputParser", title: "Output Parser" },
+
     },
     "json": [
       {
@@ -27,8 +28,8 @@ export const OpenAIFunctionsAgentJson = {
         hasDynamicVariable: true,
       },
       {
-        title: "Additional Fields",
         type: "accordion",
+        title: "Additional Fields",
         accTitle: "System Message",
         variableName: "systemMessage",
         fieldsArray: [

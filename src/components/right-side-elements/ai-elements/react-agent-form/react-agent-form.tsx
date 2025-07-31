@@ -1,6 +1,6 @@
 import { Node, NodeProps } from "@xyflow/react";
 import { useState } from "react";
-import { ReactAgentJson } from "../../../../elements/langchain-elements/ReactAgentJson";
+import { ReactAgentJson } from "../../../../elements/ai-elements/ReactAgentJson";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
 import { extractCreds, getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils";
 import { useFlowStore } from "../../../../store/flow-store";

@@ -1,9 +1,9 @@
 export const UpsertJson = {
-    "category": "langchain",
+    "category": "ai",
     type: "Upsert",
     label: "Upsert",
     color: "#72797b",
-    normalHandle: ["integration", "basic", "automationTools", "langchain"],
+    normalHandle: ["integration", "basic", "automationTools", "ai"],
     rightSideData: {
         nodesCanConnectWith: {
             '1': { category: "docLoader", title: "Loader", required: true },
