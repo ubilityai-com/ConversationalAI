@@ -11,11 +11,9 @@ function isExtrasValid(extras: any, values: Record<string, boolean> = {}) {
     for (const key in extras) {
         const item = extras[key];
 
-        if (!item.enabled) continue;
-
         const isRequired = !item.optional;
 
-        if (!isRequired) continue;
+        if (!isRequired && !item.enabled) continue;
 
         if (item.multiple) {
             const list = item.list || [];
@@ -108,13 +106,8 @@ export default function ConversationalRetrievalQaChainForm({
                 delay: 300,
                 onSave: (savedConfig) => {
                     // Save label changes
-                    const st = useRightDrawerStore.getState()
-
                     const nodeValid = useRightDrawerStore.getState().automation.validation[selectedNode.id].json
                     const subNodesValidation = useFlowStore.getState().subNodesValidation
-                    console.log({subNodesValidation});
-                    
-                    const subsValid = subNodesValidation[selectedNode.id]?.valid
                     const subs = subNodesValidation[selectedNode.id]?.subs
 
                     updateNodesValidationById(selectedNode.id, nodeValid && isExtrasValid(savedConfig.extras, subs))
