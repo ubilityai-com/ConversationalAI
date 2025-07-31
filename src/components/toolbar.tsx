@@ -14,14 +14,11 @@ export function Toolbar() {
     return Object.values(obj).includes(false);
   }
   const handleRun = () => {
-    // const connected = handleFlowZoneCheckIfAllHandlesAreConnected()
-    // if (!connected) {
-    //   // setIsFormDialogOpen(true);
-    //   // setFormDialogStatus("validation");
-    //   setShowSnackBarMessage({ open: true, message: "Please make sure all nodes are connected!", color: "destructive", duration: 3000 })
-    // }
-    // else
-    if (hasFalseValue(nodesValidation)) {
+    const connected = handleFlowZoneCheckIfAllHandlesAreConnected()
+    if (!connected) {
+      setShowSnackBarMessage({ open: true, message: "Please make sure all nodes are connected!", color: "destructive", duration: 3000 })
+    }
+    else if (hasFalseValue(nodesValidation)) {
       setShowSnackBarMessage({ open: true, message: "Please make sure all nodes are valid!", color: "destructive", duration: 3000 })
     }
     else {
