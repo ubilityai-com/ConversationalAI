@@ -1,3 +1,4 @@
+import { useFlowStore } from "../store/flow-store";
 import { ConstantVariable, DialogueVariables, OutputVariables } from "../store/variables-store";
 
 /**
@@ -41,7 +42,7 @@ export function isPickedPathAlreadyExistsInCreatedVariables(aPath: string, flowZ
 };
 
 export function reformatCreatedVariablePath(path: string) {
-  let newPath = path.substring(2, path.length);//remove '$.'
+  let newPath = path
   let firstDotIndex = newPath.indexOf('.');
   newPath = newPath.substring(firstDotIndex + 1, newPath.length);//remove node name and '.'
   newPath = newPath.replaceAll("\"", "");//remove all '"'
@@ -61,4 +62,19 @@ export function pathExistsInOutputVariables(
       }
     }
   return false
+}
+type OutputEntry = { name: string; path: string };
+
+export function convertOutputVariablesByNodeId(
+  nodeId: string
+): OutputEntry[] {
+  const outputVariables =useFlowStore.getState().outputVariables
+
+  const nodeVars = outputVariables[nodeId];
+  if (!nodeVars) return [];
+
+  return Object.entries(nodeVars).map(([name, path]) => ({
+    name,
+    path
+  }));
 }

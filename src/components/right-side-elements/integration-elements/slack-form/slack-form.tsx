@@ -14,6 +14,7 @@ import {
 import { useFlowStore } from "../../../../store/flow-store";
 import { useRightDrawerStore } from "../../../../store/right-drawer-store";
 import AutomationSimple from "../../../custom/automation-v4";
+import { convertOutputVariablesByNodeId } from "../../../../lib/variable-utils";
 
 interface IntegrationConfigProps extends Record<string, any> {
     label: string;
@@ -448,7 +449,7 @@ export function getContent(selectedNode: any, params: any) {
             app: "slack",
             credential: json.cred,
             operation: getOperationName(json.type, json.operation),
-            saveOutputAs: [],
+            saveOutputAs: convertOutputVariablesByNodeId(selectedNode.id),
         },
     };
     return {

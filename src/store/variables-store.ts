@@ -37,6 +37,7 @@ export interface VariablesSlice {
   ) => void;
   deleteOutputVariable: (nodeId: string, variableName: string) => void;
   deleteOutputVariablesByNodeId: (nodeId: string) => void;
+  deleteVariableByNodeId:(nodeId: string) => void;
 
   // Dialogue Variables
   addDialogueVariable: (
@@ -60,7 +61,7 @@ export interface VariablesSlice {
   clearAllVariables: () => void;
 }
 
-export const createVariablesSlice: StateCreator<VariablesSlice> = (set) => ({
+export const createVariablesSlice: StateCreator<VariablesSlice> = (set,get) => ({
   constantVariables: {},
   outputVariables: {},
   dialogueVariables: {},
@@ -175,6 +176,11 @@ export const createVariablesSlice: StateCreator<VariablesSlice> = (set) => ({
       const { [nodeId]: _, ...rest } = state.dialogueVariables;
       return { dialogueVariables: rest };
     }),
+    deleteVariableByNodeId:(nodeId)=>{
+      get().deleteDialogueVariablesByNodeId(nodeId)
+      get().deleteOutputVariablesByNodeId(nodeId)
+
+    },
   setAllConstantVariables: (variables) => set({ constantVariables: variables }),
   setAllOutputVariables: (variables) => set({ outputVariables: variables }),
   setAllDialogueVariables: (variables) => set({ dialogueVariables: variables }),

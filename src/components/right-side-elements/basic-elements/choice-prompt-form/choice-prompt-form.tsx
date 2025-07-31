@@ -130,7 +130,7 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
         },
     )
     const addVariable = useFlowStore(state => state.addVariable)
-    const updateVariable = useFlowStore(state => state.updateVariable)
+    const updateDialogueVariable = useFlowStore(state => state.updateDialogueVariable)
     const choices: Choice[] = localConfig.choices ?? []
     const botSays = localConfig.botSays ?? ""
     const save = localConfig.save ?? ""
@@ -260,7 +260,7 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
                         placeholder="Variable Name"
                         value={variableName || ""}
                         onChange={(newValue) => {
-                            updateVariable("dialogue", variableName, { category: "dialogue", name: newValue })
+                            updateDialogueVariable(selectedNode.id, newValue);
                             updateNestedConfig("variableName", newValue)
                         }
                         }

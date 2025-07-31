@@ -16,7 +16,7 @@ import { Label } from "../ui/label";
 interface ConfigurationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  path:string
+  path: string
 }
 
 export function CreateOutputVariableDialog({
@@ -34,8 +34,8 @@ export function CreateOutputVariableDialog({
 
   const [variableName, setVariableName] = useState("");
   const [error, setError] = useState("");
-  console.log({path});
-  
+  console.log({ path });
+
   const handleVariableNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -72,7 +72,7 @@ export function CreateOutputVariableDialog({
     }
 
     // Create the output variable
-    addOutputVariable(nodeId, variableName, path); // Using "output" as default path
+    addOutputVariable(nodeId, variableName, path.length === 0 ? "" : `.${path}`);
 
     // Reset form and close dialog
     setVariableName("");
@@ -92,7 +92,7 @@ export function CreateOutputVariableDialog({
     newPath = newPath.replaceAll('.', ' / ');
 
     return newPath;
-}
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

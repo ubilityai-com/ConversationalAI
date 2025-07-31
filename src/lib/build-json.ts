@@ -1,20 +1,20 @@
 import { Edge, Node } from "@xyflow/react";
 import { useFlowStore } from "../store/flow-store";
 import { camelToDashCase, getNextNodeId } from "./utils";
+import { ConstantVariable } from "../store/variables-store";
 
 interface Flow {
     credentials: any[];
+    constant_variables:ConstantVariable
     bot: Record<string, any>;
 }
 
 export function createFlowObject(): Flow {
-    const { nodes, edges } = useFlowStore.getState() as {
-        nodes: Node[];
-        edges: Edge[];
-    };
+    const { nodes, edges, constantVariables} = useFlowStore.getState() 
 
     const flow: Flow = {
         credentials: [],
+        constant_variables:constantVariables,
         bot: {},
     };
 
