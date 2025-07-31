@@ -117,11 +117,7 @@ const ResponseOutput = React.forwardRef<HTMLDivElement, ResponseOutputProps>(
             }
         };
         const reformatPathArray = (pathArray: any[]) => {
-            if (pathArray.length > 0) {
-                pathArray.shift()
                 return pathArray.join(".")
-            }
-            return "";
         };
 
         if (!runResult) return null
@@ -153,8 +149,8 @@ const ResponseOutput = React.forwardRef<HTMLDivElement, ResponseOutputProps>(
                                             style={{ ...style, height: undefined, width: undefined, whiteSpace: "nowrap" }}
                                             onClick={() => {
                                                 const copyEvent = {
-                                                    name: rowData.keyName ?? false,
-                                                    namespace: [false, ...(rowData.keys || [])],
+                                                    name: rowData.keyName,
+                                                    namespace: rowData.keys || [],
                                                     src: rowData.value,
                                                 }
                                                 handleCreateVariable(copyEvent)
