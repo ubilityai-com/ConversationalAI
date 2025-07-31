@@ -6,10 +6,8 @@ import { Button } from "./ui/button"
 
 
 export function Toolbar() {
-  const isRunning = false
 
-  const { nodesValidation, setFormDialogStatus, setIsFormDialogOpen, setDialogProps, setShowSnackBarMessage, nodes, edges, handleFlowZoneCheckIfAllHandlesAreConnected } = useFlowStore()
-  const { activate, loading, error, success } = useCredentialStore()
+  const { activateBot, isLoadingFlow, nodesValidation, setFormDialogStatus, setIsFormDialogOpen, setShowSnackBarMessage, handleFlowZoneCheckIfAllHandlesAreConnected } = useFlowStore()
   function hasFalseValue(obj: Record<string, boolean>): boolean {
     return Object.values(obj).includes(false);
   }
@@ -23,7 +21,7 @@ export function Toolbar() {
     }
     else {
       const data = createFlowObject()
-      activate({
+      activateBot({
         param: data
       })
     }
@@ -78,10 +76,10 @@ export function Toolbar() {
 
           <Button
             onClick={handleRun}
-            variant={isRunning ? "destructive" : "default"}
+            variant={isLoadingFlow ? "destructive" : "default"}
             size="sm"
           >
-            {isRunning ? (
+            {isLoadingFlow ? (
               <>
                 <Square className="w-4 h-4 mr-2" />
                 Stop

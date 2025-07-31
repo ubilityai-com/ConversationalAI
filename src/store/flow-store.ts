@@ -249,7 +249,6 @@ interface FlowState extends VariablesSlice {
     limitArray: string[]
     scoreArray: string[]
     components: any[]
-    loading: boolean
     error: string | null;
     runningNodeIds: Set<string>; // replace single runningNodeId with Set
 
@@ -261,11 +260,13 @@ interface FlowState extends VariablesSlice {
     removeRunningNodeId: (id: string) => void;
     nodeResults: Record<string, any>;
     setNodeResult: (id: string, result: any) => void;
+    activateBot: (data: any) => Promise<void>;
+    isLoadingFlow: boolean
 
 }
 export const useFlowStore = create<FlowState>()((set, get, store) => ({
     ...createVariablesSlice(set, get, store),
-    loading: false,
+    isLoadingFlow: false,
     error: null,
     runningNodeIds: new Set(),
     nodeResults: {},
@@ -276,6 +277,26 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
             [id]: result,
         }
     })),
+    activateBot: async (data) => {
+        const { setShowSnackBarMessage } = get()
+        set({ isLoadingFlow: true, error: null });
+        try {
+            const res = await axios.post(process.env.REACT_APP_DNS_URL + "activate_bot", data, {
+                headers: { "Content-Type": "application/json" },
+            });
+            set({ isLoadingFlow: false });
+            setShowSnackBarMessage({ open: true, message: res.data.message || "Bot Activated successfully", color: "success", duration: 3000 })
+
+
+        } catch (error: any) {
+            set({
+                error: error.response?.data?.message || error.message || "Unknown error",
+                isLoadingFlow: false,
+            });
+            setShowSnackBarMessage({ open: true, message: "Failed to activate Bot", color: "destructive", duration: 3000 })
+        }
+    },
+
     addRunningNodeId: (id) =>
         set((state) => {
             const updated = new Set(state.runningNodeIds);
@@ -327,7 +348,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
 
 
     deleteFlow: async (id) => {
-        set({ loading: true, error: null });
+        set({ isLoadingFlow: true, error: null });
         try {
             const res = await axios.delete(`/deleteFlow/${id}`);
             // optionally handle res.data if needed
@@ -335,12 +356,12 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
             console.error(error);
             set({ error: error?.response?.data?.message || error.message || "Failed to delete flow" });
         } finally {
-            set({ loading: false });
+            set({ isLoadingFlow: false });
         }
     },
 
     importFlow: async (data) => {
-        set({ loading: true, error: null });
+        set({ isLoadingFlow: true, error: null });
         try {
             const res = await axios.post(`/importFlow`, data);
             // optionally handle res.data if needed
@@ -348,7 +369,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
             console.error(error);
             set({ error: error?.response?.data?.message || error.message || "Failed to import flow" });
         } finally {
-            set({ loading: false });
+            set({ isLoadingFlow: false });
         }
     },
     fieldRefs: {},
