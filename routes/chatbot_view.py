@@ -25,7 +25,7 @@ class ChatbotUpdateRequest(BaseModel):
     ui_json: Optional[dict] = None
 
 
-@http_app.post('/chatbots')
+@http_app.post('/bot/chatbots')
 def create_chatbot_view(payload: ChatbotCreateRequest):
     """
     Create a new chatbot entry.
@@ -43,7 +43,7 @@ def create_chatbot_view(payload: ChatbotCreateRequest):
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
-@http_app.get('/chatbots')
+@http_app.get('/bot/chatbots')
 def list_chatbots_view():
     """
     List all chatbots.
@@ -57,7 +57,7 @@ def list_chatbots_view():
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
-@http_app.delete('/chatbots/{id}')
+@http_app.delete('/bot/chatbots/{id}')
 def delete_chatbots_view(id: int):
     """
     Delete a chatbot by ID.
@@ -76,7 +76,7 @@ def delete_chatbots_view(id: int):
 
 
 
-@http_app.put('/chatbots/{id}')
+@http_app.put('/bot/chatbots/{id}')
 def update_chatbot_view(id: int, payload: ChatbotUpdateRequest):
     """
     Update a chatbot by ID with only the fields provided.

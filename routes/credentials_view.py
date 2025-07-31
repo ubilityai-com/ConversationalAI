@@ -17,7 +17,7 @@ class CredentialCreateRequest(BaseModel):
 # class CredentialsBatchRequest(BaseModel):
 #     names: List[str]
 
-@http_app.post('/credentials')
+@http_app.post('/bot/credentials')
 def create_credential_view(payload: CredentialCreateRequest):
     """
     Create a new credential.
@@ -35,7 +35,7 @@ def create_credential_view(payload: CredentialCreateRequest):
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
-@http_app.get('/credentials')
+@http_app.get('/bot/credentials')
 def list_credentials_view():
     """
     List all credentials.
@@ -49,7 +49,7 @@ def list_credentials_view():
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
-@http_app.delete('/credentials/{id}')
+@http_app.delete('/bot/credentials/{id}')
 def delete_credential_view(id: int):
     """
     Delete a credential by ID.
@@ -67,7 +67,7 @@ def delete_credential_view(id: int):
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
-# @http_app.post('/credentials/batch')
+# @http_app.post('/bot/credentials/batch')
 # def get_multiple_credentials_view(payload: CredentialsBatchRequest):
 #     """
 #     Get multiple credentials by name.

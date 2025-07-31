@@ -14,7 +14,7 @@ class FileUploadRequest(BaseModel):
     filePath: str = None
 
 
-@http_app.post('/files')
+@http_app.post('/bot/files')
 def upload_file(payload: FileUploadRequest):
     """
     Upload a file from a given source path to the local storage directory.
@@ -44,7 +44,7 @@ def upload_file(payload: FileUploadRequest):
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
-@http_app.get('/files')
+@http_app.get('/bot/files')
 def list_file_names():
     """
     List all files in the local storage directory.

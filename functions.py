@@ -312,7 +312,7 @@ async def handle_app_integration(sio, sid, conversation, conversation_id, dialog
 
     # execute app operation
     app_type = app_content_json['app']
-    credential_name = app_content_json['credentials']
+    credential_name = app_content_json['credential']
     credential = active_dialogues[conversation['dialogue_id']]["credentials"][credential_name]
     operation = app_content_json['operation']
     content_json = app_content_json['content_json']

@@ -12,7 +12,7 @@ class SlackAppIntegration(BaseModel):
     credential_name: str
 
 
-@http_app.post("/slack/listUsers")
+@http_app.post("/bot/slack/listUsers")
 async def list_slack_users(payload: SlackAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
@@ -42,7 +42,7 @@ async def list_slack_users(payload: SlackAppIntegration):
 
 
 
-@http_app.post("/slack/listChannels")
+@http_app.post("/bot/slack/listChannels")
 async def get_slack_channels(payload: SlackAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
@@ -79,7 +79,7 @@ class OpenAiAppIntegration(BaseModel):
     credential_name: str
     modelType: str
 
-@http_app.post("/openai/listModels")
+@http_app.post("/bot/openai/listModels")
 async def openAi_list_models(payload: OpenAiAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
@@ -118,7 +118,7 @@ class TogetherAiAppIntegration(BaseModel):
     modelType: str
 
 
-@http_app.post("/togetherAi/listModels")
+@http_app.post("/bot/togetherAi/listModels")
 async def togetherAi_list_models(payload: TogetherAiAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
@@ -185,7 +185,7 @@ def google_create_service(cred, API_SERVICE_NAME, API_VERSION):
             f'Failed to create service instance for {API_SERVICE_NAME}',e)
 
 
-@http_app.post("/gmail/getGmailLabels")
+@http_app.post("/bot/gmail/getGmailLabels")
 async def gmail_get_labels(payload: GmailAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)

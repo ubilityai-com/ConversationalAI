@@ -91,7 +91,7 @@ async def connect(sid, environ, auth=None):
         'sid': sid,
         'created_at': now,
         'last_reply_at': now,
-        'variables': {},
+        'variables': active_dialogues[dialogue_id]['constant_variables'],
         'current_step': 'firstElementId',
         'wait_for_user_input': None,
         'dialogue_id':dialogue_id

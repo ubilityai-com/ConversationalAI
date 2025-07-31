@@ -35,7 +35,7 @@ class TestNodeRequest(BaseModel):
     content_json: dict
 
 
-@http_app.post('/test_node')
+@http_app.post('/bot/test_node')
 def test_node(payload: TestNodeRequest):
     try:
         credential_obj = get_credential(payload.credential)
@@ -50,14 +50,15 @@ class jiu(BaseModel):
 
 
 
-@http_app.post('/activate_bot')
+@http_app.post('/bot/activate_bot')
 def testing(payload: jiu):
     try:
         cred = payload.param['credentials']
         cred_obj=get_credentials_by_names(cred)
         obj = {
             "credentials":cred_obj,
-            "bot":payload.param['bot']
+            "bot":payload.param['bot'],
+            "constant_variables":payload.param['constant_variables']
         }
         active_dialogues['khaled']=obj
         return {"Message":"Successfully activated!"}
@@ -65,7 +66,7 @@ def testing(payload: jiu):
         return JSONResponse(status_code=500, content={"Error": str(e)})
     
 
-@http_app.get('/activate')
+@http_app.get('/bot/activate')
 def activate_chatbot_view(chatbot_id: int = Query(None)):
     try:
         """
@@ -104,7 +105,7 @@ def activate_chatbot_view(chatbot_id: int = Query(None)):
         return JSONResponse(status_code=500, content={"Error": str(e)})
     
 
-@http_app.get('/deactivate')
+@http_app.get('/bot/deactivate')
 def deactivate_chatbot_view(chatbot_id: int = Query(None)):
     try:
         """
