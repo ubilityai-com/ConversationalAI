@@ -52,8 +52,8 @@ export function ValidationDialog({
     cancelButtonText = "Go Back and Fix",
     warnings
 }: ValidationDialogProps) {
-    console.log({warnings});
-    
+    console.log({ warnings });
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[500px] max-h-[90vh]">
@@ -79,16 +79,19 @@ export function ValidationDialog({
                                             : "border-blue-500 bg-blue-50 text-blue-900 dark:bg-blue-950 dark:text-blue-200"
                                 }
                             >
-                                <AlertTriangle
-                                    className={
-                                        warning.severity === "high"
-                                            ? "h-4 w-4 text-red-500"
-                                            : warning.severity === "medium"
-                                                ? "h-4 w-4 text-amber-500"
-                                                : "h-4 w-4 text-blue-500"
-                                    }
-                                />
-                                <AlertTitle className="font-medium">{warning.title}</AlertTitle>
+                                <div className="flex gap-1">
+                                    <AlertTriangle
+                                        className={
+                                            warning.severity === "high"
+                                                ? "h-4 w-4 text-red-500"
+                                                : warning.severity === "medium"
+                                                    ? "h-4 w-4 text-amber-500"
+                                                    : "h-4 w-4 text-blue-500"
+                                        }
+                                    />
+                                    <AlertTitle className="font-medium">{warning.title}</AlertTitle>
+                                </div>
+
                                 <AlertDescription className="text-sm">{warning.description}</AlertDescription>
                             </Alert>
                         ))}

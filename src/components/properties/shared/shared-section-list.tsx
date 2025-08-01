@@ -42,8 +42,6 @@ export function SharedListSection({
     const del = useFlowStore((s) => s.deleteSubNodeById)
     const updateSubNodeValidationById = useFlowStore((s) => s.updateSubNodeValidationById)
 
-    // For non-optional sections, always show content
-    const shouldShowContent = optional ? enabled : true
 
     const addTool = () => {
         const currentTools = list
@@ -133,40 +131,6 @@ export function SharedListSection({
                                             value: el.type
                                         }))}
                                     />
-                                    {/* <Select
-                                        value={tool.type}
-                                        onValueChange={(value) => {
-                                            console.log({ value })
-                                            const currentTools = list
-                                            const selectedOption = elements.find((opt) => opt.type === value)
-                                            const defaultValues = objToReturnDynamicv2((selectedOption.rightSideData.json))
-
-                                            const updatedTools = currentTools.map((tool: any, index: number) =>
-                                                toolIndex === index
-                                                    ? {
-                                                        id: tool.id,
-                                                        type: value,
-                                                        content: { json: defaultValues },
-                                                    }
-                                                    : tool,
-                                            )
-                                            console.log({ updatedTools })
-                                            onConfigUpdate(`extras.${variableName}.list`, updatedTools)
-                                            updateSubNodeValidationById(id, tool.id, selectedOption.defaultValid)
-
-                                        }}
-                                    >
-                                        <SelectTrigger id={`tool-type-${tool.id}`} className="h-8 text-xs">
-                                            <SelectValue placeholder="Select tool type" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {elements.map((op) => (
-                                                <SelectItem key={op.type} value={op.type}>
-                                                    {op.label}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select> */}
                                 </div>
                                 {schemas && tool.type && (
                                     <SharedListItemSection
@@ -196,40 +160,57 @@ export function SharedListSection({
         </div>
     )
 
+    const [open, setOpen] = useState(!optional || enabled);
+    const shouldTrigger = !optional;
+
     return (
         <Card>
+            <Accordion
+                type="single"
+                collapsible
+                value={open ? "configuration" : ""}
+                onValueChange={(val) => setOpen(val === "configuration")}
+                className="w-full"
+            >
+                <AccordionItem value="configuration">
+                    {shouldTrigger ? (
+                        // Default behavior: AccordionTrigger wraps header
+                        <AccordionTrigger className="text-sm">
+                            <CardHeader className="pb-3">
+                                <div className="flex items-center justify-between">
+                                    <CardTitle className="text-sm flex items-center">
+                                        <FileJson className="w-4 h-4 mr-2" />
+                                        {title}
+                                    </CardTitle>
+                                </div>
+                                <CardDescription>{description}</CardDescription>
+                            </CardHeader>
+                        </AccordionTrigger>
+                    ) : (
+                        // Custom: no icon, not clickable
+                        <CardHeader className="pb-3 cursor-default">
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-sm flex items-center">
+                                    <FileJson className="w-4 h-4 mr-2" />
+                                    {title}
+                                </CardTitle>
+                                <Switch
+                                    checked={enabled}
+                                    onCheckedChange={(checked) => {
+                                        onConfigUpdate(`extras.${variableName}.type`, "");
+                                        onConfigUpdate(`extras.${variableName}.enabled`, checked);
+                                        setOpen(checked);
+                                    }}
+                                    aria-label="Enable section"
+                                />
+                            </div>
+                            <CardDescription>{description}</CardDescription>
+                        </CardHeader>
+                    )}
 
-
-            {
-                // shouldShowContent &&
-                (
-                    <Accordion type="single" collapsible className="w-full">
-                        <AccordionItem value="configuration">
-                            <AccordionTrigger className="text-sm">
-                                <CardHeader className="pb-3">
-                                    <div className="flex items-center justify-between">
-                                        <CardTitle className="text-sm flex items-center">
-                                            <FileJson className="w-4 h-4 mr-2" />
-                                            {title}
-                                        </CardTitle>
-                                        {/* {optional && (
-                                            <Switch
-                                                checked={enabled}
-                                                onCheckedChange={(checked) => {
-                                                    onConfigUpdate(`extras.${variableName}.type`, "")
-                                                    onConfigUpdate(`extras.${variableName}.enabled`, checked)
-                                                }}
-                                                aria-label="Enable output parser"
-                                            />
-                                        )} */}
-                                    </div>
-                                    <CardDescription>{description}</CardDescription>
-                                </CardHeader>
-                            </AccordionTrigger>
-                            <AccordionContent>{renderContent()}</AccordionContent>
-                        </AccordionItem>
-                    </Accordion>
-                )}
+                    <AccordionContent>{renderContent()}</AccordionContent>
+                </AccordionItem>
+            </Accordion>
         </Card>
-    )
+    );
 }

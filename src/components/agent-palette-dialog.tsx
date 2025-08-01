@@ -42,6 +42,7 @@ const agentTypes = [
           content: {},
           description: "Select the memory that fits your use case",
           title: "Memory",
+          // optional: true,
         },
         tool: {
           multiple: true,
@@ -49,7 +50,7 @@ const agentTypes = [
           list: [],
           description: "Configure tools for the LLM agent to use",
           title: "Tools",
-          // optional: true,
+          // optional: true
         },
       },
       json: [

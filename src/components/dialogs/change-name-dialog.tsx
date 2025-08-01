@@ -19,21 +19,9 @@ export function ChangeNameDialog({
 
     const { formDialogBotName, formDialogApplyValues, setFormDialogBotName, setFormDialogApplyValues } = useFlowStore();
     const [botName, setBotName] = useState(formDialogBotName)
-    const handlePublish = () => {
-        const flowObject = createFlowObject()
-        console.log({ flowObject });
 
-
-    }
-    const handleChangeBotName = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setBotName(event.target.value)
-    }
-    const handleSaveFormDialogOnChange = (value: string, variableName: string) => {
-        if (variableName === "formDialogBotName") {
-            setFormDialogBotName(value)
-        } else if (variableName === "formDialogApplyValues") {
-            setFormDialogApplyValues(value)
-        }
+    const handleSaveFormDialog = (value: string) => {
+        setFormDialogBotName(value)
     }
 
     return (
@@ -42,9 +30,9 @@ export function ChangeNameDialog({
             <DialogPortal>
                 <DialogOverlay className="DialogOverlay" />
                 <DialogContent className="DialogContent">
-                    <DialogTitle className="DialogTitle">Edit profile</DialogTitle>
+                    <DialogTitle className="DialogTitle">Edit name</DialogTitle>
                     <DialogDescription className="DialogDescription">
-                        Make changes to your profile here. Click save when you're done.
+                        Make changes to your bot name here. Click save when you're done.
                     </DialogDescription>
                     <Label
                         htmlFor="name"
@@ -52,14 +40,18 @@ export function ChangeNameDialog({
                         Name
                     </Label>
                     <Input
+                        value={botName}
                         id="name"
-                        defaultValue="Pedro Duarte"
+                        defaultValue={botName}
+                        onChange={(e) => setBotName(e.target.value)}
                     />
                     <div
                         style={{ display: "flex", marginTop: 25, justifyContent: "flex-end" }}
                     >
                         <DialogClose asChild>
-                            <Button className="Button green">Save changes</Button>
+                            <Button
+                                onClick={() => handleSaveFormDialog(botName)}
+                                className="Button green">Save changes</Button>
                         </DialogClose>
                     </div>
                 </DialogContent>

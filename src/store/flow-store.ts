@@ -261,7 +261,7 @@ interface FlowState extends VariablesSlice {
     nodeResults: Record<string, any>;
     setNodeResult: (id: string, result: any) => void;
     activateBot: (data: any) => Promise<void>;
-    isLoadingFlow: boolean
+    isLoadingFlow: boolean;
 
 }
 export const useFlowStore = create<FlowState>()((set, get, store) => ({
@@ -603,13 +603,13 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
                 nodes,
                 edges
             );
-            const deleteNodesValidationById=state.deleteNodesValidationById
+            const deleteNodesValidationById = state.deleteNodesValidationById
             deleteNodesValidationById(id)
             state.deleteVariableByNodeId(id)
             // Check clickedElement
             const newClickedElement =
                 state.clickedElement?.id === id ? null : state.clickedElement;
-            
+
             return {
                 nodes: updatedNodes,
                 edges: updatedEdges,
@@ -658,7 +658,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
     flow: {},
     setFlow: (flow) => set({ flow }),
 
-    formDialogBotName: "",
+    formDialogBotName: "Workflow",
     setFormDialogBotName: (name) => set({ formDialogBotName: name }),
 
     botType: "Web",

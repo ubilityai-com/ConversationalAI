@@ -1,5 +1,5 @@
 import { FileJson } from "lucide-react"
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useDebounceConfig } from "../../../hooks/use-debounced-config"
 import { objToReturnDynamicv2 } from "../../../lib/automation-utils"
 import { validateArray } from "../../../lib/utils"
@@ -44,9 +44,6 @@ export function SharedSection({
                 delay: 300,
                 onSave: (savedConfig) => {
                     // Save label changes   
-                    console.log({ schema, savedConfig });
-
-                    console.log({ savedConfig, validateArray: validateArray(schema.current.rightSideData.json, savedConfig) });
                     onConfigUpdate(`extras.${variableName}.content`, savedConfig);
                     updateSubNodeValidationById(id, variableName, validateArray(schema.current.rightSideData.json, savedConfig))
                     setNodeFilledDataByKey(id, variableName, savedConfig)
@@ -60,36 +57,50 @@ export function SharedSection({
     const add = useFlowStore((s) => s.addSubNodeValidation)
     const updateSubNodeValidationById = useFlowStore((s) => s.updateSubNodeValidationById)
     const del = useFlowStore((s) => s.deleteSubNodeById)
-    console.log({ defaultType, type, localConfig, content });
     const schema = useRef(getSchema(type, elements));
-    console.log({ elements });
+
+    const [open, setOpen] = useState(!optional || enabled)
+
+    const renderHeader = () => (
+        <CardHeader className="pb-3 cursor-default">
+            <div className="flex items-center justify-between">
+                <CardTitle className="text-sm flex items-center">
+                    {title}
+                </CardTitle>
+                {optional && (
+                    <Switch
+                        checked={enabled}
+                        onCheckedChange={(checked) => {
+                            onConfigUpdate(`extras.${variableName}.enabled`, checked);
+                            if (checked) setOpen(true);
+                            else setOpen(false);
+                        }}
+                        aria-label="Enable section"
+                    />
+                )}
+            </div>
+            <CardDescription>{description}</CardDescription>
+        </CardHeader>
+    );
 
     return (
         <Card>
-
-            {/* {(!optional || optional && enabled) && ( */}
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion
+                type="single"
+                collapsible
+                value={open ? "configuration" : ""}
+                onValueChange={(val) => setOpen(val === "configuration")}
+                className="w-full"
+            >
                 <AccordionItem value="configuration">
-                    <AccordionTrigger className="text-sm">
-                        <CardHeader className="pb-3">
-                            <div className="flex items-center justify-between">
-                                <CardTitle className="text-sm flex items-center">
-                                    <FileJson className="w-4 h-4 mr-2" />
-                                    {title}
-                                </CardTitle>
-                                {/* {optional && (
-                                        <Switch
-                                            checked={enabled}
-                                            onCheckedChange={(checked) => {
-                                                onConfigUpdate(`extras.${variableName}.enabled`, checked)
-                                            }}
-                                            aria-label="Enable output parser"
-                                        />
-                                    )} */}
-                            </div>
-                            <CardDescription>{description}</CardDescription>
-                        </CardHeader>
-                    </AccordionTrigger>
+                    {optional ? (
+                        renderHeader()
+                    ) : (
+                        <AccordionTrigger className="text-sm">
+                            {renderHeader()}
+                        </AccordionTrigger>
+                    )}
+
                     <AccordionContent className="space-y-4">
                         <div>
                             <Label htmlFor={variableName}>{title} Type</Label>
@@ -98,33 +109,20 @@ export function SharedSection({
                                 placeholder="Select a type"
                                 value={type}
                                 onChange={(value) => {
-                                    const op = elements.find((o) => o.type === value) as any
-                                    const defaultValues = objToReturnDynamicv2((op.rightSideData.json))
-                                    console.log({ defaultValues });
-                                    schema.current = op
-                                    onConfigUpdate(`extras.${variableName}.type`, value)
-                                    setTimeout(() => {
-                                        updateConfig(defaultValues)
-                                    }, 1000);
-                                    add(id, variableName, validateArray(op.rightSideData.json, {}))
+                                    const op = elements.find((o) => o.type === value) as any;
+                                    const defaultValues = objToReturnDynamicv2(op.rightSideData.json);
+                                    schema.current = op;
+                                    onConfigUpdate(`extras.${variableName}.type`, value);
+                                    setTimeout(() => updateConfig(defaultValues), 1000);
+                                    add(id, variableName, validateArray(op.rightSideData.json, {}));
                                 }}
                                 options={elements.map((el) => ({
                                     label: el.label,
-                                    value: el.type
+                                    value: el.type,
                                 }))}
                             />
-                            {/* <SelectTrigger>
-                                    <SelectValue placeholder={"Select a type"} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {elements.map((op) => (
-                                        <SelectItem key={op.type} value={op.type}>
-                                            {op.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </SearchableSelect> */}
                         </div>
+
                         {schema.current && (
                             <AutomationSimple
                                 filledDataName={`${variableName}`}
@@ -134,22 +132,14 @@ export function SharedSection({
                                 fieldValues={content}
                                 firstCall={true}
                                 onFieldChange={(partialState, replace) => {
-                                    console.log({ partialState, replace, content });
-
                                     if (replace) updateConfig(partialState);
-                                    else
-                                        updateConfig({
-                                            ...content,
-                                            ...partialState,
-                                        });
+                                    else updateConfig({ ...content, ...partialState });
                                 }}
-
                             />
                         )}
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>
-            {/* ) } */}
         </Card>
-    )
+    );
 }
