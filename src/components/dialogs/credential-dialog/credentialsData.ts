@@ -9,15 +9,15 @@ const containsOnlyLettersAndNumbers = (str: string): boolean => {
 
 const oAuth2RedirectUris: CopyField = {
     label: "Authorized redirect URIs",
-    value: process.env.REACT_APP_DOMAIN + "",
+    value: window.location.href + "",
 };
 const javascriptOrigins: CopyField = {
     label: "Authorized JavaScript origins",
-    value: process.env.REACT_APP_DOMAIN ?? "",
+    value: window.location.href ?? "",
 };
 const websiteUrl: CopyField = {
     label: "Website Url",
-    value: process.env.REACT_APP_DOMAIN ?? "",
+    value: window.location.href ?? "",
 };
 const credsThatNeedRedirects: Record<string, CopyField[]> = {
     Google: [oAuth2RedirectUris, javascriptOrigins],
