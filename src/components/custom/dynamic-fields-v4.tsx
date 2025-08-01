@@ -269,8 +269,8 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
 
             {filledArray.map(
               (fieldSet: Record<string, any>, fieldSetInd: number) => (
-                <Card key={fieldSetInd} className="border border-gray-200">
-                  <CardContent className="p-4 space-y-3">
+                <Card key={fieldSetInd} className={isAccordion ? "border-none" : "border border-gray-200"}>
+                  <CardContent className={isAccordion ? "p-0" : "p-4 space-y-3"}>
                     {json.type !== "accordion" && (
                       <div className="flex items-center justify-between">
                         <span className="font-medium text-sm">
