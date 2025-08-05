@@ -92,12 +92,17 @@ ALLOWED_EXTENSIONS = {
     "webm": ["video/webm"]
 }
 
-
 @http_app.post("/bot/upload_file")
 async def save_file_binary(request: Request, dialogue: str = Query(None)):
     try:
+        if not dialogue:
+            return JSONResponse(status_code=400, content={"Error": "Missing dialogue parameter"})
+
         current_dir = os.getcwd()
-        STORAGE_DIR = f"{current_dir}/temp/{dialogue}"
+        STORAGE_DIR = os.path.join(current_dir, "temp", dialogue)
+
+        # Create directory if it doesn't exist
+        os.makedirs(STORAGE_DIR, exist_ok=True)
 
         # Get raw body data
         body = await request.body()
@@ -142,7 +147,6 @@ async def save_file_binary(request: Request, dialogue: str = Query(None)):
             file_name = f"file_{random_suffix}.{matched_extension}"
 
         # Save file
-        os.makedirs(STORAGE_DIR, exist_ok=True)
         file_path = os.path.join(STORAGE_DIR, file_name)
 
         with open(file_path, "wb") as f:
