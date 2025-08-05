@@ -110,7 +110,7 @@ def basicDataLoader(loader_data):
     logging.info("load data in basicDataLoader")
     global file_name
     try:
-        temp_folder_path=os.getcwd() # get current working directory 
+        temp_folder_path = f"{os.getcwd()}/temp" # get current working directory 
         dataType = loader_data['dataType']
         dataFormat = loader_data['dataFormat']
         data = loader_data['data']
@@ -121,17 +121,17 @@ def basicDataLoader(loader_data):
                 response = PyPDFLoader(data)
             elif dataFormat == "Name":
                 logging.info("load data from a local file")
-                file_name=f"{temp_folder_path}/storage/{data}" # in this case, the variable data will contain the file name
+                file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{data}" # in this case, the variable data will contain the file name
                 response = PyPDFLoader(file_name)
         elif dataType == "CSV":
             logging.info("data type CSV")
             if dataFormat == "Data": 
                 logging.info("data format DATA")
-                file_name=f"{temp_folder_path}/storage/{data}" # in this case, the variable data will contain the file name
+                file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{data}" # in this case, the variable data will contain the file name
                 response = CSVLoader(file_name)
             elif dataFormat == "Name":
                 logging.info("load data from a local file")
-                file_name=f"{temp_folder_path}/storage/{data}" # in this case, the variable data will contain the file name
+                file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{data}" # in this case, the variable data will contain the file name
                 response = CSVLoader(file_name)
         elif dataType == "JSON":
             logging.info("data type JSON")
@@ -152,7 +152,7 @@ def basicDataLoader(loader_data):
                 response = JSONLoader(file_path=file_name,jq_schema='.',text_content=False)
             elif dataFormat == "Name":
                 logging.info("load data from a local file")
-                file_name=f"{temp_folder_path}/storage/{data}" # in this case, the variable data will contain the file name
+                file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{data}" # in this case, the variable data will contain the file name
                 response = JSONLoader(file_path=file_name,jq_schema='.',text_content=False)
         elif dataType == "TEXT":
             logging.info("data type TEXT")
@@ -167,7 +167,7 @@ def basicDataLoader(loader_data):
                 response = TextLoader(file_name)
             elif dataFormat == "Name":
                 logging.info("load data from a local file")
-                file_name=f"{temp_folder_path}/storage/{data}" # in this case, the variable data will contain the file name
+                file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{data}" # in this case, the variable data will contain the file name
                 response = TextLoader(file_name)
         return response
     except Exception as error:
