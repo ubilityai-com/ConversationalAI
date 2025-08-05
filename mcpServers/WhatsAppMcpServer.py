@@ -6,7 +6,7 @@ import os, sys
 apps = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(apps)
 
-from applications import whatsapp
+from mcpLibraries import whatsapp
 
 mcp = FastMCP("WhatsAppMcpServer")
 
