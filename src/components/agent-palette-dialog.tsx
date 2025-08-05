@@ -17,58 +17,10 @@ import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
+import { ReactAgentJson } from "../elements/ai-elements/ReactAgentJson";
 
 const agentTypes = [
-  {
-    type: "ReactAgent",
-    label: "React Agent",
-    description: "Large Language Model for text processing",
-    icon: Bot,
-    color: "bg-purple-500",
-    category: "ai",
-    automated: "json",
-    defaults: {
-      extras: {
-        model: {
-          enabled: true,
-          type: "",
-          content: {},
-          description: "Select the model that fits your use case",
-          title: "LLM Model",
-        },
-        memory: {
-          enabled: true,
-          type: "",
-          content: {},
-          description: "Select the memory that fits your use case",
-          title: "Memory",
-          // optional: true,
-        },
-        tool: {
-          multiple: true,
-          enabled: true,
-          list: [],
-          description: "Configure tools for the LLM agent to use",
-          title: "Tools",
-          // optional: true
-        },
-      },
-      json: [
-        {
-          type: "textfield",
-          label: "Query",
-          required: true,
-          multiline: true,
-          minRows: 4,
-          variableName: "query",
-          chatbotQuestion: true,
-          value: "",
-          placeholder: "e.g Whats going on your mind ?",
-          hasDynamicVariable: true,
-        },
-      ],
-    },
-  },
+  ReactAgentJson,
   {
     type: "ConditionAgent",
     label: "Condition Agent",

@@ -1,13 +1,11 @@
-import { Loader2, Play, Settings, Trash2, X } from "lucide-react"
+import { Loader2, Settings, Trash2, X } from "lucide-react"
 // Import all config components
 import { useFlowStore } from "../store/flow-store"
 import RightSideBody from "./right-side-body"
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
-import { IntegrationElements } from "../elements/integration-elements"
 
-const runnableNodes = [...IntegrationElements.map(elt => elt.type)]
 export function PropertiesPanel() {
     const selectedNode = useFlowStore(state => state.clickedElement)
     const setClickedElement = useFlowStore(state => state.setClickedElement)
@@ -57,7 +55,7 @@ export function PropertiesPanel() {
                     </h2>
                 </div>
                 <div className="flex items-center space-x-2 flex-shrink-0 ">
-                    {runnableNodes.includes(selectedNode.type) &&
+                    {(selectedNode.data.category === "ai" || selectedNode.data.category === "integration") &&
                         <Button
                             size="sm"
                             onClick={() => testNode(selectedNode?.id)}

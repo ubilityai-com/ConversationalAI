@@ -7,6 +7,7 @@ import { useFlowStore } from "../../../../store/flow-store";
 import { useRightDrawerStore } from "../../../../store/right-drawer-store";
 import AutomationSimple from "../../../custom/automation-v4";
 import { DynamicElementLoader } from "../../../properties/shared/DynamicElementLoader";
+import { getAccvalue } from "../../../../lib/automation-utils";
 function isExtrasValid(extras: any, values: Record<string, boolean> = {}) {
     for (const key in extras) {
         const item = extras[key];
@@ -56,7 +57,7 @@ export function getContent(selectedNode: any, params: any) {
     const content = {
         type: "data",
         data: {
-            inputs: { query: rightSideData.json.query },
+            inputs: { query: rightSideData.json.query ,prompt:getAccvalue(rightSideData.json,"prompt")},
             model: require("../../../properties/contents/model")[model.type](selectedNode),
             chainMemory: require("../../../properties/contents/memory")[memory.type](selectedNode),
             cred: extractCreds(selectedNode?.data.rightSideData.extras),
@@ -79,7 +80,7 @@ export default function ReactAgentForm({
     selectedNode,
     handleRightSideDataUpdate,
 }: LlmFormProps) {
-    const [schema, setSchema] = useState<any[]>(ReactAgentJson.rightSideData.json
+    const [schema, setSchema] = useState<any[]>(ReactAgentJson.defaults.json
     );
     const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
 

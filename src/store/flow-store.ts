@@ -315,18 +315,28 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
         set({ error: null });
         addRunningNodeId(id);
         const selectedNode = nodes.find(el => el.id === id)
-        const { content, cred } = require(`../components/right-side-elements/${selectedNode.data.category as string}-elements/${camelToDashCase(selectedNode.type as string)}-form/${camelToDashCase(selectedNode.type as string)}-form`).getContent(
+        const { content, cred, type } = require(`../components/right-side-elements/${selectedNode.data.category as string}-elements/${camelToDashCase(selectedNode.type as string)}-form/${camelToDashCase(selectedNode.type as string)}-form`).getContent(
             selectedNode,
             { edges, nodes }
         );
-
-        try {
-            const res = await axios.post(process.env.REACT_APP_DNS_URL + `test_node`, {
+        let payload = {}
+        if (selectedNode.data.category === "ai") {
+            payload = {
+                chain_type: type,
+                credentials: cred,
+                data: content.data
+            }
+        } else {
+            payload = {
                 app_type: content.data.app,
                 credential: cred,
                 operation: content.data.operation,
                 content_json: content.data.content_json
-            });
+            }
+
+        }
+        try {
+            const res = await axios.post(process.env.REACT_APP_DNS_URL + `test_node`, payload);
             setNodeResult(id, res.data?.output);
             console.log("Run node response:", res.data);
             return res.data;
@@ -339,8 +349,13 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
                 "Failed to run flow";
 
             set({ error: errorMessage });
-
-            throw error;
+            get().setShowSnackBarMessage({
+                color: "destructive",
+                duration: 1000,
+                open: true,
+                message:
+                    "Failed to test node output",
+            })
         } finally {
             removeRunningNodeId(id);
         }
