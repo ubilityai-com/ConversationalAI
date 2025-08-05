@@ -30,4 +30,4 @@ class AppIntegration:
 
         except Exception as e:
             print(f"Error during app integration: {e}")
-            return {"error": str(e)}
+            raise Exception(str(e))

@@ -18,10 +18,7 @@ from elements.router import Router
 from elements.text_formatter import TextFormatter
 from elements.flow_invoker import FlowInvoker
 from elements.variable_manager import VariableManager
-from elements.rag import RAG
-from elements.basic_llm import BasicLLM
-from elements.react_agent import REACT_AGENT
-from elements.condition_agent import CONDITION_AGENT
+from elements.ai_integration import AIIntegration
 from elements.app_integration import AppIntegration
 from elements.http_request import HttpRequest
 from dialogues.dialogues import active_dialogues
@@ -68,44 +65,10 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue):
     elif element_type == 'Message':
         await Message(content["data"]['text']).send(sio, sid)
 
-    elif element_type == "LC_RAG":
-        await RAG(content["data"], credentials).stream(sio, sid)
-        
-    elif element_type == "LC_BASIC_LLM":
-        result = await BasicLLM(content["data"], credentials).stream(sio, sid)
-        if 'outputParser' in content["data"]['params'] and content["data"]['params']['outputParser']['type'] == 'StructuredOutputParser':
-            conversation = save_output_parser_vars(content["data"]['params']['outputParser'], conversation, result)
-
-    elif element_type == "LC_REACT_AGENT":
+    elif "LC" in element_type:
+        await handle_ai_integration(sio, sid, element_type, credentials, conversation, conversation_id, current_dialogue, content)
         if conversation['variables']['react_fail']:
-            last_input_value = conversation['variables']['last_input_value']
-            result = await REACT_AGENT(content["data"], credentials).stream(sio, sid, conversation_id, last_input_value)
-            if result['status'] == 'fail':
-                conversation['variables']['react_fail'] = True
-                return
-            else:
-                conversation['variables']['react_fail'] = False
-        else:
-            result = await REACT_AGENT(content["data"], credentials).stream(sio, sid, conversation_id)
-            if result['status'] == 'fail':
-                conversation['variables']['react_fail'] = True
-                return
-            else:
-                conversation['variables']['react_fail'] = False
-    
-    elif element_type == "LC_CONDITION_AGENT":
-        result = await CONDITION_AGENT(content["data"], credentials).execute(sio, sid)
-
-        # save result in a variable if user want to
-        if 'saveOutputAs' in current_dialogue:
-            logger.info(f"Save condition agent output in variables")
-            if current_dialogue['saveOutputAs']:
-                for element in current_dialogue['saveOutputAs']:
-                    if not element['path']: # save all result in a variable 
-                        conversation['variables'][element['name']] = result
-                    else: # save specific key in result
-                        value = get_value_from_path(result,element['path'])
-                        conversation['variables'][element['name']] = value
+            return
 
     elif element_type == 'MultipleChoice':
         await MultipleChoice(
@@ -130,7 +93,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue):
         await handle_flow_invoker(conversation,content)
 
     elif element_type == 'HttpRequest':
-        await handle_http_request(sio, sid, conversation, dialogue, current_dialogue,content)
+        await handle_http_request(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content)
         return
 
     elif element_type == 'VariableManager':
@@ -277,17 +240,8 @@ def handle_variable_manager(conversation,content):
     result = manager.process()
     conversation['variables'][result['variable']] = result['value']
 
-def save_output_parser_vars(output_parser_data: dict, conversation: dict, result: dict):
-    """
-    Updates the conversation's variables with values from the result based on the output parser data.
-    """
-    for schema in output_parser_data["responseSchemas"]:
-        if schema['name'] in result:
-            conversation['variables'][schema['name']] = result[schema['name']]
-        
-    return conversation
 
-async def handle_http_request(sio, sid, conversation, dialogue, current_dialogue,content):
+async def handle_http_request(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content):
     
     request = await HttpRequest(content["data"]).make_request()
 
@@ -303,7 +257,7 @@ async def handle_http_request(sio, sid, conversation, dialogue, current_dialogue
 
     # continue process execution
     conversation['current_step'] = current_dialogue['next']
-    await execute_process(sio, sid, conversation, dialogue)
+    await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
 async def handle_app_integration(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content):
 
@@ -333,6 +287,21 @@ async def handle_app_integration(sio, sid, conversation, conversation_id, dialog
     # continue process execution
     conversation['current_step'] = current_dialogue['next']
     await execute_process(sio, sid, conversation, conversation_id, dialogue)
+
+
+async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, dialogue, content):
+    result = await AIIntegration(chain_type, credentials, content['data']).execute_ai_element(sio, sid, conversation, conversation_id)
+    
+    # save result in a variable if user want to
+    if result and 'saveOutputAs' in dialogue:
+        logger.info(f"Save {chain_type} output in variables")
+        if dialogue['saveOutputAs']:
+            for element in dialogue['saveOutputAs']:
+                if not element['path']: # save all result in a variable 
+                    conversation['variables'][element['name']] = result
+                else: # save specific key in result
+                    value = get_value_from_path(result,element['path'])
+                    conversation['variables'][element['name']] = value
 
 
 def get_value_from_path(json_body, path, default=None):

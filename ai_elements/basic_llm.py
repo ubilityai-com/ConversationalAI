@@ -80,16 +80,21 @@ class BasicLLM:
                         chain = prompt | llm_model 
 
                         result = ''
-                        for chunk in chain.stream(input=self.data['inputs']["query"]):
-                            await sio.emit('message', {
-                                'type': 'chunk',
-                                'chunk': chunk.content
-                            }, room=sid)
-                            result += chunk.content
+                        if sio and sid:
+                            for chunk in chain.stream(input=self.data['inputs']["query"]):
+                                await sio.emit('message', {
+                                    'type': 'chunk',
+                                    'chunk': chunk.content
+                                }, room=sid)
+                                result += chunk.content
 
-                        await sio.emit('message', {
-                            'type': 'end of chunks'
-                        }, room=sid)
+                            await sio.emit('message', {
+                                'type': 'end of chunks'
+                            }, room=sid)
+                        else:
+                            for chunk in chain.stream(input=self.data['inputs']["query"]):
+                                result += chunk.content
+                           
                         result = outputParser.parse(result)
                         return result
                                             
@@ -126,16 +131,21 @@ class BasicLLM:
                             chain = prompt | llm_model 
 
                             result = ''
-                            for chunk in chain.stream(input=self.data['inputs']["promptInputs"]):
-                                await sio.emit('message', {
-                                    'type': 'chunk',
-                                    'chunk': chunk.content
-                                }, room=sid)
-                                result += chunk.content
+                            if sio and sid:
+                                for chunk in chain.stream(input=self.data['inputs']["promptInputs"]):
+                                    await sio.emit('message', {
+                                        'type': 'chunk',
+                                        'chunk': chunk.content
+                                    }, room=sid)
+                                    result += chunk.content
 
-                            await sio.emit('message', {
-                                'type': 'end of chunks'
-                            }, room=sid)
+                                await sio.emit('message', {
+                                    'type': 'end of chunks'
+                                }, room=sid)
+                            else:
+                                for chunk in chain.stream(input=self.data['inputs']["promptInputs"]):
+                                    result += chunk.content
+
                             result = outputParser.parse(result)
                             return result
 
@@ -149,8 +159,9 @@ class BasicLLM:
                 raise Exception("Missing Prompt")
             
         except Exception as exc:
-            await sio.emit('error_message', {
-                'type': 'error_message',
-                'error': str(exc)
-                }, room=sid)
+            if sio and sid:
+                await sio.emit('error_message', {
+                    'type': 'error_message',
+                    'error': str(exc)
+                    }, room=sid)
             raise Exception(exc)

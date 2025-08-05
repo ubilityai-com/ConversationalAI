@@ -97,23 +97,29 @@ class RAG:
                 )
 
             result = ''
-            for chunk in chain.stream(input_data):
-                if "answer" in chunk:
-                    await sio.emit('message', {
-                        'type': 'chunk',
-                        'chunk': chunk["answer"]
-                    }, room=sid)
-                    result = chunk["answer"]
+            if sio and sid:
+                for chunk in chain.stream(input_data):
+                    if "answer" in chunk:
+                        await sio.emit('message', {
+                            'type': 'chunk',
+                            'chunk': chunk["answer"]
+                        }, room=sid)
+                        result = chunk["answer"]
 
-            await sio.emit('message', {
-                'type': 'end of chunks'
-            }, room=sid)
+                await sio.emit('message', {
+                    'type': 'end of chunks'
+                }, room=sid)
+            else:
+                for chunk in chain.stream(input_data):
+                    if "answer" in chunk:
+                        result = chunk["answer"]
 
             return result
 
         except Exception as exc:
-            await sio.emit('error_message', {
-                'type': 'error_message',
-                'error': str(exc)
-                }, room=sid)
+            if sio and sid:
+                await sio.emit('error_message', {
+                    'type': 'error_message',
+                    'error': str(exc)
+                    }, room=sid)
             raise Exception(exc)

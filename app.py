@@ -15,7 +15,7 @@ from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 from uvicorn import Config, Server
-
+import shutil
 
 # Initialize logging
 setup_logger()
@@ -185,6 +185,15 @@ async def disconnect(sid):
             if conv.get('sid') == sid:
                 print(f'[Disconnected] Conversation ended: {conversation_id} in dialogue {dialogue_id}')
                 del session[dialogue_id][conversation_id]
+
+                # Delete conversation history directory if it exists
+                lc_history_dir = f"{os.getcwd()}/langchain_history/{conversation_id}"
+                if os.path.exists(lc_history_dir):
+                    try:
+                        shutil.rmtree(lc_history_dir)
+                        print(f"History directory '{lc_history_dir}' was deleted successfully")
+                    except OSError as e:
+                        print(f"Failed to delete history directory {lc_history_dir} : {e.strerror}")
 
                 # Optionally, delete dialogue if no conversations left
                 if not session[dialogue_id]:

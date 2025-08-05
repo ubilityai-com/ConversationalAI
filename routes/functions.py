@@ -8,8 +8,10 @@ from pydantic import BaseModel
 from app import http_app
 from models.credentials import get_credential,get_credentials_by_names
 from elements.app_integration import AppIntegration
+from elements.ai_integration import AIIntegration
 from fastapi import Query
 from models.chatbot import get_chatbot,update_chatbot
+from typing import Union
 
 
 def load_dialogue(dialogue_id):
@@ -34,12 +36,23 @@ class TestNodeRequest(BaseModel):
     operation: str
     content_json: dict
 
+class TestAINodeRequest(BaseModel):
+    chain_type: str
+    credentials: list
+    data: dict
+
 
 @http_app.post('/bot/test_node')
-def test_node(payload: TestNodeRequest):
+async def test_node(payload: Union[TestNodeRequest, TestAINodeRequest]):
     try:
-        credential_obj = get_credential(payload.credential)
-        result = AppIntegration(payload.app_type,json.loads(credential_obj['data']),payload.operation,payload.content_json).run_process()
+        if isinstance(payload, TestNodeRequest):
+            credential_obj = get_credential(payload.credential)
+            result = AppIntegration(payload.app_type,json.loads(credential_obj['data']),payload.operation,payload.content_json).run_process()
+
+        if isinstance(payload, TestAINodeRequest):
+            creds_obj = get_credentials_by_names(payload.credentials)
+            result = await AIIntegration(payload.chain_type, creds_obj, payload.data).execute_ai_element()
+
         return {"output": result}
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
