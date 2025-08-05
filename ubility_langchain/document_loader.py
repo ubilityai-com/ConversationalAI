@@ -114,7 +114,7 @@ def basicDataLoader(loader_data):
         dataType = loader_data['dataType']
         dataFormat = loader_data['dataFormat']
         data = loader_data['data']
-        if dataType == "PDF":
+        if dataType == "pdf":
             logging.info("data type PDF")
             if dataFormat == "URL":  # no (Data) format_type for pdf
                 logging.info("data format URL")
@@ -123,7 +123,7 @@ def basicDataLoader(loader_data):
                 logging.info("load data from a local file")
                 file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{data}" # in this case, the variable data will contain the file name
                 response = PyPDFLoader(file_name)
-        elif dataType == "CSV":
+        elif dataType == "csv":
             logging.info("data type CSV")
             if dataFormat == "Data": 
                 logging.info("data format DATA")
@@ -133,7 +133,7 @@ def basicDataLoader(loader_data):
                 logging.info("load data from a local file")
                 file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{data}" # in this case, the variable data will contain the file name
                 response = CSVLoader(file_name)
-        elif dataType == "JSON":
+        elif dataType == "json":
             logging.info("data type JSON")
             if dataFormat == "URL":
                 logging.info("data format URL")
@@ -154,7 +154,7 @@ def basicDataLoader(loader_data):
                 logging.info("load data from a local file")
                 file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{data}" # in this case, the variable data will contain the file name
                 response = JSONLoader(file_path=file_name,jq_schema='.',text_content=False)
-        elif dataType == "TEXT":
+        elif dataType == "txt":
             logging.info("data type TEXT")
             if dataFormat == "URL":
                 logging.info("data format URL")
