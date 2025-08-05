@@ -196,25 +196,6 @@ class Memory:
             if os.path.exists(self.filePath):
                 os.remove(self.filePath)
 
-    # def read_existing_history(self, convId):
-    #     logging.info("read history")
-    #     concatenated_history = ''
-    #     file_path = f"{basePath}/{convId}/{self.historyId}.json"
-    #     if os.path.exists(file_path):
-    #         with open(file_path, "r") as f:
-    #             data = json.load(f)
-    #             if "context" in data:
-    #                 for conv in data["context"]:
-    #                     concatenated_history += f"Human : {conv['HumanMessage']}"
-    #                     concatenated_history += "\n"
-    #                     concatenated_history += f"AI : {conv['AIMessage']}"
-    #                     concatenated_history += "\n\n"
-
-    #     return concatenated_history
-                            
-
-
-
 def summarize_memory(current_buffer, messages, llm, max_token_limit):
     from langchain_core.prompts.prompt import PromptTemplate
     from langchain.chains.llm import LLMChain
