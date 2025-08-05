@@ -12,8 +12,8 @@ from fastapi import  Request,Query
 import uuid, gzip, magic, os, re
 
 
-class FileUploadRequest(BaseModel):
-    filePath: str = None
+# class FileUploadRequest(BaseModel):
+#     filePath: str = None
 
 
 # @http_app.post('/bot/files')
