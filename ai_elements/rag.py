@@ -49,46 +49,31 @@ class RAG:
             else:
                 raise Exception("Missing Model Data")
 
+            if "prompt" in self.data['inputs'] and self.data['inputs']["prompt"]:
+                template = self.data['inputs']["prompt"]
+            else:
+                template = """
+                As an AI assistant you provide answers to the question {question} based on the given context. 
+                You must adhere to the following points:
+                -Do not use any external data source
+                -Do not use your data set
+                -Do not use internet to get answer
+                -Do not use any external data source if the context is empty
+                -Say I don't know. if the context is empty
+                -------------------
+                context: {context}
+                """
+
             if self.data['vectorStore']['type'] == 'localStore':
-                if "prompt" in self.data['inputs']:
-                    template = self.data['inputs']["prompt"]
-                else:
-                    template = """
-                    As an AI assistant you provide answers to the question {question} based on the given document. 
-                    You must adhere to the following points:
-                    -Do not use any external data source
-                    -Do not use your data set
-                    -Do not use internet to get answer
-                    -Do not use any external data source if the document is empty
-                    -Say Idont know. if the document is empty
-                    -------------------
-                    document: {document}
-                    """
-                    
-                input_data = {"question":self.data['inputs']["query"], "document":doc}
+                input_data = {"question":self.data['inputs']["query"], "context":doc}
                 prompt = ChatPromptTemplate.from_template(template)
                 chain = (
-                    {"document": RunnablePassthrough(), "question": RunnablePassthrough()}
+                    {"context": RunnablePassthrough(), "question": RunnablePassthrough()}
                     | prompt
                     | llm.with_structured_output(AnswerWithSources)
                 )
 
             else:
-                if "prompt" in self.data['inputs']:
-                    template = self.data['inputs']["prompt"]
-                else:
-                    template = """
-                    As an AI assistant you provide answers to the question {question} based on the given context. 
-                    You must adhere to the following points:
-                    -Do not use any external data source
-                    -Do not use your data set
-                    -Do not use internet to get answer
-                    -Do not use any external data source if the context is empty
-                    -Say Idont know. if the context is empty
-                    -------------------
-                    context: {context}
-                    """
-
                 input_data = self.data['inputs']["query"]
                 prompt = ChatPromptTemplate.from_template(template)
                 chain = (
