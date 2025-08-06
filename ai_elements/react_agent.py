@@ -151,22 +151,24 @@ Output should be like this: {"status": ""}. No explanation is needed.
     
     async def stream(self, sio, sid, conversation_id, input=None): # input used for the recursive functionality
         try:
-            client = MultiServerMCPClient(self._setup_mcp_servers())
-            # Retrieve MCP tools if exist
-            if isinstance(self.data['tools'], dict) and "selected_tools" in self.data['tools']:
-                all_tools = await client.get_tools()
-                tools = self._get_selected_tools(all_tools)
-            else:
-                tools = await client.get_tools()
+            tools = []
+            if 'tools' in self.data:
+                client = MultiServerMCPClient(self._setup_mcp_servers())
+                # Retrieve MCP tools if exist
+                if isinstance(self.data['tools'], dict) and "selected_tools" in self.data['tools']:
+                    all_tools = await client.get_tools()
+                    tools = self._get_selected_tools(all_tools)
+                else:
+                    tools = await client.get_tools()
 
-            # Include custom tools if any exist
-            if isinstance(self.data['tools'], dict) and "toolConfigs" in self.data['tools']:
-                tools = create_custom_tools(tools, self.data['tools']['toolConfigs'], self.credentials)
-            else:
-                tools = create_custom_tools(tools, self.data['tools'], self.credentials)
+                # Include custom tools if any exist
+                if isinstance(self.data['tools'], dict) and "toolConfigs" in self.data['tools']:
+                    tools = create_custom_tools(tools, self.data['tools']['toolConfigs'], self.credentials)
+                else:
+                    tools = create_custom_tools(tools, self.data['tools'], self.credentials)
 
-            if tools == []:
-                raise Exception("Missing Tool(s)")
+                # if tools == []:
+                #     raise Exception("Missing Tool(s)")
 
             llm_model = Model(provider=self.data['model']["provider"], model=self.data['model']["model"] if "model" in self.data['model'] else "", credentials=self.credentials[self.data['model']['credential']], params=self.data['model']["params"]).chat()
 
