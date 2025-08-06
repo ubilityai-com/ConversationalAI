@@ -7,61 +7,8 @@ FastAPI routes for managing files.
 
 from fastapi.responses import JSONResponse
 from app import http_app
-from pydantic import BaseModel
 from fastapi import  Request,Query
 import uuid, gzip, magic, os, re
-
-
-# class FileUploadRequest(BaseModel):
-#     filePath: str = None
-
-
-# @http_app.post('/bot/files')
-# def upload_file(payload: FileUploadRequest):
-#     """
-#     Upload a file from a given source path to the local storage directory.
-
-#     Args:
-#         payload (FileUploadRequest): Contains the source file path.
-
-#     Returns:
-#         dict: Success message.
-#     """
-#     try:
-#         with open(payload.filePath, 'rb') as source_file:
-#             binary_data = source_file.read()
-
-#         current_dir=os.getcwd() # get current working directory
-#         filename = os.path.basename(payload.filePath)
-#         file_path = f"{current_dir}/storage/{filename}"
-#         with open(file_path, 'wb') as dest_file:
-#             dest_file.write(binary_data)
-        
-#         if os.path.exists(file_path):
-#             return {"Message":"File uploaded successfully"}
-#         else:
-#             return JSONResponse(status_code=500, content={"Error": "Destination file not found"})
-    
-#     except Exception as e:
-#         return JSONResponse(status_code=500, content={"Error": str(e)})
-
-
-# @http_app.get('/bot/files')
-# def list_file_names():
-#     """
-#     List all files in the local storage directory.
-
-#     Returns:
-#         list: A list of file names in the 'storage' directory.
-#     """
-#     try:
-#         current_dir=os.getcwd() # get current working directory
-#         directory_path = f"{current_dir}/storage"
-#         return [f for f in os.listdir(directory_path) if os.path.isfile(os.path.join(directory_path, f))]
-    
-#     except Exception as e:
-#         return JSONResponse(status_code=500, content={"Error": str(e)})
-
 
 
 
@@ -163,18 +110,49 @@ async def save_file_binary(request: Request, dialogue: str = Query(None)):
 async def list_uploaded_files(dialogue: str = Query(None)):
     try:
         current_dir = os.getcwd()
-        STORAGE_DIR = f"{current_dir}/temp/{dialogue}"
+        STORAGE_DIR = os.path.join(current_dir, "temp", dialogue)
 
         if not os.path.exists(STORAGE_DIR):
             return JSONResponse(status_code=404, content={"error": f"Folder for dialogue '{dialogue}' not found"})
 
-        # List only files, not directories
-        file_list = [
-            f for f in os.listdir(STORAGE_DIR)
-            if os.path.isfile(os.path.join(STORAGE_DIR, f))
-        ]
+        file_list = []
+        for f in os.listdir(STORAGE_DIR):
+            file_path = os.path.join(STORAGE_DIR, f)
+            if os.path.isfile(file_path):
+                file_size_bytes = os.path.getsize(file_path)
+                file_size_mb = round(file_size_bytes / (1024 * 1024), 2)
+                file_list.append({
+                    "file_name": f,
+                    "file_size": f"{file_size_mb} MB"
+                })
 
         return {"files": file_list}
+
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+    
+
+
+@http_app.delete("/bot/delete_file")
+async def delete_uploaded_file(dialogue: str = Query(None), filename: str = Query(None)):
+    try:
+        if not dialogue or not filename:
+            return JSONResponse(status_code=400, content={"error": "Missing parameter"})
+
+        current_dir = os.getcwd()
+        STORAGE_DIR = os.path.join(current_dir, "temp", dialogue)
+        file_path = os.path.join(STORAGE_DIR, filename)
+
+        if not os.path.exists(file_path):
+            return JSONResponse(status_code=404, content={"error": f"File '{filename}' not found in dialogue '{dialogue}'"})
+
+        if not os.path.isfile(file_path):
+            return JSONResponse(status_code=400, content={"error": f"'{filename}' is not a file"})
+
+        os.remove(file_path)
+
+        return {"message": f"File '{filename}' deleted successfully"}
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
