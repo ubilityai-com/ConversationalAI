@@ -95,15 +95,7 @@ export const ConversationalRetrievalQaChainJson = {
             },
           ]
         ]
-      },
-      {
-        type: "outputJson",
-        value: {
-          Output: { answer: "" },
-          Error: "",
-          Status: "",
-        },
-      },
+      }
     ]
   }
 }
