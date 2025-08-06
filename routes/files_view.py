@@ -5,7 +5,7 @@ FastAPI routes for managing files.
 """
 
 
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse,FileResponse
 from app import http_app
 from fastapi import  Request,Query
 import uuid, gzip, magic, os, re
@@ -153,6 +153,28 @@ async def delete_uploaded_file(dialogue: str = Query(None), filename: str = Quer
         os.remove(file_path)
 
         return {"message": f"File '{filename}' deleted successfully"}
+
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+    
+
+@http_app.get("/bot/get_file")
+async def get_uploaded_file(dialogue: str = Query(None), filename: str = Query(None)):
+    try:
+        if not dialogue or not filename:
+            return JSONResponse(status_code=400, content={"error": "Missing parameter"})
+
+        current_dir = os.getcwd()
+        file_path = os.path.join(current_dir, "temp", dialogue, filename)
+
+        if not os.path.exists(file_path):
+            return JSONResponse(status_code=404, content={"error": f"File '{filename}' not found"})
+
+        if not os.path.isfile(file_path):
+            return JSONResponse(status_code=400, content={"error": f"'{filename}' is not a file"})
+
+        # Automatically sets the correct media type and headers
+        return FileResponse(file_path, filename=filename)
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
