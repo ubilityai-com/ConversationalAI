@@ -30,8 +30,8 @@ export const ReactAgentJson = {
         enabled: true,
         list: [],
         description: "Configure tools for the LLM agent to use",
-        title: "Tools",
-        // optional: true
+        title: "Tool",
+        optional: true
       },
     },
     "json": [

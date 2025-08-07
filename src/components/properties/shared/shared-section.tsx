@@ -1,4 +1,3 @@
-import { FileJson } from "lucide-react"
 import { useRef, useState } from "react"
 import { useDebounceConfig } from "../../../hooks/use-debounced-config"
 import { objToReturnDynamicv2 } from "../../../lib/automation-utils"
@@ -6,12 +5,11 @@ import { validateArray } from "../../../lib/utils"
 import { useFlowStore } from "../../../store/flow-store"
 import { useRightDrawerStore } from "../../../store/right-drawer-store"
 import AutomationSimple from "../../custom/automation-v4"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../ui/accordion"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card"
-import { Label } from "../../ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
-import { Switch } from "../../ui/switch"
 import { SearchableSelect } from "../../custom/searchable-select"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../ui/accordion"
+import { Card, CardDescription, CardHeader, CardTitle } from "../../ui/card"
+import { Label } from "../../ui/label"
+import { Switch } from "../../ui/switch"
 interface SectionProps {
     config: any
     onConfigUpdate: (key: string, value: any) => void
@@ -102,8 +100,9 @@ export function SharedSection({
                     )}
 
                     <AccordionContent className="space-y-4">
-                        <div>
-                            <Label htmlFor={variableName}>{title} Type</Label>
+                    <div className="space-y-2">
+                        
+                            <Label htmlFor={variableName} className="text-sm font-medium">{title} Type</Label>
                             <SearchableSelect
                                 name="type"
                                 placeholder="Select a type"

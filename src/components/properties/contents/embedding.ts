@@ -12,8 +12,8 @@ const getAccvalue = (finaleObj: any, name: string) => {
         return finaleObj[name] ? finaleObj[name][name] || undefined : undefined;
 };
 export const EmbeddingsOpenAI = (selectedNode: any) => {
-    const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const embedding = selectedNode.data.rightSideData.extras.embedding
+    const content = embedding.content
 
     return {
         provider: "openAi",
@@ -22,8 +22,8 @@ export const EmbeddingsOpenAI = (selectedNode: any) => {
       }
 }
 export const EmbeddingsTogetherAi = (selectedNode: any) => {
-    const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const embedding = selectedNode.data.rightSideData.extras.embedding
+    const content = embedding.content
     return  {
         provider: "togetherAi",
         model: content.model,
@@ -31,8 +31,8 @@ export const EmbeddingsTogetherAi = (selectedNode: any) => {
       };
 }
 export const AnthropicChatModel = (selectedNode: any) => {
-    const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const embedding = selectedNode.data.rightSideData.extras.embedding
+    const content = embedding.content
     return {
         provider: "anthropic",
         model: content.model,
@@ -40,8 +40,8 @@ export const AnthropicChatModel = (selectedNode: any) => {
     }
 }
 export const AzureChatModel = (selectedNode: any) => {
-    const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const embedding = selectedNode.data.rightSideData.extras.embedding
+    const content = embedding.content
     return {
         provider: "azureOpenAi",
         model: content.model,
@@ -49,8 +49,8 @@ export const AzureChatModel = (selectedNode: any) => {
     }
 }
 export const EmbeddingsOllama = (selectedNode: any) => {
-    const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const embedding = selectedNode.data.rightSideData.extras.embedding
+    const content = embedding.content
     return {
         provider: "ollama",
         model: content.model,
@@ -58,8 +58,8 @@ export const EmbeddingsOllama = (selectedNode: any) => {
     };
 }
 export const HuggingFaceChatModel = (selectedNode: any) => {
-    const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const embedding = selectedNode.data.rightSideData.extras.embedding
+    const content = embedding.content
     return {
         provider: "huggingFace",
         model: content.model ? content.model : "",
@@ -67,8 +67,8 @@ export const HuggingFaceChatModel = (selectedNode: any) => {
     }
 }
 export const EmbeddingsCohere = (selectedNode: any) => {
-    const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const embedding = selectedNode.data.rightSideData.extras.embedding
+    const content = embedding.content
     return {
         provider: "cohere",
         model: content.model,
@@ -76,8 +76,8 @@ export const EmbeddingsCohere = (selectedNode: any) => {
     }
 }
 export const AWSBedrockChatModel = (selectedNode: any) => {
-    const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const embedding = selectedNode.data.rightSideData.extras.embedding
+    const content = embedding.content
     return {
         provider: "awsBedrock",
         model: content.model,
@@ -91,8 +91,8 @@ export const AWSBedrockChatModel = (selectedNode: any) => {
     }
 }
 export const EmbeddingsMistralAI = (selectedNode: any) => {
-    const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const embedding = selectedNode.data.rightSideData.extras.embedding
+    const content = embedding.content
     return {
         provider: "mistralAi",
         model: content.model,

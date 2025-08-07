@@ -99,10 +99,10 @@ export function SharedListSection({
                                         </Button>
                                     </div>
                                 </div>
-                                <div>
-                                    <Label htmlFor={`tool-type-${tool.id}`} className="text-xs">
-                                        Tool Type
-                                    </Label>
+                                 <div className="space-y-2">
+                        
+                                 <Label htmlFor={`tool-type-${tool.id}`} className="text-sm font-medium">{title} Type</Label>
+
                                     <SearchableSelect
                                         name="type"
                                         placeholder="Select a type"
