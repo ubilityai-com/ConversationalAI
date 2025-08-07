@@ -26,7 +26,7 @@ class RAG:
         self.data = data
         self.credentials = credentials
     
-    async def stream(self, sio, sid, dialogue_id):
+    async def stream(self, sio, sid, conversation):
         try:
             if "provider" in self.data['embedding'] and "model" in self.data['embedding']:
                 embeddings = Model(provider=self.data['embedding']["provider"], model=self.data['embedding']["model"], credentials=self.credentials[self.data['embedding']['credential']]).embedding()
@@ -39,7 +39,8 @@ class RAG:
                     retriever = VectorStore(vectorStore_type, self.credentials[self.data['vectorStore']['credential']], self.data['vectorStore']).retrieve_data(embedding=embeddings)
                 else:
                     # in this case, data['vectorStore'] will contain file name instead of file content ---> get file content from the file name and add this key to data['vectorStore']
-                    self.data['vectorStore']['dialogue_id'] = dialogue_id
+                    if conversation: 
+                        self.data['vectorStore']['dialogue_id'] = conversation['dialogue_id']
                     doc = DocumentLoader(type="basicDataLoader").load(self.data['vectorStore'])
             else:
                 raise Exception('Missing VectorStore type')
