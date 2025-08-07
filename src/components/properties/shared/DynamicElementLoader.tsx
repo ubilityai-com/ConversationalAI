@@ -1,6 +1,7 @@
 /// <reference types="webpack-env" />
 
 import { useEffect, useState } from "react";
+import { camelToDashCase } from "../../../lib/utils";
 import { SharedSection } from "./shared-section";
 import { SharedListSection } from "./shared-section-list";
 interface DynamicElementLoaderProps {
@@ -18,12 +19,12 @@ function capitalize(str: string) {
 const context = require.context(
     "../../../elements",
     true,
-    /index\.tsx?$/
+    /\.ts?$/
 );
 function loadElementByKey(key: string) {
 
     try {
-        const path = `./${key}-elements/index.tsx`;
+        const path = `./${camelToDashCase(key)}-elements/index.ts`;
         const module = context(path);
         return module.default || module[`${capitalize(key)}Elements`];
     } catch (error) {
@@ -40,10 +41,11 @@ export function DynamicElementLoader({
     updateNestedConfig,
 }: DynamicElementLoaderProps) {
     const [elements, setElements] = useState<any>(null);
-
+    
     useEffect(() => {
         const key = extrasKey === "tool" ? "tools" : extrasKey;
-        const loaded = loadElementByKey(key);
+        const loaded = loadElementByKey(camelToDashCase(key));
+        
         setElements(loaded);
     }, [extrasKey]);
 

@@ -1,15 +1,43 @@
+import { Bot } from "lucide-react";
+
 export const ConversationalRetrievalQaChainJson = {
   "type": "ConversationalRetrievalQaChain",
   "label": "Conversational Retrieval QA Chain",
-  "color": "black",
-  "category": "ai",
-  "normalHandle": ["integration", "basic", "automationTools", "ai"],
-  "new": true,
-  "rightSideData": {
-    "nodesCanConnectWith": {
-      "1": { "category": "model", "title": "Chat Model", "required": true },
-      "2": { "category": "memory", "title": "Memory", "required": true },
-      "3": { "category": "vectorStore", "title": "Vector Store", "required": true },
+  "nodeType": "langchain",
+  description: "Large Language Model for text processing",
+  icon: Bot,
+  category: "ai",
+  color: "bg-cyan-500",
+  automated: "json",
+  "defaults": {
+    extras: {
+      model: {
+        enabled: true,
+        type: "",
+        content: {},
+        description: "Select the model that fits your use case",
+        title: "LLM Model",
+      },
+      memory: {
+        enabled: true,
+        type: "",
+        content: {},
+        description: "Select the memory that fits your use case",
+        title: "Memory",
+        // optional: true,
+      },
+      vectorStore: {
+        type: "",
+        content: {},
+        description: "Select the vector store that fits your use case",
+        title: "Vector Store",
+      },
+      embedding: {
+        type: "",
+        content: {},
+        description: "Select the Embedding that fits your use case",
+        title: "Embedding",
+      },
     },
     "json": [
       {
@@ -67,15 +95,7 @@ export const ConversationalRetrievalQaChainJson = {
             },
           ]
         ]
-      },
-      {
-        type: "outputJson",
-        value: {
-          Output: { answer: "" },
-          Error: "",
-          Status: "",
-        },
-      },
+      }
     ]
   }
 }

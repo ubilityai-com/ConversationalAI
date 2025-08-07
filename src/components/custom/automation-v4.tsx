@@ -208,6 +208,7 @@ export default function AutomationSimple({
                       [item.variableName]: e.target.value,
                     })
                   }
+                  rows={item.minRows}
                   className={cn(
                     "min-h-[80px]",
                     item.errorSpan && "border-red-500"

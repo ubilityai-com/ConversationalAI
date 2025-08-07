@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { ReactAgentJson } from "../elements/ai-elements/ReactAgentJson";
 import { IntegrationElements } from "../elements/integration-elements";
 import { objToReturnDynamicv2, setAutomationArray } from "../lib/automation-utils";
 import { ApiResItem, objToReturnDynamic } from "../lib/utils";
@@ -17,10 +18,74 @@ import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
-import { ReactAgentJson } from "../elements/ai-elements/ReactAgentJson";
+
+import { ConversationalRetrievalQaChainJson } from "../elements/ai-elements/ConversationalRetrievalQaChainJson";
 
 const agentTypes = [
+  // BasicLLMJson,
   ReactAgentJson,
+  ConversationalRetrievalQaChainJson,
+  {
+    type: "ReactAgent",
+    label: "React Agent",
+    description: "Large Language Model for text processing",
+    icon: Bot,
+    category: "AI",
+    color: "bg-purple-500",
+    nodeType: "langchain",
+    automated: "json",
+    defaults: {
+      extras: {
+        model: {
+          enabled: true,
+          type: "",
+          content: {},
+          description: "Select the model that fits your use case",
+          title: "LLM Model",
+        },
+        memory: {
+          enabled: true,
+          type: "",
+          content: {},
+          description: "Select the memory that fits your use case",
+          title: "Memory",
+          // optional: true,
+        },
+        tool: {
+          multiple: true,
+          enabled: true,
+          list: [],
+          description: "Configure tools for the LLM agent to use",
+          title: "Tools",
+          // optional: true,
+        },
+      },
+      json: [
+        {
+          type: "textfield",
+          label: "Query",
+          required: true,
+          multiline: true,
+          minRows: 4,
+          variableName: "query",
+          chatbotQuestion: true,
+          value: "",
+          placeholder: "e.g Whats going on your mind ?",
+          hasDynamicVariable: true,
+        },
+        {
+          type: "outputJson",
+          value: {
+            Output: {
+              answer: "",
+            },
+            Error: "",
+            Status: "",
+          },
+        },
+      ],
+    },
+  },
   {
     type: "ConditionAgent",
     label: "Condition Agent",
