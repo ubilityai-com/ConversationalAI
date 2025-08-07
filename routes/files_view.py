@@ -9,7 +9,7 @@ from fastapi.responses import JSONResponse,FileResponse
 from app import http_app
 from fastapi import  Request,Query
 import uuid, gzip, magic, os, re
-
+from datetime import datetime
 
 
 ALLOWED_EXTENSIONS = {
@@ -84,8 +84,9 @@ async def save_file_binary(request: Request, dialogue: str = Query(None)):
         # Extract original filename from headers (if present)
         original_filename = request.headers.get("Filename")
 
-        # Generate filename
+        # Generate filename random number
         random_suffix = str(uuid.uuid4())[:6]
+
         if original_filename:
             base_name, _ = os.path.splitext(original_filename)  # Remove extension
             safe_name = re.sub(r'[^\w\-_.]', '_', base_name)    # Sanitize filename
@@ -99,31 +100,54 @@ async def save_file_binary(request: Request, dialogue: str = Query(None)):
         with open(file_path, "wb") as f:
             f.write(raw_data)
 
-        return {"filename": file_name, "mime_type": detected_mime}
+        file_size_bytes = len(raw_data)
+        file_size_mb = round(file_size_bytes / (1024 * 1024), 2)
+
+        created_at = datetime.now().isoformat()
+
+        return {
+            "file_name": file_name,
+            "file_type": detected_mime,
+            "file_size": f"{file_size_mb} MB",
+            "created_at": created_at
+        }
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
-
 @http_app.get("/bot/list_uploaded_files")
 async def list_uploaded_files(dialogue: str = Query(None)):
     try:
+        if not dialogue:
+            return JSONResponse(status_code=400, content={"error": "Missing dialogue parameter"})
+
         current_dir = os.getcwd()
         STORAGE_DIR = os.path.join(current_dir, "temp", dialogue)
 
         if not os.path.exists(STORAGE_DIR):
             return JSONResponse(status_code=404, content={"error": f"Folder for dialogue '{dialogue}' not found"})
 
+        mime = magic.Magic(mime=True)
         file_list = []
+
         for f in os.listdir(STORAGE_DIR):
             file_path = os.path.join(STORAGE_DIR, f)
             if os.path.isfile(file_path):
                 file_size_bytes = os.path.getsize(file_path)
                 file_size_mb = round(file_size_bytes / (1024 * 1024), 2)
+
+                with open(file_path, "rb") as file_data:
+                    detected_mime = mime.from_buffer(file_data.read(2048))
+
+                creation_time = os.path.getctime(file_path)
+                formatted_time = datetime.fromtimestamp(creation_time).isoformat()
+
                 file_list.append({
                     "file_name": f,
-                    "file_size": f"{file_size_mb} MB"
+                    "file_type": detected_mime,
+                    "file_size": f"{file_size_mb} MB",
+                    "created_at": formatted_time
                 })
 
         return {"files": file_list}
