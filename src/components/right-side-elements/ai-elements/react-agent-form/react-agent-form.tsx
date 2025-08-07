@@ -16,7 +16,7 @@ function isExtrasValid(extras: any, values: Record<string, boolean> = {}) {
 
         const isRequired = !item.optional;
 
-        if (!isRequired) continue;
+        if (!isRequired && !item.enabled) continue;
 
         if (item.multiple) {
             const list = item.list || [];

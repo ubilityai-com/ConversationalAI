@@ -1,15 +1,17 @@
 import { Node, NodeProps } from "@xyflow/react";
 import { useState } from "react";
+import { QuestionAndAnswerJson } from "../../../../elements/ai-elements/QuestionAndAnswerJson";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
 import { extractCreds, getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils";
 import { useFlowStore } from "../../../../store/flow-store";
 import { useRightDrawerStore } from "../../../../store/right-drawer-store";
 import AutomationSimple from "../../../custom/automation-v4";
 import { DynamicElementLoader } from "../../../properties/shared/DynamicElementLoader";
-import { ConversationalRetrievalQaChainJson } from "../../../../elements/ai-elements/ConversationalRetrievalQaChainJson";
 function isExtrasValid(extras: any, values: Record<string, boolean> = {}) {
     for (const key in extras) {
         const item = extras[key];
+
+        if (!item.enabled) continue;
 
         const isRequired = !item.optional;
 
@@ -61,26 +63,23 @@ const getAccvalue = (finaleObj: any, name: string) => {
 export function getContent(selectedNode: any, params: any) {
     const rightSideData = selectedNode.data.rightSideData
     const model = rightSideData.extras.model
-    const memory = rightSideData.extras.memory
     const embedding = rightSideData.extras.embedding
     const vectorStore = rightSideData.extras.vectorStore
 
     const { edges, nodes } = params
-    console.log({rightSideData});
-    
+    console.log({ rightSideData });
+
     const content = {
         type: "data",
         data: {
-            inputs:  {
-                "query": rightSideData.json.query,
-                "rephrasePrompt": getAccvalue(rightSideData.json,"rephrasePrompt"),
-                "responsePrompt": getAccvalue(rightSideData.json,"responsePrompt")
-              },
+            inputs: {
+                "query": rightSideData.json.question,
+                "prompt": getAccvalue(rightSideData.json,"prompt")
+            },
             model: require("../../../properties/contents/model")[model.type](selectedNode),
-            chainMemory: require("../../../properties/contents/memory")[memory.type](selectedNode),
             cred: extractCreds(selectedNode?.data.rightSideData.extras),
-            embedding:require("../../../properties/contents/embedding")[embedding.type](selectedNode),
-            vectorStore:require("../../../properties/contents/vector-store")[vectorStore.type](selectedNode)
+            embedding: require("../../../properties/contents/embedding")[embedding.type](selectedNode),
+            vectorStore: require("../../../properties/contents/vector-store")[vectorStore.type](selectedNode)
         }
     }
     return {
@@ -97,7 +96,7 @@ export default function ConversationalRetrievalQaChainForm({
     selectedNode,
     handleRightSideDataUpdate,
 }: LlmFormProps) {
-    const [schema, setSchema] = useState<any[]>(ConversationalRetrievalQaChainJson.defaults.json
+    const [schema, setSchema] = useState<any[]>(QuestionAndAnswerJson.defaults.json
     );
     const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
 
@@ -119,32 +118,10 @@ export default function ConversationalRetrievalQaChainForm({
             }
         );
     const extras = localConfig.extras || {}
-    console.log({ extras });
-        
-        
+
+
     return (
         <div className="space-y-6">
-            <button onClick={()=>{
-console.log({selectedNode});
-
-console.log({con:  {
-    type: "data",
-    data: {
-        inputs:  {
-            "query": selectedNode.data.rightSideData.json.query,
-            "rephrasePrompt": getAccvalue(selectedNode.data.rightSideData.json,"rephrasePrompt"),
-            "responsePrompt": getAccvalue(selectedNode.data.rightSideData.json,"responsePrompt")
-          },
-        model: require("../../../properties/contents/model")[selectedNode.data.rightSideData.extras.model.type](selectedNode),
-        chainMemory: require("../../../properties/contents/memory")[selectedNode.data.rightSideData.extras.memory.type](selectedNode),
-        cred: extractCreds(selectedNode?.data.rightSideData.extras),
-        embedding:require("../../../properties/contents/embedding")[selectedNode.data.rightSideData.extras.embedding.type](selectedNode),
-        vectorStore:require("../../../properties/contents/vector-store")[selectedNode.data.rightSideData.extras.vectorStore.type](selectedNode)
-    }
-}});
-
-
-            }}>ss</button>
             <AutomationSimple
                 filledDataName="json"
                 schema={schema}

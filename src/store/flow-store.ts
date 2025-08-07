@@ -320,10 +320,12 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
             { edges, nodes }
         );
         let payload = {}
+        
         if (selectedNode.data.category === "ai") {
+            const credentials =[...new Set(cred)]
             payload = {
                 chain_type: type,
-                credentials: cred,
+                credentials,
                 data: content.data
             }
         } else {

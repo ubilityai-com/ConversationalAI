@@ -18,7 +18,7 @@ export const EmbeddingsOpenAI = (selectedNode: any) => {
     return {
         provider: "openAi",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
       }
 }
 export const EmbeddingsTogetherAi = (selectedNode: any) => {
@@ -27,7 +27,7 @@ export const EmbeddingsTogetherAi = (selectedNode: any) => {
     return  {
         provider: "togetherAi",
         model: content.model,
-        cred: content.cred,
+        credential: content.cred,
       };
 }
 export const AnthropicChatModel = (selectedNode: any) => {

@@ -5,7 +5,7 @@ export const PineconeVectorStore = (selectedNode: any) => {
     return {
         type: "pinecone",
         indexName: content.index_name,
-        cred: content.cred
+        credential: content.cred
     }
 }
 export const LocalVectorStore = (selectedNode: any) => {
@@ -15,8 +15,8 @@ export const LocalVectorStore = (selectedNode: any) => {
     return {
         "type": "localStore",
         "dataFormat": content.type, // Name || URL 
-        "dataType": content.dataType, // TEXT, JSON, CSV, PDF --> required if data_form == Binary
-        // data is required --> url or name data
+        "dataType": content.file.split(".")[1],
+        "dialogue_id":"khaled",
         "data": content.file
     }
 }

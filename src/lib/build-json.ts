@@ -64,6 +64,6 @@ export function createFlowObject(): Flow {
             }
         }
     });
-
+    flow.credentials=[...new Set(flow.credentials)]
     return flow;
 }

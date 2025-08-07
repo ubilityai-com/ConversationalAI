@@ -21,7 +21,7 @@ const FlowZone = () => {
     End: EndNode,
     ReactAgent: LlmNode,
     ConditionAgent: ConditionAgentNode,
-    ConversationalRetrievalQaChain: LlmNode,
+    QuestionAndAnswer: LlmNode,
     Slack: IntegrationNode,
     Gmail: IntegrationNode
   };
