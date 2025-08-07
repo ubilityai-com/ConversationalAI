@@ -96,7 +96,7 @@ class BasicLLM:
                                 result += chunk.content
                            
                         result = outputParser.parse(result)
-                        return result
+                        return {"output" : result}
                                             
                     else:
                         raise Exception("Missing Query")
@@ -147,7 +147,7 @@ class BasicLLM:
                                     result += chunk.content
 
                             result = outputParser.parse(result)
-                            return result
+                            return {"output" : result}
 
                         else:
                             raise Exception("Missing template")

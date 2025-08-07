@@ -101,7 +101,7 @@ class RAG:
                     if "answer" in chunk:
                         result = chunk["answer"]
 
-            return result
+            return {"answer" : result}
 
         except Exception as exc:
             if sio and sid:
