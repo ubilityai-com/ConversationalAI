@@ -8,15 +8,18 @@ FastAPI routes for managing files.
 from fastapi.responses import JSONResponse,FileResponse
 from app import http_app
 from fastapi import  Request,Query
-import uuid, gzip, magic, os, re
+import uuid, gzip, magic, os, re,json
 from datetime import datetime
 
 
-ALLOWED_EXTENSIONS = {
+ALLOWED_EXTENSIONS =  {
+    # Text & Data
     "txt": ["text/plain"],
     "json": ["application/json"],
     "csv": ["text/csv"],
     "xml": ["application/xml", "text/xml"],
+
+    # Documents
     "pdf": ["application/pdf"],
     "doc": ["application/msword"],
     "docx": ["application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
@@ -24,14 +27,21 @@ ALLOWED_EXTENSIONS = {
     "xlsx": ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
     "ppt": ["application/vnd.ms-powerpoint"],
     "pptx": ["application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+
+    # Images
     "png": ["image/png"],
     "jpg": ["image/jpeg"],
     "jpeg": ["image/jpeg"],
     "svg": ["image/svg+xml"],
+
+
+    # Audio
     "mp3": ["audio/mpeg"],
     "wav": ["audio/wav", "audio/x-wav"],
     "ogg": ["audio/ogg"],
     "m4a": ["audio/mp4"],
+
+    # Video
     "mp4": ["video/mp4"],
     "mov": ["video/quicktime"],
     "avi": ["video/x-msvideo"],
@@ -68,6 +78,13 @@ async def save_file_binary(request: Request, dialogue: str = Query(None)):
             (ext for ext, mimes in ALLOWED_EXTENSIONS.items() if detected_mime in mimes),
             None
         )
+
+        if detected_mime == "text/plain":
+            try:
+                json.loads(raw_data.decode("utf-8"))
+                matched_extension = "json"
+            except:
+                pass
 
         if not matched_extension:
             return JSONResponse(status_code=400, content={"Error": f"MIME type '{detected_mime}' is not allowed"})
