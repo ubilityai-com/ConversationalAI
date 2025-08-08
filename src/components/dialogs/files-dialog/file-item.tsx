@@ -16,6 +16,8 @@ import {
   Music,
   Archive,
   Code,
+  Eye,
+  Download,
 } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { useFilesStore } from "../../../store/files-store";
@@ -55,9 +57,43 @@ export const FileItem: React.FC<FileItemProps> = ({
   onRetryUpload,
   onRemoveFile,
 }) => {
-  const { formatFileSize } = useFilesStore();
+  const { formatFileSize, getFile, downloadingFileIds, previewingFileIds } =
+    useFilesStore();
   console.log({ status });
+  const isDownloading = downloadingFileIds.has(fileName);
+  const isPreviewing = previewingFileIds.has(fileName);
+  const handlePreview = async () => {
+    if (!isTemporary && status === "success" && !isPreviewing) {
+      const blob = await getFile(fileName, "preview");
+      if (blob) {
+        const blobUrl = URL.createObjectURL(blob);
+        window.open(blobUrl, "_blank", "noopener,noreferrer");
+        // Clean up blob URL after a delay
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      }
+    }
+  };
 
+  const handleDownload = async () => {
+    if (!isTemporary && status === "success" && !isDownloading) {
+      const blob = await getFile(fileName, "download");
+      if (blob) {
+        const blobUrl = URL.createObjectURL(blob);
+
+        // Create a temporary anchor element to trigger download
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = fileName;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Clean up blob URL
+        URL.revokeObjectURL(blobUrl);
+      }
+    }
+  };
   const getStatusIcon = () => {
     switch (status) {
       case "uploading":
@@ -69,6 +105,20 @@ export const FileItem: React.FC<FileItemProps> = ({
       default:
         return <FileText className="w-4 h-4 text-gray-400" />;
     }
+  };
+  const isPreviewable = (mimeType: string) => {
+    return (
+      mimeType.startsWith("image/") ||
+      mimeType.startsWith("video/") ||
+      mimeType.startsWith("audio/") ||
+      mimeType.includes("pdf") ||
+      mimeType.includes("text/") ||
+      mimeType.includes("json") ||
+      mimeType.includes("xml") ||
+      mimeType.includes("javascript") ||
+      mimeType.includes("css") ||
+      mimeType.includes("html")
+    );
   };
 
   const getStatusColor = () => {
@@ -207,9 +257,7 @@ export const FileItem: React.FC<FileItemProps> = ({
                 {/* File size */}
                 <span className="flex items-center space-x-1">
                   <span>Size:</span>
-                  <span className="font-medium">
-                    {fileSize}
-                  </span>
+                  <span className="font-medium">{fileSize}</span>
                 </span>
 
                 {/* Creation date */}
@@ -237,6 +285,41 @@ export const FileItem: React.FC<FileItemProps> = ({
         </div>
 
         <div className="flex items-center space-x-2 ml-4">
+          {/* Preview button with loading state */}
+          {!isTemporary && status === "success" && isPreviewable(fileType) && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePreview}
+              disabled={isPreviewing}
+              className="h-8 w-8 p-0 hover:bg-blue-50 hover:border-blue-200"
+              title="Preview file"
+            >
+              {isPreviewing ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Eye className="w-3 h-3" />
+              )}
+            </Button>
+          )}
+
+          {/* Download button with loading state */}
+          {!isTemporary && status === "success" && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownload}
+              disabled={isDownloading}
+              className="h-8 w-8 p-0 hover:bg-green-50 hover:border-green-200"
+              title="Download file"
+            >
+              {isDownloading ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Download className="w-3 h-3" />
+              )}
+            </Button>
+          )}
           {/* Retry button for failed uploads */}
           {status === "error" && !error?.includes("exceeds 10MB limit") && (
             <Button

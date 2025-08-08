@@ -33,6 +33,8 @@ interface FilesState {
   isLoadingFiles: boolean;
   isUploading: boolean;
   removingFileIds: Set<string>;
+  downloadingFileIds: Set<string>;
+  previewingFileIds: Set<string>;
 }
 
 interface FilesActions {
@@ -57,6 +59,14 @@ interface FilesActions {
   formatFileSize: (bytes: number) => string;
   getFiles: () => void;
   resetFilesState: () => void;
+  addDownloadingFileId: (fileId: string) => void;
+  removeDownloadingFileId: (fileId: string) => void;
+  addPreviewingFileId: (fileId: string) => void;
+  removePreviewingFileId: (fileId: string) => void;
+  getFile: (
+    fileName: string,
+    action: "preview" | "download"
+  ) => Promise<Blob | null>;
 }
 
 type FilesStore = FilesState & FilesActions;
@@ -70,6 +80,8 @@ const initialState: FilesState = {
   isLoadingFiles: false,
   isUploading: false,
   removingFileIds: new Set(),
+  downloadingFileIds: new Set(),
+  previewingFileIds: new Set(),
 };
 
 export const useFilesStore = create<FilesStore>()(
@@ -161,7 +173,7 @@ export const useFilesStore = create<FilesStore>()(
       }),
 
     formatFileSize: (bytes) => {
-      if (bytes === 0) return '0 MB';
+      if (bytes === 0) return "0 MB";
 
       const mb = bytes / (1024 * 1024);
 
@@ -450,11 +462,13 @@ export const useFilesStore = create<FilesStore>()(
         const result = await axios.get(
           process.env.REACT_APP_DNS_URL + "list_uploaded_files?dialogue=khaled"
         );
-        const sortedFiles = result.data.files.sort((a: FileItem, b: FileItem) => {
-          const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
-          const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
-          return dateB - dateA;
-        });
+        const sortedFiles = result.data.files.sort(
+          (a: FileItem, b: FileItem) => {
+            const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+            const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+            return dateB - dateA;
+          }
+        );
         get().setFiles(sortedFiles);
         get().setIsLoadingFiles(false);
       } catch (error) {
@@ -462,11 +476,86 @@ export const useFilesStore = create<FilesStore>()(
         get().setIsLoadingFiles(false);
       }
     },
+    addDownloadingFileId: (fileId) =>
+      set((state) => {
+        state.downloadingFileIds.add(fileId);
+      }),
 
+    removeDownloadingFileId: (fileId) =>
+      set((state) => {
+        state.downloadingFileIds.delete(fileId);
+      }),
+
+    addPreviewingFileId: (fileId) =>
+      set((state) => {
+        state.previewingFileIds.add(fileId);
+      }),
+
+    removePreviewingFileId: (fileId) =>
+      set((state) => {
+        state.previewingFileIds.delete(fileId);
+      }),
+
+    getFile: async (fileName, action) => {
+      const {
+        addDownloadingFileId,
+        removeDownloadingFileId,
+        addPreviewingFileId,
+        removePreviewingFileId,
+      } = get();
+
+      try {
+        // Add to appropriate loading state
+        if (action === "download") {
+          addDownloadingFileId(fileName);
+        } else {
+          addPreviewingFileId(fileName);
+        }
+
+        // Get auth token
+        const authToken = localStorage.getItem("authToken") || "";
+
+        // Make request to get file
+        const response = await axios.get(
+          `http://23.88.122.180/bot/get_file?dialogue=khaled&filename=${encodeURIComponent(
+            fileName
+          )}`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+            responseType: "blob",
+          }
+        );
+
+        return response.data;
+      } catch (error: any) {
+        console.error(`${action} error:`, error);
+
+        const { handleSnackBarMessageOpen } = useRightDrawerStore.getState();
+        handleSnackBarMessageOpen(
+          `Failed to ${action} file`,
+          "destructive",
+          2000
+        );
+
+        return null;
+      } finally {
+        // Remove from loading state
+        if (action === "download") {
+          removeDownloadingFileId(fileName);
+        } else {
+          removePreviewingFileId(fileName);
+        }
+      }
+    },
+    // Update resetFilesState to include new properties
     resetFilesState: () =>
       set((state) => {
         Object.assign(state, initialState);
         state.removingFileIds = new Set();
+        state.downloadingFileIds = new Set();
+        state.previewingFileIds = new Set();
       }),
   }))
 );
