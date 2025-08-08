@@ -238,7 +238,7 @@ export const useFilesStore = create<FilesStore>()(
         const authToken = localStorage.getItem("authToken") || "";
 
         const response = await axios.post(
-          "http://23.88.122.180/bot/" + "upload_file?dialogue=khaled",
+          process.env.REACT_APP_DNS_URL + "upload_file?dialogue=khaled",
           file,
           {
             headers: {
@@ -448,7 +448,7 @@ export const useFilesStore = create<FilesStore>()(
       try {
         get().setIsLoadingFiles(true);
         const result = await axios.get(
-          "http://23.88.122.180/bot/" + "list_uploaded_files?dialogue=khaled"
+          process.env.REACT_APP_DNS_URL + "list_uploaded_files?dialogue=khaled"
         );
         const sortedFiles = result.data.files.sort((a: FileItem, b: FileItem) => {
           const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;

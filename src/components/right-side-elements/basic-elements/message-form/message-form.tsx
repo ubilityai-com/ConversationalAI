@@ -1,4 +1,4 @@
-import { Edge, Node, NodeProps } from "@xyflow/react"
+import { Node, NodeProps } from "@xyflow/react"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
@@ -8,7 +8,6 @@ import { LoopFromForm } from "../../../common/loop-from-end"
 import { EditableField } from "../../../custom/editable-field"
 import { Label } from "../../../ui/label"
 import { Switch } from "../../../ui/switch"
-import { useEffect } from "react"
 
 interface RightSideData {
   botSays?: string;
@@ -107,7 +106,6 @@ export default function MessageForm({
   const updateNodesValidationById = useFlowStore(
     (state) => state.updateNodesValidationById
   );
-  const addVariable = useFlowStore((state) => state.addVariable);
   const updateDialogueVariable = useFlowStore(
     (state) => state.updateDialogueVariable
   );
@@ -146,13 +144,6 @@ export default function MessageForm({
         <Switch
           checked={localConfig.save || false}
           onCheckedChange={(checked) => {
-            addVariable({
-              category: "dialogue",
-              name: "",
-              type: "string",
-              value: "",
-              origin: selectedNode.id,
-            });
             updateNestedConfig("save", checked);
           }}
           id="save-switch"

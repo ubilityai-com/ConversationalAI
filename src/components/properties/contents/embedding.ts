@@ -19,16 +19,16 @@ export const EmbeddingsOpenAI = (selectedNode: any) => {
         provider: "openAi",
         model: content.model,
         credential: content.cred,
-      }
+    }
 }
-export const EmbeddingsTogetherAi = (selectedNode: any) => {
+export const EmbeddingsTogetherAI = (selectedNode: any) => {
     const embedding = selectedNode.data.rightSideData.extras.embedding
     const content = embedding.content
-    return  {
+    return {
         provider: "togetherAi",
         model: content.model,
         credential: content.cred,
-      };
+    };
 }
 export const AnthropicChatModel = (selectedNode: any) => {
     const embedding = selectedNode.data.rightSideData.extras.embedding
@@ -97,16 +97,6 @@ export const EmbeddingsMistralAI = (selectedNode: any) => {
         provider: "mistralAi",
         model: content.model,
         credential: content.cred,
-        params: {
-            optionals: {
-                max_tokens: parseInt(getAccvalue(content, "maximumNumberOfTokens")),
-                temperature: parseFloat(getAccvalue(content, "samplingTemperature")),
-                max_retries: parseInt(getAccvalue(content, "maxRetries")),
-                top_p: parseFloat(getAccvalue(content, "topP")),
-                random_seed: parseInt(getAccvalue(content, "randomSeed")),
-                safe_mode: Boolean(getAccvalue(content, "safeMode")),
-            },
-        },
     }
 }
 export const GooglePalmGeminiChatModel = (selectedNode: any) => {
@@ -142,21 +132,13 @@ export const VertexAIChatModel = (selectedNode: any) => {
 
     }
 }
-export const GoogleGenerativeAiChatModel = (selectedNode: any) => {
+export const EmbeddingsGoogleGenerativeAI = (selectedNode: any) => {
     const model = selectedNode.data.rightSideData.extras.model
     const content = model.content
     return {
         provider: "googleGenerativeAi",
         model: content.model,
-        credential: content.cred,
-        params: {
-            optionals: {
-                max_tokens: getAccvalue(content, "maxOutputTokens"),
-                temperature: getAccvalue(content, "temperature"),
-                top_p: getAccvalue(content, "topP"),
-                top_k: getAccvalue(content, "topK"),
-            },
-        },
+        credential: content.cred
     }
 }
 export const GroqChatModel = (selectedNode: any) => {
@@ -190,18 +172,13 @@ export const AI21ChatModel = (selectedNode: any) => {
         },
     }
 }
-export const FireworksChatModel = (selectedNode: any) => {
+export const EmbeddingsFireworks = (selectedNode: any) => {
     const model = selectedNode.data.rightSideData.extras.model
     const content = model.content
     return {
         provider: "fireworks",
         model: content.model,
         credential: content.cred,
-        params: {
-            optionals: {
-                temperature: getAccvalue(content, "temperature"),
-            },
-        },
     }
 }
 export const EmbeddingsNvidia = (selectedNode: any) => {
@@ -209,19 +186,20 @@ export const EmbeddingsNvidia = (selectedNode: any) => {
     const content = model.content
     let jsonToSend: any = {
         provider: "nvidia",
-        model: content.model ? content.model : "",
+        model: content.model,
         credential: content.cred,
-        params: {
-            optionals: {
-                temperature: parseFloat(getAccvalue(content, "temperature")),
-                max_tokens: parseInt(getAccvalue(content, "maxToken")),
-                top_p: parseFloat(getAccvalue(content, "topP")),
-                stop: content.stopWords.map((stopWord: any) => {
-                    return stopWord.word;
-                }),
-            },
-        },
     };
-   
+
+    return jsonToSend
+}
+export const EmbeddingsNomic = (selectedNode: any) => {
+    const model = selectedNode.data.rightSideData.extras.model
+    const content = model.content
+    let jsonToSend: any = {
+        provider: "nomic",
+        model: content.model,
+        credential: content.cred,
+    };
+
     return jsonToSend
 }
