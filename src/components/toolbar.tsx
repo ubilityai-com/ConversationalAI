@@ -1,9 +1,9 @@
-import { AlignJustify, ChevronDown, Download, Edit, Home, Import, Key, Loader2, MoreHorizontal, MoreHorizontalIcon, Play, Save, Settings, Trash, Upload, Variable } from "lucide-react"
+import { Download, Edit, Files, Home, Key, Loader2, Play, Save, Settings, Trash, Upload, Variable } from "lucide-react"
 import { createFlowObject } from "../lib/build-json"
 import { useFlowStore } from "../store/flow-store"
 import { Button } from "./ui/button"
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "./ui/navigation-menu"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "./ui/navigation-menu"
 
 
 export function Toolbar() {
@@ -135,14 +135,12 @@ export function Toolbar() {
             <Key className="w-4 h-4" />
             Credentials
           </Button>
-          <Button variant="outline" size="sm" onClick={() => { }}>
-            <Upload className="w-4 h-4 mr-2" />
-            Import
-          </Button>
-
-          <Button variant="outline" size="sm" onClick={() => { }}>
-            <Download className="w-4 h-4 mr-2" />
-            Export
+          <Button variant="outline" size="sm" onClick={() => {
+            setIsFormDialogOpen(true);
+            setFormDialogStatus("files");
+          }}>
+            <Files className="w-4 h-4 mr-2" />
+            Files
           </Button>
 
           <Button variant="outline" size="sm" onClick={() => { }}>
