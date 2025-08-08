@@ -48,12 +48,14 @@ function getCompNameName({
     id,
     variableName,
     isCredential,
+    filledDataName,
 }: {
     id: string
     variableName: string
     isCredential: boolean
+    filledDataName?: string
 }): string {
-    return `${!isCredential ? id + "-" + variableName : "credential"}`
+    return `${!isCredential ? id + "-" + filledDataName + "-" + variableName : "credential"}`
 }
 
 function getList(list: any[], isCred: boolean, credType?: string, isMultiselect?: boolean): any[] {
@@ -99,7 +101,7 @@ export function ApiCaller({
     disabled,
     helperSpan,
     value,
-    filledDataName
+    filledDataName=""
 }: ApiCallerProps) {
     const { setListAndDropDownList, setIsLoadingList, setFetchList, setNotFetchingListAsFirstTime } = useApiStore()
     const flowZoneSelectedElement = useNodesData(flowZoneSelectedId || "")
@@ -107,6 +109,7 @@ export function ApiCaller({
         id: flowZoneSelectedElement?.id || "",
         variableName: apiJson.variableName,
         isCredential: apiJson.hasOwnProperty("credential"),
+        filledDataName
     })
 
     const { list: ListsForThisNode, isLoading: isLoadingList, notFetchingAsFirstTime } = useApiData(compName)
@@ -142,7 +145,7 @@ export function ApiCaller({
     useEffect(() => {
         setTimeout(() => {
             if (!isUsingAi && notFetchingAsFirstTime !== undefined && !apiJson.multiselect && !isLoadingList) {
-                
+
                 if (
                     !isUsingVariable(value) &&
                     (value !== "None" && value) &&
