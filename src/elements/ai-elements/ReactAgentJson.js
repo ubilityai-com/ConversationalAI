@@ -57,7 +57,7 @@ export const ReactAgentJson = {
             multiline: true,
             minRows: 4,
             variableName: "prompt",
-            value: "Write a concise summary of the following:{docs}CONCISE SUMMARY:",
+            value: "",
             placeholder: "prompt",
             hasDynamicVariable: true,
           },]]

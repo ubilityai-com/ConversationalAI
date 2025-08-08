@@ -125,7 +125,7 @@ export const EmbeddingsOpenAIJson = {
                       },
                       {
                         key: "modelType",
-                        value: "chat"
+                        value: "embedding"
                       }
                     ],
                   },
