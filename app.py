@@ -175,6 +175,12 @@ def get_conversation_id_from_sid(dialogue_id, sid):
             return conv_id
     return None
 
+def get_dialogue_id_from_sid(sid):
+    for d_id, conversations in session.items():
+        if sid in conversations:
+            return d_id
+    return None
+
 @sio.event
 async def disconnect(sid):
     """

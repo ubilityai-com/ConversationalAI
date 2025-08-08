@@ -8,7 +8,7 @@ import os
 
 # Message Actions
 
-def slack_send_message(creds,params):
+def slack_send_message(creds,params,**kwargs):
     """
     Send a message to a Slack channel/User.
 
@@ -57,7 +57,7 @@ def slack_send_message(creds,params):
         raise Exception(error)
 
 
-def slack_update_message(creds,params):
+def slack_update_message(creds,params,**kwargs):
     """
     Update an existing Slack message.
 
@@ -100,7 +100,7 @@ def slack_update_message(creds,params):
         raise Exception(e)
 
 
-def slack_delete_message(creds,params):
+def slack_delete_message(creds,params,**kwargs):
     """
     Delete a Slack message.
     
@@ -134,7 +134,7 @@ def slack_delete_message(creds,params):
         raise Exception(e)
 
 
-def slack_get_permalink(creds,params):
+def slack_get_permalink(creds,params,**kwargs):
     """
     Get a permalink to a Slack message.
     
@@ -177,7 +177,7 @@ def slack_get_permalink(creds,params):
 # Channel Actions
 
 
-def slack_get_channel(creds,params):
+def slack_get_channel(creds,params,**kwargs):
     """
     Get information about a Slack channel.
     
@@ -215,7 +215,7 @@ def slack_get_channel(creds,params):
         raise Exception(e)
 
 
-def slack_get_many_channels(creds,params):
+def slack_get_many_channels(creds,params,**kwargs):
     """
     Retrieve a list of Slack channels based on specified parameters.
 
@@ -254,7 +254,7 @@ def slack_get_many_channels(creds,params):
         raise Exception(e)
 
 
-def slack_create_channel(creds,params):
+def slack_create_channel(creds,params,**kwargs):
     """
     Create a new Slack channel.
 
@@ -289,7 +289,7 @@ def slack_create_channel(creds,params):
         raise Exception(e)
 
 
-def slack_archive_conversation(creds,params):
+def slack_archive_conversation(creds,params,**kwargs):
     """
     Archive a Slack conversation (channel).
 
@@ -316,7 +316,7 @@ def slack_archive_conversation(creds,params):
         raise Exception(e)
 
 
-def slack_unarchive_conversation(creds,params):
+def slack_unarchive_conversation(creds,params,**kwargs):
     """
     Unarchive a Slack conversation (channel).
 
@@ -343,7 +343,7 @@ def slack_unarchive_conversation(creds,params):
         raise Exception(e)
 
 
-def slack_rename_conversation(creds,params):
+def slack_rename_conversation(creds,params,**kwargs):
     """
     Rename a Slack conversation (channel).
 
@@ -379,7 +379,7 @@ def slack_rename_conversation(creds,params):
         raise Exception(e)
 
 
-def slack_get_members(creds,params):
+def slack_get_members(creds,params,**kwargs):
     """
     Get members of a Slack channel.
 
@@ -411,7 +411,7 @@ def slack_get_members(creds,params):
         raise Exception(e)
 
 
-def slack_leave_conversation(creds,params):
+def slack_leave_conversation(creds,params,**kwargs):
     """
     Leave a Slack conversation (channel).
 
@@ -438,7 +438,7 @@ def slack_leave_conversation(creds,params):
         raise Exception(e)
 
 
-def slack_join_conversation(creds,params):
+def slack_join_conversation(creds,params,**kwargs):
     """
     Join a Slack conversation (channel).
 
@@ -470,7 +470,7 @@ def slack_join_conversation(creds,params):
         raise Exception(e)
 
 
-def slack_invite_users(creds,params):
+def slack_invite_users(creds,params,**kwargs):
     """
     Invite users to a Slack conversation (channel).
 
@@ -512,7 +512,7 @@ def slack_invite_users(creds,params):
 # User Actions
 
 
-def slack_get_user(creds,params):
+def slack_get_user(creds,params,**kwargs):
     """
     Get information about a Slack user.
 
@@ -544,7 +544,7 @@ def slack_get_user(creds,params):
         raise Exception(e)
 
 
-def slack_get_many_users(creds,params):
+def slack_get_many_users(creds,params,**kwargs):
     """
     Retrieve a list of Slack users.
 
@@ -574,7 +574,7 @@ def slack_get_many_users(creds,params):
         raise Exception(e)
 
 
-def slack_get_user_status(creds,params):
+def slack_get_user_status(creds,params,**kwargs):
     """
     Get the presence status of a Slack user.
 
@@ -611,7 +611,7 @@ def slack_get_user_status(creds,params):
 # File Actions
 
 
-def slack_get_file(creds,params):
+def slack_get_file(creds,params,**kwargs):
     """
     Get information about a Slack file.
 
@@ -627,14 +627,12 @@ def slack_get_file(creds,params):
       dict: A dictionary containing information about the specified file.
 
     """
-    from functions import upload_file
+    from applications.functions import upload_file
     try:
         cred=json.loads(creds)
-        if "accessToken" in cred and "file" in params and "user_id" in params and "flow_id" in params:
+        if "accessToken" in cred and "file" in params:
             token = cred["accessToken"]
             file_id = params["file"]
-            user_id = params["user_id"]
-            flow_id = params["flow_id"]
             download_file = params.get("download_file", False)
             client = WebClient(token=token)
             response = client.files_info(file=file_id)
@@ -646,7 +644,12 @@ def slack_get_file(creds,params):
                 }
                 file_response = requests.get(file_url, headers=headers)
                 if file_response.status_code == 200:
-                    response_json = upload_file(user_id,flow_id,file_response.content)
+                    file_name = response["file"]["name"]  # Get file name from Slack
+                    if kwargs:
+                        # Extra conv_id & dialogue_id
+                        dialogue_id = kwargs.get("dialogue_id")
+                        conv_id = kwargs.get("conv_id")
+                    response_json = upload_file(dialogue_id,conv_id,file_response.content,file_name)
             else:
                 response_json = {
                     "content": response["content"],
@@ -660,7 +663,7 @@ def slack_get_file(creds,params):
         raise Exception(e)
     
 
-def slack_get_many_files(creds,params):
+def slack_get_many_files(creds,params,**kwargs):
     """
     Retrieve a list of Slack files.
 
@@ -705,7 +708,7 @@ def slack_get_many_files(creds,params):
         raise Exception(e)
 
 
-def slack_upload_file(creds,params):
+def slack_upload_file(creds,params,**kwargs):
     """
     Upload a file to a Slack channel.
 
@@ -727,12 +730,10 @@ def slack_upload_file(creds,params):
       dict: A dictionary containing information about the uploaded file.
 
     """
-    from functions import get_file_with_content
+    from applications.functions import get_file_data
     try:
         cred=json.loads(creds)
-        if "accessToken" in cred and "user_id" in params and "flow_id" in params and "channel" in params and "filename" in params and ("url" in params or "content" in params):
-            user_id = params["user_id"]
-            flow_id = params["flow_id"]
+        if "accessToken" in cred and "channel" in params and "filename" in params and ("url" in params or "content" in params): # here filename key is for slack , content key is the file name on ubility server
             token = cred["accessToken"]
             content = params.get("content")
             url = params.get("url")
@@ -746,7 +747,11 @@ def slack_upload_file(creds,params):
             
             if content:
                 # Retrieve file content data
-                contentData=get_file_with_content(user_id,flow_id,content)
+                if kwargs:
+                    # Extra conv_id & dialogue_id
+                    dialogue_id = kwargs.get("dialogue_id")
+                    conv_id = kwargs.get("conv_id")
+                contentData=get_file_data(dialogue_id,conv_id,params['content'])
                 if "Error" in contentData:
                     raise Exception(f"Failed to retrieve file content: {contentData['Error']}")
                 # Extract file content and name
@@ -776,7 +781,7 @@ def slack_upload_file(creds,params):
 # User Group Actions
 
 
-def slack_get_userGroups(creds,params):
+def slack_get_userGroups(creds,params,**kwargs):
     """
     Retrieve information about Slack user groups.
 
@@ -813,7 +818,7 @@ def slack_get_userGroups(creds,params):
         raise Exception(e)
 
 
-def slack_create_userGroup(creds,params):
+def slack_create_userGroup(creds,params,**kwargs):
     """
     Create a Slack user group.
 
@@ -852,7 +857,7 @@ def slack_create_userGroup(creds,params):
         raise Exception(e)
 
 
-def slack_update_userGroup(creds,params):
+def slack_update_userGroup(creds,params,**kwargs):
     """
     Update a Slack user group.
 
@@ -892,7 +897,7 @@ def slack_update_userGroup(creds,params):
         raise Exception(e)
 
 
-def slack_enable_userGroup(creds,params):
+def slack_enable_userGroup(creds,params,**kwargs):
     """
     Enable a previously disabled Slack user group.
 
@@ -928,7 +933,7 @@ def slack_enable_userGroup(creds,params):
         raise Exception(e)
 
 
-def slack_disable_userGroup(creds,params):
+def slack_disable_userGroup(creds,params,**kwargs):
     """
     Disable a Slack user group.
 

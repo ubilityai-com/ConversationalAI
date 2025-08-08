@@ -272,7 +272,7 @@ async def handle_app_integration(sio, sid, conversation, conversation_id, dialog
     content_json = app_content_json['content_json']
 
     logger.info(f"Executing {app_type} operation ({operation})")
-    result = AppIntegration(app_type,credential,operation,content_json).run_process()
+    result = AppIntegration(app_type,credential,operation,content_json).run_process(sid,conversation_id)
 
     # save result in a variable if user want to 
     logger.info(f"Save {app_type} output in variables")
