@@ -2,11 +2,11 @@
 
 import { Node, NodeProps } from "@xyflow/react"
 import { ListChecks, Plus, Trash2 } from "lucide-react"
+import { useRef } from "react"
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
 import { getNextNodeId, removeHTMLTags, stringifyAndExtractVariables } from "../../../../lib/utils"
 import { useFlowStore } from "../../../../store/flow-store"
 import { LoopFromForm } from "../../../common/loop-from-end"
-import { EditableField } from "../../../custom/editable-field"
 import { FieldWrapper } from "../../../custom/field-wrapper"
 import { Button } from "../../../ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../ui/card"
@@ -117,7 +117,7 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
 
     /* --------------------------- helper functions -------------------------- */
     const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
-    const { localConfig, updateConfigField, updateNestedConfig } = useDebounceConfig<ChoiceConfigProps["rightSideData"]>(
+    const { localConfig, updateNestedConfig } = useDebounceConfig<ChoiceConfigProps["rightSideData"]>(
         selectedNode.data.rightSideData,
         {
             delay: 300,
@@ -137,6 +137,7 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
     const variableName = localConfig.variableName ?? ""
     const loopFromName = localConfig.loopFromName ?? ""
     const loopFromSwitch = localConfig.loopFromSwitch ?? false
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 
     const addChoice = () => {
@@ -155,6 +156,15 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
     const removeChoice = (choiceId: string) => {
         const updatedChoices = choices.filter((c) => c.id !== choiceId)
         updateNestedConfig("choices", updatedChoices)
+    }
+    const debounceMessageVariable = (value: string) => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+        // Set new timeout
+        timeoutRef.current = setTimeout(() => {
+            updateDialogueVariable(selectedNode.id, value);
+        }, 1000);
     }
     /* ---------------------------------- UI --------------------------------- */
 
@@ -255,13 +265,13 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
             {save && (
                 <>
                     <Label className="block text-sm p-1 mb-1 font-normal">Variable Name</Label>
-                    <EditableField
+                    <Input
                         name="variableName"
                         placeholder="Variable Name"
                         value={variableName || ""}
-                        onChange={(newValue) => {
-                            updateDialogueVariable(selectedNode.id, newValue);
-                            updateNestedConfig("variableName", newValue)
+                        onChange={(event) => {
+                            debounceMessageVariable(event.target.value)
+                            updateNestedConfig("variableName", event.target.value)
                         }
                         }
                     />

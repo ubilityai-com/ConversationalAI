@@ -1,11 +1,12 @@
 import { Node, NodeProps } from "@xyflow/react"
+import { useRef } from "react"
 import ReactQuill from "react-quill"
 import "react-quill/dist/quill.snow.css"
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
 import { getNextNodeId, removeHTMLTags, stringifyAndExtractVariables } from "../../../../lib/utils"
 import { useFlowStore } from "../../../../store/flow-store"
 import { LoopFromForm } from "../../../common/loop-from-end"
-import { EditableField } from "../../../custom/editable-field"
+import { Input } from "../../../ui/input"
 import { Label } from "../../../ui/label"
 import { Switch } from "../../../ui/switch"
 
@@ -122,8 +123,18 @@ export default function MessageForm({
       handleRightSideDataUpdate(savedConfig);
     },
   });
-  console.log({ selectedNode });
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  console.log({ selectedNode });
+  const debounceMessageVariable = (value: string) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    // Set new timeout
+    timeoutRef.current = setTimeout(() => {
+      updateDialogueVariable(selectedNode.id, value);
+    }, 1000);
+  }
   return (
     <div className="space-y-4">
       <div>
@@ -158,13 +169,14 @@ export default function MessageForm({
           <Label className="block text-sm mb-1 font-normal">
             Variable Name
           </Label>
-          <EditableField
+          <Input
             name="variableName"
             placeholder="Variable Name"
             value={localConfig.variableName || ""}
-            onChange={(newValue) => {
-              updateDialogueVariable(selectedNode.id, newValue);
-              updateNestedConfig("variableName", newValue);
+            onChange={(event) => {
+              // Clear previous timeout (if any)
+              debounceMessageVariable(event.target.value)
+              updateNestedConfig("variableName", event.target.value);
             }}
           />
         </div>
