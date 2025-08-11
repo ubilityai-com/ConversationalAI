@@ -1,26 +1,26 @@
-import React from "react";
-import { Button } from "../../ui/button";
-import { Progress } from "../../ui/progress";
 import {
-  FileText,
+  Archive,
+  Calendar,
   CheckCircle,
-  XCircle,
+  Code,
+  Download,
+  Eye,
+  File,
+  FileText,
+  Image,
+  Loader2,
+  Music,
   RotateCcw,
   Trash2,
-  Loader2,
   Upload,
-  File,
-  Calendar,
-  Image,
   Video,
-  Music,
-  Archive,
-  Code,
-  Eye,
-  Download,
+  XCircle,
 } from "lucide-react";
+import React from "react";
 import { cn } from "../../../lib/utils";
 import { useFilesStore } from "../../../store/files-store";
+import { Button } from "../../ui/button";
+import { Progress } from "../../ui/progress";
 
 type FileStatus = "uploading" | "success" | "error";
 
@@ -57,13 +57,12 @@ export const FileItem: React.FC<FileItemProps> = ({
   onRetryUpload,
   onRemoveFile,
 }) => {
-  const { formatFileSize, getFile, downloadingFileIds, previewingFileIds } =
+  const { getFile, downloadingFileIds, previewingFileIds } =
     useFilesStore();
-  console.log({ status });
   const isDownloading = downloadingFileIds.has(fileName);
   const isPreviewing = previewingFileIds.has(fileName);
   const handlePreview = async () => {
-    if (!isTemporary && status === "success" && !isPreviewing) {
+    if (!isTemporary && !isPreviewing) {
       const blob = await getFile(fileName, "preview");
       if (blob) {
         const blobUrl = URL.createObjectURL(blob);
@@ -75,7 +74,7 @@ export const FileItem: React.FC<FileItemProps> = ({
   };
 
   const handleDownload = async () => {
-    if (!isTemporary && status === "success" && !isDownloading) {
+    if (!isTemporary && !isDownloading) {
       const blob = await getFile(fileName, "download");
       if (blob) {
         const blobUrl = URL.createObjectURL(blob);
@@ -286,7 +285,7 @@ export const FileItem: React.FC<FileItemProps> = ({
 
         <div className="flex items-center space-x-2 ml-4">
           {/* Preview button with loading state */}
-          {!isTemporary && status === "success" && isPreviewable(fileType) && (
+          {!isTemporary && isPreviewable(fileType) && (
             <Button
               variant="outline"
               size="sm"
@@ -304,7 +303,7 @@ export const FileItem: React.FC<FileItemProps> = ({
           )}
 
           {/* Download button with loading state */}
-          {!isTemporary && status === "success" && (
+          {!isTemporary && (
             <Button
               variant="outline"
               size="sm"
