@@ -114,6 +114,10 @@ def basicDataLoader(loader_data):
         dataType = loader_data['dataType']
         dataFormat = loader_data['dataFormat']
         data = loader_data['data']
+        allowed_data_types = ["pdf", "csv", "json", "txt"]
+        if dataType not in allowed_data_types:
+            raise Exception(f"Invalid data type: '{dataType}'. Valid data types: {', '.join(allowed_data_types)}")
+
         if dataType == "pdf":
             logging.info("data type PDF")
             if dataFormat == "URL":  # no (Data) format_type for pdf
