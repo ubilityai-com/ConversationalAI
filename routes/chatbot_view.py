@@ -37,8 +37,8 @@ def create_chatbot_view(payload: ChatbotCreateRequest):
         dict: Success message.
     """
     try:
-        create_chatbot(payload.name, payload.dialogue, payload.ui_json, 'Inactive')
-        return {"message": "Chatbot created"}
+        return create_chatbot(payload.name, payload.dialogue, payload.ui_json, 'Inactive')
+        
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
