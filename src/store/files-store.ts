@@ -414,7 +414,7 @@ export const useFilesStore = create<FilesStore>()(
 
         // Make API call to delete file
         await axios.delete(
-          `http://23.88.122.180/bot/delete_file?dialogue=khaled&filename=${encodeURIComponent(
+          process.env.REACT_APP_DNS_URL + `delete_file?dialogue=khaled&filename=${encodeURIComponent(
             fileId
           )}`,
           {
@@ -517,7 +517,7 @@ export const useFilesStore = create<FilesStore>()(
 
         // Make request to get file
         const response = await axios.get(
-          `http://23.88.122.180/bot/get_file?dialogue=khaled&filename=${encodeURIComponent(
+          process.env.REACT_APP_DNS_URL + `get_file?dialogue=khaled&filename=${encodeURIComponent(
             fileName
           )}`,
           {
