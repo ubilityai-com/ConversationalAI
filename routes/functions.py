@@ -12,8 +12,7 @@ from elements.ai_integration import AIIntegration
 from fastapi import Query
 from models.chatbot import get_chatbot,update_chatbot
 from typing import Union
-from cryptography.fernet import Fernet
-from config import SECRET_KEY
+
 
 def load_dialogue(dialogue_id):
     file_path = os.path.join("dialogues", f"{dialogue_id}.json")
@@ -91,7 +90,6 @@ def activate_chatbot_view(chatbot_id: int = Query(None)):
         4- create json file 
         5- add dialogue to dialogues.py
         6- update db status to be Active
-        7- return dialogue_id token
         """
         chatbot_obj = get_chatbot(chatbot_id)
 
@@ -118,9 +116,7 @@ def activate_chatbot_view(chatbot_id: int = Query(None)):
         if not update_status:
             return JSONResponse(status_code=500, content={"Error": "Fail activating chatbot"})
         
-        token = encrypt_dialogue_id(chatbot_id)
-        
-        return {"token":token}
+        return {"Message":"Chatbot is successfully activated"}
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
@@ -199,21 +195,4 @@ def delete_json_file(filename):
         return False  # File doesn't exist
     except Exception as e:
         return False
-    
-def encrypt_dialogue_id(params: dict) -> str:
-    """
-    Fetch dialogue_id from params and encrypt it.
 
-    Args:
-        params (dict): Dictionary containing 'dialogue_id'
-
-    Returns:
-        str: Encrypted dialogue_id as a string
-    """
-    dialogue_id = params.get("dialogue_id")
-    if not dialogue_id:
-        raise ValueError("Missing 'dialogue_id' in params")
-
-    fernet = Fernet(SECRET_KEY)
-    encrypted_data = fernet.encrypt(dialogue_id.encode())
-    return encrypted_data.decode()
