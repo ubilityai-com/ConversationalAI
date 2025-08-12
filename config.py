@@ -1,0 +1,1 @@
+SECRET_KEY = b'uxmtrJ2dthd4iKrklkxWI9ekGKASQ00ub5Ui0TNKhtM='
