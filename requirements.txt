@@ -7,3 +7,5 @@ slack-sdk==3.33.3
 google-api-python-client==2.166.0
 google-auth==2.31.0
 google-auth-oauthlib==1.2.1
+python-socketio==5.8.0
+cryptography==45.0.6
