@@ -107,7 +107,7 @@ class RAG:
             else:
                 for chunk in chain.stream(input_data):
                     if "answer" in chunk:
-                        result = chunk["answer"]
+                        result = chunk
 
             return result
 
