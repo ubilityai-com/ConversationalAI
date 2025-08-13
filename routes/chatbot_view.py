@@ -99,20 +99,7 @@ def update_chatbot_view(id: int, payload: ChatbotUpdateRequest):
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
-def encrypt_dialogue_id(params: dict) -> str:
-    """
-    Fetch dialogue_id from params and encrypt it.
-
-    Args:
-        params (dict): Dictionary containing 'dialogue_id'
-
-    Returns:
-        str: Encrypted dialogue_id as a string
-    """
-    dialogue_id = params.get("dialogue_id")
-    if not dialogue_id:
-        raise ValueError("Missing 'dialogue_id' in params")
-
+def encrypt_dialogue_id(dialogue_id: int) -> str:
     fernet = Fernet(SECRET_KEY)
-    encrypted_data = fernet.encrypt(dialogue_id.encode())
+    encrypted_data = fernet.encrypt(str(dialogue_id).encode())
     return encrypted_data.decode()
