@@ -5,6 +5,7 @@ from typing import List
 from ubility_langchain.document_loader import DocumentLoader
 from ubility_langchain.vector_store import VectorStore
 from ubility_langchain.model import Model
+import logging
 
 
 class AnswerWithSources(TypedDict):
@@ -87,13 +88,20 @@ class RAG:
             if sio and sid:
                 for chunk in chain.stream(input_data):
                     if "answer" in chunk:
-                        await sio.emit('message', {
+                        await sio.emit('rag', {
                             'type': 'chunk',
-                            'chunk': chunk["answer"]
+                            'answer': chunk["answer"]
                         }, room=sid)
-                        result = chunk["answer"]
+                        result = chunk
 
-                await sio.emit('message', {
+                    if "references" in chunk:
+                        await sio.emit('rag', {
+                            'type': 'chunk',
+                            'references': chunk["references"]
+                        }, room=sid)
+                        result = chunk
+
+                await sio.emit('end', {
                     'type': 'end of chunks'
                 }, room=sid)
             else:
@@ -101,12 +109,13 @@ class RAG:
                     if "answer" in chunk:
                         result = chunk["answer"]
 
-            return {"answer" : result}
+            return result
 
         except Exception as exc:
             if sio and sid:
+                logging.error(f"an error occurred while running this ai node: {str(exc)}")
                 await sio.emit('error_message', {
                     'type': 'error_message',
-                    'error': str(exc)
+                    'error': 'an error occurred while running this ai node'
                     }, room=sid)
             raise Exception(exc)

@@ -6,7 +6,7 @@ from langgraph.store.memory import InMemoryStore
 from ubility_langchain.customTools import create_custom_tools
 from langchain_core.messages.ai import AIMessage, AIMessageChunk
 from ubility_langchain.model import Model
-import sys, os, json
+import sys, os, json, logging
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
@@ -208,13 +208,13 @@ Output should be like this: {"status": ""}. No explanation is needed.
                 result = ""
                 async for chunk in agent.astream_events(input={"messages": self.data['inputs']["query"]}):
                     if 'event' in chunk and chunk['event'] == 'on_chat_model_stream':
-                        await sio.emit('message', {
+                        await sio.emit('agent', {
                                     'type': 'chunk',
                                     'chunk': chunk['data']['chunk'].content
                                 }, room=sid)
                         result += chunk['data']['chunk'].content
 
-                await sio.emit('message', {
+                await sio.emit('end', {
                     'type': 'end of chunks'
                     }, room=sid)
                 
@@ -238,8 +238,9 @@ Output should be like this: {"status": ""}. No explanation is needed.
             return result
         except Exception as exc:
             if sio and sid:
+                logging.error(f"an error occurred while running this ai node: {str(exc)}")
                 await sio.emit('error_message', {
                     'type': 'error_message',
-                    'error': str(exc)
+                    'error': 'an error occurred while running this ai node'
                     }, room=sid)
             raise Exception(exc)
