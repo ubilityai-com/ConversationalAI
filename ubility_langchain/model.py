@@ -17,6 +17,11 @@
 # pip install -qU langchain-huggingface
 # pip install langchain_nvidia_ai_endpoints
 # pip install langchain_nomic
+# pip install langchain-deepseek
+# pip install langchain-xai
+# pip install langchain-cerebras
+# pip install langchain_ollama
+
 import logging
 from typing import (Any,Callable,Dict,Generator,Iterable,List,Optional,Tuple,Type)
 import os
@@ -25,7 +30,7 @@ import types
 
 class Model:
     
-    _VALID_PROVIDERS=["openAi","ollama","anthropic","awsBedrock","googlePaLMGemini","azureOpenAi","mistralAi","cohere","togetherAi","huggingFace","vertexAi","googleGenerativeAi","groq","ai21","fireworks","nvidia","nomic"]
+    _VALID_PROVIDERS=["openAi","ollama","anthropic","awsBedrock","azureOpenAi","mistralAi","cohere","togetherAi","huggingFace","vertexAi","googleGenerativeAi","groq","ai21","fireworks","nvidia","nomic", "deepseek", "xai", "openRouter", "cerebras", "ibm", "liteLLM"]
     
     def __init__(
         self,
@@ -73,9 +78,24 @@ class Model:
         elif self.provider == "awsBedrock":
             logging.info("It is an awsBedrock provider")
             self._setup_awsBedrock(self.credentials)
-        # elif self.provider == "googlePaLMGemini":
-        #     logging.info("It is an googlePaLMGemini provider")
-        #     self._setup_googlePaLMGemini(self.credentials)
+        elif self.provider == "deepseek":
+            logging.info("It is a deepseek provider")
+            self._setup_deepseek(self.credentials)
+        elif self.provider == "xai":
+            logging.info("It is an xai provider")
+            self._setup_xai(self.credentials)
+        elif self.provider == "openRouter":
+            logging.info("It is an openRouter provider")
+            self._setup_openRouter(self.credentials)
+        elif self.provider == "cerebras":
+            logging.info("It is an cerebras provider")
+            self._setup_cerebras(self.credentials)
+        elif self.provider == "ibm":
+            logging.info("It is an IBM Watsonx provider")
+            self._setup_ibm(self.credentials)
+        elif self.provider == "liteLLM":
+            logging.info("It is an liteLLM provider")
+            self._setup_liteLLM(self.credentials)
         elif self.provider == "azureOpenAi":
             logging.info("It is an azureOpenAi provider")
             self._setup_azureOpenAi(self.credentials)
@@ -157,11 +177,83 @@ class Model:
         except Exception as error:
             raise Exception(error)
         
-    #set up azureOpenAi object 
-    def _setup_azureOpenAi(self,cred):
+    #set up deepseek object 
+    def _setup_deepseek(self,cred):
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
+                logging.info("--------------Done--------------")
+            else:
+                raise Exception("missing Deepseek credentials")
+        except Exception as error:
+            raise Exception(error)
+
+    #set up xai object 
+    def _setup_xai(self,cred):
+        try:
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
+                logging.info("--------------Done--------------")
+            else:
+                raise Exception("missing XAI credentials")
+        except Exception as error:
+            raise Exception(error)
+        
+    #set up openRouter object 
+    def _setup_openRouter(self,cred):
+        try:
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
+                logging.info("--------------Done--------------")
+            else:
+                raise Exception("missing OpenRouter credentials")
+        except Exception as error:
+            raise Exception(error)
+    
+    #set up cerebras object 
+    def _setup_cerebras(self,cred):
+        try:
+            if "apiKey" in cred:
+                self.api_key=cred["apiKey"]
+                logging.info("--------------Done--------------")
+            else:
+                raise Exception("missing Cerebras credentials")
+        except Exception as error:
+            raise Exception(error)
+
+    #set up ibm object 
+    def _setup_ibm(self,cred):
+        try:
+            if "apiKey" in cred and "baseUrl" in cred and "projectId" in cred and "version" in cred:
+                self.api_key=cred["apiKey"]
+                self.base_url=cred["baseUrl"]
+                self.project_id=cred["projectId"]
+                self.version=cred["version"]
+                logging.info("--------------Done--------------")
+            else:
+                raise Exception("missing IBM credentials")
+        except Exception as error:
+            raise Exception(error)
+
+    #set up liteLLM object 
+    def _setup_liteLLM(self,cred):
+        try:
+            if "apiKey" in cred and "baseUrl" in cred:
+                self.api_key=cred["apiKey"]
+                self.base_url=cred["baseUrl"]
+                logging.info("--------------Done--------------")
+            else:
+                raise Exception("missing liteLLM credentials")
+        except Exception as error:
+            raise Exception(error)
+        
+    #set up azureOpenAi object 
+    def _setup_azureOpenAi(self,cred):
+        try:
+            if "apiKey" in cred and "apiVersion" in cred and "resourceName" in cred:
+                self.api_key=cred["apiKey"]
+                self.api_version=cred["apiVersion"]
+                self.azure_endpoint=f"https://{cred['resourceName']}.openai.azure.com/"
                 logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Azure OpenAI credentials")
@@ -299,7 +391,7 @@ class Model:
         """
             Embedding model are used to transform words into numerical arrays or vectors.
         """
-        _VALID_EMBEDDING_PROVIDERS=["openAi","ollama","googleGenerativeAi","togetherAi","cohere","mistralAi","fireworks","nvidia","nomic"]
+        _VALID_EMBEDDING_PROVIDERS=["openAi","ollama","googleGenerativeAi","togetherAi","cohere","mistralAi","fireworks","nvidia","nomic", "ibm"]
         logging.info("Create embedding model")
         try:
             if self.provider in _VALID_EMBEDDING_PROVIDERS:
@@ -322,6 +414,9 @@ class Model:
                 elif self.provider == "mistralAi":
                     from langchain_mistralai import MistralAIEmbeddings
                     response = MistralAIEmbeddings(api_key=self.api_key,model=self.model,**optionals)
+                elif self.provider == "ibm":
+                    from langchain_ibm import WatsonxEmbeddings
+                    response = WatsonxEmbeddings(model_id=self.model, project_id=self.project_id, url=self.base_url, apikey=self.api_key, version=self.version, **optionals)
                 elif self.provider == "fireworks":
                     from langchain_fireworks import FireworksEmbeddings
                     response = FireworksEmbeddings(api_key=self.api_key, model=self.model, **optionals)
@@ -346,7 +441,7 @@ class Model:
         """
             A chat model is a language model that uses chat messages as inputs and returns chat messages as outputs (as opposed to using plain text)
         """
-        _VALID_CHAT_PROVIDERS=["openAi","ollama","anthropic","awsBedrock","googlePaLMGemini","azureOpenAi","mistralAi","cohere","togetherAi","huggingFace","vertexAi","googleGenerativeAi","groq","fireworks","ai21","nvidia"]
+        _VALID_CHAT_PROVIDERS=["openAi","ollama","anthropic","awsBedrock","azureOpenAi","mistralAi","cohere","togetherAi","huggingFace","vertexAi","googleGenerativeAi","groq","fireworks","ai21","nvidia", "deepseek", "xai", "openRouter", "cerebras", "ibm", "liteLLM"]
         logging.info("Create chat model")
         try:
             if self.provider in _VALID_CHAT_PROVIDERS:
@@ -363,12 +458,29 @@ class Model:
                 elif self.provider == "awsBedrock":
                     from langchain_aws import ChatBedrock
                     llm = ChatBedrock(region_name=self.region_name, model_id=self.model, model_kwargs=optionals)
-                # elif self.provider == "googlePaLMGemini":
-                #     from langchain_community.chat_models.google_palm import ChatGooglePalm
-                #     llm = ChatGooglePalm(google_api_key=self.api_key, model_name=self.model, **optionals)
+                elif self.provider == "deepseek":
+                    from langchain_deepseek import ChatDeepSeek
+                    llm = ChatDeepSeek(api_key=self.api_key, model=self.model, **optionals)
+                elif self.provider == "xai":
+                    from langchain_xai import ChatXAI
+                    llm = ChatXAI(api_key=self.api_key, model=self.model, **optionals)
+                elif self.provider == "openRouter":
+                    from langchain_openai import ChatOpenAI
+                    llm = ChatOpenAI(model=self.model, api_key=self.api_key,**optionals)
+                elif self.provider == "cerebras":
+                    from langchain_cerebras import ChatCerebras
+                    llm = ChatCerebras(model=self.model, api_key=self.api_key,**optionals)
+                elif self.provider == "ibm":
+                    from langchain_ibm import ChatWatsonx
+                    llm = ChatWatsonx(model_id=self.model, project_id=self.project_id, url=self.base_url, apikey=self.api_key, version=self.version, **optionals)
+                elif self.provider == "liteLLM":
+                    from langchain_openai import ChatOpenAI
+                    llm = ChatOpenAI(model=self.model, api_key=self.api_key, base_url=self.base_url, **optionals)
                 elif self.provider == "azureOpenAi":
                     from langchain_openai import AzureChatOpenAI
-                    llm = AzureChatOpenAI(api_key=self.api_key, model=self.model, **optionals)
+                    if "azure_deployment" not in optionals:
+                        raise Exception("missing deployment name")
+                    llm = AzureChatOpenAI(api_key=self.api_key, api_version=self.api_version, azure_endpoint=self.azure_endpoint, **optionals)
                 elif self.provider == "mistralAi":
                     from langchain_mistralai import ChatMistralAI
                     llm = ChatMistralAI(api_key=self.api_key, model_name=self.model, **optionals)
