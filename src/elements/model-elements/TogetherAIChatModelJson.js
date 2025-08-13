@@ -49,7 +49,7 @@ export const TogetherAIChatModelJson = {
               {
                 type: "static",
                 value:
-                  process.env.REACT_APP_DNS_URL + "togetherAi/listModels",
+                  process.env.REACT_APP_DNS_URL + "credentials",
               },
             ],
           },

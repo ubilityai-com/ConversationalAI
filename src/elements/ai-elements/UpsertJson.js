@@ -52,7 +52,7 @@ export const UpsertJson = {
             //                 {
             //                     type: "static",
             //                     value:
-            //                         process.env.REACT_APP_DNS_URL + "cloud/azure/credential/list",
+            //                         process.env.REACT_APP_DNS_URL + "credentials",
             //                 },
             //             ],
             //         },
