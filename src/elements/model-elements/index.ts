@@ -1,3 +1,4 @@
+// add import
 import { AI21ChatModelJson } from "./AI21ChatModelJson";
 import { AnthropicChatModelJson } from "./AnthropicChatModelJson";
 import { AWSBedrockChatModelJson } from "./AWSBedrockChatModelJson";
@@ -16,6 +17,7 @@ import { TogetherAIChatModelJson } from "./TogetherAIChatModelJson";
 import { VertexAIChatModelJson } from "./VertexAIChatModelJson";
 
 const ModelElements = [
+    // add Component
     AnthropicChatModelJson,
     AzureChatModelJson,
     OpenAIChatModelJson,
