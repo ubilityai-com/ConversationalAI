@@ -8,6 +8,7 @@ export const ReactAgentJson = {
   color: "bg-purple-500",
   category: "ai",
   automated: "json",
+  automationConfig:"automated",
   defaults: {
     extras: {
       model: {

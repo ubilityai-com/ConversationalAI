@@ -43,7 +43,7 @@ export function PropertiesPanel() {
   `
     // Add the style tag in the return statement before the Card
     return (
-        <div className="bg-white  border-gray-200 flex flex-col">
+        <div className="bg-white border-l border-gray-200 flex flex-col">
             <style>{sliderStyles}</style>
             <div className="sticky bg-white top-0 z-10 p-4 border-b border-gray-200 flex items-center justify-between">
                 <div className="flex items-center min-w-0">

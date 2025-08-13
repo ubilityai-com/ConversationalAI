@@ -65,7 +65,7 @@ export function pathExistsInOutputVariables(
 }
 type OutputEntry = { name: string; path: string };
 
-export function convertOutputVariablesByNodeId(
+export function getOutputVariablesByNodeId(
   nodeId: string
 ): OutputEntry[] {
   const outputVariables =useFlowStore.getState().outputVariables

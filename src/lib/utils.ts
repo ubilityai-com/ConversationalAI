@@ -2,6 +2,7 @@ import { Edge, Node } from "@xyflow/react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useFlowStore } from "../store/flow-store";
+import { AutomationItem } from "../types/automation-types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -509,6 +510,7 @@ interface FormItem {
   required?: boolean;
   multiselect?: boolean;
   options?: OptionMap;
+  structure?: AutomationItem[]
   json?: {
     required?: boolean;
     fieldsArray: FormItem[];
@@ -519,7 +521,7 @@ interface FormItem {
 type FormValues = Record<string, any>;
 
 export const validateArray = (
-  items: FormItem[],
+  items: AutomationItem[],
   values: FormValues
 ): boolean => {
   for (const item of items) {
@@ -527,10 +529,6 @@ export const validateArray = (
       type,
       variableName,
       required,
-      multiselect,
-      options,
-      json,
-      fieldsArray,
     } = item;
     const value = values[variableName];
     console.log({ item, value, values });
@@ -538,13 +536,9 @@ export const validateArray = (
     switch (type) {
       case "dropdown":
       case "api":
-        if (
-          (required && (value === "None" || !value)) ||
-          (required &&
-            multiselect &&
-            Array.isArray(value) &&
-            value.length === 0)
-        ) {
+        const options = item.options
+        if
+          (required && (value === "None" || !value)) {
           return false;
         }
         if (options && typeof value === "string" && options[value]) {
@@ -581,13 +575,19 @@ export const validateArray = (
         break;
 
       case "dynamic":
+        const json = item.json
+        const structure = item.structure
+
         if (json) {
-          if (json.required && json.fieldsArray.length < 1) return false;
-          if (!validateArray(json.fieldsArray, values)) return false;
+          if (json.required && values[variableName]?.length < 1) return false;
+          const valid = values[variableName].every((fieldList: FormValues) => validateArray(structure, fieldList));
+          if (!valid) return false
         } else {
-          if (required && (!fieldsArray || fieldsArray.length < 1))
+          if (required && (values[variableName]?.length < 1))
             return false;
-          if (!validateArray(fieldsArray!, values)) return false;
+          const valid = values[variableName].every((fieldList: FormValues) => validateArray(structure, fieldList))
+          if (!valid) return false
+
         }
         break;
 
@@ -671,7 +671,7 @@ export function extractCreds(obj: any): string[] {
         });
       }
     } else {
-      const cred = item?.content?.cred;
+      const cred = item?.content?.json?.cred;
       if (cred) {
         creds.push(cred);
       }

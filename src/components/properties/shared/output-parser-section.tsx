@@ -2,7 +2,6 @@
 
 import { FileJson } from "lucide-react";
 import { useEffect, useState } from "react";
-import { OutputParsersElements } from "../../../elements/output-parsers-elements";
 import { setAutomationArray } from "../../../lib/automation-utils";
 import { AutomationItem } from "../../../types/automation-types";
 import AutomationSimple from "../../custom/automation-v4";
@@ -22,6 +21,7 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { Switch } from "../../ui/switch";
+import OutputParserElements from "../../../elements/output-parser-elements";
 
 interface JsonField {
   id: string;
@@ -52,7 +52,7 @@ export function OutputParserSection({
   console.log({ schema, config, outputParserData, json });
   useEffect(() => {
     if (outputParser) {
-      const op = OutputParsersElements.find(
+      const op = OutputParserElements.find(
         (o) => o.type === "StructuredOutputParser"
       ) as any;
       setSchema(op);
@@ -69,7 +69,7 @@ export function OutputParserSection({
           <Switch
             checked={outputParserEnabled}
             onCheckedChange={(checked) => {
-              const op = OutputParsersElements.find(
+              const op = OutputParserElements.find(
                 (o) => o.type === "StructuredOutputParser"
               ) as any;
               setSchema(op);
@@ -92,7 +92,7 @@ export function OutputParserSection({
               <Select
                 value={outputParser}
                 onValueChange={(value) => {
-                  const op = OutputParsersElements.find(
+                  const op = OutputParserElements.find(
                     (o) => o.type === value
                   ) as any;
                   setSchema(op);
@@ -107,7 +107,7 @@ export function OutputParserSection({
                   <SelectValue placeholder="Select parser type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {OutputParsersElements.map((op) => (
+                  {OutputParserElements.map((op) => (
                     <SelectItem value={op.type}>{op.label}</SelectItem>
                   ))}
                 </SelectContent>

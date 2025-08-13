@@ -1,20 +1,20 @@
-import { Edge, Node } from "@xyflow/react";
+import { Node } from "@xyflow/react";
 import { useFlowStore } from "../store/flow-store";
-import { camelToDashCase, getNextNodeId } from "./utils";
 import { ConstantVariable } from "../store/variables-store";
+import { camelToDashCase, getNextNodeId, stringifyAndExtractVariables } from "./utils";
 
 interface Flow {
     credentials: any[];
-    constant_variables:ConstantVariable
+    constant_variables: ConstantVariable
     bot: Record<string, any>;
 }
 
 export function createFlowObject(): Flow {
-    const { nodes, edges, constantVariables} = useFlowStore.getState() 
+    const { nodes, edges, constantVariables } = useFlowStore.getState()
 
     const flow: Flow = {
         credentials: [],
-        constant_variables:constantVariables,
+        constant_variables: constantVariables,
         bot: {},
     };
 
@@ -31,8 +31,8 @@ export function createFlowObject(): Flow {
             };
         } else {
 
-            const result = require(`../components/right-side-elements/${element.data.category as string}-elements/${camelToDashCase(element.type as string)}-form/${camelToDashCase(element.type as string)}-form`).getContent(
-                element,
+            const selectedNodeModule = require(`../components/right-side-elements/${element.data.category as string}-elements/${camelToDashCase(element.type as string)}/build-content.ts`).default
+            const result = selectedNodeModule(element,
                 { edges, nodes }
             );
 
@@ -60,10 +60,18 @@ export function createFlowObject(): Flow {
                     flow.bot[item.id] = item.value;
                 });
             } else {
-                flow.bot[element.id] = result;
+                if (result.type === "AppIntegration") {
+                    flow.bot[element.id] = {
+                        ...result,
+                        saveUserInputAs: null,
+                        next: getNextNodeId(element.id, edges, nodes, null),
+                        usedVariables: stringifyAndExtractVariables(result.content),
+                    }
+                } else
+                    flow.bot[element.id] = result;
             }
         }
     });
-    flow.credentials=[...new Set(flow.credentials)]
+    flow.credentials = [...new Set(flow.credentials)]
     return flow;
 }

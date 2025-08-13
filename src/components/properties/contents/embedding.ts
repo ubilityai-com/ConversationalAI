@@ -13,120 +13,120 @@ const getAccvalue = (finaleObj: any, name: string) => {
 };
 export const EmbeddingsOpenAI = (selectedNode: any) => {
     const embedding = selectedNode.data.rightSideData.extras.embedding
-    const content = embedding.content
+    const json = embedding.content.json
 
     return {
         provider: "openAi",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
     }
 }
 export const EmbeddingsTogetherAI = (selectedNode: any) => {
     const embedding = selectedNode.data.rightSideData.extras.embedding
-    const content = embedding.content
+    const json = embedding.content.json
     return {
         provider: "togetherAi",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
     };
 }
 export const AnthropicChatModel = (selectedNode: any) => {
     const embedding = selectedNode.data.rightSideData.extras.embedding
-    const content = embedding.content
+    const json = embedding.content.json
     return {
         provider: "anthropic",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
     }
 }
 export const AzureChatModel = (selectedNode: any) => {
     const embedding = selectedNode.data.rightSideData.extras.embedding
-    const content = embedding.content
+    const json = embedding.content.json
     return {
         provider: "azureOpenAi",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
     }
 }
 export const EmbeddingsOllama = (selectedNode: any) => {
     const embedding = selectedNode.data.rightSideData.extras.embedding
-    const content = embedding.content
+    const json = embedding.content.json
     return {
         provider: "ollama",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
     };
 }
 export const HuggingFaceChatModel = (selectedNode: any) => {
     const embedding = selectedNode.data.rightSideData.extras.embedding
-    const content = embedding.content
+    const json = embedding.content.json
     return {
         provider: "huggingFace",
-        model: content.model ? content.model : "",
-        credential: content.cred
+        model: json.model ? json.model : "",
+        credential: json.cred
     }
 }
 export const EmbeddingsCohere = (selectedNode: any) => {
     const embedding = selectedNode.data.rightSideData.extras.embedding
-    const content = embedding.content
+    const json = embedding.content.json
     return {
         provider: "cohere",
-        model: content.model,
-        credential: content.cred
+        model: json.model,
+        credential: json.cred
     }
 }
 export const AWSBedrockChatModel = (selectedNode: any) => {
     const embedding = selectedNode.data.rightSideData.extras.embedding
-    const content = embedding.content
+    const json = embedding.content.json
     return {
         provider: "awsBedrock",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
         params: {
             optionals: {
-                max_tokens: parseInt(getAccvalue(content, "maximumNumberOfTokens")),
-                temperature: parseFloat(getAccvalue(content, "samplingTemperature")),
+                max_tokens: parseInt(getAccvalue(json, "maximumNumberOfTokens")),
+                temperature: parseFloat(getAccvalue(json, "samplingTemperature")),
             },
         },
     }
 }
 export const EmbeddingsMistralAI = (selectedNode: any) => {
     const embedding = selectedNode.data.rightSideData.extras.embedding
-    const content = embedding.content
+    const json = embedding.content.json
     return {
         provider: "mistralAi",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
     }
 }
 export const GooglePalmGeminiChatModel = (selectedNode: any) => {
     const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const json = model.json
     return {
         provider: "googlePaLMGemini",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
         params: {
             optionals: {
-                temperature: parseFloat(getAccvalue(content, "samplingTemperature")),
-                top_k: parseFloat(getAccvalue(content, "topK")),
-                top_p: parseFloat(getAccvalue(content, "topP")),
+                temperature: parseFloat(getAccvalue(json, "samplingTemperature")),
+                top_k: parseFloat(getAccvalue(json, "topK")),
+                top_p: parseFloat(getAccvalue(json, "topP")),
             },
         },
     }
 }
 export const VertexAIChatModel = (selectedNode: any) => {
     const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const json = model.json
     return {
         provider: "vertexAi",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
         params: {
             optionals: {
-                max_output_tokens: parseInt(getAccvalue(content, "maxOutputTokens")),
-                top_k: parseInt(getAccvalue(content, "topK")),
-                top_p: parseFloat(getAccvalue(content, "topP")),
+                max_output_tokens: parseInt(getAccvalue(json, "maxOutputTokens")),
+                top_k: parseInt(getAccvalue(json, "topK")),
+                top_p: parseFloat(getAccvalue(json, "topP")),
             },
         },
 
@@ -134,23 +134,23 @@ export const VertexAIChatModel = (selectedNode: any) => {
 }
 export const EmbeddingsGoogleGenerativeAI = (selectedNode: any) => {
     const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const json = model.json
     return {
         provider: "googleGenerativeAi",
-        model: content.model,
-        credential: content.cred
+        model: json.model,
+        credential: json.cred
     }
 }
 export const GroqChatModel = (selectedNode: any) => {
     const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const json = model.json
     return {
         provider: "groq",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
         params: {
             optionals: {
-                temperature: getAccvalue(content, "temperature"),
+                temperature: getAccvalue(json, "temperature"),
             },
         },
 
@@ -158,47 +158,47 @@ export const GroqChatModel = (selectedNode: any) => {
 }
 export const AI21ChatModel = (selectedNode: any) => {
     const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const json = model.json
     return {
         provider: "ai21",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
         params: {
             optionals: {
-                max_tokens: getAccvalue(content, "maxOutputTokens"),
-                temperature: getAccvalue(content, "temperature"),
-                top_p: getAccvalue(content, "topP"),
+                max_tokens: getAccvalue(json, "maxOutputTokens"),
+                temperature: getAccvalue(json, "temperature"),
+                top_p: getAccvalue(json, "topP"),
             },
         },
     }
 }
 export const EmbeddingsFireworks = (selectedNode: any) => {
     const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const json = model.json
     return {
         provider: "fireworks",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
     }
 }
 export const EmbeddingsNvidia = (selectedNode: any) => {
     const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const json = model.json
     let jsonToSend: any = {
         provider: "nvidia",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
     };
 
     return jsonToSend
 }
 export const EmbeddingsNomic = (selectedNode: any) => {
     const model = selectedNode.data.rightSideData.extras.model
-    const content = model.content
+    const json = model.json
     let jsonToSend: any = {
         provider: "nomic",
-        model: content.model,
-        credential: content.cred,
+        model: json.model,
+        credential: json.cred,
     };
 
     return jsonToSend

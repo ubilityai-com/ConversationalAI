@@ -14,6 +14,7 @@ interface CustomToolProps {
   onContentUpdate: (value: any) => void;
   validate: (value: any) => boolean;
   counter: number
+  validators:any
 
 }
 const checkIfKeysValuesFilled = (inputs: Record<string, any>): boolean => {
@@ -31,7 +32,7 @@ const checkIfKeysValuesFilled = (inputs: Record<string, any>): boolean => {
   return valid
 }
 
-const CustomTool: React.FC<CustomToolProps> = ({ selectedNodeId, content, onContentUpdate, validate, schema, counter }) => {
+const CustomTool: React.FC<CustomToolProps> = ({ selectedNodeId, content, onContentUpdate, validate, schema,validators }) => {
   const { localConfig, updateConfig,updateNestedConfig } =
     useDebounceConfig<any>(
       content,
@@ -45,6 +46,7 @@ const CustomTool: React.FC<CustomToolProps> = ({ selectedNodeId, content, onCont
         },
       }
     );
+   
   const inputsDescription = localConfig.inputsDescription
   const webhookActive = localConfig.webhookActive
   const json = localConfig.json

@@ -20,8 +20,10 @@ const FlowZone = () => {
     Router: RouterNode,
     End: EndNode,
     ReactAgent: LlmNode,
+    BasicLLM: LlmNode,
     ConditionAgent: ConditionAgentNode,
     QuestionAndAnswer: LlmNode,
+    // integration nodes
     Slack: IntegrationNode,
     Gmail: IntegrationNode
   };

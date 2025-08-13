@@ -315,14 +315,15 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
         set({ error: null });
         addRunningNodeId(id);
         const selectedNode = nodes.find(el => el.id === id)
-        const { content, cred, type } = require(`../components/right-side-elements/${selectedNode.data.category as string}-elements/${camelToDashCase(selectedNode.type as string)}-form/${camelToDashCase(selectedNode.type as string)}-form`).getContent(
+        const selectedNodeModule = require(`../components/right-side-elements/${selectedNode.data.category as string}-elements/${camelToDashCase(selectedNode.type as string)}/build-content.ts`).default
+        console.log({selectedNodeModule});
+                const { content, cred, type } = selectedNodeModule(
             selectedNode,
-            { edges, nodes }
-        );
+            { edges, nodes })
         let payload = {}
-        
+
         if (selectedNode.data.category === "ai") {
-            const credentials =[...new Set(cred)]
+            const credentials = [...new Set(cred)]
             payload = {
                 chain_type: type,
                 credentials,

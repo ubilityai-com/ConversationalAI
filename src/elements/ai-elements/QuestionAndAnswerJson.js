@@ -8,6 +8,7 @@ export const QuestionAndAnswerJson = {
   icon: Bot,
   category: "ai",
   color: "bg-teal-500",
+  automationConfig:"automated",
   automated: "json",
   "defaults": {
     extras: {

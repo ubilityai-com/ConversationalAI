@@ -20,6 +20,7 @@ import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 
 import { QuestionAndAnswerJson } from "../elements/ai-elements/QuestionAndAnswerJson";
+import { BasicLLMJson } from "../elements/ai-elements/BasicLLMJson";
 
 const agentTypes = [
   // BasicLLMJson,
@@ -211,6 +212,7 @@ export function AgentPaletteDialog({
           label: clonedElement.label,
           description: clonedElement.description,
           category: clonedElement.category,
+          automationConfig:clonedElement.automationConfig,
           rightSideData: newDefaults,
           color: clonedElement.color
         },

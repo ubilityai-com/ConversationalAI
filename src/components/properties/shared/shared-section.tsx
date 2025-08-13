@@ -19,6 +19,7 @@ interface SectionProps {
     variableName: string
     description: string
     elements: any[]
+    validators: any
 }
 function getSchema(type: string, elements: any[]) {
     return elements.find((o) => o.type === type) as any
@@ -32,10 +33,10 @@ export function SharedSection({
     description,
     variableName,
     elements,
+    validators
 }: SectionProps) {
     const setNodeFilledDataByKey = useRightDrawerStore((state) => state.setNodeFilledDataByKey)
-    const setValidationByKey = useRightDrawerStore((state) => state.setValidationByKey)
-    const { localConfig, updateConfig, } =
+    const { localConfig, updateConfig, updateNestedConfig } =
         useDebounceConfig<any>(
             config.content,
             {
@@ -43,8 +44,10 @@ export function SharedSection({
                 onSave: (savedConfig) => {
                     // Save label changes   
                     onConfigUpdate(`extras.${variableName}.content`, savedConfig);
-                    updateSubNodeValidationById(id, variableName, validateArray(schema.current.rightSideData.json, savedConfig))
-                    setNodeFilledDataByKey(id, variableName, savedConfig)
+                    console.log({ id, variableName, schema, savedConfig, valid: validateArray(schema.current.rightSideData.json, savedConfig.json) });
+
+                    updateSubNodeValidationById(id, variableName, validateArray(schema.current.rightSideData.json, savedConfig.json))
+                    setNodeFilledDataByKey(id, variableName, savedConfig.json)
                 },
             }
         );
@@ -52,9 +55,9 @@ export function SharedSection({
     const type = config.type
     const optional = config.optional || false
     const content = localConfig || {}
+    const json = content.json
     const add = useFlowStore((s) => s.addSubNodeValidation)
     const updateSubNodeValidationById = useFlowStore((s) => s.updateSubNodeValidationById)
-    const del = useFlowStore((s) => s.deleteSubNodeById)
     const schema = useRef(getSchema(type, elements));
 
     const [open, setOpen] = useState(!optional || enabled)
@@ -100,8 +103,8 @@ export function SharedSection({
                     )}
 
                     <AccordionContent className="space-y-4">
-                    <div className="space-y-2">
-                        
+                        <div className="space-y-2">
+
                             <Label htmlFor={variableName} className="text-sm font-medium">{title} Type</Label>
                             <SearchableSelect
                                 name="type"
@@ -112,8 +115,10 @@ export function SharedSection({
                                     const defaultValues = objToReturnDynamicv2(op.rightSideData.json);
                                     schema.current = op;
                                     onConfigUpdate(`extras.${variableName}.type`, value);
-                                    setTimeout(() => updateConfig(defaultValues), 1000);
-                                    add(id, variableName, validateArray(op.rightSideData.json, {}));
+                                    console.log({defaultValues});
+                                    
+                                    setTimeout(() => updateNestedConfig("json", defaultValues), 1000);
+                                    add(id, variableName, validateArray(op.rightSideData.json, defaultValues));
                                 }}
                                 options={elements.map((el) => ({
                                     label: el.label,
@@ -128,11 +133,11 @@ export function SharedSection({
                                 schema={schema.current?.rightSideData?.json}
                                 flowZoneSelectedId={id}
                                 AllJson={schema.current?.rightSideData?.json}
-                                fieldValues={content}
+                                fieldValues={json}
                                 firstCall={true}
                                 onFieldChange={(partialState, replace) => {
-                                    if (replace) updateConfig(partialState);
-                                    else updateConfig({ ...content, ...partialState });
+                                    if (replace) updateNestedConfig("json", partialState);
+                                    else updateNestedConfig("json", { ...json, ...partialState });
                                 }}
                             />
                         )}

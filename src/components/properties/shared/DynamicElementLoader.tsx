@@ -10,6 +10,7 @@ interface DynamicElementLoaderProps {
     localConfig: any;
     selectedNodeId: string;
     updateNestedConfig: any;
+    validators?:any
 }
 
 function capitalize(str: string) {
@@ -26,6 +27,8 @@ function loadElementByKey(key: string) {
     try {
         const path = `./${camelToDashCase(key)}-elements/index.ts`;
         const module = context(path);
+        console.log({ module, key });
+
         return module.default || module[`${capitalize(key)}Elements`];
     } catch (error) {
         console.warn(`No elements found for ${key}, skipping dynamic import.`, error);
@@ -39,13 +42,19 @@ export function DynamicElementLoader({
     localConfig,
     selectedNodeId,
     updateNestedConfig,
+    validators
+
+
+
+    // ////////
 }: DynamicElementLoaderProps) {
     const [elements, setElements] = useState<any>(null);
+    console.log({validators});
     
     useEffect(() => {
-        const key = extrasKey === "tool" ? "tools" : extrasKey;
-        const loaded = loadElementByKey(camelToDashCase(key));
+        console.log({extrasKey});
         
+        const loaded = loadElementByKey(camelToDashCase(extrasKey));
         setElements(loaded);
     }, [extrasKey]);
 
@@ -57,6 +66,7 @@ export function DynamicElementLoader({
 
     return (
         <SectionComponent
+            validators={validators}
             defaultType={extrasConfig.type}
             description={extrasConfig.description}
             elements={elements}

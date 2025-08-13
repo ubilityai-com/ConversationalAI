@@ -22,6 +22,7 @@ interface SectionProps {
     variableName: string
     description: string
     elements: any[]
+    validators:any
 }
 
 export function SharedListSection({
@@ -32,6 +33,7 @@ export function SharedListSection({
     description,
     variableName,
     elements,
+    validators
 }: SectionProps) {
     console.log({ config })
     const enabled = config.enabled === true
@@ -135,12 +137,13 @@ export function SharedListSection({
                                 {schemas && tool.type && (
                                     <SharedListItemSection
                                         key={toolIndex}
+                                        validators={validators}
                                         content={tool.content}
                                         parentId={id}
                                         id={tool.id}
                                         onConfigUpdate={onConfigUpdate}
                                         path={`extras.${variableName}.list.${toolIndex}.content`}
-                                        schema={schemas[tool.type].rightSideData.json}
+                                        schema={schemas[tool.type]}
                                         type={tool.type}
                                     />
                                 )}
@@ -161,7 +164,7 @@ export function SharedListSection({
     )
 
     const [open, setOpen] = useState(!optional || enabled);
-    const shouldTrigger = !optional;
+    const shouldTrigger = true;
 
     return (
         <Card>

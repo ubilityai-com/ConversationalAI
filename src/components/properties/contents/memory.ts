@@ -14,7 +14,7 @@ const getAccvalue = (finaleObj: any, name: string) => {
 
 export const ConversationalBufferMemory = (selectedNode: any) => {
     const memory = selectedNode.data.rightSideData.extras.memory
-    const content = memory.content
+    const json = memory.content.json
     return {
         type: "ConversationBufferMemory",
         historyId: selectedNode.id,
@@ -23,11 +23,11 @@ export const ConversationalBufferMemory = (selectedNode: any) => {
 }
 export const ConversationSummaryBufferMemory = (selectedNode: any) => {
     const memory = selectedNode.data.rightSideData.extras.memory
-    const content = memory.content
+    const json = memory.content.json
     return {
         type: memory.type,
         historyId: selectedNode.id,
-        max_token_limit: parseInt(content.maxTokenLimit),
+        max_token_limit: parseInt(json.maxTokenLimit),
         // context: []
 
     }
@@ -35,22 +35,22 @@ export const ConversationSummaryBufferMemory = (selectedNode: any) => {
 
 export const ConversationBufferWindowMemory = (selectedNode: any) => {
     const memory = selectedNode.data.rightSideData.extras.memory
-    const content = memory.content
+    const json = memory.content.json
     return {
         type: memory.type,
         historyId: selectedNode.id,
         context: [],
-        size: content.size,
+        size: json.size,
     }
 }
 
 export const RedisStackMemory = (selectedNode: any) => {
     const memory = selectedNode.data.rightSideData.extras.memory
-    const content = memory.content
+    const json = memory.content.json
     return {
         type: "RedisMemory",
         historyId: selectedNode.id,
-        credential: content.cred,
+        credential: json.cred,
 
     }
 }

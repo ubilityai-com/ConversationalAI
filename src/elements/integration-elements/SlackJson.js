@@ -7,6 +7,7 @@ export const SlackJson = {
   description: "Slack integration",
   defaultValid: false,
   automated: "json",
+  automationConfig:"automated",
   "defaults": {
     "json": [
       {

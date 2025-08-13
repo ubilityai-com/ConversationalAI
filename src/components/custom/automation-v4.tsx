@@ -1,7 +1,7 @@
 "use client";
 
 import { AlertCircle, Code, Settings, Upload } from "lucide-react";
-import { type Dispatch, Fragment, type SetStateAction, useEffect } from "react";
+import { type Dispatch, Fragment, type SetStateAction } from "react";
 import "react-quill/dist/quill.snow.css";
 import {
   objToReturnDynamicv2,
@@ -15,11 +15,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { MultiSelect } from "../ui/multi-select";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Separator } from "../ui/separator";
 import { Textarea } from "../ui/textarea";
@@ -28,7 +28,6 @@ import DynamicFields from "./dynamic-fields-v4";
 import { FieldWrapper } from "./field-wrapper";
 import { SearchableSelect } from "./searchable-select";
 import ReactQuillEditor from "./textFormatter";
-import { MultiSelect } from "../ui/multi-select";
 
 // Validation functions
 const validateNumberGreaterThanZero = (value: string) => {
@@ -51,24 +50,8 @@ const validationConditionFunctions = {
   validateRequiredWords,
 };
 
-// Helper functions
-const isJsonString = (str: string) => {
-  try {
-    JSON.parse(str);
-    return true;
-  } catch (e) {
-    return false;
-  }
-};
 
-const hexToRgb = (hex: string) => {
-  hex = hex.replace(/^#/, "");
-  const bigint = Number.parseInt(hex, 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  return { r, g, b };
-};
+
 
 interface AutomationSimpleProps {
   filledDataName: string;
@@ -105,18 +88,10 @@ export default function AutomationSimple({
   firstCall,
   ...restProps
 }: AutomationSimpleProps) {
-  console.log({ fieldValues });
 
   const setValidationByKey = useRightDrawerStore(
     (state) => state.setValidationByKey
   );
-  const setNodeFilledDataByKey = useRightDrawerStore(
-    (state) => state.setNodeFilledDataByKey
-  );
-  const updateNodeRightSideDataNestedKey = useRightDrawerStore(
-    (state) => state.updateNodeRightSideDataNestedKey
-  );
-
   // Helper function to get field value from props or item
   const getFieldValue = (item: any, fieldName = "value") => {
     if (
@@ -131,7 +106,6 @@ export default function AutomationSimple({
 
   // Helper function to get dynamic field value
   const getDynamicFieldValue = (item: any) => {
-    console.log({ item, fieldValues });
 
     if (
       fieldValues &&
@@ -145,22 +119,6 @@ export default function AutomationSimple({
       : item.fieldsArray;
   };
 
-  useEffect(() => {
-    if (firstCall) {
-      // Initialize validation and final object
-      console.log(
-        "Initializing automation  component",
-        objToReturnDynamicv2(schema)
-      );
-      if (flowZoneSelectedId && filledDataName) {
-        setValidationByKey(
-          flowZoneSelectedId,
-          filledDataName,
-          validateArray(schema, fieldValues)
-        );
-      }
-    }
-  }, [firstCall]);
 
   const onChangeAutomationSimple = (partialState: any, replace = false) => {
     const newFieldsValue = replace
@@ -346,7 +304,6 @@ export default function AutomationSimple({
         );
 
       case "api":
-        console.log({ item, fieldValues });
 
         return (
           <div className="space-y-2">
@@ -355,7 +312,6 @@ export default function AutomationSimple({
               value={getFieldValue(item) || ""}
               variableName={item.variableName}
               onChange={(newValue) => {
-                console.log({ newValue });
 
                 onChangeAutomationSimple({
                   [item.variableName]: newValue,
@@ -447,7 +403,6 @@ export default function AutomationSimple({
 
       case "multiselect":
         const multiselectValue = getFieldValue(item) || [];
-        console.log({ multiselectValue });
 
         return (
           <div className="space-y-2">
