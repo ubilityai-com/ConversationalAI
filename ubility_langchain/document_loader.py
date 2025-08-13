@@ -9,7 +9,7 @@ import string
 import json
 
 
-from langchain_community.document_loaders import TextLoader,PyPDFLoader,CSVLoader,JSONLoader,SeleniumURLLoader,WikipediaLoader
+from langchain_community.document_loaders import TextLoader,PyPDFLoader,CSVLoader,JSONLoader,SeleniumURLLoader,WikipediaLoader,UnstructuredExcelLoader,UnstructuredPowerPointLoader,UnstructuredWordDocumentLoader
 
 
 file_name=''
@@ -114,7 +114,7 @@ def basicDataLoader(loader_data):
         dataType = loader_data['dataType']
         dataFormat = loader_data['dataFormat']
         data = loader_data['data']
-        allowed_data_types = ["pdf", "csv", "json", "txt"]
+        allowed_data_types = ["pdf", "csv", "json", "txt", "xls", "xlsx", "doc", "docx", "ppt", "pptx"]
         if dataType not in allowed_data_types:
             raise Exception(f"Invalid data type: '{dataType}'. Valid data types: {', '.join(allowed_data_types)}")
 
@@ -145,7 +145,7 @@ def basicDataLoader(loader_data):
             elif dataFormat == "Data":
                 logging.info("data format DATA")
                 temp_file_name=generate_random_filename("json")
-                file_name=temp_folder_path+temp_file_name
+                file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{temp_file_name}" 
                 if isinstance(data,dict):
                     data=json.dumps(data)
                 data=data.replace("'", '"')
@@ -166,13 +166,40 @@ def basicDataLoader(loader_data):
             elif dataFormat == "Data":
                 logging.info("data format DATA")
                 temp_file_name=generate_random_filename("txt")
-                file_name=temp_folder_path+temp_file_name
+                file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{temp_file_name}" 
                 create_temp_file(file_name,data) #create file
                 response = TextLoader(file_name)
             elif dataFormat == "Name":
                 logging.info("load data from a local file")
                 file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{data}" # in this case, the variable data will contain the file name
                 response = TextLoader(file_name)
+        elif dataType == "xls" or dataType == "xlsx":
+            logging.info("data type Excel")
+            if dataFormat == "URL": 
+                logging.info("data format URL")
+                response = SeleniumURLLoader([data])
+            elif dataFormat == "Name":
+                logging.info("load data from a local file")
+                file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{data}" # in this case, the variable data will contain the file name
+                response = UnstructuredExcelLoader(file_name)
+        elif dataType == "doc" or dataType == "docx":
+            logging.info("data type Word")
+            if dataFormat == "URL": 
+                logging.info("data format URL")
+                response = SeleniumURLLoader([data])
+            elif dataFormat == "Name":
+                logging.info("load data from a local file")
+                file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{data}" # in this case, the variable data will contain the file name
+                response = UnstructuredWordDocumentLoader(file_name)
+        elif dataType == "ppt" or dataType == "pptx":
+            logging.info("data type Powerpoint")
+            if dataFormat == "URL": 
+                logging.info("data format URL")
+                response = SeleniumURLLoader([data])
+            elif dataFormat == "Name":
+                logging.info("load data from a local file")
+                file_name=f"{temp_folder_path}/{loader_data['dialogue_id']}/{data}" # in this case, the variable data will contain the file name
+                response = UnstructuredPowerPointLoader(file_name)
         return response
     except Exception as error:
         raise Exception(error)
@@ -200,18 +227,3 @@ def create_temp_file(temp_file_name,data):
         raise Exception("Error opening file")
     finally:
         file.close()
-
-def create_binary_temp_file(temp_file_name,data):
-    logging.info("creating binary file")
-    try:
-        file_data = base64.b64decode(data)
-        with open(temp_file_name, 'wb') as file:
-            try:
-                file.write(file_data)
-            except (IOError, OSError):
-                raise Exception("Error writing to file")
-    except (FileNotFoundError, PermissionError, OSError):
-        raise Exception("Error opening file")
-    finally:
-        file.close()
-
