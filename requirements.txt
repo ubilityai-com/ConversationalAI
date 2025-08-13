@@ -9,6 +9,7 @@ google-auth==2.31.0
 google-auth-oauthlib==1.2.1
 python-socketio==5.8.0
 cryptography==45.0.6
+
 langchain_community==0.3.27
 langchain_mcp_adapters==0.1.9
 langgraph==0.5.3

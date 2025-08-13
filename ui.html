@@ -133,10 +133,10 @@
     <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
     <script>
         const conversationId = 'conv-' + Math.random().toString(36).substring(2, 11);
-        const dialogueId = 'demo';
+        const token = 'gAAAAABomwiImMt2S41kTpjhF8GpYyMdrUDeQXiYIzqdClWhLRd7OHNrhyJkKShjmSq9lJ-6vxp0zjyd4aPh926SCNlv_WQS5Q==';
 
         const socket = io('http://localhost:8031', {
-            query: { conversationId: conversationId, dialogueId: dialogueId }
+            query: { conversationId: conversationId, token: token }
         });
 
         const chatContainer = document.getElementById('chat-container');
@@ -194,8 +194,6 @@
                 const messageObj = {
                     type: "Message",
                     data: message,
-                    dialogueId: dialogueId,
-                    conversationId: conversationId,
                     data_type: "text"
                 };
                 console.log('Sending to server:', messageObj);
@@ -211,8 +209,6 @@
             const messageObj = {
                 type: "Message",
                 data: choice,
-                dialogueId: dialogueId,
-                conversationId: conversationId,
                 data_type: "text"
             };
             console.log('Sending choice to server:', messageObj);

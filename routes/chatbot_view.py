@@ -11,7 +11,8 @@ from pydantic import BaseModel
 from app import http_app
 from models.chatbot import create_chatbot, list_chatbots, delete_chatbot, update_chatbot
 from typing import Optional
-
+from cryptography.fernet import Fernet
+from config import SECRET_KEY
 
 class ChatbotCreateRequest(BaseModel):
     name: str
@@ -37,8 +38,11 @@ def create_chatbot_view(payload: ChatbotCreateRequest):
         dict: Success message.
     """
     try:
-        create_chatbot(payload.name, payload.dialogue, payload.ui_json, 'Inactive')
-        return {"message": "Chatbot created"}
+        chatbot= create_chatbot(payload.name, payload.dialogue, payload.ui_json, 'Inactive')
+        token = encrypt_dialogue_id(chatbot['id'])
+        chatbot['token']=token
+        return chatbot
+        
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
@@ -93,3 +97,22 @@ def update_chatbot_view(id: int, payload: ChatbotUpdateRequest):
         return {"message": "Chatbot updated"}
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
+
+
+def encrypt_dialogue_id(params: dict) -> str:
+    """
+    Fetch dialogue_id from params and encrypt it.
+
+    Args:
+        params (dict): Dictionary containing 'dialogue_id'
+
+    Returns:
+        str: Encrypted dialogue_id as a string
+    """
+    dialogue_id = params.get("dialogue_id")
+    if not dialogue_id:
+        raise ValueError("Missing 'dialogue_id' in params")
+
+    fernet = Fernet(SECRET_KEY)
+    encrypted_data = fernet.encrypt(dialogue_id.encode())
+    return encrypted_data.decode()

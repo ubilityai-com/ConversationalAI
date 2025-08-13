@@ -22,11 +22,26 @@ def create_chatbot(name: str, dialogue: dict, ui_json: dict, status: str) -> Non
         status (str): The chatbot status.
     """
     now_unix = str(int(time.time()))
+
     with sqlite3.connect(DB_FILE) as conn:
-        conn.execute("""
+        cursor = conn.cursor()
+        
+        cursor.execute("""
             INSERT INTO chatbot (name, dialogue, ui_json, status, last_update_at, created_at)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (name, json.dumps(dialogue), json.dumps(ui_json), status, now_unix, now_unix))
+        
+        chatbot_id = cursor.lastrowid
+
+    return {
+        "id": chatbot_id,
+        "name": name,
+        "dialogue": dialogue,
+        "ui_json": ui_json,
+        "status": status,
+        "last_update_at": now_unix,
+        "created_at": now_unix
+    }
 
 def list_chatbots() -> List[Dict]:
     """

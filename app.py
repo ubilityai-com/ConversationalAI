@@ -5,7 +5,7 @@ Main entry point for the FastAPI + Socket.IO chatbot server.
 
 """
 
-import json,socketio
+import json,socketio,shutil,os,asyncio
 from datetime import datetime,timedelta
 from fastapi import FastAPI
 from elements.message import Message
@@ -13,9 +13,10 @@ from functions import execute_process, save_user_input,save_file_input
 from logger_config import logger, setup_logger
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
-import asyncio
 from uvicorn import Config, Server
-import shutil
+from config import SECRET_KEY
+from cryptography.fernet import Fernet
+from urllib.parse import parse_qs
 
 # Initialize logging
 setup_logger()
@@ -27,6 +28,9 @@ CANCELLATION_PHRASES = ['bye', 'quit', 'cancel', 'exit', 'stop', 'end']
 
 # In-memory session store
 session = defaultdict(dict)
+
+# Keep a global dictionary to map sid -> dialogue_id , conv_id
+connected_clients = {}
 
 # All active dialogues
 from dialogues.dialogues import active_dialogues
@@ -50,6 +54,7 @@ from routes.chatbot_view import *
 from routes.functions import *
 from applications.routes import *
 from routes.files_view import *
+
 # Socket.IO ASGI server
 sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi')
 app = socketio.ASGIApp(sio, other_asgi_app=http_app)
@@ -68,9 +73,10 @@ async def connect(sid, environ, auth=None):
     """
     
     query = environ.get('QUERY_STRING', '')
-    params = dict(p.split('=') for p in query.split('&') if '=' in p)
-    conversation_id = params.get('conversationId')
-    dialogue_id = params.get('dialogueId')
+    params = parse_qs(query) # Python’s built-in URL query parser
+    token = params.get('token', [None])[0]
+    conversation_id = params.get('conversationId', [None])[0]
+    dialogue_id = decrypt_dialogue_id(token)
 
     if not conversation_id or not dialogue_id or dialogue_id not in active_dialogues:
         await sio.disconnect(sid)
@@ -84,6 +90,11 @@ async def connect(sid, environ, auth=None):
         old_sid = session[dialogue_id][conversation_id]['sid']
         await sio.emit('force_disconnect', 'A new connection caused this session to end', room=old_sid)
         await sio.disconnect(old_sid)
+
+    connected_clients[sid]={
+        "dialogue_id":dialogue_id,
+        "conversation_id":conversation_id
+    }
 
     # Start a new session
     now = datetime.now().isoformat()
@@ -124,17 +135,14 @@ async def message(sid, data):
 
     user_input = json.loads(data) if isinstance(data, str) else data
     user_message = user_input.get('data', '')
-    dialogue_id = user_input.get('dialogueId')
     data_type = user_input.get('data_type')
 
-    if not dialogue_id or not data_type:
-        logger.warning("The request is missing required headers")
-        return
+    if sid not in connected_clients:
+        logger.warning(f"No conversation found for sid={sid}")
+        return 
 
-    conversation_id = get_conversation_id_from_sid(dialogue_id, sid)
-    if not conversation_id:
-        logger.warning(f"No conversation found for sid={sid} under dialogue_id={dialogue_id}")
-        return
+    dialogue_id = connected_clients[sid]["dialogue_id"]       
+    conversation_id = connected_clients[sid]["conversation_id"]       
 
     conversation = session[dialogue_id][conversation_id]
     conversation['last_reply_at'] = datetime.now().isoformat()
@@ -168,12 +176,12 @@ async def message(sid, data):
 
     await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
-def get_conversation_id_from_sid(dialogue_id, sid):
-    dialogue_sessions = session.get(dialogue_id, {})
-    for conv_id, conv in dialogue_sessions.items():
-        if conv.get('sid') == sid:
-            return conv_id
-    return None
+# def get_conversation_id_from_sid(dialogue_id, sid):
+#     dialogue_sessions = session.get(dialogue_id, {})
+#     for conv_id, conv in dialogue_sessions.items():
+#         if conv.get('sid') == sid:
+#             return conv_id
+#     return None
 
 def get_dialogue_id_from_sid(sid):
     for d_id, conversations in session.items():
@@ -186,25 +194,33 @@ async def disconnect(sid):
     """
     Handle client disconnection and clean up session state.
     """
-    for dialogue_id, conversations in list(session.items()):
-        for conversation_id, conv in list(conversations.items()):
-            if conv.get('sid') == sid:
-                print(f'[Disconnected] Conversation ended: {conversation_id} in dialogue {dialogue_id}')
-                del session[dialogue_id][conversation_id]
+    client_info = connected_clients.pop(sid, None)
+    if not client_info:
+        logger.warning(f"[Disconnect] No client info found for SID: {sid}")
+        return
 
-                # Delete conversation history directory if it exists
-                lc_history_dir = f"{os.getcwd()}/langchain_history/{conversation_id}"
-                if os.path.exists(lc_history_dir):
-                    try:
-                        shutil.rmtree(lc_history_dir)
-                        print(f"History directory '{lc_history_dir}' was deleted successfully")
-                    except OSError as e:
-                        print(f"Failed to delete history directory {lc_history_dir} : {e.strerror}")
+    dialogue_id = client_info["dialogue_id"]
+    conversation_id = client_info["conversation_id"]
 
-                # Optionally, delete dialogue if no conversations left
-                if not session[dialogue_id]:
-                    del session[dialogue_id]
-                return  # exit after first match
+    logger.warning(f'[Disconnected] Conversation ended: {conversation_id} in dialogue {dialogue_id}')
+
+    # Remove from session
+    if dialogue_id in session and conversation_id in session[dialogue_id]:
+        del session[dialogue_id][conversation_id]
+
+        # Delete conversation history directory if it exists
+        lc_history_dir = os.path.join(os.getcwd(), "langchain_history", conversation_id)
+        if os.path.exists(lc_history_dir):
+            try:
+                shutil.rmtree(lc_history_dir)
+                logger.info(f"History directory '{lc_history_dir}' was deleted successfully")
+            except OSError as e:
+                logger.warning(f"Failed to delete history directory {lc_history_dir} : {e.strerror}")
+
+        # Optionally, delete dialogue if no conversations left
+        if not session[dialogue_id]:
+            del session[dialogue_id]
+
 
 
 IDLE_TIMEOUT_MINUTES = 3 # 3 minutes
@@ -212,20 +228,41 @@ IDLE_TIMEOUT_MINUTES = 3 # 3 minutes
 async def check_idle_sessions():
     while True:
         now = datetime.now()
-        for dialogue_id, conversations in list(session.items()):
-            for conversation_id, conv in list(conversations.items()):
-                try:
-                    last_reply_at = datetime.fromisoformat(conv['last_reply_at'])
-                except (ValueError, KeyError):
-                    continue  # Skip malformed sessions
 
-                if now - last_reply_at > timedelta(minutes=IDLE_TIMEOUT_MINUTES):
-                    sid = conv['sid']
-                    logger.info(f"Disconnecting idle session: {conversation_id} in dialogue {dialogue_id}")
-                    await sio.emit('force_disconnect', 'Session disconnected due to inactivity', room=sid)
-                    await sio.disconnect(sid)
+        # Iterate directly over connected clients
+        for sid, client_info in list(connected_clients.items()):
+            dialogue_id = client_info["dialogue_id"]
+            conversation_id = client_info["conversation_id"]
+
+            conv = session.get(dialogue_id, {}).get(conversation_id)
+            if not conv:
+                continue  # Session might have been already cleaned up
+
+            try:
+                last_reply_at = datetime.fromisoformat(conv['last_reply_at'])
+            except (ValueError, KeyError):
+                continue  # Skip malformed sessions
+
+            if now - last_reply_at > timedelta(minutes=IDLE_TIMEOUT_MINUTES):
+                logger.info(f"Disconnecting idle session: {conversation_id} in dialogue {dialogue_id}")
+                await sio.emit('force_disconnect','Session disconnected due to inactivity',room=sid)
+                await sio.disconnect(sid)
 
         await asyncio.sleep(180)  # Run every 3 minutes
+
+def decrypt_dialogue_id(encrypted_str: str) -> str:
+    """
+    Decrypts dialogue_id from an encrypted string.
+
+    Args:
+        encrypted_str (str): Encrypted dialogue_id as a string
+
+    Returns:
+        str: Decrypted dialogue_id
+    """
+    fernet = Fernet(SECRET_KEY)
+    decrypted_data = fernet.decrypt(encrypted_str.encode())  # convert back to bytes
+    return decrypted_data.decode()
 
 
 async def main():
