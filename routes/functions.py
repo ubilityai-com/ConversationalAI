@@ -116,7 +116,7 @@ def activate_chatbot_view(chatbot_id: int = Query(None)):
         if not update_status:
             return JSONResponse(status_code=500, content={"Error": "Fail activating chatbot"})
         
-        return {"Message":"Chatbot successfully activated"}
+        return {"Message":"Chatbot is successfully activated"}
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
@@ -195,3 +195,4 @@ def delete_json_file(filename):
         return False  # File doesn't exist
     except Exception as e:
         return False
+
