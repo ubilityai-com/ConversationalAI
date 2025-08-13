@@ -94,7 +94,7 @@ async def openAi_list_models(payload: OpenAiAppIntegration):
         headers = {"Authorization": f"Bearer {apiKey}"}
 
         async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=headers) as response:
+            async with session.get(url, headers=headers, ssl=False) as response:
                 response.raise_for_status()
                 result = await response.json()
         if "error" not in result:
