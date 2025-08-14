@@ -367,11 +367,18 @@ def save_file_input(conversation,conversation_id,user_input):
                 logger.warning("fail svg")
                 
         random_suffix = str(uuid.uuid4())[:6]
-        file_name = f"{random_suffix}.{matched_extension}"
+        current_dir = os.getcwd()
+        STORAGE_DIR = os.path.join(
+            current_dir,
+            "temp",
+            str(conversation['dialogue_id']),
+            str(conversation_id)
+        )
 
-        target_dir = f"/home/ubility/Desktop/new_chatbot_ubility/chatbot/temp/{conversation['dialogue_id']}/{conversation_id}"
-        os.makedirs(target_dir, exist_ok=True) # directories (id,token) created if they don't exist
-        file_path = os.path.join(target_dir, file_name)
+        os.makedirs(STORAGE_DIR, exist_ok=True)  # Create dirs if they don't exist
+
+        file_name = f"{random_suffix}.{matched_extension}"
+        file_path = os.path.join(STORAGE_DIR, file_name)
 
         # Save file
         with open(file_path, "wb") as f:
@@ -388,8 +395,10 @@ def save_file_input(conversation,conversation_id,user_input):
 def get_file_data(conversation,conversation_id,file_name):
     try:
 
-        # Construct full file path
-        file_path = f"/home/ubility/Desktop/new_chatbot_ubility/chatbot/temp/{conversation['dialogue_id']}/{conversation_id}/{file_name}"
+        current_dir = os.getcwd()
+        STORAGE_DIR = os.path.join(current_dir,"temp",str(conversation['dialogue_id']),str(conversation_id))
+
+        file_path = os.path.join(STORAGE_DIR, file_name)
         if not os.path.exists(file_path):
             return 
 
