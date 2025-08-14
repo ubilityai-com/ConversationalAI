@@ -102,7 +102,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue):
         await handle_app_integration(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content)
         return
     elif element_type == 'Attachement':
-        await Message(content["data"]['message']).send(sio, sid)
+        await handle_attachement(sio, sid,conversation,conversation_id,content)
     else:
         print(f'[Warning] Invalid element type: {element_type}')
 
@@ -214,6 +214,20 @@ def handle_text_formatter(conversation,content):
     result = formatter.process()
     conversation['variables'][content["data"]['saveOutputAs']] = result
 
+
+
+async def handle_attachement(sio, sid,conversation,conversation_id,content):
+    """
+    Process Attachement logic (save file or send file).
+    """
+    if 'message' in content["data"]: # wait user to upload file
+        await Message(content["data"]['message']).send(sio, sid)
+
+    elif 'file' in content["data"]: # send file to user
+        file = get_file_data(conversation,conversation_id,content["data"]['file'])
+        await sio.emit("message", {'type': 'file','data': file}, room=sid)
+
+    
 
 async def handle_flow_invoker(conversation,content):
     """
