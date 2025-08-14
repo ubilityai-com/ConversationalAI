@@ -104,7 +104,11 @@ def update_chatbot_view(id: int, payload: ChatbotUpdateRequest):
 def get_chatbot_view(id: int):
 
     try:
-        return get_chatbot(id=id)
+        chatbot_obj = get_chatbot(id=id)
+        if chatbot_obj:
+            return chatbot_obj
+        else:
+            return JSONResponse(status_code=404, content={"Error": "Chatbot not found"})
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
