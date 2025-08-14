@@ -35,6 +35,7 @@ class TestNodeRequest(BaseModel):
     credential: str
     operation: str
     content_json: dict
+    chatbot_id: int
 
 class TestAINodeRequest(BaseModel):
     chain_type: str
@@ -44,10 +45,13 @@ class TestAINodeRequest(BaseModel):
 
 @http_app.post('/bot/test_node')
 async def test_node(payload: Union[TestNodeRequest, TestAINodeRequest]):
+    """
+    Note that all files that are saved via test node are in ( /chatbot_id/testNode/ )
+    """
     try:
         if isinstance(payload, TestNodeRequest):
             credential_obj = get_credential(payload.credential)
-            result = AppIntegration(payload.app_type,json.loads(credential_obj['data']),payload.operation,payload.content_json).run_process()
+            result = AppIntegration(payload.app_type,json.loads(credential_obj['data']),payload.operation,payload.content_json).run_process_for_test_node(payload.chatbot_id,"testNode")
 
         if isinstance(payload, TestAINodeRequest):
             creds_obj = get_credentials_by_names(payload.credentials)
