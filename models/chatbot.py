@@ -21,27 +21,37 @@ def create_chatbot(name: str, dialogue: dict, ui_json: dict, status: str) -> Non
         ui_json (dict): The UI configuration.
         status (str): The chatbot status.
     """
-    now_unix = str(int(time.time()))
+    try:
+        now_unix = str(int(time.time()))
 
-    with sqlite3.connect(DB_FILE) as conn:
-        cursor = conn.cursor()
-        
-        cursor.execute("""
-            INSERT INTO chatbot (name, dialogue, ui_json, status, last_update_at, created_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (name, json.dumps(dialogue), json.dumps(ui_json), status, now_unix, now_unix))
-        
-        chatbot_id = cursor.lastrowid
+        with sqlite3.connect(DB_FILE) as conn:
+            cursor = conn.cursor()
+            
+            cursor.execute("""
+                INSERT INTO chatbot (name, dialogue, ui_json, status, last_update_at, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (name, json.dumps(dialogue), json.dumps(ui_json), status, now_unix, now_unix))
+            
+            chatbot_id = cursor.lastrowid
 
-    return {
-        "id": chatbot_id,
-        "name": name,
-        "dialogue": dialogue,
-        "ui_json": ui_json,
-        "status": status,
-        "last_update_at": now_unix,
-        "created_at": now_unix
-    }
+        chatbot_data =  {
+            "id": chatbot_id,
+            "name": name,
+            "dialogue": dialogue,
+            "ui_json": ui_json,
+            "status": status,
+            "last_update_at": now_unix,
+            "created_at": now_unix
+        }
+
+        return chatbot_data
+
+    except (TypeError, ValueError) as e:
+        return None
+    except sqlite3.Error as e:
+        return None
+    except Exception as e:
+        return None
 
 
 def list_chatbots() -> List[Dict]:
@@ -51,31 +61,49 @@ def list_chatbots() -> List[Dict]:
     Returns:
         List[Dict]: A list of chatbot rows as dictionaries.
     """
-    with sqlite3.connect(DB_FILE) as conn:
-        cursor = conn.execute("SELECT id, name, last_update_at, status FROM chatbot")
-        chatbots = []
+    try:
+        with sqlite3.connect(DB_FILE) as conn:
+            cursor = conn.execute("SELECT id, name, last_update_at, status FROM chatbot")
+            chatbots = []
 
-        for row in cursor.fetchall():
-            chatbot_id, name, last_update_at, status = row
-            chatbots.append({
-                "id": chatbot_id,
-                "name": name,
-                "updated_date": last_update_at,
-                "status": status
-            })
+            for row in cursor.fetchall():
+                chatbot_id, name, last_update_at, status = row
+                chatbots.append({
+                    "id": chatbot_id,
+                    "name": name,
+                    "updated_date": last_update_at,
+                    "status": status
+                })
 
-        return chatbots
+            return chatbots
+    except sqlite3.Error as e:
+        return []
+    except Exception as e:
+        return []
 
 
-def delete_chatbot(id: int) -> None:
+def delete_chatbot(id: int):
     """
     Delete a chatbot from the database by ID.
 
     Args:
         id (int): The ID of the chatbot to delete.
+
+    Returns:
+        bool: True if deleted successfully, False otherwise.
+        str: Error message if failed (optional).
     """
-    with sqlite3.connect(DB_FILE) as conn:
-        conn.execute("DELETE FROM chatbot WHERE id = ?", (id,))
+    try:
+        with sqlite3.connect(DB_FILE) as conn:
+            cursor = conn.execute("DELETE FROM chatbot WHERE id = ?", (id,))
+            if cursor.rowcount == 0:
+                return False # No chatbot found with given ID
+    except sqlite3.Error as e:
+        return False # Database error
+    except Exception as e:
+        return False # Unexpected error
+
+    return True
 
 
 def update_chatbot(id: int, updates: Dict):
@@ -85,24 +113,42 @@ def update_chatbot(id: int, updates: Dict):
     Args:
         id (int): The chatbot ID.
         updates (Dict): Dictionary of fields to update.
+    
+    Returns:
+        bool: True if updated successfully, False otherwise.
+        str: Error message if failed (optional).
     """
     if not updates:
-        return False
+        return False # No updates provided
 
     updates['last_update_at'] = str(int(time.time()))
 
     # JSON-encode fields if needed
     if 'dialogue' in updates:
-        updates['dialogue'] = json.dumps(updates['dialogue'])
+        try:
+            updates['dialogue'] = json.dumps(updates['dialogue'])
+        except (TypeError, ValueError) as e:
+            return False # Failed to encode
+
     if 'ui_json' in updates:
-        updates['ui_json'] = json.dumps(updates['ui_json'])
+        try:
+            updates['ui_json'] = json.dumps(updates['ui_json'])
+        except (TypeError, ValueError) as e:
+            return False # Failed to encode 'ui_json'
 
     fields = ", ".join([f"{key} = ?" for key in updates.keys()])
     values = list(updates.values())
 
-    with sqlite3.connect(DB_FILE) as conn:
-        conn.execute(f"UPDATE chatbot SET {fields} WHERE id = ?", (*values, id))
-    
+    try:
+        with sqlite3.connect(DB_FILE) as conn:
+            cursor = conn.execute(f"UPDATE chatbot SET {fields} WHERE id = ?", (*values, id))
+            if cursor.rowcount == 0:
+                return False  #No chatbot found with given ID
+    except sqlite3.Error as e:
+        return False # Database error
+    except Exception as e:
+        return False  # Unexpected error
+
     return True
 
 

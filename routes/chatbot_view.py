@@ -39,6 +39,8 @@ def create_chatbot_view(payload: ChatbotCreateRequest):
     """
     try:
         chatbot= create_chatbot(payload.name, payload.dialogue, payload.ui_json, 'Inactive')
+        if not chatbot:
+            return JSONResponse(status_code=500, content={"Error": "Fail creating chatbot"})
         token = encrypt_dialogue_id(chatbot['id'])
         chatbot['token']=token
         return chatbot
@@ -73,8 +75,11 @@ def delete_chatbots_view(id: int):
         dict: Success message.
     """
     try:
-        delete_chatbot(id)
-        return {"message": "Chatbot deleted"}
+        delete = delete_chatbot(id)
+        if delete:
+            return {"Message": "Chatbot deleted"}
+        else:
+            return JSONResponse(status_code=500, content={"Error": "fail deleting chatbot"})
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
@@ -93,8 +98,11 @@ def update_chatbot_view(id: int, payload: ChatbotUpdateRequest):
         dict: Success message.
     """
     try:
-        update_chatbot(id, payload.dict(exclude_unset=True))
-        return {"message": "Chatbot updated"}
+        update =update_chatbot(id, payload.dict(exclude_unset=True))
+        if update:
+            return {"Message": "Chatbot updated"}
+        else:
+            return JSONResponse(status_code=500, content={"Error": "fail updating chatbot"})
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
     
