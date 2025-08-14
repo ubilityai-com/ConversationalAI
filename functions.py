@@ -396,11 +396,18 @@ def get_file_data(conversation,conversation_id,file_name):
     try:
 
         current_dir = os.getcwd()
-        STORAGE_DIR = os.path.join(current_dir,"temp",str(conversation['dialogue_id']),str(conversation_id))
+        STORAGE_DIR1 = os.path.join(current_dir,"temp",str(conversation['dialogue_id'])) # Global file
+        STORAGE_DIR2 = os.path.join(current_dir,"temp",str(conversation['dialogue_id']),str(conversation_id))
 
-        file_path = os.path.join(STORAGE_DIR, file_name)
-        if not os.path.exists(file_path):
-            return 
+        file_path1 = os.path.join(STORAGE_DIR1, file_name)
+        file_path2 = os.path.join(STORAGE_DIR2, file_name)
+
+        if os.path.exists(file_path1): # global file
+            file_path = file_path1
+        elif os.path.exists(file_path2):
+            file_path = file_path2
+        else: # File not found in either place
+            return None
 
         # Load and return file as a downloadable attachment
         with open(file_path, 'rb') as f:

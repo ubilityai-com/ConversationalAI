@@ -114,9 +114,18 @@ def get_file_data(dialogue_id,conv_id,file_name):
     try:
         # Construct full file path
         current_dir = os.getcwd()
-        file_path = os.path.join(current_dir, "temp", str(dialogue_id),str(conv_id),file_name)
-        if not os.path.exists(file_path):
-            return {"Error": "File not found"}
+        STORAGE_DIR1 = os.path.join(current_dir,"temp",str(dialogue_id)) # Global file
+        STORAGE_DIR2 = os.path.join(current_dir,"temp",str(dialogue_id),str(conv_id))
+
+        file_path1 = os.path.join(STORAGE_DIR1, file_name)
+        file_path2 = os.path.join(STORAGE_DIR2, file_name)
+
+        if os.path.exists(file_path1): # global file
+            file_path = file_path1
+        elif os.path.exists(file_path2):
+            file_path = file_path2
+        else: # File not found in either place
+            return None
 
         # Load and return file as a downloadable attachment
         with open(file_path, 'rb') as f:
