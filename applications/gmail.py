@@ -11,6 +11,8 @@ import json,mimetypes,os,sys
 import logging
 import sys,os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from applications.functions import get_file_data,upload_file
+
 
 def create_service(access_token, API_SERVICE_NAME, API_VERSION):
     try:
@@ -49,7 +51,7 @@ def create_token(cred):
 ################################################# Messages #########################################
 
 
-def gmail_addLabel(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_addLabel(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
     """
     Adds a label to a specific Gmail message.
 
@@ -109,7 +111,7 @@ def gmail_addLabel(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_deleteMessage(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_deleteMessage(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
     """
     Deletes a specific Gmail message.
     
@@ -149,7 +151,7 @@ def gmail_deleteMessage(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_getMessage(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_getMessage(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
     """
     Retrieves a Gmail message or a list of Gmail messages based on the provided scope.
 
@@ -217,7 +219,7 @@ def gmail_getMessage(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_markAsRead(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_markAsRead(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
      Marks a specific Gmail message as read by removing the "UNREAD" label.
 
@@ -261,7 +263,7 @@ def gmail_markAsRead(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_markAsUnread(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_markAsUnread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Marks a specific Gmail message as unread by adding the "UNREAD" label.
 
@@ -305,7 +307,7 @@ def gmail_markAsUnread(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_removeLabel(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_removeLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
      Removes a label from a specific Gmail message.
 
@@ -364,7 +366,7 @@ def gmail_removeLabel(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_replyToMessage(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_replyToMessage(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     
     """
      Replies to a specific Gmail message with an optional message body, recipients, and attachments.
@@ -385,8 +387,7 @@ def gmail_replyToMessage(creds,API_SERVICE_NAME, API_VERSION, request):
 
         request (dict): A dictionary containing the parameters for the reply. It may include:
         
-            - **user_id** (str, required): The user id for uploading attachments.
-            - **flow_id** (str, required): The flow id for uploading attachments.
+            
             - **in_reply_to** (str, required): The ID of the message being replied to.
             - **type** (str, optional, default='plain'): The type of email content, either 'plain' or 'html'.
             - **cc_recipients** (str, optional): A comma-separated list of CC recipients.
@@ -397,12 +398,9 @@ def gmail_replyToMessage(creds,API_SERVICE_NAME, API_VERSION, request):
     Returns:
         dict: The response from the Gmail API after sending the reply.
     """
-    from functions import get_file_with_content
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        user_id = request["user_id"]
-        flow_id = request["flow_id"]
         to = ""
         subject = ""
         # id of the message we're replying to
@@ -458,14 +456,20 @@ def gmail_replyToMessage(creds,API_SERVICE_NAME, API_VERSION, request):
                         )
                         mimeMessage.attach(attachment)
                 else:  # type = ByteString
-                    content = attach["content"]
-                    contentData=get_file_with_content(user_id,flow_id,content)
+
+                    if kwargs:
+                        # Extra conv_id & dialogue_id
+                        dialogue_id = kwargs.get("dialogue_id")
+                        conv_id = kwargs.get("conv_id")
+
+                    contentData = get_file_data(dialogue_id,conv_id,attach["content"])
                     if "Error" in contentData:
                         raise Exception(f"Failed to retrieve file content: {contentData['Error']}")
+                    
                     # Extract and decode the file content from hex to bytes
-                    file_data = bytes.fromhex(contentData["file_content"])
+                    data = bytes.fromhex(contentData["file_content"])  
                     payload = MIMEBase("application", "octet-stream")
-                    payload.set_payload(file_data)
+                    payload.set_payload(data)
                     encoders.encode_base64(payload)
                     payload.add_header(
                         "Content-Disposition", "attachment", filename=attach["name"]
@@ -483,7 +487,7 @@ def gmail_replyToMessage(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
      
     """
     Sends a message via Gmail API with optional attachments, CC, BCC, and subject.
@@ -504,8 +508,6 @@ def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request):
 
         request (dict): A dictionary containing the parameters for the message to be sent. It may include:
         
-            - **user_id** (str, required): The user id for uploading attachments.
-            - **flow_id** (str, required): The flow id for uploading attachments.
             - **to** (str, required): The recipient's email address.
             - **body** (str, required): The body of the email message.
             - **cc** (str,optional): A comma-separated string or list of CC email addresses.
@@ -517,12 +519,9 @@ def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request):
     Returns:
         dict: The response from the Gmail API after sending the message.
     """
-    from functions import get_file_with_content
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        user_id = request["user_id"]
-        flow_id = request["flow_id"]
         to = request.get("to")
         body = request.get("body")
         cc = request.get("cc")
@@ -568,14 +567,19 @@ def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request):
                         )
                         mimeMessage.attach(attachment)
                 elif attach["type"] == "File":
-                    content = attach["content"]
-                    contentData=get_file_with_content(user_id,flow_id,content)
+                    if kwargs:
+                        # Extra conv_id & dialogue_id
+                        dialogue_id = kwargs.get("dialogue_id")
+                        conv_id = kwargs.get("conv_id")
+
+                    contentData = get_file_data(dialogue_id,conv_id,attach["content"])
                     if "Error" in contentData:
                         raise Exception(f"Failed to retrieve file content: {contentData['Error']}")
+                    
                     # Extract and decode the file content from hex to bytes
-                    file_data = bytes.fromhex(contentData["file_content"])
+                    data = bytes.fromhex(contentData["file_content"])
                     payload = MIMEBase("application", "octet-stream")
-                    payload.set_payload(file_data)
+                    payload.set_payload(data)
                     encoders.encode_base64(payload)
                     payload.add_header(
                         "Content-Disposition", "attachment", filename=attach["name"]
@@ -662,7 +666,7 @@ def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request):
 #         raise Exception(e)
 
 
-def gmail_list_message_attachments(creds, API_SERVICE_NAME, API_VERSION, request):
+def gmail_list_message_attachments(creds, API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     lists the attachments in a Gmail message.
 
@@ -699,7 +703,7 @@ def gmail_list_message_attachments(creds, API_SERVICE_NAME, API_VERSION, request
         raise Exception(e)
 
 
-def gmail_download_attachment(creds, API_SERVICE_NAME, API_VERSION, request):
+def gmail_download_attachment(creds, API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Downloads an attachment from a Gmail message.
 
@@ -710,19 +714,14 @@ def gmail_download_attachment(creds, API_SERVICE_NAME, API_VERSION, request):
             
             - :message_id: (str, Required) - The ID of the message.
             - :attachment_id: (str, Required) - The ID of the attachment.
-            - :flow_id: (str, Required) - The flow id for Downloading the file.
-            - :user_id: (str, Required) - The user id for Downloading the file.
 
     Returns:
         file: The downloaded file data.
     """
-    from functions import upload_file
     try:
         cred = json.loads(creds)
         access_token = create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
-        user_id = request["user_id"]
-        flow_id = request["flow_id"]
         message_id = request["message_id"]
         attachment_id = request["attachment_id"]
 
@@ -734,8 +733,19 @@ def gmail_download_attachment(creds, API_SERVICE_NAME, API_VERSION, request):
         ).execute()
 
         file_data = base64.urlsafe_b64decode(attachment["data"])
-        fileData = upload_file(user_id,flow_id,file_data)
-        return fileData
+        if kwargs:
+            # Extra conv_id & dialogue_id
+            dialogue_id = kwargs.get("dialogue_id")
+            conv_id = kwargs.get("conv_id")
+
+            #get request to retrieve the file_name from gmail
+            message = (
+                service.users().messages().get(userId="me", id=message_id).execute()
+            )
+            file_name = message['payload']['parts'][1]['filename']
+
+        response = upload_file(dialogue_id,conv_id,file_data,file_name)
+        return response
 
     except Exception as e:
         raise Exception(e)
@@ -743,7 +753,7 @@ def gmail_download_attachment(creds, API_SERVICE_NAME, API_VERSION, request):
 
 ################################################# Threads #########################################
 
-def gmail_addLabelToThread(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_addLabelToThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Adds labels to a Gmail thread using the Gmail API.
 
@@ -791,7 +801,7 @@ def gmail_addLabelToThread(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_deleteThread(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_deleteThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Deletes a Gmail thread using the Gmail API.
 
@@ -832,7 +842,7 @@ def gmail_deleteThread(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_getThreads(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_getThreads(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
       Retrieves Gmail threads based on specified filters and parameters.
 
@@ -937,7 +947,7 @@ def gmail_getThreads(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_removeLabelFromThread(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_removeLabelFromThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Removes labels from a Gmail thread.
 
@@ -1048,7 +1058,7 @@ def forge_reply(message_id, service):
     return reply
 
 
-def gmail_replyToThread(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_replyToThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Replies to a Gmail thread with an optional message and attachments.
 
@@ -1068,8 +1078,6 @@ def gmail_replyToThread(creds,API_SERVICE_NAME, API_VERSION, request):
 
         request (dict): A dictionary containing the parameters for the request. It may include:
         
-            - **user_id** (str, required): The user id for uploading attachments.
-            - **flow_id** (str, required): The flow id for uploading attachments.
             - **to_recipients** (str, optional): The recipient(s) of the reply.
             - **thread_id** (str, required): The thread ID to which the reply belongs.
             - **cc_recipients** (str, optional): The CC recipients of the reply comma-separated .
@@ -1083,13 +1091,10 @@ def gmail_replyToThread(creds,API_SERVICE_NAME, API_VERSION, request):
     Returns:
         dict: The sent reply message with the thread ID and raw email content.
     """
-    from functions import get_file_with_content
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
-        user_id = request["user_id"]
-        flow_id = request["flow_id"]
         mimeMessage = MIMEMultipart()
         # Extract the request parameters
         to = request.get("to_recipients", "")
@@ -1138,14 +1143,19 @@ def gmail_replyToThread(creds,API_SERVICE_NAME, API_VERSION, request):
                             )
                             mimeMessage.attach(attachment)
                     else:  # type = ByteString
-                        content = attach["content"]
-                        contentData=get_file_with_content(user_id,flow_id,content)
+                        if kwargs:
+
+                            dialogue_id = kwargs.get("dialogue_id")
+                            conv_id = kwargs.get("conv_id")
+
+                        contentData = get_file_data(dialogue_id,conv_id,attach["content"])
                         if "Error" in contentData:
                             raise Exception(f"Failed to retrieve file content: {contentData['Error']}")
+                    
                         # Extract and decode the file content from hex to bytes
-                        file_data = bytes.fromhex(contentData["file_content"])
+                        data = bytes.fromhex(contentData["file_content"])
                         payload = MIMEBase("application", "octet-stream")
-                        payload.set_payload(file_data)
+                        payload.set_payload(data)
                         encoders.encode_base64(payload)
                         payload.add_header(
                             "Content-Disposition", "attachment", filename=attach["name"]
@@ -1170,7 +1180,7 @@ def gmail_replyToThread(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_trashThread(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_trashThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Moves a specified Gmail thread to the trash.
 
@@ -1211,7 +1221,7 @@ def gmail_trashThread(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_untrashThread(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_untrashThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Restores a specified Gmail thread from the trash.
 
@@ -1255,7 +1265,7 @@ def gmail_untrashThread(creds,API_SERVICE_NAME, API_VERSION, request):
 ################################################# Label@@@ #########################################
 
 
-def gmail_createLabel(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_createLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Creates a new label in Gmail.
 
@@ -1305,7 +1315,7 @@ def gmail_createLabel(creds,API_SERVICE_NAME, API_VERSION, request):
     except Exception as e:
         raise Exception(e)
 
-def gmail_deleteLabel(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_deleteLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Deletes a label from the user's Gmail account.
 
@@ -1345,7 +1355,7 @@ def gmail_deleteLabel(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_getLabels(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_getLabels(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Retrieves labels from the user's Gmail account.
 
@@ -1404,7 +1414,7 @@ def gmail_getLabels(creds,API_SERVICE_NAME, API_VERSION, request):
 ################################################# Drafts## #########################################
 
 
-def gmail_createDraft(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_createDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Creates a draft email in the user's Gmail account.
 
@@ -1424,8 +1434,6 @@ def gmail_createDraft(creds,API_SERVICE_NAME, API_VERSION, request):
 
         request (dict): A dictionary containing the parameters for the request. It should include:
         
-            - **user_id** (str, required): The user id for uploading attachments.
-            - **flow_id** (str, required): The flow id for uploading attachments.
             - **to** (str, required): The recipient(s) of the email.
             - **body** (str, required): The body content of the email.
             - **cc** (str, optional): The CC recipients of the email.comma-separated.
@@ -1444,8 +1452,6 @@ def gmail_createDraft(creds,API_SERVICE_NAME, API_VERSION, request):
         access_token=create_token(cred)
         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
         mimeMessage = MIMEMultipart()
-        user_id = request["user_id"]
-        flow_id = request["flow_id"]
 
         to = request.get("to", None)
         body = request.get("body", None)
@@ -1489,14 +1495,19 @@ def gmail_createDraft(creds,API_SERVICE_NAME, API_VERSION, request):
                         )
                         mimeMessage.attach(attachment)
                 elif attach["type"] == "ByteString":
-                    content = attach["content"]
-                    contentData=get_file_with_content(user_id,flow_id,content)
+                    if kwargs:
+                        # Extra conv_id & dialogue_id
+                        dialogue_id = kwargs.get("dialogue_id")
+                        conv_id = kwargs.get("conv_id")
+
+                    contentData = get_file_data(dialogue_id,conv_id,attach["content"])
                     if "Error" in contentData:
                         raise Exception(f"Failed to retrieve file content: {contentData['Error']}")
+                    
                     # Extract and decode the file content from hex to bytes
-                    file_data = bytes.fromhex(contentData["file_content"])
+                    data = bytes.fromhex(contentData["file_content"])
                     payload = MIMEBase("application", "octet-stream")
-                    payload.set_payload(file_data)
+                    payload.set_payload(data)
                     encoders.encode_base64(payload)
                     payload.add_header(
                         "Content-Disposition", "attachment", filename=attach["name"]
@@ -1515,7 +1526,7 @@ def gmail_createDraft(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_deleteDraft(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_deleteDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Deletes a draft email from the user's Gmail account.
 
@@ -1554,7 +1565,7 @@ def gmail_deleteDraft(creds,API_SERVICE_NAME, API_VERSION, request):
         raise Exception(e)
 
 
-def gmail_getDraft(creds,API_SERVICE_NAME, API_VERSION, request):
+def gmail_getDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     """
     Retrieves drafts from the user's Gmail account.
 
