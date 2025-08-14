@@ -42,7 +42,7 @@ def upload_file(dialogue_id,conv_id,file_content, original_filename=None):
     try:
 
         current_dir = os.getcwd()
-        STORAGE_DIR = os.path.join(current_dir, "temp", dialogue_id,conv_id)
+        STORAGE_DIR = os.path.join(current_dir, "temp", str(dialogue_id),str(conv_id))
 
         # Create directory if it doesn't exist
         os.makedirs(STORAGE_DIR, exist_ok=True)
@@ -114,7 +114,7 @@ def get_file_data(dialogue_id,conv_id,file_name):
     try:
         # Construct full file path
         current_dir = os.getcwd()
-        file_path = os.path.join(current_dir, "temp", dialogue_id,conv_id,file_name)
+        file_path = os.path.join(current_dir, "temp", str(dialogue_id),str(conv_id),file_name)
         if not os.path.exists(file_path):
             return {"Error": "File not found"}
 
