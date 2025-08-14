@@ -327,14 +327,16 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
             payload = {
                 chain_type: type,
                 credentials,
-                data: content.data
+                data: content.data,
+                chatbot_id:12
             }
         } else {
             payload = {
                 app_type: content.data.app,
                 credential: cred,
                 operation: content.data.operation,
-                content_json: content.data.content_json
+                content_json: content.data.content_json,
+                chatbot_id:12
             }
 
         }
