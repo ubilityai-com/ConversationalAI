@@ -43,29 +43,26 @@ def create_chatbot(name: str, dialogue: dict, ui_json: dict, status: str) -> Non
         "created_at": now_unix
     }
 
+
 def list_chatbots() -> List[Dict]:
     """
-    Fetch all chatbot records and parse JSON fields.
+    Fetch all chatbot records and return only id, name, updated_date, and status.
 
     Returns:
         List[Dict]: A list of chatbot rows as dictionaries.
     """
     with sqlite3.connect(DB_FILE) as conn:
-        cursor = conn.execute("SELECT * FROM chatbot")
-        columns = [column[0] for column in cursor.description]
+        cursor = conn.execute("SELECT id, name, last_update_at, status FROM chatbot")
         chatbots = []
 
         for row in cursor.fetchall():
-            record = dict(zip(columns, row))
-
-            for key in ["dialogue", "ui_json"]:
-                if key in record:
-                    try:
-                        record[key] = json.loads(record[key])
-                    except (json.JSONDecodeError, TypeError):
-                        record[key] = {}
-
-            chatbots.append(record)
+            chatbot_id, name, last_update_at, status = row
+            chatbots.append({
+                "id": chatbot_id,
+                "name": name,
+                "updated_date": last_update_at,
+                "status": status
+            })
 
         return chatbots
 

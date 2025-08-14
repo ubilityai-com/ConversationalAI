@@ -9,7 +9,7 @@ This module defines the HTTP endpoints for creating, listing, and deleting chatb
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from app import http_app
-from models.chatbot import create_chatbot, list_chatbots, delete_chatbot, update_chatbot
+from models.chatbot import create_chatbot, list_chatbots, delete_chatbot, update_chatbot,get_chatbot
 from typing import Optional
 from cryptography.fernet import Fernet
 from config import SECRET_KEY
@@ -95,6 +95,16 @@ def update_chatbot_view(id: int, payload: ChatbotUpdateRequest):
     try:
         update_chatbot(id, payload.dict(exclude_unset=True))
         return {"message": "Chatbot updated"}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"Error": str(e)})
+    
+
+
+@http_app.get('/bot/chatbot/{id}')
+def get_chatbot_view(id: int):
+
+    try:
+        return get_chatbot(id=id)
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
 
