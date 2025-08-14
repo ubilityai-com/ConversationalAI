@@ -94,6 +94,7 @@ def activate_chatbot_view(chatbot_id: int = Query(None)):
         4- create json file 
         5- add dialogue to dialogues.py
         6- update db status to be Active
+        7- clear testNode folder (file system)
         """
         chatbot_obj = get_chatbot(chatbot_id)
 
@@ -119,6 +120,8 @@ def activate_chatbot_view(chatbot_id: int = Query(None)):
         update_status = update_chatbot(chatbot_id,{"status":"Active"})
         if not update_status:
             return JSONResponse(status_code=500, content={"Error": "Fail activating chatbot"})
+        
+        clear_testNode_folder(chatbot_id)
         
         return {"Message":"Chatbot is successfully activated"}
 
@@ -200,3 +203,22 @@ def delete_json_file(filename):
     except Exception as e:
         return False
 
+
+def clear_testNode_folder(dialogue_id):
+    """
+    Clears all files and folders inside /temp/{dialogue_id}/testNode/
+    """
+    current_dir = os.getcwd()
+    target_dir = os.path.join(current_dir, "temp", str(dialogue_id), "testNode")
+
+    if os.path.exists(target_dir) and os.path.isdir(target_dir):
+        # Remove all files and subdirectories
+        for filename in os.listdir(target_dir):
+            file_path = os.path.join(target_dir, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)  # delete file or link
+            except Exception as e:
+                print(f"Failed to delete {file_path}: {e}")
+    else:
+        print(f"Directory {target_dir} does not exist.")
