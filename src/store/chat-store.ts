@@ -65,8 +65,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
         const { socket } = get()
         if (socket) return
         const conversationId = `conv-${v4()}`
-        const newSocket = io(process.env.RREACT_APP_DOMAIN, {
-            // const newSocket = io("http://23.88.122.180:8031", {
+        // const newSocket = io(process.env.RREACT_APP_DOMAIN, {
+        const newSocket = io(window.location.origin, {
+            path: '/socket.io',
             transports: ["websocket", "polling"],
             query: {
                 token: botToken,
