@@ -11,7 +11,7 @@ from elements.ai_integration import AIIntegration
 from fastapi import Query
 from models.chatbot import get_chatbot,update_chatbot
 from typing import Union
-
+from typing import Optional
 
 def load_dialogue(dialogue_id):
     file_path = os.path.join("dialogues", f"{dialogue_id}.json")
@@ -82,12 +82,17 @@ def testing(payload: jiu):
         return JSONResponse(status_code=500, content={"Error": str(e)})
     
 
-@http_app.get('/bot/activate')
-def activate_chatbot_view(chatbot_id: int = Query(None)):
+class ChatbotActivateRequest(BaseModel):
+    name: Optional[str] = None
+    dialogue: Optional[dict] = None
+    ui_json: Optional[dict] = None
+
+@http_app.post('/bot/activate/{chatbot_id}')
+def activate_chatbot_view(chatbot_id: int, payload: ChatbotActivateRequest):
     try:
         """
         Activate chatbot
-        1- get dialogue json from db
+        1- update bot if there is some changes
         2- get credentials values
         3- replace credentials array in dialogue object by real creds values
         4- create json file 
@@ -95,13 +100,11 @@ def activate_chatbot_view(chatbot_id: int = Query(None)):
         6- update db status to be Active
         7- clear testNode folder (file system)
         """
-        chatbot_obj = get_chatbot(chatbot_id)
 
-        if not chatbot_obj:
-            return JSONResponse(status_code=500, content={"Error": "Chatbot does not exist"})
-        
-        if chatbot_obj['status'] == "Active":
-            return JSONResponse(status_code=500, content={"Error": "Chatbot already active"})
+        chatbot_obj, error = update_on_activation(chatbot_id, payload.dict(exclude_unset=True))
+
+        if error:
+            return JSONResponse(status_code=400, content={"Error": error})
 
         cred_obj = get_credentials_by_names(chatbot_obj['dialogue']['credentials'])
 
@@ -150,8 +153,7 @@ def deactivate_chatbot_view(chatbot_id: int = Query(None)):
         remove_json_file = delete_json_file(file_name)
         if not remove_json_file:
             return JSONResponse(status_code=500, content={"Error": "Fail deactivating chatbot"})
-        
-        del active_dialogues[chatbot_obj['name']]
+        del active_dialogues[str(chatbot_obj['id'])]
 
         update_status = update_chatbot(chatbot_id,{"status":"Inactive"})
         if not update_status:
@@ -222,3 +224,32 @@ def clear_testNode_folder(dialogue_id):
                 print(f"Failed to delete {file_path}: {e}")
     else:
         print(f"Directory {target_dir} does not exist.")
+
+
+def update_on_activation(chatbot_id, activation_obj):
+    current_chatbot = get_chatbot(chatbot_id)
+    if not current_chatbot:
+        return None, "Chatbot not found"
+
+    if current_chatbot['status'] == "Active":
+        return None, "Chatbot already active"
+
+    updates = {}
+    for key, new_value in activation_obj.items():
+        if key == "id":
+            continue
+        old_value = current_chatbot.get(key)
+        if isinstance(old_value, (dict, list)) and isinstance(new_value, (dict, list)):
+            if old_value != new_value:
+                updates[key] = new_value
+        else:
+            if old_value != new_value:
+                updates[key] = new_value
+
+    if updates:
+        if not update_chatbot(chatbot_id, updates):
+            return None, "Failed to update chatbot"
+        # merge updates into current_chatbot so it's fresh
+        current_chatbot.update(updates)
+
+    return current_chatbot, None
