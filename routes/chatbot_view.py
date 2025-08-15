@@ -114,6 +114,8 @@ def get_chatbot_view(id: int):
     try:
         chatbot_obj = get_chatbot(id=id)
         if chatbot_obj:
+            token = encrypt_dialogue_id(chatbot_obj['id'])
+            chatbot_obj['token']=token
             return chatbot_obj
         else:
             return JSONResponse(status_code=404, content={"Error": "Chatbot not found"})
