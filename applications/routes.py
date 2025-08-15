@@ -73,14 +73,16 @@ async def get_slack_channels(payload: SlackAppIntegration):
         return JSONResponse(status_code=500, content={"Error": str(error)})
         
 
-############################# OpenAi API's  ###############################
+################################ AI Providers List Models BaseModel ################################
 
-class OpenAiAppIntegration(BaseModel):
+class AiProvidersListModelsAppIntegration(BaseModel):
     credential_name: str
     modelType: str
 
+############################# OpenAi API's  ###############################
+
 @http_app.post("/bot/openai/listModels")
-async def openAi_list_models(payload: OpenAiAppIntegration):
+async def openAi_list_models(payload: AiProvidersListModelsAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
         json_cred = json_cred[payload.credential_name]
@@ -113,13 +115,8 @@ async def openAi_list_models(payload: OpenAiAppIntegration):
 
 ############################# TogetherAi API's  ###############################
 
-class TogetherAiAppIntegration(BaseModel):
-    credential_name: str
-    modelType: str
-
-
 @http_app.post("/bot/togetherAi/listModels")
-async def togetherAi_list_models(payload: TogetherAiAppIntegration):
+async def togetherAi_list_models(payload: AiProvidersListModelsAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
         json_cred = json_cred[payload.credential_name]
@@ -143,19 +140,11 @@ async def togetherAi_list_models(payload: TogetherAiAppIntegration):
 
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
-    
-
-
 
 ############################# Cerebras API's  ###############################
 
-class CerebrasAppIntegration(BaseModel):
-    credential_name: str
-    modelType: str
-
-
 @http_app.post("/bot/cerebras/listModels")
-async def cerebras_list_models(payload: CerebrasAppIntegration):
+async def cerebras_list_models(payload: AiProvidersListModelsAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
         json_cred = json_cred[payload.credential_name]
@@ -180,18 +169,11 @@ async def cerebras_list_models(payload: CerebrasAppIntegration):
 
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
-    
-
 
 ############################# OpenRouter API's  ###############################
 
-class OpenRouterAppIntegration(BaseModel):
-    credential_name: str
-    modelType: str
-
-
 @http_app.post("/bot/openRouter/listModels")
-async def openrouter_list_models(payload: OpenRouterAppIntegration):
+async def openrouter_list_models(payload: AiProvidersListModelsAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
         json_cred = json_cred[payload.credential_name]
@@ -218,18 +200,11 @@ async def openrouter_list_models(payload: OpenRouterAppIntegration):
 
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
-    
-
 
 ############################# LiteLLM API's  ###############################
 
-class LiteLLMAppIntegration(BaseModel):
-    credential_name: str
-    modelType: str
-
-
 @http_app.post("/bot/liteLlm/listModels")
-async def litellm_list_models(payload: LiteLLMAppIntegration):
+async def litellm_list_models(payload: AiProvidersListModelsAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
         json_cred = json_cred[payload.credential_name]
@@ -257,18 +232,11 @@ async def litellm_list_models(payload: LiteLLMAppIntegration):
 
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
-    
-
 
 ############################# IBM Watsonx API's  ###############################
 
-class IBMWatsonxAppIntegration(BaseModel):
-    credential_name: str
-    modelType: str
-
-
 @http_app.post("/bot/ibmWatsonx/listModels")
-async def ibm_watsonx_list_models(payload: IBMWatsonxAppIntegration):
+async def ibm_watsonx_list_models(payload: AiProvidersListModelsAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
         json_cred = json_cred[payload.credential_name]
@@ -319,9 +287,6 @@ async def ibm_watsonx_list_models(payload: IBMWatsonxAppIntegration):
 
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
-    
-
-
 
 ############################## gmail's api#################################
 
