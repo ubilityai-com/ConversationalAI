@@ -147,6 +147,182 @@ async def togetherAi_list_models(payload: TogetherAiAppIntegration):
 
 
 
+############################# Cerebras API's  ###############################
+
+class CerebrasAppIntegration(BaseModel):
+    credential_name: str
+    modelType: str
+
+
+@http_app.post("/bot/cerebras/listModels")
+async def cerebras_list_models(payload: CerebrasAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        # modelType = payload.modelType
+        apiKey = json_cred["apiKey"]
+        url = "https://api.cerebras.ai/v1/models"
+        headers = {"Authorization": f"Bearer {apiKey}"}
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "data" in result:
+            models = result.get("data", [])
+            data = [model.get("id") for model in models]
+            return {"Models": data}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+
+
+############################# OpenRouter API's  ###############################
+
+class OpenRouterAppIntegration(BaseModel):
+    credential_name: str
+    modelType: str
+
+
+@http_app.post("/bot/openRouter/listModels")
+async def openrouter_list_models(payload: OpenRouterAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        # modelType = payload.modelType
+        apiKey = json_cred["apiKey"]
+        url = "https://openrouter.ai/api/v1/models/user"
+        headers = {
+            "Authorization": f"Bearer {apiKey}",
+            "Accept": "application/json"
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "data" in result:
+            models = result.get("data", [])
+            data = [model.get("id") for model in models]
+            return {"Models": data}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+
+
+############################# LiteLLM API's  ###############################
+
+class LiteLLMAppIntegration(BaseModel):
+    credential_name: str
+    modelType: str
+
+
+@http_app.post("/bot/liteLlm/listModels")
+async def litellm_list_models(payload: LiteLLMAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred and "baseUrl" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        # modelType = payload.modelType
+        apiKey = json_cred["apiKey"]
+        baseUrl = json_cred["baseUrl"]
+        url = f"{baseUrl}/model/info"
+        headers = {
+            "Authorization": f"Bearer {apiKey}",
+            "Accept": "application/json"
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "data" in result:
+            models = result.get("data", [])
+            data = [model.get("model_name") for model in models]
+            return {"Models": data}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+
+
+############################# IBM Watsonx API's  ###############################
+
+class IBMWatsonxAppIntegration(BaseModel):
+    credential_name: str
+    modelType: str
+
+
+@http_app.post("/bot/ibmWatsonx/listModels")
+async def ibm_watsonx_list_models(payload: IBMWatsonxAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred and "baseUrl" not in json_cred and "version" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        modelType = payload.modelType
+        apiKey = json_cred["apiKey"]
+        baseUrl = json_cred["baseUrl"]
+        version = json_cred["version"]
+        url = "https://iam.cloud.ibm.com/identity/token"
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        data = {
+            "grant_type": "urn:ibm:params:oauth:grant-type:apikey",
+            "apikey": apiKey
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, headers=headers, data=data) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "access_token" in result:
+            access_token = result["access_token"]
+            response = None
+            result = None
+            url = f"{baseUrl}/ml/v1/foundation_model_specs"
+            headers = {
+                "Authorization": f"Bearer {access_token}",
+                "Accept": "application/json"
+            }
+            data = {"version": version}
+            if modelType == "embedding":
+                data["filters"] = "function_embedding"
+            else:
+                data["filters"] = "function_text_chat"
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    response.raise_for_status()
+                    result = await response.json()
+            if "resources" in result:
+                models = result.get("resources", [])
+                data = [model.get("model_id") for model in models]
+                return {"Models": data}
+            return JSONResponse(status_code=500, content={"Error": str(result)})
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+
+
+
 ############################## gmail's api#################################
 
 class GmailAppIntegration(BaseModel):
