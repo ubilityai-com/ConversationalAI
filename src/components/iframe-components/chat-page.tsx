@@ -18,7 +18,6 @@ export default function ChatPage() {
         scrollToBottom()
     }, [messages])
     const { botToken } = useParams()
-    console.log({ botToken });
     useEffect(() => {
         initializeSocket(botToken)
 

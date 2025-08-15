@@ -14,8 +14,8 @@ root.render(
     <ReactFlowProvider>
       <Routes>
         <Route path="/" element={<MainFunction />} />
+        <Route path="/chat" element={<ChatPage />} />
         <Route path="/chat/:botToken" element={<ChatPage />} />
-        {/* <Route path="/chat" element={<ChatPage />} /> */}
       </Routes>
     </ReactFlowProvider>
   </BrowserRouter>
