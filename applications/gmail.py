@@ -47,7 +47,6 @@ def create_token(cred):
         return json.dumps(result)
     except Exception as e:
         raise Exception(e)
-##################################### here comes the code ##########################################
 
 
 ################################################# Messages #########################################
@@ -735,18 +734,23 @@ def gmail_download_attachment(creds, request, **kwargs):
         ).execute()
 
         file_data = base64.urlsafe_b64decode(attachment["data"])
-        if kwargs:
-            # Extra conv_id & dialogue_id
-            dialogue_id = kwargs.get("dialogue_id")
-            conv_id = kwargs.get("conv_id")
 
-            #get request to retrieve the file_name from gmail
-            message = (
-                service.users().messages().get(userId="me", id=message_id).execute()
-            )
-            file_name = message['payload']['parts'][1]['filename']
+        #get request to retrieve the file_name from gmail depending on attachment_id 
+        message = service.users().messages().get(userId="me", id=message_id).execute()
+        parts = message.get("payload", {}).get("parts", [])
+        if parts:
+            for part in parts:
+                
+                body = part.get("body", {})
+                att_id = body["attachmentId"]
+                if attachment_id == att_id:
+                    file_name = part["filename"]
+                if kwargs:
+                    # Extra conv_id & dialogue_id
+                    dialogue_id = kwargs.get("dialogue_id")
+                    conv_id = kwargs.get("conv_id")
 
-        response = upload_file(dialogue_id,conv_id,file_data,file_name)
+                response = upload_file(dialogue_id,conv_id,file_data,file_name)
         return response
 
     except Exception as e:
@@ -1448,7 +1452,6 @@ def gmail_createDraft(creds, request, **kwargs):
         dict: A dictionary containing the created draft, including details like the `id` and `message` object.
     """
     
-    from functions import get_file_with_content
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
