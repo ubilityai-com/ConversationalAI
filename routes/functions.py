@@ -115,7 +115,7 @@ def activate_chatbot_view(chatbot_id: int = Query(None)):
         if not create_json_file:
             return JSONResponse(status_code=500, content={"Error": "Fail activating chatbot"})
         
-        active_dialogues[chatbot_obj['name']] = new_dialogue
+        active_dialogues[str(chatbot_obj['id'])] = new_dialogue
 
         update_status = update_chatbot(chatbot_id,{"status":"Active"})
         if not update_status:
