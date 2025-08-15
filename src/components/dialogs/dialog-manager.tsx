@@ -7,20 +7,22 @@ import { CreateCredentialDialog } from "./credential-dialog/create-credential-di
 import { ManageCredentialsDialog } from "./credential-dialog/manage-credential-dialog";
 import { FilesDialog } from "./files-dialog";
 import { ItemsListDialog } from "./langchain-dialog";
-import { PublishDialog } from "./save-dialog";
+import { SaveDialog } from "./save-dialog";
+import { UpdateDialog } from "./update-dialog";
 import { ValidationDialog } from "./validation-dialog";
 import { VariablesDialog } from "./variables-dialog";
 
 
 export const dialogRegistry: Record<string, React.FC<any>> = {
-    publish: PublishDialog,
+    save: SaveDialog,
+    update: UpdateDialog,
     validation: ValidationDialog,
     changeName: ChangeNameDialog,
     langchain: ItemsListDialog,
     addNode: AgentPaletteDialog,
     createCred: CreateCredentialDialog,
     variables: VariablesDialog,
-    ManageCred: ManageCredentialsDialog,
+    manageCred: ManageCredentialsDialog,
     createOutputVariable: CreateOutputVariableDialog,
     files:FilesDialog
 };

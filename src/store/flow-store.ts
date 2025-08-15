@@ -4,12 +4,13 @@ import {
     Edge,
     getConnectedEdges,
     Node,
-    type ReactFlowInstance,
+    type ReactFlowInstance
 } from "@xyflow/react";
 import axios from "axios";
 import { v4 } from "uuid";
 import { create } from "zustand";
 import { camelToDashCase } from "../lib/utils";
+import { ChatbotSlice, createChatbotSlice } from "./chatbot-store";
 import { createVariablesSlice, VariablesSlice } from "./variables-store";
 
 type SubNodesValidation = {
@@ -31,8 +32,8 @@ export interface WorkflowVariable {
 }
 
 export type VariableCategory = "ai" | "dialogue" | "global";
-
-interface FlowState extends VariablesSlice {
+type SlicesStates = VariablesSlice & ChatbotSlice
+export interface FlowState extends SlicesStates {
     fieldRefs: { [key: string]: HTMLElement | null };
     setFieldRef: (key: string, ref: HTMLElement | null) => void;
 
@@ -207,8 +208,8 @@ interface FlowState extends VariablesSlice {
     showSnackBarMessage:
     | {
         open: true;
-        message: string;
-        color: "default" | "destructive" | "success" | "warning" | "info";
+        message: string | null;
+        color: "default" | "destructive" | "success" | "warning" | "info" | null;
         duration: number;
     }
     | {
@@ -253,50 +254,59 @@ interface FlowState extends VariablesSlice {
     runningNodeIds: Set<string>; // replace single runningNodeId with Set
 
     testNode: (id: string) => Promise<void>;
-    deleteFlow: (id: string) => Promise<void>;
-    importFlow: (data: any) => Promise<void>;
-
     addRunningNodeId: (id: string) => void;
     removeRunningNodeId: (id: string) => void;
     nodeResults: Record<string, any>;
     setNodeResult: (id: string, result: any) => void;
-    activateBot: (data: any) => Promise<void>;
-    isLoadingFlow: boolean;
-
+    resetData: () => void;
 }
 export const useFlowStore = create<FlowState>()((set, get, store) => ({
     ...createVariablesSlice(set, get, store),
-    isLoadingFlow: false,
-    error: null,
+    ...createChatbotSlice(set, get, store),
     runningNodeIds: new Set(),
     nodeResults: {},
+    error: null,
+    resetData: () => {
+        const id = v4()
+        const { setAllConstantVariables, setNodes, setEdges, setNodesValidation, addNodesValidation, setAllDialogueVariables, setAllOutputVariables,setSelectedBot } = get()
+        // setSelectedBot(null)
+        setAllConstantVariables({})
+        setAllDialogueVariables({})
+        setAllOutputVariables({})
 
+        setNodes([
+            {
+                id: id,
+                type: "Handler",
+                data: {
+                    category: "basic",
+                    color: "#68b04b",
+                    label: "Start Dialog",
+                    description: "Begin your Chatbot journey",
+                    icon: "PlayArrow",
+                    rightSideData: {
+                        greet: "",
+                        restart: "",
+                        thankYou: "",
+                        cancel: "",
+                        start: false,
+                        bye: "",
+                    },
+                },
+                position: { x: 400, y: 40 },
+            },
+        ])
+        setEdges([])
+        setNodesValidation({})
+        addNodesValidation(id, false)
+        setSelectedBot(null)
+    },
     setNodeResult: (id, result) => set((state) => ({
         nodeResults: {
             ...state.nodeResults,
             [id]: result,
         }
     })),
-    activateBot: async (data) => {
-        const { setShowSnackBarMessage } = get()
-        set({ isLoadingFlow: true, error: null });
-        try {
-            const res = await axios.post(process.env.REACT_APP_DNS_URL + "activate_bot", data, {
-                headers: { "Content-Type": "application/json" },
-            });
-            set({ isLoadingFlow: false });
-            setShowSnackBarMessage({ open: true, message: res.data.message || "Bot Activated successfully", color: "success", duration: 3000 })
-
-
-        } catch (error: any) {
-            set({
-                error: error.response?.data?.message || error.message || "Unknown error",
-                isLoadingFlow: false,
-            });
-            setShowSnackBarMessage({ open: true, message: "Failed to activate Bot", color: "destructive", duration: 3000 })
-        }
-    },
-
     addRunningNodeId: (id) =>
         set((state) => {
             const updated = new Set(state.runningNodeIds);
@@ -363,33 +373,6 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
             })
         } finally {
             removeRunningNodeId(id);
-        }
-    },
-
-
-    deleteFlow: async (id) => {
-        set({ isLoadingFlow: true, error: null });
-        try {
-            const res = await axios.delete(`/deleteFlow/${id}`);
-            // optionally handle res.data if needed
-        } catch (error: any) {
-            console.error(error);
-            set({ error: error?.response?.data?.message || error.message || "Failed to delete flow" });
-        } finally {
-            set({ isLoadingFlow: false });
-        }
-    },
-
-    importFlow: async (data) => {
-        set({ isLoadingFlow: true, error: null });
-        try {
-            const res = await axios.post(`/importFlow`, data);
-            // optionally handle res.data if needed
-        } catch (error: any) {
-            console.error(error);
-            set({ error: error?.response?.data?.message || error.message || "Failed to import flow" });
-        } finally {
-            set({ isLoadingFlow: false });
         }
     },
     fieldRefs: {},
@@ -523,9 +506,10 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
         })),
 
     nodesValidation: {},
-    setNodesValidation: (nodeId) => {
-        set((state) => ({
-        }))
+    setNodesValidation: (nodesValidation) => {
+        set({
+            nodesValidation
+        })
     },
     addNodesValidation: (nodeId, valid) => {
         set((state) => ({

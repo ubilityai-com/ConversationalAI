@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { createFlowObject } from "../../lib/create-flow-object"
 import { useFlowStore } from "../../store/flow-store"
 import { Button } from "../ui/button"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle } from "../ui/dialog"
@@ -17,11 +16,13 @@ export function ChangeNameDialog({
     onOpenChange,
 }: ConfigurationDialogProps) {
 
-    const { formDialogBotName, formDialogApplyValues, setFormDialogBotName, setFormDialogApplyValues } = useFlowStore();
-    const [botName, setBotName] = useState(formDialogBotName)
+    const { selectedBot, updateBot } = useFlowStore();
+    const [botName, setBotName] = useState(selectedBot?.name)
 
-    const handleSaveFormDialog = (value: string) => {
-        setFormDialogBotName(value)
+    const handleSaveFormDialog = () => {
+        updateBot({
+            name: botName
+        })
     }
 
     return (
@@ -50,7 +51,7 @@ export function ChangeNameDialog({
                     >
                         <DialogClose asChild>
                             <Button
-                                onClick={() => handleSaveFormDialog(botName)}
+                                onClick={handleSaveFormDialog}
                                 className="Button green">Save changes</Button>
                         </DialogClose>
                     </div>

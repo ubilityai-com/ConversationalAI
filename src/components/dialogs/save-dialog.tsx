@@ -1,112 +1,99 @@
+import { Loader2, Save } from "lucide-react"
 import { useState } from "react"
-import { createFlowObject } from "../../lib/create-flow-object"
+import { useNavigate } from "react-router-dom"
 import { useFlowStore } from "../../store/flow-store"
 import { Button } from "../ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
 
 
 interface ConfigurationDialogProps {
     open: boolean
     onOpenChange: (open: boolean) => void
 }
-
-export function PublishDialog({
+const getRandomNumber = () => Math.round(Math.random() * 1000000)
+export function SaveDialog({
     open,
     onOpenChange,
-    // onSubmit,
 }: ConfigurationDialogProps) {
 
-    const { formDialogBotName, formDialogApplyValues, setFormDialogBotName, setFormDialogApplyValues } = useFlowStore();
-    const [botName, setBotName] = useState(formDialogBotName)
-    const handlePublish = () => {
-        const flowObject = createFlowObject()
-        console.log({ flowObject });
+    const { nodes, edges, nodesValidation, outputVariables, constantVariables, dialogueVariables, saveBot, selectedBot } = useFlowStore();
+    const [botName, setBotName] = useState(selectedBot?.name ?? `Bot ${getRandomNumber()}`)
+    const [isLoading, setIsLoading] = useState(false)
 
-
-    }
+    const navigate = useNavigate()
     const handleChangeBotName = (event: React.ChangeEvent<HTMLInputElement>) => {
         setBotName(event.target.value)
     }
-    const handleSaveFormDialogOnChange = (value: string, variableName: string) => {
-        if (variableName === "formDialogBotName") {
-            setFormDialogBotName(value)
-        } else if (variableName === "formDialogApplyValues") {
-            setFormDialogApplyValues(value)
+    const handleSave = async () => {
+        if (!botName.trim()) return
+
+        setIsLoading(true)
+        try {
+            const savedBot = await saveBot({
+                name: botName,
+                dialogue: {},
+                ui_json: {
+                    nodes,
+                    edges,
+                    nodesValidation,
+                    constantVariables,
+                    outputVariables,
+                    dialogueVariables
+                }
+            }
+            )
+            navigate(`/${savedBot.id}`)
+            onOpenChange(false)
+            setBotName("")
+        } catch (error) {
+            console.error("Save failed:", error)
+        } finally {
+            setIsLoading(false)
         }
     }
 
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!isLoading) {
+            onOpenChange(newOpen)
+            if (!newOpen) {
+                setBotName("")
+            }
+        }
+    }
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>Save Configuration</DialogTitle>
                     <DialogDescription>
-                        Enter a name for your configuration and select the environment to deploy to.
+                        Enter a name for your Bot.
                     </DialogDescription>
                 </DialogHeader>
-                <form className="space-y-6" onSubmit={handlePublish}>
-                    <div className="space-y-2">
+                <div className="space-y-2">
 
-                        <Label>Configuration Name</Label>
-                        <Input placeholder="My Configuration" value={botName} onChange={handleChangeBotName} />
+                    <Label>Bot Name</Label>
+                    <Input placeholder="My Configuration" value={botName} onChange={handleChangeBotName} />
 
-                    </div>
+                </div>
 
-                    <div className="space-y-3">
-                        <Label>Environment</Label>
-                        <div>
-                            <RadioGroup
-                                // onValueChange={field.onChange}
-                                defaultValue={formDialogApplyValues}
-                                className="flex flex-col space-y-1"
-                            >
-                                <div className="flex items-center space-x-3 space-y-0">
-                                    <div>
-                                        <RadioGroupItem value="Draft" />
-                                    </div>
-                                    <Label className="font-normal">
-                                        Draft
-                                        <span className="text-xs text-muted-foreground block">
-                                            Save your configuration without deploying
-                                        </span>
-                                    </Label>
-                                </div>
-                                <div className="flex items-center space-x-3 space-y-0">
-                                    <div>
-                                        <RadioGroupItem value="Staging" />
-                                    </div>
-                                    <Label className="font-normal">
-                                        Staging
-                                        <span className="text-xs text-muted-foreground block">
-                                            Deploy to the staging environment for testing
-                                        </span>
-                                    </Label>
-                                </div>
-                                <div className="flex items-center space-x-3 space-y-0">
-                                    <div>
-                                        <RadioGroupItem value="Production" />
-                                    </div>
-                                    <Label className="font-normal">
-                                        Production
-                                        <span className="text-xs text-muted-foreground block">
-                                            Deploy to the production environment
-                                        </span>
-                                    </Label>
-                                </div>
-                            </RadioGroup>
-                        </div>
-                    </div>
-
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                            Cancel
-                        </Button>
-                        <Button type="submit">Save</Button>
-                    </DialogFooter>
-                </form>
+                <DialogFooter>
+                    <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
+                        Cancel
+                    </Button>
+                    <Button onClick={handleSave} type="submit"> {isLoading ? (
+                        <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Saving...
+                        </>
+                    ) : (
+                        <>
+                            <Save className="w-4 h-4 mr-2" />
+                            Save
+                        </>
+                    )}</Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     )

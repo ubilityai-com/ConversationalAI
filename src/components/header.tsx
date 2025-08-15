@@ -2,7 +2,6 @@
 import { ChevronDown, Download, Edit, Home, Import, LogOut, Moon, Play, Save, Settings, Square, Sun, Trash, Upload } from "lucide-react"
 
 import { memo, useState } from "react"
-import { createFlowObject } from "../lib/create-flow-object"
 import { handleFlowZoneCheckIfAllHandlesAreConnected } from "../lib/utils"
 import { useFlowStore } from "../store/flow-store"
 import { useRightDrawerStore } from "../store/right-drawer-store"
@@ -41,7 +40,7 @@ export default memo(function Header() {
     const isAllNodesValid = handleSaveFormDialogCheckIfAllRequiredDataAreFilledForEachElement()
     const isAllHandlesConnected = handleFlowZoneCheckIfAllHandlesAreConnected()
     const isWebUrlEmpty = checkIfWebUrlIsEmpty()
-    const flowObject = createFlowObject()
+    const flowObject = {}
 
     console.log({ isAllNodesValid, isAllHandlesConnected, isWebUrlEmpty, flowObject });
     const warnings = []

@@ -18,13 +18,13 @@ type SearchableSelectProps<T> = {
   onChange: (value: T | null) => void;
   value: T | undefined;
   placeholder: string;
-  name:string
+  name: string
   disabled?: boolean;
   loading?: boolean;
   showDeselect?: boolean;
   onRefresh?: () => void;
   showRefresh?: boolean;
-  className?:string
+  className?: string
 };
 
 export const SearchableSelect = <T extends React.Key>({
@@ -45,12 +45,12 @@ export const SearchableSelect = <T extends React.Key>({
   const [filterOptionsIndices, setFilteredOptions] = useState<number[]>([]);
   const triggerWidth = `${triggerRef.current?.clientWidth ?? 0}px`;
   const [selectedIndex, setSelectedIndex] = useState(
-    options.findIndex((option) => option.value===value) ?? -1,
+    options.findIndex((option) => option.value === value) ?? -1,
   );
 
   useEffect(() => {
     setSelectedIndex(
-      options.findIndex((option) => option.value===value) ?? -1,
+      options.findIndex((option) => option.value === value) ?? -1,
     );
   }, [value, options]);
 
@@ -97,6 +97,7 @@ export const SearchableSelect = <T extends React.Key>({
         asChild
         className={cn('', {
           'cursor-not-allowed opacity-80 ': disabled,
+          className
         })}
         onClick={(e) => {
           if (disabled) {
@@ -113,7 +114,7 @@ export const SearchableSelect = <T extends React.Key>({
             role="combobox"
             // loading={loading}
             aria-expanded={open}
-            className="w-full justify-between font-normal text-foreground"
+            className={cn("w-full justify-between font-normal text-foreground", className)}
             onClick={(e) => {
               setOpen((prev) => !prev);
               e.preventDefault();
@@ -177,7 +178,7 @@ export const SearchableSelect = <T extends React.Key>({
             <CommandList>
               <ScrollArea
                 className="h-full"
-                // viewPortClassName={'max-h-[200px]'}
+              // viewPortClassName={'max-h-[200px]'}
               >
                 {filterOptionsIndices &&
                   filterOptionsIndices.map((filterIndex) => {
