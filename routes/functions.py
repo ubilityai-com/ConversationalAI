@@ -1,7 +1,6 @@
 # functions.py
 
-import json
-import os
+import json, os
 from dialogues.dialogues import active_dialogues
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -108,6 +107,7 @@ def activate_chatbot_view(chatbot_id: int = Query(None)):
 
         new_dialogue = {
             "credentials": cred_obj,
+            "constant_variables": chatbot_obj['dialogue']['constant_variables'],
             "bot": chatbot_obj['dialogue']['bot']
         }
         file_name = chatbot_obj['name']+".json"
