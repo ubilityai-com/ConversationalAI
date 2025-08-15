@@ -39,8 +39,8 @@ def create_chatbot_view(payload: ChatbotCreateRequest):
     """
     try:
         chatbot= create_chatbot(payload.name, payload.dialogue, payload.ui_json, 'Inactive')
-        if not chatbot:
-            return JSONResponse(status_code=500, content={"Error": "Fail creating chatbot"})
+        if "Error" in chatbot:
+            return JSONResponse(status_code=500, content=chatbot)
         token = encrypt_dialogue_id(str(chatbot['id']))
         chatbot['token']=token
         return chatbot

@@ -11,22 +11,32 @@ from typing import List, Dict
 from app import DB_FILE
 
 
-def create_chatbot(name: str, dialogue: dict, ui_json: dict, status: str) -> None:
+def create_chatbot(name: str, dialogue: dict, ui_json: dict, status: str) -> dict | None:
     """
-    Insert a new chatbot into the database.
+    Insert a new chatbot into the database, ensuring the name is unique.
 
     Args:
         name (str): Chatbot name.
         dialogue (dict): The dialogue configuration.
         ui_json (dict): The UI configuration.
         status (str): The chatbot status.
+
+    Returns:
+        dict | None: Created chatbot data if successful, None if error or name exists.
     """
     try:
         now_unix = str(int(time.time()))
 
         with sqlite3.connect(DB_FILE) as conn:
             cursor = conn.cursor()
-            
+
+            # Check if name exists
+            cursor.execute("SELECT id FROM chatbot WHERE name = ?", (name,))
+            existing = cursor.fetchone()
+            if existing:
+                raise ValueError(f"Chatbot name already exists.")
+
+            # Insert new chatbot
             cursor.execute("""
                 INSERT INTO chatbot (name, dialogue, ui_json, status, last_update_at, created_at)
                 VALUES (?, ?, ?, ?, ?, ?)
@@ -34,7 +44,7 @@ def create_chatbot(name: str, dialogue: dict, ui_json: dict, status: str) -> Non
             
             chatbot_id = cursor.lastrowid
 
-        chatbot_data =  {
+        return {
             "id": chatbot_id,
             "name": name,
             "dialogue": dialogue,
@@ -44,14 +54,10 @@ def create_chatbot(name: str, dialogue: dict, ui_json: dict, status: str) -> Non
             "created_at": now_unix
         }
 
-        return chatbot_data
-
-    except (TypeError, ValueError) as e:
-        return None
-    except sqlite3.Error as e:
-        return None
-    except Exception as e:
-        return None
+    except ValueError as e:
+        return {"Error": str(e)}
+    except (TypeError, sqlite3.Error, Exception):
+        return {"Error": "server error"}
 
 
 def list_chatbots() -> List[Dict]:
