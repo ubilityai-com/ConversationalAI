@@ -132,8 +132,8 @@ def activate_chatbot_view(chatbot_id: int, payload: ChatbotActivateRequest):
         return JSONResponse(status_code=500, content={"Error": str(e)})
     
 
-@http_app.get('/bot/deactivate')
-def deactivate_chatbot_view(chatbot_id: int = Query(None)):
+@http_app.get('/bot/deactivate/{chatbot_id}')
+def deactivate_chatbot_view(chatbot_id: int):
     try:
         """
         Deactivate chatbot
