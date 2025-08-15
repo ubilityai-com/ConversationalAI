@@ -14,7 +14,7 @@ export function LiveUrlDisplay() {
     }
   
     // Generate live URL based on bot ID
-    const liveUrl = `${process.env.REACT_APP_DNS_URL}chat/${selectedBot.token}`
+    const liveUrl = `${window.location.origin}/chat/${selectedBot.token}`
   
     const handleCopyUrl = async () => {
       try {
