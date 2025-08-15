@@ -248,3 +248,11 @@ code {
   border-radius: 4px;
   font-weight: 600;
 }
+::-webkit-scrollbar {
+  width: 6px; 
+  height: 6px; 
+}
+::-webkit-scrollbar-thumb {
+  background: #6b7280 ; 
+  border-radius: 4px;
+}

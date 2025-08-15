@@ -1,20 +1,25 @@
 import { ReactFlowProvider } from '@xyflow/react';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import ChatPage from './components/iframe-components/chat-page';
 import './index.css';
 import MainFunction from './main-migration';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
   // <React.StrictMode>
-  <ReactFlowProvider>
-    <MainFunction />
-  </ReactFlowProvider>
+  <BrowserRouter>
+    <ReactFlowProvider>
+      <Routes>
+        <Route path="/" element={<MainFunction />} />
+        <Route path="/chat/:botToken" element={<ChatPage />} />
+        {/* <Route path="/chat" element={<ChatPage />} /> */}
+      </Routes>
+    </ReactFlowProvider>
+  </BrowserRouter>
   // </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
