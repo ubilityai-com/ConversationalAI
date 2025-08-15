@@ -14,18 +14,20 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from applications.functions import get_file_data,upload_file
 
 
-def create_service(access_token, API_SERVICE_NAME, API_VERSION):
+def create_service(access_token):
     try:
+        API_SERVICE_NAME = "gmail"
+        API_VERSION = "v1"
         creds_data = json.loads(access_token)
         creds = Credentials.from_authorized_user_info(creds_data)
         if creds and creds.expired and creds.refresh_token:
             # in this case the token is expired and we need to get a new access token
             creds.refresh(Request())
         service = build(
-            API_SERVICE_NAME, API_VERSION, credentials=creds, static_discovery=False
+            API_SERVICE_NAME,API_VERSION, credentials=creds, static_discovery=False
         )
 
-        logging.warning(API_SERVICE_NAME, API_VERSION, 'service created successfully')
+        logging.warning(API_SERVICE_NAME,API_VERSION, 'service created successfully')
         return service
     except Exception as e:
         logging.warning(f'Failed to create service instance for {e}')
@@ -51,7 +53,7 @@ def create_token(cred):
 ################################################# Messages #########################################
 
 
-def gmail_addLabel(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
+def gmail_addLabel(creds,request,**kwargs):
     """
     Adds a label to a specific Gmail message.
 
@@ -65,7 +67,7 @@ def gmail_addLabel(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -82,7 +84,7 @@ def gmail_addLabel(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         message_id = request.get("message_id", "")
         label_id = request.get("label_id", "")
         label_name = request.get("label_name", "")
@@ -111,7 +113,7 @@ def gmail_addLabel(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
         raise Exception(e)
 
 
-def gmail_deleteMessage(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
+def gmail_deleteMessage(creds, request,**kwargs):
     """
     Deletes a specific Gmail message.
     
@@ -125,7 +127,7 @@ def gmail_deleteMessage(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -139,7 +141,7 @@ def gmail_deleteMessage(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         message_id = request.get("message_id", "")
         if not message_id:
             raise Exception("Missing input data")
@@ -151,7 +153,7 @@ def gmail_deleteMessage(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
         raise Exception(e)
 
 
-def gmail_getMessage(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
+def gmail_getMessage(creds, request,**kwargs):
     """
     Retrieves a Gmail message or a list of Gmail messages based on the provided scope.
 
@@ -165,7 +167,7 @@ def gmail_getMessage(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -184,7 +186,7 @@ def gmail_getMessage(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         scope = request.get("scope", "single")
 
         if scope == "single":
@@ -219,7 +221,7 @@ def gmail_getMessage(creds,API_SERVICE_NAME, API_VERSION, request,**kwargs):
         raise Exception(e)
 
 
-def gmail_markAsRead(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_markAsRead(creds, request, **kwargs):
     """
      Marks a specific Gmail message as read by removing the "UNREAD" label.
 
@@ -233,7 +235,7 @@ def gmail_markAsRead(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -247,7 +249,7 @@ def gmail_markAsRead(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         message_id = request.get("message_id", "")
         if not message_id:
             raise Exception("Missing input data")
@@ -263,7 +265,7 @@ def gmail_markAsRead(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         raise Exception(e)
 
 
-def gmail_markAsUnread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_markAsUnread(creds,request, **kwargs):
     """
     Marks a specific Gmail message as unread by adding the "UNREAD" label.
 
@@ -277,7 +279,7 @@ def gmail_markAsUnread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -291,7 +293,7 @@ def gmail_markAsUnread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         message_id = request.get("message_id", "")
         if not message_id:
             raise Exception("Missing input data")
@@ -307,7 +309,7 @@ def gmail_markAsUnread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         raise Exception(e)
 
 
-def gmail_removeLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_removeLabel(creds, request, **kwargs):
     """
      Removes a label from a specific Gmail message.
 
@@ -321,7 +323,7 @@ def gmail_removeLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -337,7 +339,7 @@ def gmail_removeLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         message_id = request.get("message_id", "")
         label_id = request.get("label_id", "")
         label_name = request.get("label_name", "")
@@ -366,7 +368,7 @@ def gmail_removeLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         raise Exception(e)
 
 
-def gmail_replyToMessage(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_replyToMessage(creds, request, **kwargs):
     
     """
      Replies to a specific Gmail message with an optional message body, recipients, and attachments.
@@ -381,7 +383,7 @@ def gmail_replyToMessage(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs)
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -414,7 +416,7 @@ def gmail_replyToMessage(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs)
         if "in_reply_to" not in request and "message" not in request:
             raise Exception("Missing input data")
 
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         # find the destination for the reply using in_reply_to
         original_message = (
             service.users().messages().get(userId="me", id=in_reply_to).execute()
@@ -487,7 +489,7 @@ def gmail_replyToMessage(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs)
         raise Exception(e)
 
 
-def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_sendMessage(creds, request, **kwargs):
      
     """
     Sends a message via Gmail API with optional attachments, CC, BCC, and subject.
@@ -502,7 +504,7 @@ def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -533,7 +535,7 @@ def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         if not to or not body:
             raise Exception("Missing input data")        
 
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         mimeMessage = MIMEMultipart()
 
         # Fill mimeMessage fields
@@ -599,7 +601,7 @@ def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         raise Exception(e)
 
 
-# def gmail_check_and_download_attachments(creds, API_SERVICE_NAME, API_VERSION, request):
+# def gmail_check_and_download_attachments(creds, , request):
 #     """
 #         Checks if there are any attachments in the Gmail message, downloads them, 
 #     and uploads them to the provided server URL.
@@ -617,7 +619,7 @@ def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
 #     try:
 #         cred = json.loads(creds)
 #         access_token = create_token(cred)
-#         service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+#         service = create_service(access_token)
 
 #         message = service.users().messages().get(userId="me", id=request["message_id"]).execute()
 #         parts = message.get("payload", {}).get("parts", [])
@@ -666,7 +668,7 @@ def gmail_sendMessage(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
 #         raise Exception(e)
 
 
-def gmail_list_message_attachments(creds, API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_list_message_attachments(creds, request, **kwargs):
     """
     lists the attachments in a Gmail message.
 
@@ -682,7 +684,7 @@ def gmail_list_message_attachments(creds, API_SERVICE_NAME, API_VERSION, request
     try:
         cred = json.loads(creds)
         access_token = create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
 
         message = service.users().messages().get(userId="me", id=request["message_id"]).execute()
         parts = message.get("payload", {}).get("parts", [])
@@ -703,7 +705,7 @@ def gmail_list_message_attachments(creds, API_SERVICE_NAME, API_VERSION, request
         raise Exception(e)
 
 
-def gmail_download_attachment(creds, API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_download_attachment(creds, request, **kwargs):
     """
     Downloads an attachment from a Gmail message.
 
@@ -721,7 +723,7 @@ def gmail_download_attachment(creds, API_SERVICE_NAME, API_VERSION, request, **k
     try:
         cred = json.loads(creds)
         access_token = create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         message_id = request["message_id"]
         attachment_id = request["attachment_id"]
 
@@ -753,7 +755,7 @@ def gmail_download_attachment(creds, API_SERVICE_NAME, API_VERSION, request, **k
 
 ################################################# Threads #########################################
 
-def gmail_addLabelToThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_addLabelToThread(creds, request, **kwargs):
     """
     Adds labels to a Gmail thread using the Gmail API.
 
@@ -767,7 +769,7 @@ def gmail_addLabelToThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwarg
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -782,7 +784,7 @@ def gmail_addLabelToThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwarg
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         thread_id = request.get("thread_id", "")
         ids = request.get("label_ids", None)
         label_ids = [id.strip() for id in ids.split(",")]
@@ -801,7 +803,7 @@ def gmail_addLabelToThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwarg
         raise Exception(e)
 
 
-def gmail_deleteThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_deleteThread(creds, request, **kwargs):
     """
     Deletes a Gmail thread using the Gmail API.
 
@@ -815,7 +817,7 @@ def gmail_deleteThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -829,7 +831,7 @@ def gmail_deleteThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         thread_id = request.get("thread_id", "")
 
         if not thread_id:
@@ -842,7 +844,7 @@ def gmail_deleteThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         raise Exception(e)
 
 
-def gmail_getThreads(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_getThreads(creds, request, **kwargs):
     """
       Retrieves Gmail threads based on specified filters and parameters.
 
@@ -856,7 +858,7 @@ def gmail_getThreads(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -879,7 +881,7 @@ def gmail_getThreads(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         scope = request.get("scope", "")
         thread_id = request.get("thread_id", "")
         limit = request.get("limit", 100)
@@ -947,7 +949,7 @@ def gmail_getThreads(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         raise Exception(e)
 
 
-def gmail_removeLabelFromThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_removeLabelFromThread(creds, request, **kwargs):
     """
     Removes labels from a Gmail thread.
 
@@ -961,7 +963,7 @@ def gmail_removeLabelFromThread(creds,API_SERVICE_NAME, API_VERSION, request, **
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -976,7 +978,7 @@ def gmail_removeLabelFromThread(creds,API_SERVICE_NAME, API_VERSION, request, **
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
 
         thread_id = request.get("thread_id", "")
         label_ids_str = request.get("label_ids", "")
@@ -1017,7 +1019,7 @@ def get_message_subject(id, service):
      Removes a list of labels, which is A mechanism for organizing messages and threads, from a specific thread.
 
     :param str access_token: (str,required) Used for authentication. 
-    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str : (str,required) for the calendar, it's 'gmail'
     :param str API_VERSION: (str,required) the version used is v1  
     :param dict request: contains thread and label ids 
     
@@ -1037,7 +1039,7 @@ def forge_reply(message_id, service):
         Sends a reply to a certain messsage in a thread 
 
     :param str access_token: (str,required) Used for authentication. 
-    :param str API_SERVICE_NAME: (str,required) for the calendar, it's 'gmail'
+    :param str : (str,required) for the calendar, it's 'gmail'
     :param str API_VERSION: (str,required) the version used is v1  
     :param dict request: contains thread  id and related details
     
@@ -1058,7 +1060,7 @@ def forge_reply(message_id, service):
     return reply
 
 
-def gmail_replyToThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_replyToThread(creds, request, **kwargs):
     """
     Replies to a Gmail thread with an optional message and attachments.
 
@@ -1072,7 +1074,7 @@ def gmail_replyToThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -1094,7 +1096,7 @@ def gmail_replyToThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         mimeMessage = MIMEMultipart()
         # Extract the request parameters
         to = request.get("to_recipients", "")
@@ -1180,7 +1182,7 @@ def gmail_replyToThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         raise Exception(e)
 
 
-def gmail_trashThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_trashThread(creds, request, **kwargs):
     """
     Moves a specified Gmail thread to the trash.
 
@@ -1194,7 +1196,7 @@ def gmail_trashThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -1212,7 +1214,7 @@ def gmail_trashThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         if not thread_id:
             raise Exception("Missing input data")
 
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
 
         # Trash the thread
         return service.users().threads().trash(userId="me", id=thread_id).execute()
@@ -1221,7 +1223,7 @@ def gmail_trashThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         raise Exception(e)
 
 
-def gmail_untrashThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_untrashThread(creds, request, **kwargs):
     """
     Restores a specified Gmail thread from the trash.
 
@@ -1235,7 +1237,7 @@ def gmail_untrashThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -1253,7 +1255,7 @@ def gmail_untrashThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         if not thread_id:
             raise Exception("Missing input data")
 
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
 
         # Trash the thread
         return service.users().threads().untrash(userId="me", id=thread_id).execute()
@@ -1265,7 +1267,7 @@ def gmail_untrashThread(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
 ################################################# Label@@@ #########################################
 
 
-def gmail_createLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_createLabel(creds, request, **kwargs):
     """
     Creates a new label in Gmail.
 
@@ -1279,7 +1281,7 @@ def gmail_createLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -1296,7 +1298,7 @@ def gmail_createLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         name = request.get("name", "")
         if not name:
             raise Exception("Missing input data")
@@ -1315,7 +1317,7 @@ def gmail_createLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     except Exception as e:
         raise Exception(e)
 
-def gmail_deleteLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_deleteLabel(creds, request, **kwargs):
     """
     Deletes a label from the user's Gmail account.
 
@@ -1329,7 +1331,7 @@ def gmail_deleteLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -1343,7 +1345,7 @@ def gmail_deleteLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         label_id = request.get("label_id", "")
 
         if not label_id:
@@ -1355,7 +1357,7 @@ def gmail_deleteLabel(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         raise Exception(e)
 
 
-def gmail_getLabels(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_getLabels(creds, request, **kwargs):
     """
     Retrieves labels from the user's Gmail account.
 
@@ -1369,7 +1371,7 @@ def gmail_getLabels(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -1388,7 +1390,7 @@ def gmail_getLabels(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         scope = request.get("scope", "")
         label_id = request.get("label_id", "")
         limit = request.get("limit", 100)
@@ -1414,7 +1416,7 @@ def gmail_getLabels(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
 ################################################# Drafts## #########################################
 
 
-def gmail_createDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_createDraft(creds, request, **kwargs):
     """
     Creates a draft email in the user's Gmail account.
 
@@ -1428,7 +1430,7 @@ def gmail_createDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -1450,7 +1452,7 @@ def gmail_createDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         mimeMessage = MIMEMultipart()
 
         to = request.get("to", None)
@@ -1526,7 +1528,7 @@ def gmail_createDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         raise Exception(e)
 
 
-def gmail_deleteDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_deleteDraft(creds, request, **kwargs):
     """
     Deletes a draft email from the user's Gmail account.
 
@@ -1540,7 +1542,7 @@ def gmail_deleteDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expirey** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -1554,7 +1556,7 @@ def gmail_deleteDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         draft_id = request.get("draft_id", "")
         if not draft_id:
             raise Exception("Missing input data")
@@ -1565,7 +1567,7 @@ def gmail_deleteDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
         raise Exception(e)
 
 
-def gmail_getDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
+def gmail_getDraft(creds, request, **kwargs):
     """
     Retrieves drafts from the user's Gmail account.
 
@@ -1579,7 +1581,7 @@ def gmail_getDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
             - **refreshToken** (str, required): OAuth refresh token for Gmail API.
             - **expiry** (str, required): Expiry date of the access token.
 
-        API_SERVICE_NAME (str): The name of the API service (e.g., 'gmail').
+         (str): The name of the API service (e.g., 'gmail').
 
         API_VERSION (str): The version of the API (e.g., 'v1').
 
@@ -1595,7 +1597,7 @@ def gmail_getDraft(creds,API_SERVICE_NAME, API_VERSION, request, **kwargs):
     try:
         cred=json.loads(creds)
         access_token=create_token(cred)
-        service = create_service(access_token, API_SERVICE_NAME, API_VERSION)
+        service = create_service(access_token)
         scope = request.get("scope", "")
         # Default to 100 if 'limit' is not provided
         limit = request.get("limit", 100)
