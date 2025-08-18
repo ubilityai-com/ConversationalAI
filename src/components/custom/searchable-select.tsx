@@ -96,8 +96,7 @@ export const SearchableSelect = <T extends React.Key>({
       <PopoverTrigger
         asChild
         className={cn('', {
-          'cursor-not-allowed opacity-80 ': disabled,
-          className
+          'cursor-not-allowed opacity-80 ': disabled
         })}
         onClick={(e) => {
           if (disabled) {
@@ -114,7 +113,7 @@ export const SearchableSelect = <T extends React.Key>({
             role="combobox"
             // loading={loading}
             aria-expanded={open}
-            className={cn("w-full justify-between font-normal text-foreground", className)}
+            className={cn("w-full justify-between font-normal text-foreground")}
             onClick={(e) => {
               setOpen((prev) => !prev);
               e.preventDefault();

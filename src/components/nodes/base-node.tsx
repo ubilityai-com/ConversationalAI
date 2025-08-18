@@ -95,12 +95,12 @@ export function BaseNode({
             <div className="flex items-start space-x-4">
               {/* Icon circle */}
               <div
-                className={`w-12 h-12 ${color} rounded-full flex items-center justify-center shadow-md flex-shrink-0`}
+                className={`w-12 h-12 ${color} rounded-full flex items-center justify-center`}
               >
                 {
                   IconComponent ? <IconComponent className="w-6 h-6 text-white" />
                     :
-                    <img src={"/components-icons/" + type + ".png"} alt="img" className="w-7 h-7 object-contain" />
+                    <img src={"/components-icons/" + type + ".png"} alt="img" className="w-10 h-10 object-contain" />
 
                 }
               </div>
