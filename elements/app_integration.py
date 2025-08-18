@@ -10,34 +10,13 @@ class AppIntegration:
         self.operation = operation
         self.params = params
 
-    def run_process(self,sid,conversation_id):
+    def run_process(self,sid,conversation_id,test_node=False):
         try:
-            from app import get_dialogue_id_from_sid
-            dial_id = get_dialogue_id_from_sid(sid)
-            # Dynamically import the app module
-            module_path = f"applications.{self.app_type}"
-            app_module = importlib.import_module(module_path)
-
-            # Get the operations dict from the module
-            operations = getattr(app_module, "operations", None)
-            if operations is None:
-                raise ValueError(f"No operations found for app: {self.app_type}")
-
-            # Find the operation function
-            func = operations.get(self.operation)
-            if func is None:
-                raise ValueError(f"Unknown operation '{self.operation}' for app '{self.app_type}'")
-
-            # Call the function
-            return func(json.dumps(self.credentials), self.params, dialogue_id= dial_id, conv_id = conversation_id) # dialogue_id & conv_id are for files 
-
-        except Exception as e:
-            print(f"Error during app integration: {e}")
-            raise Exception(str(e))
-        
-    def run_process_for_test_node(self,dial_id,conversation_id):
-        try:
-
+            if not test_node:
+                from app import get_dialogue_id_from_sid
+                dial_id = get_dialogue_id_from_sid(sid)
+            else: # if request from test_node
+                dial_id = sid
             # Dynamically import the app module
             module_path = f"applications.{self.app_type}"
             app_module = importlib.import_module(module_path)
