@@ -5,6 +5,7 @@ import { ChatInput } from "./chat-input"
 import { ChatMessage } from "./chat-message"
 import { SimpleHeader } from "./simple-header"
 import TypingIndicator from "./typing-indicator"
+import { LoadingOverlay } from "../loading-overlay"
 
 export default function ChatPage() {
     const { messages, isLoading, initializeSocket, disconnectSocket } = useChatStore()
@@ -29,6 +30,7 @@ export default function ChatPage() {
 
     return (
         <div className="h-screen bg-white text-gray-900 flex flex-col">
+            <LoadingOverlay />
             <div className="fixed top-0 left-0 right-0 z-10 bg-white border">
                 <SimpleHeader />
             </div>

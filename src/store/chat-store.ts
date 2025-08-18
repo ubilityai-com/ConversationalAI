@@ -15,6 +15,7 @@ export interface Message {
 interface ChatState {
     messages: Message[]
     isLoading: boolean
+    isLoadingConnect: boolean
     isConnected: boolean
     socket: Socket | null
     currentStreamingId: string | null
@@ -22,9 +23,6 @@ interface ChatState {
     disconnectSocket: () => void
     sendMessage: (content: string, attachments?: any[]) => void
     addMessage: (content: string, role: "user" | "assistant", attachments?: any[], multipleChoice?: any[]) => void
-    setLoading: (loading: boolean) => void
-    setConnected: (connected: boolean) => void
-    clearMessages: () => void
     addStreamingMessage: (role: "user" | "assistant") => string
     updateStreamingMessage: (id: string, content: string) => void
     finishStreamingMessage: (id: string) => void
@@ -33,6 +31,7 @@ interface ChatState {
 export const useChatStore = create<ChatState>((set, get) => ({
     messages: [],
     isLoading: false,
+    isLoadingConnect: false,
     isConnected: false,
     socket: null,
     currentStreamingId: null,
@@ -64,8 +63,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
     initializeSocket: (botToken) => {
         const { socket } = get()
         if (socket) return
+        set({ isLoadingConnect: true })
         const conversationId = `conv-${v4()}`
-        // const newSocket = io(process.env.RREACT_APP_DOMAIN, {
+        // const newSocket = io("http://23.88.122.180", {
         const newSocket = io(window.location.origin, {
             path: '/socket.io',
             transports: ["websocket", "polling"],
@@ -81,7 +81,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         // Connection event handlers
         newSocket.on("connect", () => {
             console.log("Connected to server")
-            set({ isConnected: true })
+            set({ isConnected: true, isLoadingConnect: false })
         })
         newSocket.on("rag", (data) => {
             console.log("rag data:", data)
@@ -179,7 +179,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
         newSocket.on("error_message", (error: string) => {
             console.error("Socket error:", error)
-            get().addMessage(error || "Sorry, there was an error processing your message.", "assistant")
+            get().addMessage("Sorry, there was an error processing your message.", "assistant")
             set({ isLoading: false })
         })
         // Streaming message event handlers
@@ -299,9 +299,4 @@ export const useChatStore = create<ChatState>((set, get) => ({
             return { messages: [...state.messages, newMessage] }
         }),
 
-    setLoading: (loading) => set({ isLoading: loading }),
-
-    setConnected: (connected) => set({ isConnected: connected }),
-
-    clearMessages: () => set({ messages: [] }),
 }))
