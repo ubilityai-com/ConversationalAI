@@ -6,6 +6,8 @@ import aiohttp, json
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
+from langchain_nvidia_ai_endpoints import ChatNVIDIA,NVIDIAEmbeddings
+
 
 ############################# Slack API's  ###############################
 class SlackAppIntegration(BaseModel):
@@ -141,6 +143,223 @@ async def togetherAi_list_models(payload: AiProvidersListModelsAppIntegration):
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
+
+############################# Cohere API's  ###############################
+
+@http_app.post("/bot/cohere/listModels")
+async def cohere_list_models(payload: AiProvidersListModelsAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        modelType = payload.modelType
+        apiKey = json_cred["apiKey"]
+        
+        if modelType == "embedding":
+            endpoint = "embed"
+        else:
+            endpoint = modelType
+        url = f"https://api.cohere.com/v1/models?endpoint={endpoint}"
+        headers = {"Authorization": f"Bearer {apiKey}"}
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "models" in result:
+            models = result.get("models", [])
+            data = [model["name"] for model in models]
+            return {"Models": data}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+############################# Anthropic API's  ###############################
+
+@http_app.post("/bot/anthropic/listModels")
+async def anthropic_list_models(payload: AiProvidersListModelsAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        # modelType = payload.modelType
+        apiKey = json_cred["apiKey"]
+        url = "https://api.anthropic.com/v1/models"
+        headers = {"x-api-key": apiKey, "anthropic-version": "2023-06-01"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "data" in result:
+            models = result.get("data")
+            data = [model["id"] for model in models]
+            return {"Models": data}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+############################# Mistral AI API's  ###############################
+
+@http_app.post("/bot/mistralAi/listModels")
+async def mistralai_list_models(payload: AiProvidersListModelsAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+
+        modelType = payload.modelType
+        apiKey = json_cred["apiKey"]
+        url = "https://api.mistral.ai/v1/models"
+        headers = {"Authorization": f"Bearer {apiKey}"}
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "data" in result:
+            models = result["data"]
+            if modelType == "embedding":
+                modelType = "embed"
+                embedding_models = [m["id"] for m in models if modelType in m["id"]]
+                return {"Models": embedding_models}
+            else:
+                non_embedding_models = [
+                    m["id"] for m in models if "embed" not in m["id"]
+                ]
+                return {"Models": non_embedding_models}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+############################# Ollama API's  ###############################
+
+@http_app.post("/bot/ollama/listModels")
+async def ollama_list_models(payload: AiProvidersListModelsAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "ollamaBaseUrl" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        # modelType = payload.modelType
+        baseUrl = json_cred["ollamaBaseUrl"]
+        url = f"{baseUrl}/api/tags"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "models" in result:
+            models = result.get("models")
+            data = [model["name"] for model in models]
+            return {"Models": data}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+############################# Google Generative AI API's  ###############################
+
+class GoogleGenerativeAiListModelsAppIntegration(BaseModel):
+    credential_name: str
+    modelType: str
+    apiVersion: str
+
+
+@http_app.post("/bot/googleGenerativeAi/listModels")
+async def googleGenerativeAi_list_models(payload: GoogleGenerativeAiListModelsAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+
+        modelType = payload.modelType
+        apiVersion = payload.apiVersion
+        apiKey = json_cred["apiKey"]
+        url = f"https://generativelanguage.googleapis.com/{apiVersion}/models?key={apiKey}"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "models" in result:
+            models = result["models"]
+            data = [
+                    model["name"]
+                    for model in models
+                    if modelType in model.get("supportedGenerationMethods", [])
+                ]
+            return {"Models": data}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+############################# Groq API's  ###############################
+
+@http_app.post("/bot/groq/listModels")
+async def groq_list_models(payload: AiProvidersListModelsAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        # modelType = payload.modelType
+        apiKey = json_cred["apiKey"]
+        url = f"https://api.groq.com/openai/v1/models"
+        headers = {"Authorization": f"Bearer {apiKey}"}
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "data" in result:
+            models = result.get("data")
+            data = [model["id"] for model in models]
+            return {"Models": data}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+############################# Nvidia AI API's  ###############################
+
+@http_app.post("/bot/nvidia/listModels")
+async def nvidia_list_models(payload: AiProvidersListModelsAppIntegration):
+    try:
+        model_type = payload.modelType
+        if model_type == "chat":
+            available_models = ChatNVIDIA.get_available_models()
+        elif model_type == "embedding":
+            available_models = NVIDIAEmbeddings.get_available_models()
+        model_ids = [model.id for model in available_models]
+        return {"Models": model_ids}
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
 ############################# Cerebras API's  ###############################
 
 @http_app.post("/bot/cerebras/listModels")
@@ -169,6 +388,7 @@ async def cerebras_list_models(payload: AiProvidersListModelsAppIntegration):
 
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
+
 
 ############################# OpenRouter API's  ###############################
 
@@ -201,6 +421,7 @@ async def openrouter_list_models(payload: AiProvidersListModelsAppIntegration):
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
+
 ############################# LiteLLM API's  ###############################
 
 @http_app.post("/bot/liteLlm/listModels")
@@ -232,6 +453,7 @@ async def litellm_list_models(payload: AiProvidersListModelsAppIntegration):
 
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
+
 
 ############################# IBM Watsonx API's  ###############################
 
@@ -287,6 +509,7 @@ async def ibm_watsonx_list_models(payload: AiProvidersListModelsAppIntegration):
 
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
+
 
 ############################## gmail's api#################################
 
