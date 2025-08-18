@@ -45,6 +45,7 @@ class TestAINodeRequest(BaseModel):
 class TestNodeToolsRequest(BaseModel):
     tool_type: str
     data: dict
+    chatbot_id: int
 
 @http_app.post('/bot/test_node')
 async def test_node(payload: Union[TestNodeRequest, TestAINodeRequest,TestNodeToolsRequest]):
@@ -62,7 +63,7 @@ async def test_node(payload: Union[TestNodeRequest, TestAINodeRequest,TestNodeTo
 
         if isinstance(payload,TestNodeToolsRequest):
             if payload.tool_type == "HttpRequest":
-                result = await HttpRequest(payload.data).make_request()
+                result = await HttpRequest(payload.data).make_request(payload.chatbot_id,"testNode")
 
         return {"output": result}
     except Exception as e:

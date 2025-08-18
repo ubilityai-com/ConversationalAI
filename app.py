@@ -79,6 +79,7 @@ async def connect(sid, environ, auth=None):
     dialogue_id = decrypt_dialogue_id(token)
 
     if not conversation_id or not dialogue_id or dialogue_id not in active_dialogues:
+        await sio.emit('force_disconnect', 'Connection error', room=old_sid)
         await sio.disconnect(sid)
         return
 
@@ -196,7 +197,6 @@ async def disconnect(sid):
     """
     client_info = connected_clients.pop(sid, None)
     if not client_info:
-        logger.warning(f"[Disconnect] No client info found for SID: {sid}")
         return
 
     dialogue_id = client_info["dialogue_id"]

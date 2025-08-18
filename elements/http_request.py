@@ -7,8 +7,11 @@ class HttpRequest:
     def __init__(self, data):
         self.data = data
 
-    async def make_request(self):
+    async def make_request(self,sid,conversation_id):
         try:
+            from app import get_dialogue_id_from_sid
+            from applications.functions import upload_file
+            dial_id = get_dialogue_id_from_sid(sid)
             method = self.data['method'].upper()
             url = self.data['url']
             authorization_params = self.data.get('authorization_params', {})
@@ -99,7 +102,10 @@ class HttpRequest:
                     elif 'text/' in content_type:
                         return await response.text()
                     else: #file
-                        return {}
+                        file_content = response.content
+                        # Forward binary data to Flask endpoint
+                        fileData = upload_file(dial_id,conversation_id,file_content)
+                        return fileData
                         
 
         except aiohttp.ClientResponseError as e:
