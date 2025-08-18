@@ -8,6 +8,7 @@ from app import http_app
 from models.credentials import get_credential,get_credentials_by_names
 from elements.app_integration import AppIntegration
 from elements.ai_integration import AIIntegration
+from elements.http_request import HttpRequest
 from fastapi import Query
 from models.chatbot import get_chatbot,update_chatbot
 from typing import Union
@@ -41,9 +42,12 @@ class TestAINodeRequest(BaseModel):
     credentials: list
     data: dict
 
+class TestNodeToolsRequest(BaseModel):
+    tool_type: str
+    data: dict
 
 @http_app.post('/bot/test_node')
-async def test_node(payload: Union[TestNodeRequest, TestAINodeRequest]):
+async def test_node(payload: Union[TestNodeRequest, TestAINodeRequest,TestNodeToolsRequest]):
     """
     Note that all files that are saved via test node are in ( /chatbot_id/testNode/ )
     """
@@ -56,31 +60,14 @@ async def test_node(payload: Union[TestNodeRequest, TestAINodeRequest]):
             creds_obj = get_credentials_by_names(payload.credentials)
             result = await AIIntegration(payload.chain_type, creds_obj, payload.data).execute_ai_element()
 
+        if isinstance(payload,TestNodeToolsRequest):
+            if payload.tool_type == "HttpRequest":
+                result = await HttpRequest(payload.data).make_request()
+
         return {"output": result}
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
-    
 
-class jiu(BaseModel):
-    param: dict
-
-
-
-@http_app.post('/bot/activate_bot')
-def testing(payload: jiu):
-    try:
-        cred = payload.param['credentials']
-        cred_obj=get_credentials_by_names(cred)
-        obj = {
-            "credentials":cred_obj,
-            "bot":payload.param['bot'],
-            "constant_variables":payload.param['constant_variables']
-        }
-        active_dialogues['khaled']=obj
-        return {"Message":"Successfully activated!"}
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"Error": str(e)})
-    
 
 class ChatbotActivateRequest(BaseModel):
     name: Optional[str] = None
