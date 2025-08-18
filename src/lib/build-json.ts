@@ -31,7 +31,7 @@ export function createFlowObject(): Flow {
             };
         } else {
 
-            const selectedNodeModule = require(`../components/right-side-elements/${element.data.category as string}-elements/${camelToDashCase(element.type as string)}/build-content.ts`).default
+            const selectedNodeModule = require(`../components/right-side-elements/${camelToDashCase(element.data.category as string)}-elements/${camelToDashCase(element.type as string)}/build-content.ts`).default
             const result = selectedNodeModule(element,
                 { edges, nodes }
             );
@@ -60,7 +60,7 @@ export function createFlowObject(): Flow {
                     flow.bot[item.id] = item.value;
                 });
             } else {
-                if (result.type === "AppIntegration") {
+                if (result.type === "AppIntegration" || element.data.category === "automationTools") {
                     flow.bot[element.id] = {
                         ...result,
                         saveUserInputAs: null,

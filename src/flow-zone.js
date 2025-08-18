@@ -25,7 +25,8 @@ const FlowZone = () => {
     QuestionAndAnswer: LlmNode,
     // integration nodes
     Slack: IntegrationNode,
-    Gmail: IntegrationNode
+    Gmail: IntegrationNode,
+    HttpRequest: IntegrationNode
   };
   const edgeTypes = {
     buttonEdge: ButtonEdge

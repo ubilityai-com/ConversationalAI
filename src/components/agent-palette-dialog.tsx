@@ -21,6 +21,7 @@ import { ScrollArea } from "./ui/scroll-area";
 
 import { QuestionAndAnswerJson } from "../elements/ai-elements/QuestionAndAnswerJson";
 import { BasicLLMJson } from "../elements/ai-elements/BasicLLMJson";
+import { AutomationToolsElements } from "../elements/automation-tools-elements";
 
 const agentTypes = [
   // BasicLLMJson,
@@ -109,6 +110,7 @@ const agentTypes = [
       loopFromName: "",
     },
   },
+  ...AutomationToolsElements,
   ...IntegrationElements,
   {
     type: "End",
@@ -127,9 +129,10 @@ const agentTypes = [
 
 const categories = [
   "All",
-  "basic",
   "ai",
-  "integration",
+  "automationTools",
+  "basic",
+  "integration"
 ];
 
 interface AgentPaletteDialogProps {
@@ -212,7 +215,7 @@ export function AgentPaletteDialog({
           label: clonedElement.label,
           description: clonedElement.description,
           category: clonedElement.category,
-          automationConfig:clonedElement.automationConfig,
+          automationConfig: clonedElement.automationConfig,
           rightSideData: newDefaults,
           color: clonedElement.color
         },

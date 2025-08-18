@@ -268,7 +268,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
     error: null,
     resetData: () => {
         const id = v4()
-        const { setAllConstantVariables, setNodes, setEdges, setNodesValidation, addNodesValidation, setAllDialogueVariables, setAllOutputVariables,setSelectedBot } = get()
+        const { setAllConstantVariables, setNodes, setEdges, setNodesValidation, addNodesValidation, setAllDialogueVariables, setAllOutputVariables, setSelectedBot } = get()
         // setSelectedBot(null)
         setAllConstantVariables({})
         setAllDialogueVariables({})
@@ -321,32 +321,41 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
             return { runningNodeIds: updated };
         }),
     testNode: async (id) => {
-        const { addRunningNodeId, removeRunningNodeId, nodes, edges, setNodeResult } = get();
+        const { addRunningNodeId, removeRunningNodeId, nodes, edges, setNodeResult, selectedBot } = get();
         set({ error: null });
         addRunningNodeId(id);
         const selectedNode = nodes.find(el => el.id === id)
-        const selectedNodeModule = require(`../components/right-side-elements/${selectedNode.data.category as string}-elements/${camelToDashCase(selectedNode.type as string)}/build-content.ts`).default
-        console.log({selectedNodeModule});
-                const { content, cred, type } = selectedNodeModule(
+        const selectedNodeModule = require(`../components/right-side-elements/${camelToDashCase(selectedNode.data.category as string)}-elements/${camelToDashCase(selectedNode.type as string)}/build-content.ts`).default
+        const { content, cred, type } = selectedNodeModule(
             selectedNode,
             { edges, nodes })
-        let payload = {}
+        let payload: any = {
+            chatbot_id: selectedBot?.id
+        }
 
         if (selectedNode.data.category === "ai") {
             const credentials = [...new Set(cred)]
             payload = {
+                ...payload,
                 chain_type: type,
                 credentials,
                 data: content.data,
-                chatbot_id:12
             }
-        } else {
+        }
+        else if (selectedNode.data.category === "automationTools") {
             payload = {
+                ...payload,
+                tool_type: type,
+                data: content.data,
+            }
+        }
+        else {
+            payload = {
+                ...payload,
                 app_type: content.data.app,
                 credential: cred,
                 operation: content.data.operation,
                 content_json: content.data.content_json,
-                chatbot_id:12
             }
 
         }
@@ -357,7 +366,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
             return res.data;
         } catch (error: any) {
             console.error(error);
-
+            setNodeResult(id, error.response.data || { error: "failed to run this node" });
             const errorMessage =
                 error?.response?.data?.message ||
                 error.message ||

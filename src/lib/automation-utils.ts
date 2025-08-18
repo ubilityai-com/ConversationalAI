@@ -595,7 +595,7 @@ type ApiResponse = FieldItem[];
 export function objToReturnDynamicv2(apiRes: ApiResponse): Record<string, any> {
   let obj: Record<string, any> = {};
 
-  apiRes.forEach((item) => {
+  apiRes && apiRes.forEach((item) => {
     const {
       type,
       value,

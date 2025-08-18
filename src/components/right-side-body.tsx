@@ -35,16 +35,15 @@ export default function RightSideBody() {
         setComponent(() => module.default);
         setSchema(
           () =>
-            require(`../elements/${clickedElement.data.category}-elements/${clickedElement.type}Json`)[
+            require(`../elements/${camelToDashCase(clickedElement.data.category)}-elements/${clickedElement.type}Json`)[
               `${clickedElement.type}Json`
             ].defaults.json
         );
         if (clickedElement.data.automationConfig === "semi-automated") {
-          const path = `./${
-            clickedElement.data.category
-          }-elements/${camelToDashCase(
-            clickedElement.type
-          )}/${camelToDashCase(clickedElement.type)}.tsx`;
+          const path = `./${clickedElement.data.category
+            }-elements/${camelToDashCase(
+              clickedElement.type
+            )}/${camelToDashCase(clickedElement.type)}.tsx`;
 
           try {
             const context = require.context(
@@ -65,11 +64,10 @@ export default function RightSideBody() {
         setIsLoading(false);
         return;
       } else {
-        const path = `./${
-          clickedElement.data.category
-        }-elements/${camelToDashCase(
-          clickedElement.type
-        )}/${camelToDashCase(clickedElement.type)}.tsx`;
+        const path = `./${camelToDashCase(clickedElement.data.category)
+          }-elements/${camelToDashCase(
+            clickedElement.type
+          )}/${camelToDashCase(clickedElement.type)}.tsx`;
 
         try {
           const context = require.context(
