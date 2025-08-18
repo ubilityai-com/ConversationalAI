@@ -2,6 +2,7 @@ import { Node, NodeProps } from "@xyflow/react";
 import { ListChecks, Plus, Trash2 } from "lucide-react";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
 import { useFlowStore } from "../../../../store/flow-store";
+import { NodeConfigProps } from "../../../../types/automation-types";
 import { FieldWrapper } from "../../../custom/field-wrapper";
 import { DynamicElementLoader } from "../../../properties/shared/DynamicElementLoader";
 import { Button } from "../../../ui/button";
@@ -52,33 +53,22 @@ function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
   }
   return true;
 }
-export default function ConditionAgentForm({
-  selectedNode,
-  handleRightSideDataUpdate,
-}: LlmFormProps) {
+export default function ConditionAgentForm({ content, onContentUpdate, selectedNodeId, validate }: NodeConfigProps<RightSideData>) {
   const updateNodesValidationById = useFlowStore(
     (state) => state.updateNodesValidationById
   );
-  const addVariable = useFlowStore((state) => state.addVariable);
-
   const { localConfig, updateNestedConfig } = useDebounceConfig<
     LLMConfigProps["rightSideData"]
-  >(selectedNode.data.rightSideData, {
+  >(content, {
     delay: 300,
     onSave: (savedConfig) => {
       // Save label changes
       const subNodesValidation = useFlowStore.getState().subNodesValidation;
-      const subsValid = subNodesValidation[selectedNode.id]?.valid;
-      updateNodesValidationById(
-        selectedNode.id,
+      const subsValid = subNodesValidation[selectedNodeId]?.valid;
+      validate(
         checkIfAllRequiredDataIsFilled(savedConfig) && subsValid
       );
-      console.log({
-        selectedNode,
-        aa: checkIfAllRequiredDataIsFilled(savedConfig) && subsValid,
-        subNodesValidation,
-      });
-      handleRightSideDataUpdate(savedConfig);
+      onContentUpdate(savedConfig);
     },
   });
 
@@ -240,7 +230,7 @@ export default function ConditionAgentForm({
           extrasKey={key}
           extrasConfig={extras[key]}
           localConfig={localConfig.extras[key]}
-          selectedNodeId={selectedNode.id}
+          selectedNodeId={selectedNodeId}
           updateNestedConfig={updateNestedConfig}
         />
       ))}

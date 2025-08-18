@@ -1,11 +1,11 @@
 "use client"
 
-import { Node, NodeProps } from "@xyflow/react"
 import { ListChecks, Plus, Trash2 } from "lucide-react"
 import { useRef } from "react"
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
-import { getNextNodeId, removeHTMLTags, stringifyAndExtractVariables } from "../../../../lib/utils"
+import { removeHTMLTags } from "../../../../lib/utils"
 import { useFlowStore } from "../../../../store/flow-store"
+import { NodeConfigProps } from "../../../../types/automation-types"
 import { LoopFromForm } from "../../../common/loop-from-end"
 import { FieldWrapper } from "../../../custom/field-wrapper"
 import { Button } from "../../../ui/button"
@@ -30,19 +30,6 @@ export interface RightSideData {
     loopFromSwitch: boolean;
     loopFromName: string
 }
-interface ChoiceConfigProps extends Record<string, unknown> {
-    /* node.data passed from <PropertiesPanel /> */
-    label: string
-    description: string
-    rightSideData: RightSideData
-}
-interface ChoicePromptFormProps {
-    selectedNode: NodeProps<Node<ChoiceConfigProps>>
-    handleRightSideDataUpdate: (
-        value: any
-    ) => void
-}
-
 
 
 function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
@@ -69,18 +56,17 @@ function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
     return true;
 }
 
-export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpdate }: ChoicePromptFormProps) {
+export default function ChoicePromptForm({ content, onContentUpdate, selectedNodeId, validate }: NodeConfigProps<RightSideData>) {
 
     /* --------------------------- helper functions -------------------------- */
-    const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
-    const { localConfig, updateNestedConfig } = useDebounceConfig<ChoiceConfigProps["rightSideData"]>(
-        selectedNode.data.rightSideData,
+    const { localConfig, updateNestedConfig } = useDebounceConfig<RightSideData>(
+        content,
         {
             delay: 300,
             onSave: (savedConfig) => {
                 // Save label changes
-                updateNodesValidationById(selectedNode.id, checkIfAllRequiredDataIsFilled(savedConfig))
-                handleRightSideDataUpdate(savedConfig)
+                validate(checkIfAllRequiredDataIsFilled(savedConfig))
+                onContentUpdate(savedConfig)
 
             },
         },
@@ -119,7 +105,7 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
         }
         // Set new timeout
         timeoutRef.current = setTimeout(() => {
-            updateDialogueVariable(selectedNode.id, value);
+            updateDialogueVariable(selectedNodeId, value);
         }, 1000);
     }
     /* ---------------------------------- UI --------------------------------- */
@@ -209,7 +195,7 @@ export default function ChoicePromptForm({ selectedNode, handleRightSideDataUpda
                     onCheckedChange={(checked) => {
                         updateNestedConfig("save", checked)
                         if (checked)
-                            addVariable({ origin: selectedNode.id, category: "dialogue", name: "", type: "string", value: "" })
+                            addVariable({ origin: selectedNodeId, category: "dialogue", name: "", type: "string", value: "" })
                     }}
                     id="save-switch"
                 />

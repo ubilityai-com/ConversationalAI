@@ -1,9 +1,8 @@
 "use client"
 
-import { Node, type NodeProps } from "@xyflow/react";
 import { GitBranch, Plus, Trash2 } from "lucide-react";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
-import { useFlowStore } from "../../../../store/flow-store";
+import { NodeConfigProps } from "../../../../types/automation-types";
 import { FieldWrapper } from "../../../custom/field-wrapper";
 import { RouterBranch, RouterDefaultBranch } from "../../../nodes/router-node";
 import { Button } from "../../../ui/button";
@@ -27,12 +26,7 @@ export interface RouterConfig extends Record<string, unknown> {
   rightSideData: RightSideData
 }
 
-interface RouterConfigFormProps {
-  selectedNode: NodeProps<Node<RouterConfig>>
-  handleRightSideDataUpdate: (
-    value: any
-  ) => void
-}
+
 
 function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
   if (!data) return false;
@@ -54,17 +48,16 @@ function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
   return true;
 }
 
-export default function RouterForm({ selectedNode, handleRightSideDataUpdate }: RouterConfigFormProps) {
-  const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
+export default function RouterForm({ content, onContentUpdate, validate }: NodeConfigProps<RightSideData>) {
 
-  const { localConfig, updateConfigField, updateNestedConfig } = useDebounceConfig(
-    selectedNode.data.rightSideData,
+  const { localConfig, updateNestedConfig } = useDebounceConfig(
+    content,
     {
       delay: 300,
       onSave: (savedConfig) => {
         // Save the entire config at once
-        updateNodesValidationById(selectedNode.id, checkIfAllRequiredDataIsFilled(savedConfig))
-        handleRightSideDataUpdate(savedConfig)
+        validate(checkIfAllRequiredDataIsFilled(savedConfig))
+        onContentUpdate(savedConfig)
       },
     },
   )
