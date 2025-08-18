@@ -74,7 +74,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 conversationId,
             },
             reconnection: true,
-            reconnectionAttempts: 5,
+            reconnectionAttempts: 3,
             reconnectionDelay: 2000,
         })
 
@@ -82,6 +82,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
         newSocket.on("connect", () => {
             console.log("Connected to server")
             set({ isConnected: true, isLoadingConnect: false })
+        })
+        newSocket.on("connect_error", (error) => {
+            console.log(" Connection error :", error)
+            set({ isLoadingConnect: false })
         })
         newSocket.on("rag", (data) => {
             console.log("rag data:", data)

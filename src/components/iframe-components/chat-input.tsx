@@ -11,7 +11,7 @@ export function ChatInput() {
   const [isMultiLine, setIsMultiLine] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
-  const { isConnected, sendMessage, addMessage } = useChatStore()
+  const { isConnected, sendMessage, addMessage, isLoadingConnect } = useChatStore()
 
   useEffect(() => {
     if (textareaRef.current) {
@@ -92,11 +92,11 @@ export function ChatInput() {
 
   return (
     <div className="p-4 bg-white">
-      {!isConnected && (
+      {!isConnected && !isLoadingConnect && (
         <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-1">
           <div className="bg-red-100 border border-red-300 rounded-lg px-3 py-2 flex items-center gap-2 text-sm text-red-800">
             <WifiOff className="w-4 h-4" />
-            <span>Disconnected from server</span>
+            <span>Not connected to server.</span>
           </div>
         </div>
       )}
