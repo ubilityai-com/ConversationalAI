@@ -9,7 +9,7 @@ import json,socketio,shutil,os,asyncio
 from datetime import datetime,timedelta
 from fastapi import FastAPI
 from elements.message import Message
-from functions import execute_process, save_user_input,save_file_input
+from functions import execute_process, save_user_input,save_file_input,restore_active_chatbots
 from logger_config import logger, setup_logger
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
@@ -267,6 +267,7 @@ def decrypt_dialogue_id(encrypted_str: str) -> str:
 
 async def main():
     asyncio.create_task(check_idle_sessions())
+    asyncio.create_task(restore_active_chatbots())
     config = Config(app, host="0.0.0.0", port=8031)
     server = Server(config)
     await server.serve()

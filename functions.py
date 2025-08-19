@@ -24,6 +24,7 @@ from elements.http_request import HttpRequest
 from dialogues.dialogues import active_dialogues
 import gzip, os, gzip,magic,uuid
 import os.path
+from models.chatbot import list_chatbots
 
 
 async def execute_process(sio, sid, conversation, conversation_id, dialogue):
@@ -463,3 +464,35 @@ ALLOWED_EXTENSIONS = {
     "mkv": ["video/x-matroska"],
     "webm": ["video/webm"]
 }
+
+
+def restore_active_chatbots():
+    """
+    On server restart, restore all active chatbots' dialogues to file system.
+    
+    Args:
+        token (str): SuperAdmin or internal token with permission to list all chatbots.
+    """
+    try:
+        all_chatbots = list_chatbots()
+
+        if not all_chatbots:
+            logger.warning("No chatbots found or failed to fetch.")
+            return False
+
+        for chatbot in all_chatbots:
+            if chatbot.get("status") != "Active":
+                continue
+
+            dialogue_id = chatbot.get("id")
+            dialogue = chatbot.get("dialogue")
+
+            if not dialogue_id or not dialogue:
+                logger.warning(f"Skipping chatbot ID {dialogue_id} due to missing info.")
+                continue
+
+            active_dialogues[str(dialogue_id)]=dialogue
+
+        return True
+    except Exception as e:
+        return False
