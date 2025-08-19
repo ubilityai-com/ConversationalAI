@@ -54,13 +54,24 @@ export function ChatMessage({ message }: ChatMessageProps) {
       <div className="max-w-[85%] sm:max-w-[75%] space-y-2">
         {/* Message content */}
         {message?.content && (
-          <div className={cn("px-4 py-3 rounded-2xl", isUser ? "bg-blue-600 text-white ml-auto" : "bg-gray-100 text-gray-900")}>
-            <p className="whitespace-pre-wrap text-sm sm:text-base leading-relaxed break-words overflow-wrap-anywhere">
-              {message.content}
-              {message.isStreaming && <span className="inline-block w-0.5 h-4 bg-current ml-1 animate-pulse" />}
-            </p>
+          <div
+            className={cn(
+              "px-4 py-3 rounded-2xl",
+              isUser
+                ? "bg-blue-600 text-white ml-auto"
+                : "bg-gray-100 text-gray-900"
+            )}
+          >
+            <div
+              className="prose prose-sm sm:prose-base leading-relaxed break-words max-w-none"
+              dangerouslySetInnerHTML={{ __html: message.content }}
+            />
+            {message.isStreaming && (
+              <span className="inline-block w-0.5 h-4 bg-current ml-1 animate-pulse" />
+            )}
           </div>
         )}
+
 
         {/* Multiple choice options */}
         {message.multipleChoice && message.multipleChoice?.length > 0 && (

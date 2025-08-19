@@ -174,7 +174,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         })
         newSocket.on("disconnect", () => {
             console.log("Disconnected from server")
-            set({ isConnected: false })
+            set({ isConnected: false, isLoadingConnect: false })
         })
         newSocket.on("force_disconnect", (reason) => {
             console.log("force disconnect:", reason)

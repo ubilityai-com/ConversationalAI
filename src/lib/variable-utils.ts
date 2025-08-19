@@ -57,7 +57,8 @@ export function pathExistsInOutputVariables(
   const nodeToCheckVariables = outputVariables[nodeId]
   if (nodeToCheckVariables)
     for (const [variableName, path] of Object.entries(nodeToCheckVariables)) {
-      if (path === pathToCheck) {
+      let pathWithoutPoint = path.startsWith(".") ? path.slice(1) : path
+      if (pathWithoutPoint === pathToCheck) {
         return variableName;
       }
     }
@@ -68,7 +69,7 @@ type OutputEntry = { name: string; path: string };
 export function getOutputVariablesByNodeId(
   nodeId: string
 ): OutputEntry[] {
-  const outputVariables =useFlowStore.getState().outputVariables
+  const outputVariables = useFlowStore.getState().outputVariables
 
   const nodeVars = outputVariables[nodeId];
   if (!nodeVars) return [];
