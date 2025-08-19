@@ -24,7 +24,7 @@ from elements.http_request import HttpRequest
 from dialogues.dialogues import active_dialogues
 import gzip, os, gzip,magic,uuid
 import os.path
-from models.chatbot import list_chatbots
+
 
 
 async def execute_process(sio, sid, conversation, conversation_id, dialogue):
@@ -474,6 +474,7 @@ def restore_active_chatbots():
         token (str): SuperAdmin or internal token with permission to list all chatbots.
     """
     try:
+        from models.chatbot import list_chatbots
         all_chatbots = list_chatbots()
 
         if not all_chatbots:
