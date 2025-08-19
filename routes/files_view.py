@@ -10,6 +10,7 @@ from app import http_app
 from fastapi import  Request,Query
 import uuid, gzip, magic, os, re,json
 from datetime import datetime
+import base64
 
 
 ALLOWED_EXTENSIONS =  {
@@ -202,20 +203,33 @@ async def delete_uploaded_file(dialogue: str = Query(None), filename: str = Quer
 @http_app.get("/bot/get_file")
 async def get_uploaded_file(dialogue: str = Query(None), filename: str = Query(None)):
     try:
-        if not dialogue or not filename:
-            return JSONResponse(status_code=400, content={"error": "Missing parameter"})
-
         current_dir = os.getcwd()
-        file_path = os.path.join(current_dir, "temp", dialogue, filename)
+        STORAGE_DIR1 = os.path.join(current_dir,"temp",str(dialogue)) # Global file
+        STORAGE_DIR2 = os.path.join(current_dir,"temp",str(dialogue),"testNode")
 
-        if not os.path.exists(file_path):
-            return JSONResponse(status_code=404, content={"error": f"File '{filename}' not found"})
+        file_path1 = os.path.join(STORAGE_DIR1, filename)
+        file_path2 = os.path.join(STORAGE_DIR2, filename)
 
-        if not os.path.isfile(file_path):
-            return JSONResponse(status_code=400, content={"error": f"'{filename}' is not a file"})
+        if os.path.exists(file_path1): # global file
+            file_path = file_path1
+        elif os.path.exists(file_path2):
+            file_path = file_path2
+        else: # File not found in either place
+            return None
 
-        # Automatically sets the correct media type and headers
-        return FileResponse(file_path, filename=filename)
+        # Load and return file as a downloadable attachment
+        with open(file_path, 'rb') as f:
+            file_data = f.read()
+            
+        # Encode the binary data to base64
+        encoded_data = base64.b64encode(file_data).decode('utf-8')
+
+        # Return as a JSON-compatible dict
+        return {
+            "file_name": filename,
+            "content_type": "application/octet-stream",
+            "data_base64": encoded_data
+        }
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
