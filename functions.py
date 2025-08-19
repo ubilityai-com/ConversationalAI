@@ -466,7 +466,7 @@ ALLOWED_EXTENSIONS = {
 }
 
 
-def restore_active_chatbots():
+async def restore_active_chatbots():
     """
     On server restart, restore all active chatbots' dialogues to file system.
     
