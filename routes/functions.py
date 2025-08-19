@@ -94,6 +94,10 @@ def activate_chatbot_view(chatbot_id: int, payload: ChatbotActivateRequest):
         if error:
             return JSONResponse(status_code=400, content={"Error": error})
 
+        # Ensure dialogue is a dict
+        if isinstance(chatbot_obj.get("dialogue"), str):
+            chatbot_obj["dialogue"] = json.loads(chatbot_obj["dialogue"])
+
         cred_obj = get_credentials_by_names(chatbot_obj['dialogue']['credentials'])
 
         new_dialogue = {
