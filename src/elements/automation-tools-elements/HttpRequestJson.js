@@ -345,16 +345,6 @@ export const HttpRequestJson = {
           ]
         ]
       },
-      {
-        "type": "outputJson",
-        "value": {
-          // "Output": {
-          "Output": "",
-          "Error": "",
-          "Status": ""
-          // }
-        }
-      }
     ]
   }
 };

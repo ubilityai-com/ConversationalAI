@@ -78,12 +78,12 @@ export const SqlDatabaseChainJson = {
               "keys": {
                 "option": {
                   "fields": [
-                    "credName"
+                    "name"
                   ]
                 },
                 "value": {
                   "fields": [
-                    "credName"
+                    "name"
                   ]
                 },
                 "type": {
@@ -144,12 +144,12 @@ export const SqlDatabaseChainJson = {
               "keys": {
                 "option": {
                   "fields": [
-                    "credName"
+                    "name"
                   ]
                 },
                 "value": {
                   "fields": [
-                    "credName"
+                    "name"
                   ]
                 },
                 "type": {

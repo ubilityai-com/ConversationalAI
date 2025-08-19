@@ -3,6 +3,7 @@ import { enableMapSet } from "immer";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { useRightDrawerStore } from "./right-drawer-store";
+import { useFlowStore } from "./flow-store";
 enableMapSet();
 
 type FileStatus = "uploading" | "success" | "error";
@@ -248,9 +249,9 @@ export const useFilesStore = create<FilesStore>()(
         setIsUploading(true);
 
         const authToken = localStorage.getItem("authToken") || "";
-
+        const { selectedBot } = useFlowStore.getState()
         const response = await axios.post(
-          process.env.REACT_APP_DNS_URL + "upload_file?dialogue=khaled",
+          process.env.REACT_APP_DNS_URL + `upload_file?dialogue=${selectedBot?.id}`,
           file,
           {
             headers: {
@@ -411,10 +412,10 @@ export const useFilesStore = create<FilesStore>()(
       try {
         // Get auth token
         const authToken = localStorage.getItem("authToken") || "";
-
+        const { selectedBot } = useFlowStore.getState()
         // Make API call to delete file
         await axios.delete(
-          process.env.REACT_APP_DNS_URL + `delete_file?dialogue=khaled&filename=${encodeURIComponent(
+          process.env.REACT_APP_DNS_URL + `delete_file?dialogue=${selectedBot?.id}&filename=${encodeURIComponent(
             fileId
           )}`,
           {
@@ -457,10 +458,11 @@ export const useFilesStore = create<FilesStore>()(
       }
     },
     getFiles: async () => {
+      const { selectedBot } = useFlowStore.getState()
       try {
         get().setIsLoadingFiles(true);
         const result = await axios.get(
-          process.env.REACT_APP_DNS_URL + "list_uploaded_files?dialogue=khaled"
+          process.env.REACT_APP_DNS_URL + `list_uploaded_files?dialogue=${selectedBot?.id}`
         );
         const sortedFiles = result.data.files.sort(
           (a: FileItem, b: FileItem) => {
@@ -503,7 +505,7 @@ export const useFilesStore = create<FilesStore>()(
         addPreviewingFileId,
         removePreviewingFileId,
       } = get();
-
+      const { selectedBot } = useFlowStore.getState()
       try {
         // Add to appropriate loading state
         if (action === "download") {
@@ -517,7 +519,7 @@ export const useFilesStore = create<FilesStore>()(
 
         // Make request to get file
         const response = await axios.get(
-          process.env.REACT_APP_DNS_URL + `get_file?dialogue=khaled&filename=${encodeURIComponent(
+          process.env.REACT_APP_DNS_URL + `get_file?dialogue=${selectedBot?.id}&filename=${encodeURIComponent(
             fileName
           )}`,
           {

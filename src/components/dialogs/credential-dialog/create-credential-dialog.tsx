@@ -212,7 +212,7 @@ export function CreateCredentialDialog({
                 setTimeout(() => credNameAndFunctionForConsent?.fn(), 100)
             }
 
-            if (credentialsList.some((c) => c.credName === newCredInfo.Service_name)) {
+            if (credentialsList.some((c) => c.name === newCredInfo.Service_name)) {
                 setError("Credential name already exists.")
                 return
             }
@@ -461,11 +461,11 @@ export function CreateCredentialDialog({
                         )}
                         <div className="space-y-6">
                             <div className="space-y-3">
-                                <Label htmlFor="credName" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <Label htmlFor="name" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Credential Name
                                 </Label>
                                 <Input
-                                    id="credName"
+                                    id="name"
                                     placeholder="Enter a unique name for this credential"
                                     value={credInfo.Service_name}
                                     onChange={(e: any) => setCredInfo((prev) => ({ ...prev, Service_name: e.target.value }))}

@@ -57,10 +57,10 @@ export const EmbeddingsGoogleGenerativeAIJson = {
           path: "data",
           keys: {
             option: {
-              fields: ["credName"],
+              fields: ["name"],
             },
             value: {
-              fields: ["credName"],
+              fields: ["name"],
             },
             type: { fields: ["type"] },
           },
@@ -161,7 +161,7 @@ export const EmbeddingsGoogleGenerativeAIJson = {
               },
             ],
           },
-          
+
         ],
         res: {
           path: "data.Models",

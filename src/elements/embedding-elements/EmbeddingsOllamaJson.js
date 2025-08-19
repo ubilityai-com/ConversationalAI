@@ -58,10 +58,10 @@ export const EmbeddingsOllamaJson = {
                     path: "data",
                     keys: {
                         option: {
-                            fields: ["credName"],
+                            fields: ["name"],
                         },
                         value: {
-                            fields: ["credName"],
+                            fields: ["name"],
                         },
                         type: { fields: ["type"] },
                     },
