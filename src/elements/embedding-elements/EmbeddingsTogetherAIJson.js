@@ -88,7 +88,7 @@ export const EmbeddingsTogetherAIJson = {
                 type: "static",
                 value:
                   process.env.REACT_APP_DNS_URL +
-                  "cloud/regular/langchain/getModels",
+                  "togetherAi/listModels",
               },
             ],
           },
@@ -123,17 +123,8 @@ export const EmbeddingsTogetherAIJson = {
                 isAutomation: true,
               },
               {
-                key: "provider",
-                obj: [
-                  {
-                    key: "providerName",
-                    value: "togetherAi",
-                  },
-                  {
-                    key: "modelType",
-                    value: "embedding",
-                  },
-                ],
+                key: "modelType",
+                value: "embedding",
               },
             ],
           },

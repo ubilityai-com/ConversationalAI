@@ -35,7 +35,7 @@ export const TogetherAIChatModel = (selectedNode: any) => {
     const json = model.content.json
     return {
         provider: "togetherAi",
-        model: model.type,
+        model: json.model,
         credential: json.cred,
         params: {
             optionals: {
