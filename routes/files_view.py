@@ -215,21 +215,10 @@ async def get_uploaded_file(dialogue: str = Query(None), filename: str = Query(N
         elif os.path.exists(file_path2):
             file_path = file_path2
         else: # File not found in either place
-            return None
-
-        # Load and return file as a downloadable attachment
-        with open(file_path, 'rb') as f:
-            file_data = f.read()
-            
-        # Encode the binary data to base64
-        encoded_data = base64.b64encode(file_data).decode('utf-8')
+            return JSONResponse(status_code=404, content={"error": "file not found"})
 
         # Return as a JSON-compatible dict
-        return {
-            "file_name": filename,
-            "content_type": "application/octet-stream",
-            "data_base64": encoded_data
-        }
+        return FileResponse(file_path, filename=filename)
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
