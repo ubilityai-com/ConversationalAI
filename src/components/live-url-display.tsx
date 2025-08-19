@@ -27,7 +27,7 @@ export function LiveUrlDisplay() {
 
   const handleUrlClick = async () => {
     try {
-      await navigator.clipboard.writeText(liveUrl)
+      copyToClipboard(liveUrl)
       setCopied(true)
       setShowCopyText(true)
       setTimeout(() => {
