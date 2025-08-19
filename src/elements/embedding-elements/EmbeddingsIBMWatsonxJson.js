@@ -61,10 +61,10 @@ export const EmbeddingsIBMWatsonxJson = {
           path: "data",
           keys: {
             option: {
-              fields: ["name"],
+              fields: ["credName"],
             },
             value: {
-              fields: ["name"],
+              fields: ["credName"],
             },
             type: { fields: ["type"] },
           },
