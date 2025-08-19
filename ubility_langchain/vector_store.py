@@ -217,7 +217,7 @@ class VectorStore:
         logging.info("Retrieve data from your vectore store")
         try:
             if self.type == "pinecone":
-                from langchain_pinecone import Pinecone as langPinecone
+                from langchain_pinecone import PineconeVectorStore as langPinecone
                 vectordb = langPinecone(
                     embedding=embedding,
                     index_name=self.index_name,

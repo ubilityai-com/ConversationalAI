@@ -416,7 +416,11 @@ class Model:
                     response = MistralAIEmbeddings(api_key=self.api_key,model=self.model,**optionals)
                 elif self.provider == "ibm":
                     from langchain_ibm import WatsonxEmbeddings
-                    response = WatsonxEmbeddings(model_id=self.model, project_id=self.project_id, url=self.base_url, apikey=self.api_key, version=self.version, **optionals)
+                    ibm_watson_params = {}
+                    if "truncateInputTokens" in optionals:
+                        from ibm_watsonx_ai.metanames import EmbedTextParamsMetaNames
+                        ibm_watson_params[EmbedTextParamsMetaNames.TRUNCATE_INPUT_TOKENS] = int(optionals.pop("truncateInputTokens"))
+                    response = WatsonxEmbeddings(model_id=self.model, project_id=self.project_id, url=self.base_url, apikey=self.api_key, version=self.version, **optionals, params=ibm_watson_params)
                 elif self.provider == "fireworks":
                     from langchain_fireworks import FireworksEmbeddings
                     response = FireworksEmbeddings(api_key=self.api_key, model=self.model, **optionals)
