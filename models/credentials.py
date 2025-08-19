@@ -33,10 +33,10 @@ def create_credential(name: str,type: str, data: dict) -> None:
 
 def list_credentials() -> List[Dict]:
     """
-    Retrieve all credentials, parsing the JSON data field.
+    Retrieve all credentials, hiding the 'data' field.
 
     Returns:
-        List[Dict]: A list of credential entries with parsed data.
+        List[Dict]: A list of credential entries without 'data'.
     """
     with sqlite3.connect(DB_FILE) as conn:
         cursor = conn.execute("SELECT * FROM credentials")
@@ -46,13 +46,13 @@ def list_credentials() -> List[Dict]:
         credentials = []
         for row in rows:
             entry = dict(zip(columns, row))
-            try:
-                entry["data"] = json.loads(entry["data"])
-            except (json.JSONDecodeError, TypeError):
-                entry["data"] = {}  # Fallback to empty dict on error
+            # Hide/remove the "data" field
+            if "data" in entry:
+                del entry["data"]
             credentials.append(entry)
 
         return credentials
+
 
 
 def delete_credential(id: int) -> None:
