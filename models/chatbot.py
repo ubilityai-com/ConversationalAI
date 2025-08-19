@@ -88,6 +88,32 @@ def list_chatbots() -> List[Dict]:
         return []
 
 
+def list_chatbots_all_data() -> List[Dict]:
+    """
+    Fetch all chatbot records and parse JSON fields.
+
+    Returns:
+        List[Dict]: A list of chatbot rows as dictionaries.
+    """
+    with sqlite3.connect(DB_FILE) as conn:
+        cursor = conn.execute("SELECT * FROM chatbot")
+        columns = [column[0] for column in cursor.description]
+        chatbots = []
+
+        for row in cursor.fetchall():
+            record = dict(zip(columns, row))
+
+            for key in ["dialogue", "ui_json"]:
+                if key in record:
+                    try:
+                        record[key] = json.loads(record[key])
+                    except (json.JSONDecodeError, TypeError):
+                        record[key] = {}
+
+            chatbots.append(record)
+
+        return chatbots
+
 def delete_chatbot(id: int):
     """
     Delete a chatbot from the database by ID.

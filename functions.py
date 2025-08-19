@@ -474,8 +474,8 @@ async def restore_active_chatbots():
         token (str): SuperAdmin or internal token with permission to list all chatbots.
     """
     try:
-        from models.chatbot import list_chatbots
-        all_chatbots = list_chatbots()
+        from models.chatbot import list_chatbots_all_data
+        all_chatbots = list_chatbots_all_data()
 
         if not all_chatbots:
             logger.warning("No chatbots found or failed to fetch.")
