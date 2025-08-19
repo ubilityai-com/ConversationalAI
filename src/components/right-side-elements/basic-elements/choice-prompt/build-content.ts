@@ -40,9 +40,9 @@ export default function getContent(selectedNode: any, params: any) {
     };
     return {
         multiple: true,
-        data: [
-            { id: selectedNode.id, value: choicePromptObj },
-            { id: `${selectedNode.id}-handler`, value: handlerObj }
-        ]
+        data: {
+            [`${selectedNode.id}`]: choicePromptObj,
+            [`${selectedNode.id}-handler`]: handlerObj
+        }
     };
 }

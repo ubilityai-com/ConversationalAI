@@ -36,30 +36,28 @@ export function createFlowObject(): Flow {
                 { edges, nodes }
             );
 
-            // Collect `cred` if exists, then remove it
-            if (result.cred) {
-                if (Array.isArray(result.cred)) {
-                    flow.credentials.push(...result.cred);
-                } else {
-                    flow.credentials.push(result.cred);
-                }
-                delete result.cred;
-            }
 
             if (result.multiple) {
-                result.data.forEach((item: { id: string; value: any }) => {
-                    // Also check and collect `cred` from each item if present
-                    if (item.value?.cred) {
-                        if (Array.isArray(item.value.cred)) {
-                            flow.credentials.push(...item.value.cred);
-                        } else {
-                            flow.credentials.push(item.value.cred);
-                        }
-                        delete item.value.cred;
+                const nodeCred = result.data[element.id]?.cred
+                if (nodeCred) {
+                    if (Array.isArray(nodeCred)) {
+                        flow.credentials.push(...nodeCred);
+                    } else {
+                        flow.credentials.push(nodeCred);
                     }
-                    flow.bot[item.id] = item.value;
-                });
+                    delete result.data[element.id]?.cred;
+                }
+                Object.assign(flow.bot, result.data)
             } else {
+                // Collect `cred` if exists, then remove it
+                if (result.cred) {
+                    if (Array.isArray(result.cred)) {
+                        flow.credentials.push(...result.cred);
+                    } else {
+                        flow.credentials.push(result.cred);
+                    }
+                    delete result.cred;
+                }
                 if (result.type === "AppIntegration" || element.data.category === "automationTools") {
                     flow.bot[element.id] = {
                         ...result,

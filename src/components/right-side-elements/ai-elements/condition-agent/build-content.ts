@@ -21,7 +21,7 @@ export default function getContent(selectedNode: any, params: any) {
         credentials: extractCreds(selectedNode?.data.rightSideData.extras),
     };
     // const saveUserInputAs = rightSideData.save ? rightSideData.variableName : selectedNode.id + "-var";
-    const conditionAgtentObj = {
+    const conditionAgentObj = {
         type: "LC_CONDITION_AGENT",
         content: content,
         next: selectedNode.id + "-handler",
@@ -56,9 +56,9 @@ export default function getContent(selectedNode: any, params: any) {
     };
     return {
         multiple: true,
-        data: [
-            { id: selectedNode.id, value: conditionAgtentObj },
-            { id: `${selectedNode.id}-handler`, value: handlerObj },
-        ],
+        data: {
+            [`${selectedNode.id}`]: conditionAgentObj,
+            [`${selectedNode.id}-handler`]: handlerObj
+        }
     };
 }

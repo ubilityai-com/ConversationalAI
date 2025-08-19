@@ -326,7 +326,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
         addRunningNodeId(id);
         const selectedNode = nodes.find(el => el.id === id)
         const selectedNodeModule = require(`../components/right-side-elements/${camelToDashCase(selectedNode.data.category as string)}-elements/${camelToDashCase(selectedNode.type as string)}/build-content.ts`).default
-        const { content, cred, type } = selectedNodeModule(
+        const { content, cred, type, multiple, data } = selectedNodeModule(
             selectedNode,
             { edges, nodes })
         let payload: any = {
@@ -334,12 +334,25 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
         }
 
         if (selectedNode.data.category === "ai") {
-            const credentials = [...new Set(cred)]
-            payload = {
-                ...payload,
-                chain_type: type,
-                credentials,
-                data: content.data,
+            if (multiple) {
+                const nodeData = data[selectedNode.id]
+                const nodeCred = nodeData?.cred
+                const credentials = [...new Set(nodeCred)]
+                payload = {
+                    ...payload,
+                    chain_type: nodeData.type,
+                    credentials,
+                    data: nodeData.content.data,
+                }
+            }
+            else {
+                const credentials = [...new Set(cred)]
+                payload = {
+                    ...payload,
+                    chain_type: type,
+                    credentials,
+                    data: content.data,
+                }
             }
         }
         else if (selectedNode.data.category === "automationTools") {
