@@ -79,7 +79,7 @@ async def connect(sid, environ, auth=None):
     dialogue_id = decrypt_dialogue_id(token)
 
     if not conversation_id or not dialogue_id or dialogue_id not in active_dialogues:
-        await sio.emit('force_disconnect', 'Connection error', room=old_sid)
+        await sio.emit('force_disconnect', 'Connection error', room=sid)
         await sio.disconnect(sid)
         return
 
