@@ -62,13 +62,15 @@ export function ChatMessage({ message }: ChatMessageProps) {
                 : "bg-gray-100 text-gray-900"
             )}
           >
-            <div
-              className="prose prose-sm sm:prose-base leading-relaxed break-words max-w-none"
-              dangerouslySetInnerHTML={{ __html: message.content }}
-            />
-            {message.isStreaming && (
-              <span className="inline-block w-0.5 h-4 bg-current ml-1 animate-pulse" />
-            )}
+            <div className="flex items-center">
+              <div
+                className="prose prose-sm sm:prose-base leading-relaxed break-words max-w-none"
+                dangerouslySetInnerHTML={{ __html: message.content }}
+              />
+              {message.isStreaming && (
+                <span className="inline-block w-0.5 h-4 bg-current ml-1 animate-pulse" />
+              )}
+            </div>
           </div>
         )}
 

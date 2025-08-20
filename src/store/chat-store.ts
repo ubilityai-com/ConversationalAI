@@ -19,6 +19,11 @@ interface ChatState {
     isConnected: boolean
     socket: Socket | null
     currentStreamingId: string | null
+
+    // Queue helpers
+    messageQueue: any[]
+    processing: boolean
+
     initializeSocket: (botToken: string | undefined) => void
     disconnectSocket: () => void
     sendMessage: (content: string, attachments?: any[]) => void
@@ -26,6 +31,10 @@ interface ChatState {
     addStreamingMessage: (role: "user" | "assistant") => string
     updateStreamingMessage: (id: string, content: string) => void
     finishStreamingMessage: (id: string) => void
+
+    enqueueMessage: (data: any) => void
+    processQueue: () => Promise<void>
+    streamMessage: (data: any) => Promise<void>
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
@@ -35,6 +44,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
     isConnected: false,
     socket: null,
     currentStreamingId: null,
+
+    // queue state
+    messageQueue: [],
+    processing: false,
+
     addStreamingMessage: (role) => {
         const id = v4()
         set((state) => {
@@ -60,13 +74,68 @@ export const useChatStore = create<ChatState>((set, get) => ({
             messages: state.messages.map((msg) => (msg.id === id ? { ...msg, isStreaming: false } : msg)),
         })),
 
+    enqueueMessage: (data) =>
+        set((state) => ({
+            messageQueue: [...state.messageQueue, data],
+        })),
+
+    processQueue: async () => {
+        const { messageQueue, processing } = get()
+        if (processing || messageQueue.length === 0) return
+
+        set({ processing: true })
+
+        while (get().messageQueue.length > 0) {
+            const data = get().messageQueue[0]
+            await get().streamMessage(data)
+            set((state) => ({
+                messageQueue: state.messageQueue.slice(1),
+            }))
+        }
+
+        set({ processing: false })
+    },
+
+    streamMessage: async (data) => {
+        const streamingId = get().addStreamingMessage("assistant")
+        set({ currentStreamingId: streamingId })
+
+        const text = data.text || ""
+        let currentText = ""
+
+        if (text) {
+            for (let i = 0; i < text.length; i++) {
+                currentText += text[i]
+                get().updateStreamingMessage(streamingId, currentText)
+                await new Promise((resolve) => setTimeout(resolve, 5))
+            }
+        }
+
+        // Add attachments and choices after streaming
+        if (data?.type === "file" || data.choices) {
+            set((state) => ({
+                messages: state.messages.map((msg) =>
+                    msg.id === streamingId
+                        ? {
+                            ...msg,
+                            attachments: data || msg.attachments,
+                            multipleChoice: data.choices || msg.multipleChoice,
+                        }
+                        : msg,
+                ),
+            }))
+        }
+
+        get().finishStreamingMessage(streamingId)
+        set({ currentStreamingId: null, isLoading: false })
+    },
+
     initializeSocket: (botToken) => {
         const { socket } = get()
         if (socket) return
         set({ isLoadingConnect: true })
         const conversationId = `conv-${v4()}`
-        // const newSocket = io("http://23.88.122.180", {
-        const newSocket = io(window.location.origin, {
+        const newSocket = io("http://23.88.122.180", {
             path: '/socket.io',
             transports: ["websocket", "polling"],
             query: {
@@ -87,6 +156,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             console.log(" Connection error :", error)
             set({ isLoadingConnect: false })
         })
+
         newSocket.on("rag", (data) => {
             console.log("rag data:", data)
 
@@ -159,19 +229,18 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 }
             }
         })
+
         newSocket.on("end", (data) => {
             console.log("end data:", data)
-
-            // Handle end of streaming
             if (data.type === "end of chunks") {
                 const { currentStreamingId } = get()
                 if (currentStreamingId) {
-                    // Finish the streaming message
                     get().finishStreamingMessage(currentStreamingId)
                     set({ currentStreamingId: null, isLoading: false })
                 }
             }
         })
+
         newSocket.on("disconnect", () => {
             console.log("Disconnected from server")
             set({ isConnected: false, isLoadingConnect: false })
@@ -180,51 +249,19 @@ export const useChatStore = create<ChatState>((set, get) => ({
             console.log("force disconnect:", reason)
             newSocket.disconnect()
         })
-
-        newSocket.on("error_message", (error: string) => {
+        newSocket.on("error_message", (error) => {
             console.error("Socket error:", error)
-            get().addMessage("Sorry, there was an error processing your message.", "assistant")
+            get().addMessage(error.error || "Sorry, there was an error processing your message.", "assistant")
             set({ isLoading: false })
         })
-        // Streaming message event handlers
 
-        newSocket.on("message", async (data) => {
+        // 👇 updated message handler to use queue
+        newSocket.on("message", (data) => {
             console.log("Received from server:", data)
-
-            const streamingId = get().addStreamingMessage("assistant")
-            set({ currentStreamingId: streamingId })
-
-            const text = data.text || ""
-            let currentText = ""
-
-            // Stream only the text
-            if (text) {
-                for (let i = 0; i < text.length; i++) {
-                    currentText += text[i]
-                    get().updateStreamingMessage(streamingId, currentText)
-                    await new Promise((resolve) => setTimeout(resolve, 5))
-                }
-            }
-
-            // Add attachments and choices *after* streaming is complete
-            if (data?.type === "file" || data.choices) {
-                set((state) => ({
-                    messages: state.messages.map((msg) =>
-                        msg.id === streamingId
-                            ? {
-                                ...msg,
-                                attachments: data || msg.attachments,
-                                multipleChoice: data.choices || msg.multipleChoice,
-                            }
-                            : msg,
-                    ),
-                }))
-            }
-
-            // Finish streaming
-            get().finishStreamingMessage(streamingId)
-            set({ currentStreamingId: null, isLoading: false })
+            get().enqueueMessage(data)
+            get().processQueue()
         })
+
         set({ socket: newSocket })
     },
 
@@ -235,6 +272,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             set({ socket: null, isConnected: false, isLoading: false })
         }
     },
+
     sendMessage: async (content, attachments) => {
         const { socket } = get()
 
@@ -255,40 +293,34 @@ export const useChatStore = create<ChatState>((set, get) => ({
         }
 
         if (attachments?.length) {
-            const { socket } = get()
-
             for (const attach of attachments) {
                 const { file } = attach
                 if (!file) continue
 
                 const reader = new FileReader()
-
                 reader.onload = (e) => {
                     const arrayBuffer = e.target?.result
                     if (!arrayBuffer) return
 
                     const byteArray = new Uint8Array(arrayBuffer as ArrayBuffer)
-
                     const fileMessageObj = {
                         type: "Message",
-                        data: Array.from(byteArray), // send as array of bytes
+                        data: Array.from(byteArray),
                         filename: file.name,
                         mimetype: file.type,
                         data_type: "binary",
                     }
-
                     console.log("Sending file to server:", fileMessageObj)
                     socket?.emit("message", JSON.stringify(fileMessageObj))
                 }
-
                 reader.onerror = (err) => {
                     console.error("Error reading file:", file.name, err)
                 }
-
-                reader.readAsArrayBuffer(file) // Read raw bytes
+                reader.readAsArrayBuffer(file)
             }
         }
     },
+
     addMessage: (content, role, attachments, multipleChoice) =>
         set((state) => {
             const newMessage: Message = {
@@ -299,8 +331,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 attachments,
                 multipleChoice,
             }
-
             return { messages: [...state.messages, newMessage] }
         }),
-
 }))
