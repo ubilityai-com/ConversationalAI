@@ -72,6 +72,7 @@ export const TogetherAIChatModelJson = {
       },
       {
         type: "api",
+        type: "api",
         label: "Model",
         variableName: "model",
         value: "None",
@@ -125,8 +126,8 @@ export const TogetherAIChatModelJson = {
               },
               {
                 key: "modelType",
-                value: "chat",
-              },
+                value: "chat"
+              }
             ],
           },
         ],
@@ -136,6 +137,20 @@ export const TogetherAIChatModelJson = {
           key: true,
         },
         apiDependsOn: [
+          {
+            type: "dropdown",
+            name: "cred",
+            isAutomation: true,
+          },
+        ],
+        conditionOnFirstTime: [
+          {
+            type: "dropdown",
+            name: "cred",
+            isAutomation: true,
+          },
+        ],
+        conditionOnRefresh: [
           {
             type: "dropdown",
             name: "cred",

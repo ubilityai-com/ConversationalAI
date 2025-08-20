@@ -88,7 +88,7 @@ export const EmbeddingsCohereJson = {
                 type: "static",
                 value:
                   process.env.REACT_APP_DNS_URL +
-                  "cloud/regular/langchain/getModels",
+                  "cohere/listModels",
               },
             ],
           },
@@ -123,18 +123,9 @@ export const EmbeddingsCohereJson = {
                 isAutomation: true,
               },
               {
-                key: "provider",
-                obj: [
-                  {
-                    key: "providerName",
-                    value: "cohere",
-                  },
-                  {
-                    key: "modelType",
-                    value: "embedding",
-                  },
-                ],
-              },
+                key: "modelType",
+                value: "embedding"
+              }
             ],
           },
         ],

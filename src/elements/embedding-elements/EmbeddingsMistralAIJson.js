@@ -88,7 +88,7 @@ export const EmbeddingsMistralAIJson = {
                 type: "static",
                 value:
                   process.env.REACT_APP_DNS_URL +
-                  "cloud/regular/langchain/getModels",
+                  "mistralAi/listModels",
               },
             ],
           },
@@ -123,18 +123,9 @@ export const EmbeddingsMistralAIJson = {
                 isAutomation: true,
               },
               {
-                key: "provider",
-                obj: [
-                  {
-                    key: "providerName",
-                    value: "mistralAi",
-                  },
-                  {
-                    key: "modelType",
-                    value: "embedding",
-                  },
-                ],
-              },
+                key: "modelType",
+                value: "embedding"
+              }
             ],
           },
         ],

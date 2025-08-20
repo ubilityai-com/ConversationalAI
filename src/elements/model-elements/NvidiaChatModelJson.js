@@ -88,7 +88,7 @@ export const NvidiaChatModelJson = {
                 type: "static",
                 value:
                   process.env.REACT_APP_DNS_URL +
-                  "cloud/regular/langchain/getModels",
+                  "nvidia/listModels",
               },
             ],
           },
@@ -123,18 +123,9 @@ export const NvidiaChatModelJson = {
                 isAutomation: true,
               },
               {
-                key: "provider",
-                obj: [
-                  {
-                    key: "providerName",
-                    value: "nvidia",
-                  },
-                  {
-                    key: "modelType",
-                    value: "chat",
-                  },
-                ],
-              },
+                key: "modelType",
+                value: "chat"
+              }
             ],
           },
         ],

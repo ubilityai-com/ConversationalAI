@@ -88,7 +88,7 @@ export const AnthropicChatModelJson = {
                 type: "static",
                 value:
                   process.env.REACT_APP_DNS_URL +
-                  "cloud/regular/langchain/getModels",
+                  "anthropic/listModels",
               },
             ],
           },
@@ -123,18 +123,9 @@ export const AnthropicChatModelJson = {
                 isAutomation: true,
               },
               {
-                key: "provider",
-                obj: [
-                  {
-                    key: "providerName",
-                    value: "anthropic",
-                  },
-                  {
-                    key: "modelType",
-                    value: "chat",
-                  },
-                ],
-              },
+                key: "modelType",
+                value: "chat"
+              }
             ],
           },
         ],

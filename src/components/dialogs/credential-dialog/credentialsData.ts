@@ -341,6 +341,19 @@ const serviceFields: CredentialInfo[] = [
         ],
     },
     {
+        type: "Cerebras",
+        service: "Cerebras",
+        Service_name: "",
+        cred: [
+            {
+                label: "API key",
+                Credential_name: "apiKey",
+                Credential_value: "",
+                hashed: true,
+            },
+        ],
+    },
+    {
         type: "Cohere",
         service: "Cohere",
         Service_name: "",
@@ -1052,6 +1065,34 @@ const serviceFields: CredentialInfo[] = [
         ],
     },
     {
+        type: "IBMWatsonx",
+        service: "IBMWatsonx",
+        Service_name: "",
+        cred: [
+            {
+                label: "API Key",
+                Credential_name: "apiKey",
+                Credential_value: "",
+                hashed: true,
+            },
+            {
+                label: "Base URL",
+                Credential_name: "baseUrl",
+                Credential_value: "",
+            },
+            {
+                label: "Project ID",
+                Credential_name: "projectId",
+                Credential_value: "",
+            },
+            {
+                label: "Version",
+                Credential_name: "version",
+                Credential_value: "2024-03-14",
+            },
+        ],
+    },
+    {
         type: "Jenkins",
         service: "Jenkins",
         Service_name: "",
@@ -1412,6 +1453,24 @@ const serviceFields: CredentialInfo[] = [
                 Credential_value: false,
                 switch: true,
                 typeOfValue: "string",
+            },
+        ],
+    },
+    {
+        type: "LiteLLM",
+        service: "LiteLLM",
+        Service_name: "",
+        cred: [
+            {
+                label: "API Key",
+                Credential_name: "apiKey",
+                Credential_value: "",
+                hashed: true,
+            },
+            {
+                label: "Base URL",
+                Credential_name: "baseUrl",
+                Credential_value: "",
             },
         ],
     },
@@ -1949,6 +2008,19 @@ const serviceFields: CredentialInfo[] = [
                 Credential_name: "organization",
                 Credential_value: "",
                 optional: true,
+            },
+        ],
+    },
+    {
+        type: "OpenRouter",
+        service: "OpenRouter",
+        Service_name: "",
+        cred: [
+            {
+                label: "API Key",
+                Credential_name: "apiKey",
+                Credential_value: "",
+                hashed: true,
             },
         ],
     },

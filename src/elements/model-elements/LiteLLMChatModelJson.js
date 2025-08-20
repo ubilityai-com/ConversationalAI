@@ -1,18 +1,23 @@
-export const MistralAIChatModelJson = {
-  category: "model",
-  type: "MistralAIChatModel",
-  label: "Mistral AI Chat Model",
-  color: "#72797b",
-  description: "For advanced usage with an AI chain",
-  rightSideData: {
-    json: [
+export const LiteLLMChatModelJson = {
+  "category": "model",
+  "type": "LiteLLMChatModel",
+  "label": "LiteLLM Chat Model",
+  "color": "#53D2E2 ",
+  "docsPath": "Connectors/LiteLLMChatModel/getting_started",
+  "description": "For advanced usage with an AI chain",
+  "defaultValid": false,
+  "automated": "json",
+  "automationConfig": "automated",
+  "rightSideData": {
+    "json": [
+
       {
         type: "api",
         label: "Credentials",
         variableName: "cred",
         required: true,
         credential: true,
-        credType: "MistralAi",
+        credType: "LiteLLM",
         value: "None",
         list: [],
         config: [
@@ -69,6 +74,7 @@ export const MistralAIChatModelJson = {
         conditionOnFirstTime: [],
         conditionOnRefresh: [],
       },
+
       {
         type: "api",
         label: "Model",
@@ -88,7 +94,7 @@ export const MistralAIChatModelJson = {
                 type: "static",
                 value:
                   process.env.REACT_APP_DNS_URL +
-                  "mistralAi/listModels",
+                  "liteLlm/listModels",
               },
             ],
           },
@@ -159,23 +165,7 @@ export const MistralAIChatModelJson = {
       {
         title: "Additional Fields",
         type: "accordion",
-        accTitle: "Temperature",
-        variableName: "samplingTemperature",
-        fieldsArray: [
-          [
-            {
-              type: "textfield",
-              variableName: "samplingTemperature",
-              numberField: true,
-              value: "0.8",
-              hasDynamicVariable: true,
-            },
-          ],
-        ],
-      },
-      {
-        type: "accordion",
-        accTitle: "Max Output Tokens",
+        accTitle: "Maximum Number Of Tokens",
         variableName: "maximumNumberOfTokens",
         fieldsArray: [
           [
@@ -184,7 +174,7 @@ export const MistralAIChatModelJson = {
               // label: "Maximum Number Of Tokens",
               variableName: "maximumNumberOfTokens",
               numberField: true,
-              value: "4096",
+              value: 4096,
               hasDynamicVariable: true,
             },
           ],
@@ -192,16 +182,17 @@ export const MistralAIChatModelJson = {
       },
       {
         type: "accordion",
-        accTitle: "Max Retries",
-        variableName: "maxRetries",
+        accTitle: "Temperature",
+        variableName: "samplingTemperature",
         fieldsArray: [
           [
             {
               type: "textfield",
-              // label: "Max Retries",
-              variableName: "maxRetries",
+              // label: "Sampling Temperature",
+              variableName: "samplingTemperature",
               numberField: true,
-              value: 2,
+              typeOfValue: "float",
+              value: "0.9",
               hasDynamicVariable: true,
             },
           ],
@@ -209,52 +200,38 @@ export const MistralAIChatModelJson = {
       },
       {
         type: "accordion",
-        accTitle: "Random Seed",
-        variableName: "randomSeed",
+        accTitle: "Timeout",
+        variableName: "timeout",
         fieldsArray: [
           [
             {
               type: "textfield",
-              variableName: "randomSeed",
+              // label: "Timeout",
+              variableName: "timeout",
               numberField: true,
+              value: 60000,
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Top Probability",
+        variableName: "top_P",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              variableName: "top_P",
+              numberField: true,
+              typeOfValue: "float",
               value: "",
               hasDynamicVariable: true,
             },
           ],
         ],
       },
-      {
-        type: "accordion",
-        accTitle: "Top P",
-        variableName: "topP",
-        fieldsArray: [
-          [
-            {
-              type: "textfield",
-              variableName: "topP",
-              numberField: true,
-              value: 0.9,
-              placeholder: "Top P",
-              hasDynamicVariable: true,
-            },
-          ],
-        ],
-      },
-      {
-        type: "accordion",
-        accTitle: "Safe Mode",
-        variableName: "safeMode",
-        fieldsArray: [
-          [
-            {
-              type: "checkbox",
-              value: false,
-              variableName: "safeMode",
-              rightSideInput: true
-            }
-          ]
-        ]
-      },
     ],
-  },
+  }
 };

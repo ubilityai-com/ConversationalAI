@@ -88,7 +88,7 @@ export const OllamaChatModelJson = {
                 type: "static",
                 value:
                   process.env.REACT_APP_DNS_URL +
-                  "cloud/regular/langchain/getModels",
+                  "ollama/listModels",
               },
             ],
           },
@@ -123,18 +123,9 @@ export const OllamaChatModelJson = {
                 isAutomation: true,
               },
               {
-                key: "provider",
-                obj: [
-                  {
-                    key: "providerName",
-                    value: "ollama",
-                  },
-                  {
-                    key: "modelType",
-                    value: "chat",
-                  },
-                ],
-              },
+                key: "modelType",
+                value: "chat"
+              }
             ],
           },
         ],

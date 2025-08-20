@@ -107,7 +107,7 @@ export const EmbeddingsGoogleGenerativeAIJson = {
                 type: "static",
                 value:
                   process.env.REACT_APP_DNS_URL +
-                  "cloud/regular/langchain/getModels",
+                  "googleGenerativeAi/listModels",
               },
             ],
           },
@@ -142,26 +142,16 @@ export const EmbeddingsGoogleGenerativeAIJson = {
                 isAutomation: true,
               },
               {
-                key: "provider",
-                obj: [
-                  {
-                    key: "providerName",
-                    value: "googleGenerativeAi",
-                  },
-                  {
-                    key: "modelType",
-                    value: "embedContent",
-                  },
-                  {
-                    key: "apiVersion",
-                    dependOn: "apiVersion",
-                    isAutomation: true,
-                  },
-                ],
+                key: "apiVersion",
+                dependOn: "apiVersion",
+                isAutomation: true,
               },
+              {
+                key: "modelType",
+                value: "embedContent"
+              }
             ],
           },
-
         ],
         res: {
           path: "data.Models",

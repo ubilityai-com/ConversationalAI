@@ -203,3 +203,21 @@ export const EmbeddingsNomic = (selectedNode: any) => {
 
     return jsonToSend
 }
+
+  
+  export function EmbeddingsIBMWatsonx(selectedNode: any) {
+    const embedding = selectedNode.data.rightSideData.extras.embedding
+    const json = embedding.content.json
+    return {
+        provider: "ibm",
+        model: json.model,
+        credential: json.cred,
+        params: {
+            optionals: {
+                max_retries: parseInt(getAccvalue(json, "maxRetries")),
+                concurrency_limit: parseInt(getAccvalue(json, "maxConcurrency")),
+                truncateInputTokens: parseInt(getAccvalue(json, "truncateInputTokens")),
+            },
+        },
+    }
+  }

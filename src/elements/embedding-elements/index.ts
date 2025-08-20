@@ -7,6 +7,7 @@ import { EmbeddingsNvidiaJson } from "./EmbeddingsNvidiaJson";
 import { EmbeddingsOllamaJson } from "./EmbeddingsOllamaJson";
 import { EmbeddingsOpenAIJson } from "./EmbeddingsOpenAIJson";
 import { EmbeddingsTogetherAIJson } from "./EmbeddingsTogetherAIJson";
+import { EmbeddingsIBMWatsonxJson } from "./EmbeddingsIBMWatsonxJson";
 
 const EmbeddingElements = [
     EmbeddingsOpenAIJson,
@@ -18,5 +19,6 @@ const EmbeddingElements = [
     EmbeddingsFireworksJson,
     EmbeddingsNvidiaJson,
     EmbeddingsNomicJson,
+    EmbeddingsIBMWatsonxJson,
 ];
 export default EmbeddingElements

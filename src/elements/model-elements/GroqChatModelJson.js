@@ -88,7 +88,7 @@ export const GroqChatModelJson = {
                 type: "static",
                 value:
                   process.env.REACT_APP_DNS_URL +
-                  "cloud/regular/langchain/getModels",
+                  "groq/listModels",
               },
             ],
           },
@@ -123,18 +123,9 @@ export const GroqChatModelJson = {
                 isAutomation: true,
               },
               {
-                key: "provider",
-                obj: [
-                  {
-                    key: "providerName",
-                    value: "groq",
-                  },
-                  {
-                    key: "modelType",
-                    value: "chat",
-                  },
-                ],
-              },
+                key: "modelType",
+                value: "chat"
+              }
             ],
           },
         ],

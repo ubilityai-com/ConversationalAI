@@ -1,18 +1,22 @@
-export const MistralAIChatModelJson = {
-  category: "model",
-  type: "MistralAIChatModel",
-  label: "Mistral AI Chat Model",
-  color: "#72797b",
-  description: "For advanced usage with an AI chain",
-  rightSideData: {
-    json: [
+export const EmbeddingsIBMWatsonxJson = {
+  "category": "embedding",
+  "type": "EmbeddingsIBMWatsonx",
+  "label": "Embeddings IBM Watsonx",
+  "color": "#53D2E2 ",
+  "docsPath": "Connectors/EmbeddingsIBMWatsonx/getting_started",
+  "description": "Use IBM Watsonx Embeddings",
+  "defaultValid": false,
+  "automated": "json",
+  "automationConfig": "automated",
+  "rightSideData": {
+    "json": [
       {
         type: "api",
         label: "Credentials",
         variableName: "cred",
         required: true,
         credential: true,
-        credType: "MistralAi",
+        credType: "IBMWatsonx",
         value: "None",
         list: [],
         config: [
@@ -88,7 +92,7 @@ export const MistralAIChatModelJson = {
                 type: "static",
                 value:
                   process.env.REACT_APP_DNS_URL +
-                  "mistralAi/listModels",
+                  "ibmWatsonx/listModels",
               },
             ],
           },
@@ -124,7 +128,7 @@ export const MistralAIChatModelJson = {
               },
               {
                 key: "modelType",
-                value: "chat"
+                value: "embedding"
               }
             ],
           },
@@ -159,32 +163,16 @@ export const MistralAIChatModelJson = {
       {
         title: "Additional Fields",
         type: "accordion",
-        accTitle: "Temperature",
-        variableName: "samplingTemperature",
+        accTitle: "Truncate Input Tokens",
+        variableName: "truncateInputTokens",
         fieldsArray: [
           [
             {
               type: "textfield",
-              variableName: "samplingTemperature",
+              label: "Truncate Input Tokens",
+              variableName: "truncateInputTokens",
               numberField: true,
-              value: "0.8",
-              hasDynamicVariable: true,
-            },
-          ],
-        ],
-      },
-      {
-        type: "accordion",
-        accTitle: "Max Output Tokens",
-        variableName: "maximumNumberOfTokens",
-        fieldsArray: [
-          [
-            {
-              type: "textfield",
-              // label: "Maximum Number Of Tokens",
-              variableName: "maximumNumberOfTokens",
-              numberField: true,
-              value: "4096",
+              value: "",
               hasDynamicVariable: true,
             },
           ],
@@ -198,24 +186,8 @@ export const MistralAIChatModelJson = {
           [
             {
               type: "textfield",
-              // label: "Max Retries",
+              label: "Max Retries",
               variableName: "maxRetries",
-              numberField: true,
-              value: 2,
-              hasDynamicVariable: true,
-            },
-          ],
-        ],
-      },
-      {
-        type: "accordion",
-        accTitle: "Random Seed",
-        variableName: "randomSeed",
-        fieldsArray: [
-          [
-            {
-              type: "textfield",
-              variableName: "randomSeed",
               numberField: true,
               value: "",
               hasDynamicVariable: true,
@@ -225,36 +197,22 @@ export const MistralAIChatModelJson = {
       },
       {
         type: "accordion",
-        accTitle: "Top P",
-        variableName: "topP",
+        accTitle: "Max Concurrency",
+        variableName: "maxConcurrency",
         fieldsArray: [
           [
             {
               type: "textfield",
-              variableName: "topP",
+              label: "Max Concurrency",
+              variableName: "maxConcurrency",
               numberField: true,
-              value: 0.9,
-              placeholder: "Top P",
+              value: "",
               hasDynamicVariable: true,
             },
           ],
         ],
       },
-      {
-        type: "accordion",
-        accTitle: "Safe Mode",
-        variableName: "safeMode",
-        fieldsArray: [
-          [
-            {
-              type: "checkbox",
-              value: false,
-              variableName: "safeMode",
-              rightSideInput: true
-            }
-          ]
-        ]
-      },
+
     ],
-  },
+  }
 };

@@ -1,18 +1,22 @@
-export const MistralAIChatModelJson = {
-  category: "model",
-  type: "MistralAIChatModel",
-  label: "Mistral AI Chat Model",
-  color: "#72797b",
-  description: "For advanced usage with an AI chain",
-  rightSideData: {
-    json: [
+export const CerebrasChatModelJson = {
+  "category": "model",
+  "type": "CerebrasChatModel",
+  "label": "Cerebras Chat Model",
+  "color": "#53D2E2 ",
+  "docsPath": "Connectors/CerebrasChatModel/getting_started",
+  "description": "For advanced usage with an AI chain",
+  "defaultValid": false,
+  "automated": "json",
+  "automationConfig": "automated",
+  "rightSideData": {
+    "json": [
       {
         type: "api",
         label: "Credentials",
         variableName: "cred",
         required: true,
         credential: true,
-        credType: "MistralAi",
+        credType: "Cerebras",
         value: "None",
         list: [],
         config: [
@@ -69,6 +73,7 @@ export const MistralAIChatModelJson = {
         conditionOnFirstTime: [],
         conditionOnRefresh: [],
       },
+
       {
         type: "api",
         label: "Model",
@@ -88,7 +93,7 @@ export const MistralAIChatModelJson = {
                 type: "static",
                 value:
                   process.env.REACT_APP_DNS_URL +
-                  "mistralAi/listModels",
+                  "cerebras/listModels",
               },
             ],
           },
@@ -159,15 +164,16 @@ export const MistralAIChatModelJson = {
       {
         title: "Additional Fields",
         type: "accordion",
-        accTitle: "Temperature",
-        variableName: "samplingTemperature",
+        accTitle: "Base Url",
+        variableName: "baseUrl",
         fieldsArray: [
           [
             {
               type: "textfield",
-              variableName: "samplingTemperature",
-              numberField: true,
-              value: "0.8",
+              // label: "Base Url",
+              variableName: "baseUrl",
+              value: "https://api.cerebras.ai/v1",
+              placeholder: "Base Url",
               hasDynamicVariable: true,
             },
           ],
@@ -175,7 +181,7 @@ export const MistralAIChatModelJson = {
       },
       {
         type: "accordion",
-        accTitle: "Max Output Tokens",
+        accTitle: "Maximum Number Of Tokens",
         variableName: "maximumNumberOfTokens",
         fieldsArray: [
           [
@@ -184,7 +190,42 @@ export const MistralAIChatModelJson = {
               // label: "Maximum Number Of Tokens",
               variableName: "maximumNumberOfTokens",
               numberField: true,
-              value: "4096",
+              value: 4096,
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Temperature",
+        variableName: "samplingTemperature",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              // label: "Sampling Temperature",
+              variableName: "samplingTemperature",
+              numberField: true,
+              typeOfValue: "float",
+              value: "0.9",
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Timeout",
+        variableName: "timeout",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              // label: "Timeout",
+              variableName: "timeout",
+              numberField: true,
+              value: 60000,
               hasDynamicVariable: true,
             },
           ],
@@ -209,14 +250,15 @@ export const MistralAIChatModelJson = {
       },
       {
         type: "accordion",
-        accTitle: "Random Seed",
-        variableName: "randomSeed",
+        accTitle: "Top Probability",
+        variableName: "top_P",
         fieldsArray: [
           [
             {
               type: "textfield",
-              variableName: "randomSeed",
+              variableName: "top_P",
               numberField: true,
+              typeOfValue: "float",
               value: "",
               hasDynamicVariable: true,
             },
@@ -225,16 +267,16 @@ export const MistralAIChatModelJson = {
       },
       {
         type: "accordion",
-        accTitle: "Top P",
-        variableName: "topP",
+        accTitle: "Frequency Penalty",
+        variableName: "frequencyPenalty",
         fieldsArray: [
           [
             {
               type: "textfield",
-              variableName: "topP",
+              variableName: "frequencyPenalty",
               numberField: true,
-              value: 0.9,
-              placeholder: "Top P",
+              typeOfValue: "float",
+              value: "",
               hasDynamicVariable: true,
             },
           ],
@@ -242,19 +284,21 @@ export const MistralAIChatModelJson = {
       },
       {
         type: "accordion",
-        accTitle: "Safe Mode",
-        variableName: "safeMode",
+        accTitle: "Presence Penalty",
+        variableName: "presencePenalty",
         fieldsArray: [
           [
             {
-              type: "checkbox",
-              value: false,
-              variableName: "safeMode",
-              rightSideInput: true
-            }
-          ]
-        ]
+              type: "textfield",
+              variableName: "presencePenalty",
+              numberField: true,
+              typeOfValue: "float",
+              value: "",
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
       },
-    ],
-  },
+    ]
+  }
 };

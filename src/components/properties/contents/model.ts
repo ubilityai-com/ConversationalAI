@@ -304,3 +304,89 @@ export const NvidiaChatModel = (selectedNode: any) => {
     }
     return jsonToSend
 }
+
+
+export function CerebrasChatModel(selectedNode: any) {
+    const model = selectedNode.data.rightSideData.extras.model
+    const json = model.content.json
+    return {
+        provider: "cerebras",
+        model: json.model,
+        credential: json.cred,
+        params: {
+            optionals: {
+                base_url: getAccvalue(json, "baseUrl"),
+                max_tokens: parseInt(getAccvalue(json, "maximumNumberOfTokens")),
+                temperature: parseFloat(getAccvalue(json, "samplingTemperature")),
+                timeout: parseInt(getAccvalue(json, "timeout")),
+                max_retries: parseInt(getAccvalue(json, "maxRetries")),
+                top_p: parseFloat(getAccvalue(json, "top_P")),
+                frequency_penalty: parseFloat(getAccvalue(json, "frequencyPenalty")),
+                presence_penalty: parseFloat(getAccvalue(json, "presencePenalty")),
+            },
+        },
+    };
+}
+
+  
+  export function OpenRouterChatModel(selectedNode: any) {
+    const model = selectedNode.data.rightSideData.extras.model
+    const json = model.content.json
+    return {
+        provider: "openRouter",
+        model: json.model,
+        credential: json.cred,
+        params: {
+            optionals: {
+                base_url: getAccvalue(json, "baseUrl"),
+                max_tokens: parseInt(getAccvalue(json, "maximumNumberOfTokens")),
+                temperature: parseFloat(getAccvalue(json, "samplingTemperature")),
+                timeout: parseInt(getAccvalue(json, "timeout")),
+                top_p: parseFloat(getAccvalue(json, "top_P")),
+                frequency_penalty: parseFloat(getAccvalue(json, "frequencyPenalty")),
+                presence_penalty: parseFloat(getAccvalue(json, "presencePenalty")),
+            },
+        },
+    };
+  }
+
+  
+  export function LiteLLMChatModel(selectedNode: any) {
+    const model = selectedNode.data.rightSideData.extras.model
+    const json = model.content.json
+    return {
+        provider: "liteLLM",
+        model: json.model,
+        credential: json.cred,
+        params: {
+            optionals: {
+                max_tokens: parseInt(getAccvalue(json, "maximumNumberOfTokens")),
+                temperature: parseFloat(getAccvalue(json, "samplingTemperature")),
+                timeout: parseInt(getAccvalue(json, "timeout")),
+                top_p: parseFloat(getAccvalue(json, "top_P")),
+            },
+        },
+    };
+  }
+
+  
+  export function IBMWatsonxChatModel(selectedNode: any) {
+    const model = selectedNode.data.rightSideData.extras.model
+    const json = model.content.json
+    return {
+        provider: "ibm",
+        model: json.model,
+        credential: json.cred,
+        params: {
+            optionals: {
+                max_tokens: parseInt(getAccvalue(json, "maximumNumberOfTokens")),
+                temperature: parseFloat(getAccvalue(json, "samplingTemperature")),
+                top_p: parseFloat(getAccvalue(json, "top_P")),
+                logprobs: getAccvalue(json, "logProbs"),
+                n: parseInt(getAccvalue(json, "completionChoicesNumber")),
+                frequency_penalty: parseInt(getAccvalue(json, "frequencyPenalty")),
+                presence_penalty: parseInt(getAccvalue(json, "presencePenalty")),
+            },
+        },
+    };
+  }

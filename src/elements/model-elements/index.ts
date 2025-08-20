@@ -1,4 +1,8 @@
 // add import
+import { IBMWatsonxChatModelJson } from "./IBMWatsonxChatModelJson";
+import { LiteLLMChatModelJson } from "./LiteLLMChatModelJson";
+import { OpenRouterChatModelJson } from "./OpenRouterChatModelJson";
+import { CerebrasChatModelJson } from "./CerebrasChatModelJson";
 import { AI21ChatModelJson } from "./AI21ChatModelJson";
 import { AnthropicChatModelJson } from "./AnthropicChatModelJson";
 import { AWSBedrockChatModelJson } from "./AWSBedrockChatModelJson";
@@ -18,6 +22,10 @@ import { VertexAIChatModelJson } from "./VertexAIChatModelJson";
 
 const ModelElements = [
     // add Component
+    IBMWatsonxChatModelJson,
+    LiteLLMChatModelJson,
+    OpenRouterChatModelJson,
+    CerebrasChatModelJson,
     AnthropicChatModelJson,
     AzureChatModelJson,
     OpenAIChatModelJson,

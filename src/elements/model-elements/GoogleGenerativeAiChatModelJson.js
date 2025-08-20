@@ -107,7 +107,7 @@ export const GoogleGenerativeAiChatModelJson = {
                 type: "static",
                 value:
                   process.env.REACT_APP_DNS_URL +
-                  "cloud/regular/langchain/getModels",
+                  "googleGenerativeAi/listModels",
               },
             ],
           },
@@ -142,26 +142,16 @@ export const GoogleGenerativeAiChatModelJson = {
                 isAutomation: true,
               },
               {
-                key: "provider",
-                obj: [
-                  {
-                    key: "providerName",
-                    value: "googleGenerativeAi",
-                  },
-                  {
-                    key: "modelType",
-                    value: "generateContent",
-                  },
-                  {
-                    key: "apiVersion",
-                    dependOn: "apiVersion",
-                    isAutomation: true,
-                  },
-                ],
+                key: "apiVersion",
+                dependOn: "apiVersion",
+                isAutomation: true,
               },
+              {
+                key: "modelType",
+                value: "generateContent"
+              }
             ],
           },
-
         ],
         res: {
           path: "data.Models",

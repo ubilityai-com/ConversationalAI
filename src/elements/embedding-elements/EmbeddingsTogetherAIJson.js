@@ -124,8 +124,8 @@ export const EmbeddingsTogetherAIJson = {
               },
               {
                 key: "modelType",
-                value: "embedding",
-              },
+                value: "embedding"
+              }
             ],
           },
         ],
