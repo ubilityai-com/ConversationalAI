@@ -475,6 +475,7 @@ async def restore_active_chatbots():
     """
     try:
         from models.chatbot import list_chatbots_all_data
+        from models.credentials import get_credentials_by_names
         all_chatbots = list_chatbots_all_data()
 
         if not all_chatbots:
@@ -487,12 +488,18 @@ async def restore_active_chatbots():
 
             dialogue_id = chatbot.get("id")
             dialogue = chatbot.get("dialogue")
+            cred_obj = get_credentials_by_names(dialogue['credentials'])
 
+            new_dialogue = {
+                "credentials": cred_obj,
+                "constant_variables": dialogue['constant_variables'],
+                "bot": dialogue['bot']
+            }
             if not dialogue_id or not dialogue:
                 logger.warning(f"Skipping chatbot ID {dialogue_id} due to missing info.")
                 continue
 
-            active_dialogues[str(dialogue_id)]=dialogue
+            active_dialogues[str(dialogue_id)]=new_dialogue
 
         return True
     except Exception as e:
