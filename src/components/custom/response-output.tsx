@@ -89,8 +89,7 @@ const ResponseOutput = React.forwardRef<HTMLDivElement, ResponseOutputProps>(
 
         const Copied = JsonView.Copied
         const handleCreateVariable = (copyEvent: any) => {
-            console.log({copyEvent});
-            
+
             if (copyEvent.name !== false) {
                 let copiedPath = reformatPathArray(copyEvent.namespace);
 
@@ -117,13 +116,13 @@ const ResponseOutput = React.forwardRef<HTMLDivElement, ResponseOutputProps>(
             }
         };
         const reformatPathArray = (pathArray: any[]) => {
-                return pathArray.join(".")
+            return pathArray.join(".")
         };
 
         if (!runResult) return null
 
         return (
-            <div ref={ref} className={cn("w-full", className)} {...props}>
+            <div ref={ref} className={cn("w-full my-4", className)} {...props}>
                 {hasDivider && <hr className="border-gray-300 my-5 h-0.5" />}
 
                 <JsonView

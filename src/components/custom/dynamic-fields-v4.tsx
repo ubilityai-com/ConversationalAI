@@ -253,10 +253,10 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
                   ({fieldsArray.length})
                 </span>
               </CardTitle>
-              <CardDescription>
+              {/* <CardDescription>
                 Add options users can select. Every choice gets its own output
                 handle.
-              </CardDescription>
+              </CardDescription> */}
             </CardHeader>
           )}
 

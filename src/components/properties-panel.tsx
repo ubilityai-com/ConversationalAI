@@ -55,7 +55,7 @@ export function PropertiesPanel() {
                     </h2>
                 </div>
                 <div className="flex items-center space-x-2 flex-shrink-0 ">
-                    {(selectedNode.data.category === "ai" || selectedNode.data.category === "integration" || selectedNode.data.category == "automationTools") &&
+                    {(selectedNode.data.category === "ai" || selectedNode.data.category === "integration" || selectedNode.type == "HttpRequest") &&
                         <Button
                             size="sm"
                             onClick={() => testNode(selectedNode?.id)}

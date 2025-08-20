@@ -28,6 +28,7 @@ import DynamicFields from "./dynamic-fields-v4";
 import { FieldWrapper } from "./field-wrapper";
 import { SearchableSelect } from "./searchable-select";
 import ReactQuillEditor from "./textFormatter";
+import { JsonEditor } from "./json-editor";
 
 // Validation functions
 const validateNumberGreaterThanZero = (value: string) => {
@@ -545,7 +546,16 @@ export default function AutomationSimple({
       case "editor":
         return (
           <div className="space-y-2">
-            <div className="border rounded-md">
+            <JsonEditor
+              language={item.defaultLanguage}
+              value={getFieldValue(item) || ""}
+              onChange={(value: any) =>
+                onChangeAutomationSimple({
+                  [item.variableName]: value,
+                })
+              }
+              {...commonProps} />
+            {/* <div className="border rounded-md">
               <div className="flex items-center justify-between p-2 border-b bg-muted">
                 <div className="flex items-center space-x-2">
                   <Code className="h-4 w-4" />
@@ -568,7 +578,7 @@ export default function AutomationSimple({
                 placeholder="Enter your code here..."
                 {...commonProps}
               />
-            </div>
+            </div> */}
           </div>
         );
 
@@ -599,19 +609,6 @@ export default function AutomationSimple({
             )}
           </div>
         );
-      // case "outputJson":
-      //     return (
-      //         <div className="space-y-2">
-      //             <JsonEditor
-      //                 onChange={() => { }}
-      //                 value={item.value}
-      //                 stopAdd={true}
-      //                 stopEdit={true}
-      //                 stopDelete
-      //             />
-      //         </div>
-      //     )
-
       default:
         return (
           <div className="p-4 border border-dashed border-gray-300 rounded-lg">

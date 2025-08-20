@@ -6,6 +6,18 @@ import { camelToDashCase } from "../lib/utils";
 import { useFlowStore } from "../store/flow-store";
 import { useRightDrawerStore } from "../store/right-drawer-store";
 import { ResponseOutput } from "./custom/response-output";
+import BinaryResult, { ResultOptions } from "./file-components/BinaryResult";
+
+function hasFileBinaryDataKeyDeep(jsonObj: any) {
+  for (let key in jsonObj) {
+    if (key === "file_name") return true;
+
+    if (typeof jsonObj[key] === "object" && jsonObj[key] !== null) {
+      if (hasFileBinaryDataKeyDeep(jsonObj[key])) return true;
+    }
+  }
+  return false;
+}
 export default function RightSideBody() {
   const [isLoading, setIsLoading] = useState(false);
   const [Component, setComponent] = useState<ComponentType<any> | null>(null);
@@ -13,6 +25,7 @@ export default function RightSideBody() {
     useState<ComponentType<any> | null>(null);
 
   const [schema, setSchema] = useState<ComponentType<any[]> | null>(null);
+  const [activeTab, setActiveTab] = useState('Binary');
 
   const clickedElement = useFlowStore((state) => state.clickedElement);
   const updateNodesValidationById = useFlowStore(
@@ -93,7 +106,12 @@ export default function RightSideBody() {
   }, [clickedElement?.type, clickedElement?.data?.category]);
 
   const selectedNode = useNodesData(clickedElement?.id);
-
+  const runResult = selectedNode ? nodeResults[selectedNode.id] : {}
+  useEffect(() => {
+    if (hasFileBinaryDataKeyDeep(runResult))
+      setActiveTab("Binary")
+    else setActiveTab("Json")
+  }, [runResult])
   if (!selectedNode) return null;
 
   const handleCopy = (event: any) => {
@@ -119,6 +137,7 @@ export default function RightSideBody() {
   const validate = (valid: boolean) => {
     updateNodesValidationById(selectedNode.id, valid);
   };
+
   return (
     <div>
       {isLoading && <>Loading ........</>}
@@ -133,15 +152,27 @@ export default function RightSideBody() {
           CustomComponent={CustomComponent}
         />
       )}
-      {nodeResults && (
+      {
+        runResult && hasFileBinaryDataKeyDeep(runResult) &&
+        <ResultOptions activeTab={activeTab} setActiveTab={setActiveTab} />
+      }
+      {runResult && hasFileBinaryDataKeyDeep(runResult) && activeTab === "Binary" &&
+        <BinaryResult
+          runResult={runResult}
+          file={{
+            name: runResult?.file_name,
+            extension: runResult.file_name?.split(".").pop(),
+            displayName: runResult?.file_name
+          }} />}
+      {runResult && activeTab === "Json" && (
         <ResponseOutput
-          runResult={nodeResults[selectedNode.id]}
+          runResult={runResult}
           onCopy={handleCopy}
           onExport={handleExport}
           onMaximize={handleMaximize}
           onCreateVariable={handleCreateVariable}
           collapsed={1}
-          hasDivider
+        // hasDivider
         />
       )}
     </div>
