@@ -49,7 +49,7 @@ async def test_node(payload: Union[TestNodeRequest, TestAINodeRequest,TestNodeTo
 
         if isinstance(payload,TestNodeToolsRequest):
             if payload.tool_type == "HttpRequest":
-                result = await HttpRequest(payload.data).make_request(payload.chatbot_id,"testNode",test_node=True)
+                result = await HttpRequest(payload.data).make_request(payload.chatbot_id,"testNode")
 
         return {"output": result}
     except Exception as e:
