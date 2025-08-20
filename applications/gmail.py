@@ -740,7 +740,7 @@ def gmail_download_attachment(creds, request, **kwargs):
             dialogue_id = kwargs.get("dialogue_id")
             conv_id = kwargs.get("conv_id")
 
-        response = upload_file(dialogue_id,conv_id,file_data,file_name=None)
+        response = upload_file(dialogue_id,conv_id,file_data,original_filename=None)
         return response
 
     except Exception as e:
