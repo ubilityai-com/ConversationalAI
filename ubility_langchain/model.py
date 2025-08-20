@@ -482,9 +482,7 @@ class Model:
                     llm = ChatOpenAI(model=self.model, api_key=self.api_key, base_url=self.base_url, **optionals)
                 elif self.provider == "azureOpenAi":
                     from langchain_openai import AzureChatOpenAI
-                    if "azure_deployment" not in optionals:
-                        raise Exception("missing deployment name")
-                    llm = AzureChatOpenAI(api_key=self.api_key, api_version=self.api_version, azure_endpoint=self.azure_endpoint, **optionals)
+                    llm = AzureChatOpenAI(azure_deployment=self.model ,api_key=self.api_key, api_version=self.api_version, azure_endpoint=self.azure_endpoint, **optionals)
                 elif self.provider == "mistralAi":
                     from langchain_mistralai import ChatMistralAI
                     llm = ChatMistralAI(api_key=self.api_key, model_name=self.model, **optionals)
