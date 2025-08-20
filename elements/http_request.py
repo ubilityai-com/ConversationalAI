@@ -7,13 +7,9 @@ class HttpRequest:
     def __init__(self, data):
         self.data = data
 
-    async def make_request(self,sid,conversation_id,test_node=False):
+    async def make_request(self,dialogue_id,conversation_id):
         try:
-            if not test_node:
-                from app import get_dialogue_id_from_sid
-                dial_id = get_dialogue_id_from_sid(sid)
-            else: # if request from test_node
-                dial_id = sid
+
             from applications.functions import upload_file
             method = self.data['method'].upper()
             url = self.data['url']
@@ -107,7 +103,7 @@ class HttpRequest:
                     else: #file
                         file_content = await response.read() 
                         # Forward binary data to Flask endpoint
-                        fileData = upload_file(dial_id,conversation_id,file_content)
+                        fileData = upload_file(dialogue_id,conversation_id,file_content)
                         return fileData
                         
 

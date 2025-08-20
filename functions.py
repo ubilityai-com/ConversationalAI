@@ -258,7 +258,7 @@ def handle_variable_manager(conversation,content):
 
 async def handle_http_request(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content):
     
-    request = await HttpRequest(content["data"]).make_request(sid,conversation_id)
+    request = await HttpRequest(content["data"]).make_request(conversation['dialogue_id'],conversation_id)
 
     # save result in a variable if user want to 
     logger.info(f"Save http_request output in variables")
