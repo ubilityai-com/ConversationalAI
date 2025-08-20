@@ -1,13 +1,11 @@
 import { getAccvalue } from "../../../../lib/automation-utils";
-import { getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils";
 
-
-export function getContent(selectedNode: any, params: any) {
+export default function getContent(selectedNode: any, params: any) {
     const rightSideData = selectedNode.data.rightSideData
-    const { edges, nodes } = params
     const json = rightSideData.json
 
     let jsonToSend = {};
+
     if (json.type === "Message") {
         jsonToSend = {
             message_id: json.messageID,
@@ -49,8 +47,7 @@ export function getContent(selectedNode: any, params: any) {
             jsonToSend = {
                 ...jsonToSend,
                 in_reply_to: json.messageID,
-                user_id: "${u1s2e3r4i5d6}",
-                flow_id: "${f1l2o3w4i5d6}"
+
             };
             if (json.textMessage && json.textMessage.trim())
                 jsonToSend = {
@@ -100,8 +97,7 @@ export function getContent(selectedNode: any, params: any) {
                 // type: json.emailType,
                 type: "html",
                 body: json.textMessage,
-                user_id: "${u1s2e3r4i5d6}",
-                flow_id: "${f1l2o3w4i5d6}"
+
             };
             if (json.attachmentsMessageSend.length > 0) {
                 jsonToSend = {
@@ -147,8 +143,6 @@ export function getContent(selectedNode: any, params: any) {
             jsonToSend = {
                 message_id: json.messageID,
                 attachment_id: json.attachmentID,
-                user_id: "${u1s2e3r4i5d6}",
-                flow_id: "${f1l2o3w4i5d6}"
             };
         }
     } else if (json.type === "Thread") {
@@ -196,9 +190,8 @@ export function getContent(selectedNode: any, params: any) {
             jsonToSend = {
                 ...jsonToSend,
                 in_reply_to: json.replyToThread_messageId,
-                subject: getAccvalue(json, "replyToThread_subject"),
-                user_id: "${u1s2e3r4i5d6}",
-                flow_id: "${f1l2o3w4i5d6}"
+                subject: json.replyToThread_subject,
+
             };
             if (json.textMessage && json.textMessage.trim())
                 jsonToSend = {
@@ -266,8 +259,7 @@ export function getContent(selectedNode: any, params: any) {
             jsonToSend = {
                 subject: json.subject,
                 to: json.toEmailDraftCreate,
-                user_id: "${u1s2e3r4i5d6}",
-                flow_id: "${f1l2o3w4i5d6}"
+
             };
             if (json.textMessage && json.textMessage.trim())
                 jsonToSend = {
@@ -347,6 +339,7 @@ export function getContent(selectedNode: any, params: any) {
             }
         }
     }
+
     const content = {
         type: "data",
         data: {
@@ -354,13 +347,14 @@ export function getContent(selectedNode: any, params: any) {
             app: "gmail",
             credential: json.cred,
             operation: json.operation,
+            API_SERVICE_NAME: "gmail",
+            API_VERSION: "v1",
             saveOutputAs: []
         }
     }
     return {
         cred: json?.cred,
         type: "AppIntegration",
-        content: content,
+        content: content
     };
 }
-

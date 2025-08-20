@@ -4,8 +4,10 @@ export const GmailJson = {
   label: "Gmail",
   color: "orange",
   description: "Gmail integration",
+  "docsPath": "Connectors/Gmail/getting_started",
   defaultValid: false,
   automated: "json",
+  automationConfig: "automated",
   defaults: {
     json: [
       {
@@ -22,28 +24,7 @@ export const GmailJson = {
             key: "method",
             value: "get",
           },
-          {
-            key: "headers",
-            obj: [
-              {
-                key: "Authorization",
-                dependOn: [
-                  {
-                    type: "static",
-                    value: "Bearer ",
-                  },
-                  {
-                    type: "redux",
-                    value: "authentication.authToken",
-                  },
-                ],
-              },
-              {
-                key: "content-type",
-                value: "application/json",
-              },
-            ],
-          },
+
           {
             key: "url",
             dependOn: [
@@ -1273,20 +1254,13 @@ export const GmailJson = {
                     },
                   },
                   {
-                    type: "accordion",
-                    accTitle: "Subject",
+                    type: "textfield",
+                    value: "",
+                    placeholder: "Subject",
                     variableName: "replyToThread_subject",
-                    fieldsArray: [
-                      [
-                        {
-                          type: "textfield",
-                          value: "",
-                          placeholder: "Subject",
-                          variableName: "replyToThread_subject",
-                          hasDynamicVariable: true,
-                        },
-                      ],
-                    ],
+                    hasDynamicVariable: true,
+                    required: true
+
                   },
                   {
                     type: "accordion",
