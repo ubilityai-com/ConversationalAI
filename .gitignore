@@ -7,3 +7,4 @@ __pycache__/
 /elements/__pycache__/
 /botenv/
 /temp/
+database.db
