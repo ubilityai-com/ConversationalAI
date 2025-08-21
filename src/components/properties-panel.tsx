@@ -10,7 +10,10 @@ export function PropertiesPanel() {
     const selectedNode = useFlowStore(state => state.clickedElement)
     const setClickedElement = useFlowStore(state => state.setClickedElement)
     const deleteNode = useFlowStore(state => state.deleteNode)
+    const selectedBot = useFlowStore(state => state.selectedBot)
     const testNode = useFlowStore(state => state.testNode)
+    const setFormDialogStatus = useFlowStore(state => state.setFormDialogStatus)
+    const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
     const isThisNodeRunning = useFlowStore(state => state.runningNodeIds.has(selectedNode?.id));
     const nodesValidation = useFlowStore(state => state.nodesValidation);
 
@@ -58,7 +61,14 @@ export function PropertiesPanel() {
                     {(selectedNode.data.category === "ai" || selectedNode.data.category === "integration" || selectedNode.type == "HttpRequest") &&
                         <Button
                             size="sm"
-                            onClick={() => testNode(selectedNode?.id)}
+                            onClick={() => {
+                                if (!selectedBot) {
+                                    setFormDialogStatus("save");
+                                    setIsFormDialogOpen(true);
+                                }
+                                else
+                                    testNode(selectedNode?.id)
+                            }}
                             disabled={isThisNodeRunning || !nodesValidation[selectedNode.id]}
                             className="h-8 px-3 bg-green-50 text-green-600 hover:bg-green-100 disabled:text-gray-400 disabled:bg-gray-100 flex items-center gap-1"
                         >
