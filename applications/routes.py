@@ -40,7 +40,7 @@ class MicrosoftTokenIntegration(BaseModel):
     code : str
     redirectUri: str
 
-@http_app.post("/microsoft/getToken")
+@http_app.post("/bot/microsoft/getToken")
 async def microsoft_token(payload: MicrosoftTokenIntegration):
     try:
         
@@ -70,7 +70,7 @@ async def microsoft_token(payload: MicrosoftTokenIntegration):
 class MicrosoftAppIntegration(BaseModel):
     credential_name: str
 
-@http_app.post("/outlook/getManyCalendarGroup")
+@http_app.post("/bot/outlook/getManyCalendarGroup")
 async def outlook_list_calendargroups(payload: MicrosoftAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
@@ -103,7 +103,7 @@ async def outlook_list_calendargroups(payload: MicrosoftAppIntegration):
 
 
 
-@http_app.post("/outlook/getManyCalendar")
+@http_app.post("/bot/outlook/getManyCalendar")
 async def outlook_list_calendars(payload: MicrosoftAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
@@ -136,7 +136,7 @@ async def outlook_list_calendars(payload: MicrosoftAppIntegration):
 
 
 
-@http_app.post("/outlook/getManyContact")
+@http_app.post("/bot/outlook/getManyContact")
 async def outlook_list_contacts(payload: MicrosoftAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
@@ -168,7 +168,7 @@ async def outlook_list_contacts(payload: MicrosoftAppIntegration):
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
 
-@http_app.post("/outlook/getManyFolder")
+@http_app.post("/bot/outlook/getManyFolder")
 async def outlook_list_folders(payload: MicrosoftAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
@@ -200,7 +200,7 @@ async def outlook_list_folders(payload: MicrosoftAppIntegration):
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
 
-@http_app.post("/outlook/getManyMessage")
+@http_app.post("/bot/outlook/getManyMessage")
 async def outlook_list_messages(payload: MicrosoftAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
@@ -231,7 +231,7 @@ async def outlook_list_messages(payload: MicrosoftAppIntegration):
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
-@http_app.post("/outlook/getContactFolders")
+@http_app.post("/bot/outlook/getContactFolders")
 async def outlook_list_contactfolders(payload: MicrosoftAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
@@ -263,7 +263,7 @@ class OutlookEventAppIntegration(BaseModel):
     credential_name: str
     calendar_id : str
 
-@http_app.post("/outlook/getManyEvent")
+@http_app.post("/bot/outlook/getManyEvent")
 async def outlook_list_events(payload: OutlookEventAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
@@ -299,7 +299,7 @@ class OutlookAttachmentAppIntegration(BaseModel):
     credential_name: str
     message_id : str
 
-@http_app.post("/outlook/getManyAttachment")
+@http_app.post("/bot/outlook/getManyAttachment")
 async def outlook_list_attachments(payload: OutlookAttachmentAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
