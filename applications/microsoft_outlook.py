@@ -1245,3 +1245,34 @@ async def outlook_get_message_attachment(credential_name, params, **kwargs):
       return {"Error": str(e)}
         
            
+operations = {
+    'GetManyContacts':outlook_get_many_contacts,
+    'GetContact':outlook_get_contact,
+    'CreateContact':outlook_create_contact,
+    'UpdateContact':outlook_update_contact,
+    'DeleteContact':outlook_delete_contact,
+    'GetManyCalendars':outlook_get_many_calendars,
+    'GetCalendar':outlook_get_calendar,
+    'CreateCalendar':outlook_create_calendar,
+    'UpdateCalendar':outlook_update_calendar,
+    'DeleteCalendar':outlook_delete_calendar,
+    'GetManyFolders':outlook_get_many_folders,
+    'GetFolder':outlook_get_folder,
+    'CreateFolder':outlook_create_folder,
+    'UpdateFolder':outlook_update_folder,
+    'DeleteFolder':outlook_delete_folder,
+    'GetManyFolderMessages':outlook_get_many_folder_messages,
+    'GetMessage':outlook_get_message,
+    'GetManyMessages':outlook_get_many_message,
+    'DeleteMessage':outlook_delete_message,
+    'MoveMessage':outlook_move_message,
+    'ReplyMessage':outlook_reply_message,
+    'SendMessage':outlook_send_message,
+    'GetEvent':outlook_get_event,
+    'DeleteEvent':outlook_delete_event,
+    'GetManyEvents':outlook_get_many_event,
+    'CreateEvent':outlook_create_event,
+    'UpdateEvent':outlook_update_event,
+    'GetManyMessageAtts':outlook_get_many_message_attachment,
+    'GetMessageAtt':outlook_get_message_attachment
+}
