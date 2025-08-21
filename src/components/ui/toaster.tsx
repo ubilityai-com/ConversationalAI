@@ -14,7 +14,7 @@ export function Toaster() {
                     setShowSnackBarMessage({ open: false })
 
                 }}>
-                    <div className="grid gap-1">
+                    <div className="grid gap-1 whitespace-pre-line">
                         <ToastTitle>{showSnackBarMessage.message}</ToastTitle>
                     </div>
                     <ToastClose />
