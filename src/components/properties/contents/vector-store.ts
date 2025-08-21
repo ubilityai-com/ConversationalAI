@@ -1,3 +1,5 @@
+import { useFlowStore } from "../../../store/flow-store"
+
 export const PineconeVectorStore = (selectedNode: any) => {
     const vectorStore = selectedNode.data.rightSideData.extras.vectorStore
     const json = vectorStore.content.json
@@ -11,12 +13,13 @@ export const PineconeVectorStore = (selectedNode: any) => {
 export const LocalVectorStore = (selectedNode: any) => {
     const vectorStore = selectedNode.data.rightSideData.extras.vectorStore
     const json = vectorStore.content.json
+    const chatbot_id = useFlowStore.getState().selectedBot?.id
 
     return {
         "type": "localStore",
         "dataFormat": json.type, // Name || URL 
         "dataType": json.file.split(".")[1],
-        "dialogue_id":"khaled",
+        "dialogue_id": chatbot_id,
         "data": json.file
     }
 }

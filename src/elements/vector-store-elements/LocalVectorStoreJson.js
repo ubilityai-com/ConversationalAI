@@ -28,74 +28,12 @@ export const LocalVectorStoreJson = {
         options: {
           "Name": [
             {
-              type: "api",
+              type: "textfield",
               label: "File",
               variableName: "file",
               value: "",
               required: true,
-              list: [],
-              config: [
-                {
-                  key: "method",
-                  value: "get",
-                },
-                {
-                  key: "url",
-                  dependOn: [
-                    {
-                      type: "static",
-                      value:
-                        process.env.REACT_APP_DNS_URL +
-                        "list_uploaded_files",
-                    },
-                  ],
-                },
-                {
-                  key: "params",
-                  obj: [
-                    {
-                      key: "dialogue",
-                      dependOn: [
-                        {
-                          type: "static",
-                          value: "khaled",
-                        },
-                      ],
-                    },
-                  ],
-                },
-                {
-                  key: "headers",
-                  obj: [
-                    {
-                      key: "Authorization",
-                      dependOn: [
-                        {
-                          type: "static",
-                          value: "Bearer ",
-                        },
-                        {
-                          type: "redux",
-                          value: "authentication.authToken",
-                        },
-                      ],
-                    },
-                  ],
-                }
-              ],
-              res: {
-                path: "data.files",
-                keys: {
-                  option: {
-                    fields: ["file_name"],
-                  },
-                  value: {
-                    fields: ["file_name"],
-                  },
-                  description: { fields: ["file_size"] },
-                },
-              },
-              apiDependsOn: []
+              placeholder:"select a file variable"
             },
           ],
            "URL": [{

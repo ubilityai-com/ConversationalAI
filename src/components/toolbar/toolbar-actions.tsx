@@ -1,11 +1,11 @@
 "use client"
 
+import { TooltipArrow } from "@radix-ui/react-tooltip"
 import { FileText, Key, Loader2, Rocket, Save } from "lucide-react"
 import { useState } from "react"
 import { useFlowStore } from "../../store/flow-store"
 import { Button } from "../ui/button"
-import { Tooltip, TooltipProvider, TooltipTrigger,TooltipContent } from "../ui/tooltip"
-import { TooltipArrow } from "@radix-ui/react-tooltip"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
 function hasFalseValue(obj: Record<string, boolean>): boolean {
   return Object.values(obj).includes(false);
 }
@@ -83,11 +83,22 @@ export function ToolbarActions() {
         <Key className="w-4 h-4 mr-2" />
         Credentials
       </Button>
-
-      <Button variant="outline" size="sm" onClick={handleFilesClick}>
-        <FileText className="w-4 h-4 mr-2" />
-        Files
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="outline" size="sm" onClick={handleFilesClick} disabled={!selectedBot}>
+              <FileText className="w-4 h-4 mr-2" />
+              Files
+            </Button>
+          </TooltipTrigger>
+          {!selectedBot && (
+            <TooltipContent>
+              <TooltipArrow className="fill-white" />
+              <p>Save your chatbot first to unlock file features</p>
+            </TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
 
       <Button variant="outline" size="sm" onClick={handleVariablesClick}>
         <Save className="w-4 h-4 mr-2" />
@@ -99,41 +110,41 @@ export function ToolbarActions() {
         Save
       </Button>
       <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={handlePublishToggle}
-                variant={isPublished ? "secondary" : "default"}
-                size="sm"
-                className={
-                  isPublished
-                    ? "bg-green-600 hover:bg-green-700 text-white border-green-600"
-                    : "bg-blue-600 hover:bg-blue-700 text-white"
-                }
-                disabled={isLoadingActivate || !selectedBot}
-              >
-                {isLoadingActivate ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <Rocket className="w-4 h-4 mr-2" />
-                )}
-                {isLoadingActivate
-                  ? isPublished
-                    ? "Unpublishing..."
-                    : "Publishing..."
-                  : isPublished
-                    ? "Unpublish"
-                    : "Publish Bot"}
-              </Button>
-            </TooltipTrigger>
-            {!selectedBot && (
-              <TooltipContent>
-                <TooltipArrow className="fill-white" />
-                <p>Save your chatbot before publishing</p>
-              </TooltipContent>
-            )}
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={handlePublishToggle}
+              variant={isPublished ? "secondary" : "default"}
+              size="sm"
+              className={
+                isPublished
+                  ? "bg-green-600 hover:bg-green-700 text-white border-green-600"
+                  : "bg-blue-600 hover:bg-blue-700 text-white"
+              }
+              disabled={isLoadingActivate || !selectedBot}
+            >
+              {isLoadingActivate ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Rocket className="w-4 h-4 mr-2" />
+              )}
+              {isLoadingActivate
+                ? isPublished
+                  ? "Unpublishing..."
+                  : "Publishing..."
+                : isPublished
+                  ? "Unpublish"
+                  : "Publish Bot"}
+            </Button>
+          </TooltipTrigger>
+          {!selectedBot && (
+            <TooltipContent>
+              <TooltipArrow className="fill-white" />
+              <p>Save your chatbot before publishing</p>
+            </TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
     </div>
   )
 }

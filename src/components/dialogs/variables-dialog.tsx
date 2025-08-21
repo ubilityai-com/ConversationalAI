@@ -5,17 +5,18 @@ import {
   Bot,
   Code,
   Edit2,
-  Eye,
   Globe,
   MessageSquare,
   Plus,
   Save,
   Trash2,
   X,
-  Zap,
+  Zap
 } from "lucide-react";
+import { doesVariableExist } from "../../lib/variable-utils";
 import { useFlowStore, VariableCategory } from "../../store/flow-store";
 import { JsonEditor } from "../custom/json-editor";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
@@ -32,8 +33,6 @@ import {
 } from "../ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { WorkflowVariable } from "../variable-picker";
-import { doesVariableExist } from "../../lib/variable-utils";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
 interface VariablesDialogProps {
   open: boolean;
@@ -387,7 +386,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
                       <h3 className="font-medium text-lg">{name}</h3>
-                      <Badge className={getTypeColor(value)}>
+                      <Badge className={getTypeColor(typeof value as WorkflowVariable["type"])}>
                         {typeof value}
                       </Badge>
                     </div>
@@ -492,7 +491,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
   };
 
   const renderDialogueVariables = () => {
-    const handleEyeClick = (nodeName: string, varName: string) => {};
+    const handleEyeClick = (nodeName: string, varName: string) => { };
     console.log({ dialogueVariables });
 
     return (

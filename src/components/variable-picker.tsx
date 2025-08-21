@@ -8,12 +8,13 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
+  Files,
   MessageSquare,
   Search,
   Variable,
-  X,
+  X
 } from "lucide-react";
+import { useFilesStore } from "../store/files-store";
 import { useFlowStore, VariableCategory } from "../store/flow-store";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -31,8 +32,8 @@ import { Textarea } from "./ui/textarea";
 
 interface Variable {
   name: string;
-  type: "constant" | "output" | "dialogue";
-  value?: "string" | "number" | "boolean" | "object" | "array" | string;
+  type: "constant" | "output" | "dialogue" | "file";
+  value?: string | number | boolean | object;
   path?: string;
   nodeId?: string;
 }
@@ -54,6 +55,12 @@ const typeConfig = {
     icon: MessageSquare,
     label: "Dialogue",
     description: "Conversation flow and user interaction data",
+    badgeClass: "bg-dialogue-bg text-dialogue border-dialogue",
+  },
+  file: {
+    icon: Files,
+    label: "Files",
+    description: "Static files",
     badgeClass: "bg-dialogue-bg text-dialogue border-dialogue",
   },
 };
@@ -93,16 +100,13 @@ export function VariablesPanel({
   const setVarPicker = useFlowStore((state) => state.setVarPicker);
   const {
     fieldRefs,
-    setFieldRef,
-    blurTimeoutRef,
-    setBlurTimeoutRef,
     focusedField,
     setSelectedOutputOrVariable,
     constantVariables,
     outputVariables,
     dialogueVariables,
   } = useFlowStore();
-
+  const files = useFilesStore(state => state.files)
   const onVariableSelect = (varName: string) => {
     console.log({ varPickerProps, varName });
     setSelectedOutputOrVariable(varName);
@@ -119,6 +123,13 @@ export function VariablesPanel({
       name,
       type: "constant" as const,
       value: type,
+    })),
+
+    // Include all constant variables
+    ...files.map(({ file_name }) => ({
+      name: file_name,
+      type: "file" as const,
+      value: file_name,
     })),
 
     // Include only output variables for allowed node IDs
@@ -334,8 +345,8 @@ export function VariablesPanel({
                                     >
                                       <div className="flex items-start justify-between gap-2">
                                         <div className="flex-1 min-w-0">
-                                          <div className="flex items-center gap-2 mb-1">
-                                            <code className="font-mono text-sm font-medium">
+                                          <div className="flex items-center gap-2 mb-1 w-64">
+                                            <code className="font-mono text-sm font-medium truncate" title={variable.name}>
                                               {variable.name}
                                             </code>
                                             <Badge
@@ -346,20 +357,9 @@ export function VariablesPanel({
                                             </Badge>
                                           </div>
 
-                                          {variable.value && (
-                                            <div className="text-xs text-muted-foreground mb-1">
-                                              <span className="font-medium">
-                                                {variable.type === "constant"
-                                                  ? "Type: "
-                                                  : "Value: "}
-                                              </span>
-                                              <code className="bg-muted px-1 py-0.5 rounded">
-                                                {variable.value}
-                                              </code>
-                                            </div>
-                                          )}
 
-                                          {variable.path && (
+
+                                          {variable.type === "output" && (
                                             <div className="text-xs text-muted-foreground mb-1">
                                               <span className="font-medium">
                                                 Path:{" "}

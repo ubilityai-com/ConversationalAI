@@ -32,6 +32,7 @@ interface DynamicInputFieldsProps {
     title: string;
     fieldsArray: ApiResItem[][] | string;
     structure: ApiResItem[];
+    description?:string
     required?: boolean;
     minSize?: number;
     errorSpan?: string;
@@ -253,10 +254,9 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
                   ({fieldsArray.length})
                 </span>
               </CardTitle>
-              {/* <CardDescription>
-                Add options users can select. Every choice gets its own output
-                handle.
-              </CardDescription> */}
+              {json.description && <CardDescription>
+                {json.description}
+              </CardDescription>}
             </CardHeader>
           )}
 

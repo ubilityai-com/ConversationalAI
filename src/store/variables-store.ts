@@ -1,7 +1,7 @@
 import { StateCreator } from "zustand";
 
 export interface ConstantVariable {
-  [key: string]: "string" | "number" | "boolean" | "object" | "array";
+  [key: string]: string | number | boolean | object | any[];
 }
 
 export interface OutputVariables {

@@ -11,6 +11,7 @@ import { Toaster } from "./components/ui/toaster";
 import FlowZone from "./flow-zone";
 import { useFlowStore } from "./store/flow-store";
 import { LiveUrlDisplay } from "./components/live-url-display";
+import { useFilesStore } from "./store/files-store";
 
 export default function MainLayout() {
     // Get state and actions from Zustand stores
@@ -20,14 +21,16 @@ export default function MainLayout() {
         fetchBots,
         getBotById,
         reactFlowInstance,
-        failedLoadingBot
+        failedLoadingBot,
     } = useFlowStore()
+    const getFiles=useFilesStore(state=>state.getFiles)
     const { botID } = useParams();
 
     useEffect(() => {
         initializeAllDroppedElementsByHandler()
         fetchBots()
         OAuth2AuthenticationFlow()
+        getFiles()
     }, [])
     useEffect(() => {
         const fetchBot = async () => {
