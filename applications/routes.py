@@ -2,12 +2,334 @@ from app import http_app
 from models.credentials import get_credentials_by_names
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-import aiohttp, json
+import aiohttp, json, httpx
 from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from langchain_nvidia_ai_endpoints import ChatNVIDIA,NVIDIAEmbeddings
+status = [200, 201, 202, 204, 206, 207, 208]
 
+
+
+################################### outlook's apis ###############################
+
+
+
+async def microsoft_refresh_token(refresh_token: str, client_id: str, client_secret: str):
+    token_endpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
+    dataa = {
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'scope': ' '.join(['https://graph.microsoft.com/.default', 'offline_access']),
+        'refresh_token': refresh_token,
+        "grant_type": "refresh_token",
+    }
+    async with aiohttp.ClientSession() as session:
+        async with session.post(token_endpoint, data=dataa) as response:
+            response.raise_for_status()
+            result = await response.json()
+            if response.status in status:
+                return result
+            return {"Error" : result}
+
+
+
+class MicrosoftTokenIntegration(BaseModel):
+    clientId: str
+    clientSecret: str
+    code : str
+    redirectUri: str
+
+@http_app.post("/microsoft/getToken")
+async def microsoft_token(payload: MicrosoftTokenIntegration):
+    try:
+        
+        client_id = payload.clientId
+        client_secret = payload.clientSecret
+        auth_code= payload.code 
+        redirect_uri= payload.redirectUri
+        token_endpoint = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
+        dataa = {
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'scope': ' '.join(['https://graph.microsoft.com/.default'] +['offline_access']),
+            'code': auth_code,
+            "grant_type": "authorization_code",
+            'redirect_uri': redirect_uri,
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url=token_endpoint, data=dataa) as response:
+                result = await response.json()
+                if response.status in status:
+                    return result
+                return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class MicrosoftAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/outlook/getManyCalendarGroup")
+async def outlook_list_calendargroups(payload: MicrosoftAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
+
+        if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']):
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        client_id = json_cred['clientId']
+        client_secret = json_cred['clientSecret']
+        refresh_token = json_cred['refreshToken']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        url = f"https://graph.microsoft.com/v1.0/me/calendarGroups?$select=id,name"
+        headers = {
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+            if "error" not in result:
+                calendarsGroups = result.get('value', [])
+                simplified_calendarsGroups = [{"id": calendar.get(
+                    'id'), "name": calendar.get('name')} for calendar in calendarsGroups]
+                return {"calendarGroups": simplified_calendarsGroups}
+            return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+
+@http_app.post("/outlook/getManyCalendar")
+async def outlook_list_calendars(payload: MicrosoftAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
+
+        if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']):
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        client_id = json_cred['clientId']
+        client_secret = json_cred['clientSecret']
+        refresh_token = json_cred['refreshToken']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        url = f"https://graph.microsoft.com/v1.0/me/calendars?$select=id,name"
+        headers = {
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+            if "error" not in result:
+                calendars = result.get('value', [])
+                simplified_calendars = [{"id": calendar.get(
+                    'id'), "name": calendar.get('name')} for calendar in calendars]
+                return {"Calendars": simplified_calendars}
+            return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+
+@http_app.post("/outlook/getManyContact")
+async def outlook_list_contacts(payload: MicrosoftAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
+
+        if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']):
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        client_id = json_cred['clientId']
+        client_secret = json_cred['clientSecret']
+        refresh_token = json_cred['refreshToken']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        url = f"https://graph.microsoft.com/v1.0/me/contacts?$select=id,displayName"
+        headers = {
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+            if "error" not in result:
+                contacts = result.get('value', [])
+                simplified_contacts = [{"id": contact.get('id'), "displayName": contact.get(
+                    'displayName')} for contact in contacts]
+                return {"Contacts": simplified_contacts}
+            return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/outlook/getManyFolder")
+async def outlook_list_folders(payload: MicrosoftAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
+
+        if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']):
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        client_id = json_cred['clientId']
+        client_secret = json_cred['clientSecret']
+        refresh_token = json_cred['refreshToken']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        url = f"https://graph.microsoft.com/v1.0/me/mailFolders?$select=id,displayName"
+        headers = {
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+            if "error" not in result:
+                folders = result.get('value', [])
+                simplified_folders = [{"id": folder.get('id'), "displayName": folder.get(
+                    'displayName')} for folder in folders]
+                return {"Folders": simplified_folders}
+            return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/outlook/getManyMessage")
+async def outlook_list_messages(payload: MicrosoftAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
+
+        if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']):
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        client_id = json_cred['clientId']
+        client_secret = json_cred['clientSecret']
+        refresh_token = json_cred['refreshToken']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        url = f"https://graph.microsoft.com/v1.0/me/messages?$select=id,subject"
+        headers = {
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+            if "error" not in result:
+                messages = result.get('value', [])
+                simplified_messages = [{"id": message.get('id'), "subject": message.get(
+                    'subject')} for message in messages]
+                return {"Messages": simplified_messages}
+            return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/outlook/getContactFolders")
+async def outlook_list_contactfolders(payload: MicrosoftAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
+
+        if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']):
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        client_id = json_cred['clientId']
+        client_secret = json_cred['clientSecret']
+        refresh_token = json_cred['refreshToken']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        url = f"https://graph.microsoft.com/v1.0/me/contactFolders"
+        headers = {
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+            if "error" not in result:
+                return {"Folders":result['value']}
+            return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class OutlookEventAppIntegration(BaseModel):
+    credential_name: str
+    calendar_id : str
+
+@http_app.post("/outlook/getManyEvent")
+async def outlook_list_events(payload: OutlookEventAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
+
+        if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']):
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        client_id = json_cred['clientId']
+        client_secret = json_cred['clientSecret']
+        refresh_token = json_cred['refreshToken']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        url = f"https://graph.microsoft.com/v1.0/me/calendars/{payload.calendar_id}/events?$select=id,subject"
+        headers = {
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+            if "error" not in result:
+                events = result.get('value', [])
+                simplified_events = [{"id": event.get('id'), "subject": event.get(
+                    'subject')} for event in events]
+                return {"Events": simplified_events}
+            return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+class OutlookAttachmentAppIntegration(BaseModel):
+    credential_name: str
+    message_id : str
+
+@http_app.post("/outlook/getManyAttachment")
+async def outlook_list_attachments(payload: OutlookAttachmentAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)[payload.credential_name]
+        
+        #no need here to check the existence of message_id in payload since the class gonna raise the "422 Unprocessable Entity" error itself
+        if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']):
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        client_id = json_cred['clientId']
+        client_secret = json_cred['clientSecret']
+        refresh_token = json_cred['refreshToken']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        url = f"https://graph.microsoft.com/v1.0/me/messages/{payload.message_id}/attachments?$select=name"
+        headers = {
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+            if "error" not in result:
+                attachments = result.get('value', [])
+                simplified_attachments = [{"id": attachment.get('id'), "name": attachment.get(
+                    'name')} for attachment in attachments]
+                return {"Attachments": simplified_attachments}
+            return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
 
 ############################# Slack API's  ###############################
 class SlackAppIntegration(BaseModel):
