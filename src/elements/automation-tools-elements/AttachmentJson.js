@@ -22,8 +22,8 @@ export const AttachmentJson = {
                         "value": "Send file"
                     },
                     {
-                        "option": "Recieve file",
-                        "value": "Recieve file"
+                        "option": "Receive file",
+                        "value": "Receive file"
                     },
                 ],
                 options: {
@@ -38,7 +38,7 @@ export const AttachmentJson = {
                             "hasDynamicVariable": true
                         },
                     ],
-                    "Recieve file": [
+                    "Receive file": [
                         {
                             "type": "textfield",
                             "label": "Message",
