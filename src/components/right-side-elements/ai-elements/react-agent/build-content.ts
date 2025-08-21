@@ -8,6 +8,7 @@ export default function getContent(selectedNode: any, params: any) {
     const memory = rightSideData.extras.memory
     const tool = rightSideData.extras.tool
     const { edges, nodes } = params
+    const arr = getAccvalue(rightSideData.json, "requiredInputs") || []
     const content = {
         type: "data",
         data: {
@@ -15,12 +16,13 @@ export default function getContent(selectedNode: any, params: any) {
             model: require("../../../properties/contents/model")[model.type](selectedNode),
             chainMemory: require("../../../properties/contents/memory")[memory.type](selectedNode),
             cred: extractCreds(selectedNode?.data.rightSideData.extras),
-            tools: tool.list.map((el: any) => {
+            requiredInputs: arr.length !== 0 ? Object.fromEntries(arr.map(({ key, value }: any) => [key, value])) : undefined,
+            tools: tool.list.length !== 0 ? tool.list.map((el: any) => {
                 return require("../../../properties/contents/tool")[el.type](el.content)
-            })
+            }) : undefined
         }
     }
-    
+
     return {
         cred: extractCreds(selectedNode?.data.rightSideData.extras),
         type: "LC_REACT_AGENT",

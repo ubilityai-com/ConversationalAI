@@ -8,7 +8,7 @@ export const ReactAgentJson = {
   color: "bg-purple-500",
   category: "ai",
   automated: "json",
-  automationConfig:"automated",
+  automationConfig: "automated",
   defaults: {
     extras: {
       model: {
@@ -62,6 +62,46 @@ export const ReactAgentJson = {
             placeholder: "prompt",
             hasDynamicVariable: true,
           },]]
+      },
+      {
+        type: "accordion",
+        accTitle: "Required inputs",
+        variableName: "requiredInputs",
+        required: true,
+        fieldsArray: [
+          [{
+            "type": "dynamic",
+            "fieldsArray": [],
+            "title": "Required inputs",
+            "variableName": "requiredInputs",
+            "structure": [
+              {
+                "type": "row",
+                "title": "Required inputs",
+                "variableName": "requiredInputs",
+                "removeButton": true
+              },
+              {
+                "label": "Key",
+                "type": "textfield",
+                "placeholder": "key",
+                "value": "",
+                "variableName": "key",
+                "hasDynamicVariable": true,
+                "rightSideInput": true
+              },
+              {
+                "label": "Value",
+                "type": "textfield",
+                "value": "",
+                "placeholder": "value",
+                "variableName": "value",
+                "hasDynamicVariable": true,
+                "rightSideInput": true
+              }
+            ]
+          }
+          ]]
       }
     ]
   }
