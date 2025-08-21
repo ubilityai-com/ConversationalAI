@@ -309,7 +309,6 @@ class Model:
     def _setup_vertexAi(self,cred):
         try:
             if "projectId" in cred and 'credentials' in cred:
-                optionals = self.params
                 from google.oauth2 import service_account
                 service_account_info = json.load(cred["credentials"])
                 self.kwargs = {
