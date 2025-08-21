@@ -26,6 +26,7 @@ import logging
 from typing import (Any,Callable,Dict,Generator,Iterable,List,Optional,Tuple,Type)
 import os
 import types
+import json
 
 
 class Model:
@@ -309,10 +310,11 @@ class Model:
         try:
             if "projectId" in cred and 'credentials' in cred:
                 optionals = self.params
+                from google.oauth2 import service_account
+                service_account_info = json.load(cred["credentials"])
                 self.kwargs = {
-                        "project_id": cred["projectId"],
-                        "credentials": cred["credentials"],
-                        **optionals
+                        "project": cred["projectId"],
+                        "credentials": service_account.Credentials.from_service_account_info(service_account_info)
                     }
                 logging.info("--------------Done--------------")
             else:
@@ -482,9 +484,7 @@ class Model:
                     llm = ChatOpenAI(model=self.model, api_key=self.api_key, base_url=self.base_url, **optionals)
                 elif self.provider == "azureOpenAi":
                     from langchain_openai import AzureChatOpenAI
-                    if "azure_deployment" not in optionals:
-                        raise Exception("missing deployment name")
-                    llm = AzureChatOpenAI(api_key=self.api_key, api_version=self.api_version, azure_endpoint=self.azure_endpoint, **optionals)
+                    llm = AzureChatOpenAI(azure_deployment=self.model ,api_key=self.api_key, api_version=self.api_version, azure_endpoint=self.azure_endpoint, **optionals)
                 elif self.provider == "mistralAi":
                     from langchain_mistralai import ChatMistralAI
                     llm = ChatMistralAI(api_key=self.api_key, model_name=self.model, **optionals)
@@ -501,7 +501,7 @@ class Model:
                 elif self.provider == "vertexAi":
                     from langchain_google_vertexai import ChatVertexAI
                     kwargs=self.kwargs
-                    llm = ChatVertexAI(model_name=self.model, **kwargs)
+                    llm = ChatVertexAI(model=self.model, **kwargs, **optionals)
                 elif self.provider == "googleGenerativeAi":
                     from langchain_google_genai import ChatGoogleGenerativeAI
                     llm = ChatGoogleGenerativeAI(api_key=self.api_key,model=self.model,**optionals)
