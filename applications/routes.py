@@ -7,6 +7,8 @@ from googleapiclient.discovery import build
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from langchain_nvidia_ai_endpoints import ChatNVIDIA,NVIDIAEmbeddings
+from langchain_mcp_adapters.client import MultiServerMCPClient
+import sys, os
 status = [200, 201, 202, 204, 206, 207, 208]
 
 
@@ -888,3 +890,105 @@ async def gmail_get_labels(payload: GmailAppIntegration):
 
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+
+############################# MCP API's  ###############################
+class McpTools(BaseModel):
+    data: list
+
+@http_app.post("/bot/langchain/listMcps")
+async def list_all_tool_names(tools: McpTools):
+    def setup_mcp_servers(tools_data):
+        mcps = {}
+        mcps_data = []
+        for tool in tools_data:
+            if tool["type"] == "mcp":
+                mcps_data.append(tool)
+
+        for mcp in mcps_data:
+            if "name" in mcp and "url" in mcp:
+                mcps[mcp["name"]] = {
+                    "url": mcp["url"],
+                    "transport": "sse" if "/sse" in mcp["url"] else "streamable_http"
+                }
+            elif "name" in mcp and "credential" in mcp:
+
+                json_cred = get_credentials_by_names(mcp['credential'])
+                currentDir = os.getcwd()  # get current working directory
+
+                # get cred value and create env vars
+                envVars = {}
+                if mcp['name'] == 'SlackMcpServer':
+                    envVars = {'SLACK_BOT_TOKEN': json_cred['accessToken']}
+                elif mcp['name'] == 'NotionMcpServer':
+                    envVars = {'NOTION_BOT_TOKEN': json_cred['accessToken']}
+                elif mcp['name'] == 'WhatsAppMcpServer':
+                    envVars = {'WHATSAPP_TOKEN': json_cred['accessToken'], 'WHATSAPP_ACCOUNT_ID': json_cred['whatsappAccountId']}
+                elif mcp['name'] == 'AirTableMcpServer':
+                    envVars = {'AIRTABLE_BOT_TOKEN': json_cred['accesstoken']}
+                elif mcp['name'] == 'GoogleSheetsMcpServer':
+                    envVars = {
+                        'GOOGLESHEETS_REFRESH_TOKEN': json_cred['refreshToken'],
+                        'GOOGLESHEETS_ACCESS_TOKEN': json_cred['accessToken'],
+                        'GOOGLESHEETS_CLIENT_ID': json_cred['clientID'],
+                        'GOOGLESHEETS_CLIENT_SECRET': json_cred['clientSecret'],
+                        'GOOGLESHEETS_SCOPE': json_cred['scope'],
+                        'GOOGLESHEETS_EXPIREY': json_cred['expirey']
+                        }
+                elif mcp['name'] == 'FreshdeskMcpServer':
+                    envVars = {
+                        'FRESHDESK_API_KEY': json_cred['apiKey'],
+                        'FRESHDESK_DOMAIN': json_cred['domain']
+                        }
+                elif mcp['name'] == 'HubspotMcpServer':
+                    envVars = {
+                        'HUBSPOT_REDIRECT_URI': json_cred['redirectUri'],
+                        'HUBSPOT_REFRESH_TOKEN': json_cred['refreshToken'],
+                        'HUBSPOT_CLIENT_ID': json_cred['clientID'],
+                        'HUBSPOT_CLIENT_SECRET': json_cred['clientSecret']
+                        }
+                elif mcp['name'] == 'MailChimpMcpServer':
+                    envVars = {
+                        'MAILCHIMP_API_KEY': json_cred['apiKey'],
+                        'MAILCHIMP_SERVER_PREFIX': json_cred['serverPrefix']
+                        }
+                elif mcp['name'] == 'GmailMcpServer':
+                    envVars = {
+                        'GMAIL_ACCESS_TOKEN': json_cred['accessToken'],
+                        'GMAIL_REFRESH_TOKEN': json_cred['refreshToken'],
+                        'GMAIL_CLIENT_ID': json_cred['clientID'],
+                        'GMAIL_CLIENT_SECRET': json_cred['clientSecret'],
+                        'GMAIL_EXPIREY': json_cred['expirey']
+                        }
+                elif mcp['name'] == 'GoogleCalendarMcpServer':
+                    envVars = {
+                        'GOOGLE_CALENDAR_ACCESS_TOKEN': json_cred['accessToken'],
+                        'GOOGLE_CALENDAR_REFRESH_TOKEN': json_cred['refreshToken'],
+                        'GOOGLE_CALENDAR_CLIENT_ID': json_cred['clientID'],
+                        'GOOGLE_CALENDAR_CLIENT_SECRET': json_cred['clientSecret'],
+                        'GOOGLE_CALENDAR_SCOPE': json_cred['scope'],
+                        'GOOGLE_CALENDAR_EXPIREY': json_cred['expirey']
+                        }
+                elif mcp['name'] == 'GoogleDriveMcpServer':
+                    envVars = {
+                        'GOOGLE_DRIVE_ACCESS_TOKEN': json_cred['accessToken'],
+                        'GOOGLE_DRIVE_REFRESH_TOKEN': json_cred['refreshToken'],
+                        'GOOGLE_DRIVE_CLIENT_ID': json_cred['clientID'],
+                        'GOOGLE_DRIVE_CLIENT_SECRET': json_cred['clientSecret'],
+                        'GOOGLE_DRIVE_EXPIREY': json_cred['expirey']
+                        }
+                elif mcp['name'] == 'StripeMcpServer':
+                    envVars = {'STRIPE_API_KEY': json_cred['apiKey']}
+                
+                mcps[mcp["name"]] = {
+                    "command": sys.executable,
+                    "args": [f"{currentDir}/mcpServers/{mcp['name']}.py"],
+                    "transport": "stdio",
+                    "env": envVars
+                }
+        return mcps
+    
+    client = MultiServerMCPClient(setup_mcp_servers(tools.data))
+    tools = await client.get_tools()
+    
+    return [tool.name for tool in tools]
