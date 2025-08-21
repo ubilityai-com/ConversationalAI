@@ -52,6 +52,7 @@ export default function TemplateForm({
     selectedNodeId,
     ai,
     CustomComponent,
+    contentPath
 }: NodeConfigProps) {
     console.log({ schema });
     const setNodeFilledDataByKey = useRightDrawerStore(
@@ -97,7 +98,7 @@ export default function TemplateForm({
     return (
         <div className="space-y-6">
             <AutomationSimple
-                filledDataName="json"
+                filledDataName={contentPath ? `${contentPath}.json` : "json"}
                 schema={schema}
                 fieldValues={localConfig.json}
                 flowZoneSelectedId={selectedNodeId}

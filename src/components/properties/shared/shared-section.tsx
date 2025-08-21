@@ -129,7 +129,7 @@ export function SharedSection({
 
                         {schema.current && (
                             <AutomationSimple
-                                filledDataName={`${variableName}`}
+                                filledDataName={`extras.${variableName}.content.json`}
                                 schema={schema.current?.rightSideData?.json}
                                 flowZoneSelectedId={id}
                                 AllJson={schema.current?.rightSideData?.json}

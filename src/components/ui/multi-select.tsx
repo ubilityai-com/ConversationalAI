@@ -1,5 +1,7 @@
-import * as React from "react";
 import { Check, ChevronsUpDown, X } from "lucide-react";
+import * as React from "react";
+import { cn } from "../../lib/utils";
+import { Badge } from "./badge";
 import { Button } from "./button";
 import {
   Command,
@@ -10,8 +12,6 @@ import {
   CommandList,
 } from "./command";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
-import { Badge } from "./badge";
-import { cn } from "../../lib/utils";
 
 export interface Option {
   option: string;
@@ -24,6 +24,7 @@ interface MultiSelectProps {
   onChange: (selected: Option[]) => void;
   placeholder?: string;
   className?: string;
+  disabled?: boolean
 }
 
 export function MultiSelect({
@@ -32,6 +33,7 @@ export function MultiSelect({
   onChange,
   placeholder = "Select options...",
   className,
+  disabled
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -61,6 +63,7 @@ export function MultiSelect({
             "w-full justify-between min-h-10 h-auto p-2",
             className
           )}
+          disabled={disabled}
         >
           <div className="flex flex-wrap gap-1 flex-1">
             {selected.length > 0 ? (

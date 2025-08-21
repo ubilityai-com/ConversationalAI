@@ -3,7 +3,7 @@ import axios from "axios"
 import { useEffect, useRef } from "react"
 import { useApiData, useApiStore } from "../../store/api-store"
 import { useFlowStore } from "../../store/flow-store"
-import { useRightDrawerStore } from "../../store/right-drawer-store"
+import { MultiSelect } from "../ui/multi-select"
 import { SearchableSelect } from "./searchable-select"
 
 
@@ -82,16 +82,30 @@ function checkIfVariableInDropDown(value: string, options: string[], isCred: boo
 
 let backup: Record<string, any> = {}
 
-interface ApiCallerProps {
-    flowZoneSelectedId?: string
-    apiJson: any
-    onChange: (args: { name: string | string[]; val: any }) => void
-    inDynamic?: boolean
-    disabled?: boolean
-    helperSpan?: string
-    value: string
-    filledDataName: string
+interface ApiCallerPropsBase {
+    flowZoneSelectedId?: string;
+    apiJson: any;
+    onChange: (args: { name: string | string[]; val: any }) => void;
+    inDynamic?: boolean;
+    disabled?: boolean;
+    helperSpan?: string;
+    filledDataName: string;
 }
+
+interface ApiCallerPropsSingleSelect extends ApiCallerPropsBase {
+    multiSelect?: false;
+    value: string;
+}
+
+interface ApiCallerPropsMultiSelect extends ApiCallerPropsBase {
+    multiSelect: true;
+    value: {
+        option: string;
+        value: string;
+    }[];
+}
+
+type ApiCallerProps = ApiCallerPropsSingleSelect | ApiCallerPropsMultiSelect;
 
 export function ApiCaller({
     flowZoneSelectedId,
@@ -101,7 +115,8 @@ export function ApiCaller({
     disabled,
     helperSpan,
     value,
-    filledDataName=""
+    filledDataName = "",
+    multiSelect
 }: ApiCallerProps) {
     const { setListAndDropDownList, setIsLoadingList, setFetchList, setNotFetchingListAsFirstTime } = useApiStore()
     const flowZoneSelectedElement = useNodesData(flowZoneSelectedId || "")
@@ -114,18 +129,16 @@ export function ApiCaller({
 
     const { list: ListsForThisNode, isLoading: isLoadingList, notFetchingAsFirstTime } = useApiData(compName)
 
-    // Get finale object from flow store or other source
-    const finaleObj = useRightDrawerStore(state => state.automation.filledData[flowZoneSelectedId || ""]?.[filledDataName]) || {}
+    const node = useNodesData(flowZoneSelectedId || "")
+    const rs = node?.data.rightSideData
+
+    const finaleObj = getNestedPropertyValue(rs, filledDataName) || {}
 
     backup = { ...backup, [compName]: { ...backup[compName], ["1"]: finaleObj } };
 
     const isUsingAi = apiJson.hasAI && value === "##AI##"
     const prevVariableRef = useRef(null)
     const controllerRef = useRef<AbortController>(null)
-
-    const saveRightSide = (listChange?: boolean) => {
-
-    }
 
     const didComponentUnmount = useRef(false)
 
@@ -144,7 +157,7 @@ export function ApiCaller({
 
     useEffect(() => {
         setTimeout(() => {
-            if (!isUsingAi && notFetchingAsFirstTime !== undefined && !apiJson.multiselect && !isLoadingList) {
+            if (!isUsingAi && notFetchingAsFirstTime !== undefined && !multiSelect && !isLoadingList) {
 
                 if (
                     !isUsingVariable(value) &&
@@ -152,19 +165,16 @@ export function ApiCaller({
                     !ListsForThisNode.find((elt) => elt.value === value)
                 ) {
                     if (inDynamic === undefined || inDynamic) {
-                        console.trace("innnnnnnnnnnnnnnnnnn")
-                        onChange({
+                            onChange({
                             name: "value",
                             val: "",
                         })
                     } else {
-                        console.trace("innnnnnnnnnnnnnnnnnn")
-                        onChange({
+                            onChange({
                             name: "value",
                             val: "",
                         })
                     }
-                    saveRightSide()
                 }
             }
         }, 100)
@@ -293,7 +303,7 @@ export function ApiCaller({
                 }
 
                 if (
-                    !apiJson.multiselect &&
+                    !multiSelect &&
                     (value !== "None" && value) &&
                     !isUsingVariable(value) &&
                     !checkIfVariableInDropDown(
@@ -303,7 +313,6 @@ export function ApiCaller({
                         false,
                     )
                 ) {
-                    console.trace("innnnnnnnnnnnnnnnnnn")
                     onChange({
                         name: "value",
                         val: "",
@@ -326,11 +335,9 @@ export function ApiCaller({
                     id: compName,
                     status: false,
                 })
-
-                console.trace("innnnnnnnnnnnnnnnnnn")
                 onChange({
                     name: "value",
-                    val: apiJson.multiselect ? [] : "",
+                    val: multiSelect ? [] : "",
                 })
 
                 setListAndDropDownList({
@@ -348,7 +355,6 @@ export function ApiCaller({
         if (apiJson.hasOwnProperty("apiDependsOn") && apiJson.apiDependsOn.length > 0) {
             valid = true
             apiJson.apiDependsOn.map((elt: any) => {
-                console.log({ elt, finaleObj, backup });
 
                 if (elt.isAutomation === false) {
                     const valueInCompJson = getNestedPropertyValue(flowZoneSelectedElement, `data.rightSideData.${elt.name}`)
@@ -360,10 +366,8 @@ export function ApiCaller({
                         valid = false
                     }
                 } else {
-                    console.log("outttttttttttttt", finaleObj);
 
                     if (Object.keys(finaleObj).length > 0) {
-                        console.log("innnnnnnnn");
 
                         if (
                             backup[compName]?.hasOwnProperty("b") &&
@@ -453,7 +457,6 @@ export function ApiCaller({
     // Check if component should be disabled
     let isDisabled = false
     apiJson.apiDependsOn.forEach((elt: any) => {
-        console.log({ flowZoneSelectedElement, elt, finaleObj });
 
         if (Object.keys(finaleObj).length !== 0) {
             if (
@@ -481,13 +484,13 @@ export function ApiCaller({
     })
 
     if (isDisabled && isLoadingList === false) {
-        if (!apiJson.multiselect && (value !== "None" && value)) {
+        if (!multiSelect && (value !== "None" && value)) {
             console.trace("innnnnnnnnnnnnnnnnnn")
             onChange({
                 name: "value",
                 val: "",
             })
-        } else if (apiJson.multiselect && value.length > 0) {
+        } else if (multiSelect && value.length > 0) {
             console.trace("innnnnnnnnnnnnnnnnnn")
             onChange({
                 name: "value",
@@ -497,7 +500,8 @@ export function ApiCaller({
     }
 
     const disable = isLoadingList || isDisabled || disabled || isUsingAi
-    const finalList = getList(ListsForThisNode, apiJson.credential, apiJson.credType, apiJson.multiselect)
+
+    const finalList = getList(ListsForThisNode, apiJson.credential, apiJson.credType, multiSelect)
     const setFormDialogStatus = useFlowStore(state => state.setFormDialogStatus)
     const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
     const setDialogProps = useFlowStore((state) => state.setDialogProps);
@@ -514,22 +518,22 @@ export function ApiCaller({
     }
 
     const errorMessage =
-        !isLoadingList && notFetchingAsFirstTime && finalList.length < (apiJson.multiselect ? 1 : 2) && !isDisabled
+        !isLoadingList && notFetchingAsFirstTime && finalList.length ===0 && !isDisabled
             ? "Make sure you have connection or you filled valid credentials"
             : null
-
+    
     return (
         <div className="space-y-4">
 
-            {apiJson.multiselect ? (
-                <SearchableSelect
-                    name={apiJson.variableName}
+            {multiSelect ? (
+
+                <MultiSelect
                     placeholder={apiJson.placeholder}
-                    value={value}
+                    selected={value}
                     onChange={handleChange}
                     options={finalList}
-                    disabled={disable}
                     className="w-full"
+                    disabled={disable}
                 />
             ) : (
                 <SearchableSelect
@@ -547,7 +551,7 @@ export function ApiCaller({
                 />
             )}
 
-            {errorMessage && !isUsingVariable(value) && !isUsingAi && (
+            {errorMessage && (multiSelect || !isUsingVariable(value)) && !isUsingAi && (
                 <p className="text-xs text-destructive">{errorMessage}</p>
             )}
 

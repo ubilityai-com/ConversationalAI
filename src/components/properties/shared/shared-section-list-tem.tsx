@@ -84,6 +84,7 @@ export function SharedListItemSection({
       {Component && !isLoading && (
         <Component
           selectedNodeId={parentId}
+          contentPath={path}
           validators={validators}
           schema={schema.rightSideData.json}
           content={content}

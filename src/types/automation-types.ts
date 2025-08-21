@@ -433,4 +433,5 @@ export interface NodeConfigProps<T=Record<string,any>> {
   CustomComponent?: React.ComponentType<CustomComponentProps>;
   customValidate?:(val:any)=>boolean
   selectedNodeId: string;
+  contentPath?:string
 }
