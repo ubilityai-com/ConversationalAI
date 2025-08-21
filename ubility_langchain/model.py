@@ -26,6 +26,7 @@ import logging
 from typing import (Any,Callable,Dict,Generator,Iterable,List,Optional,Tuple,Type)
 import os
 import types
+import json
 
 
 class Model:
@@ -309,10 +310,11 @@ class Model:
         try:
             if "projectId" in cred and 'credentials' in cred:
                 optionals = self.params
+                from google.oauth2 import service_account
+                service_account_info = json.load(cred["credentials"])
                 self.kwargs = {
-                        "project_id": cred["projectId"],
-                        "credentials": cred["credentials"],
-                        **optionals
+                        "project": cred["projectId"],
+                        "credentials": service_account.Credentials.from_service_account_info(service_account_info)
                     }
                 logging.info("--------------Done--------------")
             else:
@@ -499,7 +501,7 @@ class Model:
                 elif self.provider == "vertexAi":
                     from langchain_google_vertexai import ChatVertexAI
                     kwargs=self.kwargs
-                    llm = ChatVertexAI(model_name=self.model, **kwargs)
+                    llm = ChatVertexAI(model=self.model, **kwargs, **optionals)
                 elif self.provider == "googleGenerativeAi":
                     from langchain_google_genai import ChatGoogleGenerativeAI
                     llm = ChatGoogleGenerativeAI(api_key=self.api_key,model=self.model,**optionals)
