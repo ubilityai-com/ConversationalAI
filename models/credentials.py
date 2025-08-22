@@ -31,7 +31,7 @@ def create_credential(name: str,type: str, data: dict) -> None:
         )
 
 
-def list_credentials() -> List[Dict]:
+def list_credentials(type=None) -> List[Dict]:
     """
     Retrieve all credentials, hiding the 'data' field.
 
@@ -49,7 +49,11 @@ def list_credentials() -> List[Dict]:
             # Hide/remove the "data" field
             if "data" in entry:
                 del entry["data"]
-            credentials.append(entry)
+            if type:
+                if entry["type"] == type:
+                    credentials.append(entry)
+            else:
+                credentials.append(entry)
 
         return credentials
 
