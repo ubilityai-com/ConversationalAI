@@ -916,9 +916,9 @@ async def list_all_tool_names(tools: McpTools):
                 envVars = {'SLACK_BOT_TOKEN': json_cred['accessToken']}
             elif mcp['name'] == 'NotionMcpServer':
                 envVars = {'NOTION_BOT_TOKEN': json_cred['accessToken']}
-            elif mcp['name'] == 'WhatsAppMcpServer':
+            elif mcp['name'] == 'WhatsappMcpServer':
                 envVars = {'WHATSAPP_TOKEN': json_cred['accessToken'], 'WHATSAPP_ACCOUNT_ID': json_cred['whatsappAccountId']}
-            elif mcp['name'] == 'AirTableMcpServer':
+            elif mcp['name'] == 'AirtableMcpServer':
                 envVars = {'AIRTABLE_BOT_TOKEN': json_cred['accesstoken']}
             elif mcp['name'] == 'GoogleSheetsMcpServer':
                 envVars = {
@@ -941,7 +941,7 @@ async def list_all_tool_names(tools: McpTools):
                     'HUBSPOT_CLIENT_ID': json_cred['clientID'],
                     'HUBSPOT_CLIENT_SECRET': json_cred['clientSecret']
                     }
-            elif mcp['name'] == 'MailChimpMcpServer':
+            elif mcp['name'] == 'MailchimpMcpServer':
                 envVars = {
                     'MAILCHIMP_API_KEY': json_cred['apiKey'],
                     'MAILCHIMP_SERVER_PREFIX': json_cred['serverPrefix']

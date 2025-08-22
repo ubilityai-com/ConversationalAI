@@ -8,7 +8,7 @@ sys.path.append(apps)
 
 from mcpLibraries import whatsapp
 
-mcp = FastMCP("WhatsAppMcpServer")
+mcp = FastMCP("WhatsappMcpServer")
 
 class SendWhatsappTextMessageContent(BaseModel):
     body: str = Field(None, description="Message body text. Supports URLs. Maximum 4096 characters.")
