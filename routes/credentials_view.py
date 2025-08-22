@@ -5,6 +5,7 @@ Flask route handlers for managing credentials.
 """
 
 from app import http_app
+from fastapi import Query
 from pydantic import BaseModel
 from models.credentials import create_credential, list_credentials, delete_credential,get_credentials_by_names
 from fastapi.responses import JSONResponse
@@ -36,7 +37,7 @@ def create_credential_view(payload: CredentialCreateRequest):
 
 
 @http_app.get('/bot/credentials')
-def list_credentials_view():
+def list_credentials_view(type: str = Query(None)):
     """
     List all credentials.
 
@@ -44,6 +45,8 @@ def list_credentials_view():
         list: A list of credentials.
     """
     try:
+        if type:
+            return list_credentials(type)
         return list_credentials()
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})
@@ -82,22 +85,3 @@ def delete_credential_view(id: int):
 #         return get_credentials_by_names(payload.names)
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail=f"Error retrieving credentials: {str(e)}")
-
-
-@http_app.get('/bot/credentials/{mcp}')
-def list_credentials_by_type(mcp):
-    """
-    List MCP server credentials by type.
-
-    Returns:
-        list: A list of credentials.
-    """
-    try:
-        type = mcp.split("McpServer")[0]
-        google_mcps = ["Gmail", "GoogleCalendar", "GoogleDrive", "GoogleSheets"]
-        if type in google_mcps:
-            type = "Google"
-
-        return list_credentials(type)
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"Error": str(e)})
