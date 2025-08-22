@@ -74,7 +74,7 @@ export const AzureChatModel = (selectedNode: any) => {
                 temperature: parseFloat(getAccvalue(json, "samplingTemperature")),
                 timeout: parseInt(getAccvalue(json, "timeout")),
                 max_retries: parseInt(getAccvalue(json, "maxRetries")),
-                top_k: parseInt(getAccvalue(json, "topK")),
+                // top_k: parseInt(getAccvalue(json, "topK")),
                 top_p: parseFloat(getAccvalue(json, "topP")),
             },
         },
@@ -172,22 +172,6 @@ export const MistralAIChatModel = (selectedNode: any) => {
                 top_p: parseFloat(getAccvalue(json, "topP")),
                 random_seed: parseInt(getAccvalue(json, "randomSeed")),
                 safe_mode: Boolean(getAccvalue(json, "safeMode")),
-            },
-        },
-    }
-}
-export const GooglePalmGeminiChatModel = (selectedNode: any) => {
-    const model = selectedNode.data.rightSideData.extras.model
-    const json = model.content.json
-    return {
-        provider: "googlePaLMGemini",
-        model: json.model,
-        credential: json.cred,
-        params: {
-            optionals: {
-                temperature: parseFloat(getAccvalue(json, "samplingTemperature")),
-                top_k: parseFloat(getAccvalue(json, "topK")),
-                top_p: parseFloat(getAccvalue(json, "topP")),
             },
         },
     }

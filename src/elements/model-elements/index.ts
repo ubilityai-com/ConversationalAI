@@ -10,7 +10,6 @@ import { AzureChatModelJson } from "./AzureChatModelJson";
 import { CohereChatModelJson } from "./CohereChatModelJson";
 import { FireworksChatModelJson } from "./FireworksChatModelJson";
 import { GoogleGenerativeAiChatModelJson } from "./GoogleGenerativeAiChatModelJson";
-import { GooglePalmGeminiChatModelJson } from "./GooglePalmGeminiChatModelJson";
 import { GroqChatModelJson } from "./GroqChatModelJson";
 import { HuggingFaceChatModelJson } from "./HuggingFaceChatModelJson";
 import { MistralAIChatModelJson } from "./MistralAIChatModelJson";
@@ -35,7 +34,6 @@ const ModelElements = [
     CohereChatModelJson,
     AWSBedrockChatModelJson,
     MistralAIChatModelJson,
-    GooglePalmGeminiChatModelJson,
     VertexAIChatModelJson,
     GoogleGenerativeAiChatModelJson,
     GroqChatModelJson,

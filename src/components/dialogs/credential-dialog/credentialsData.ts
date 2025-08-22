@@ -263,7 +263,19 @@ const serviceFields: CredentialInfo[] = [
                 Credential_value: "",
                 hashed: true,
             },
-        ],
+            {
+                label: "Resource Name",
+                Credential_name: "resourceName",
+                Credential_value: "",
+                hashed: false,
+            },
+            {
+                label: "API Version",
+                Credential_name: "apiVersion",
+                Credential_value: "2025-04-01-preview",
+                hashed: false,
+            },
+        ]
     },
     {
         type: "Baserow",
@@ -859,19 +871,6 @@ const serviceFields: CredentialInfo[] = [
                 Credential_name: "clientEmail",
                 Credential_value: "",
                 optional: true,
-            },
-        ],
-    },
-    {
-        type: "GooglePaLMGemini",
-        service: "GooglePaLMGemini",
-        Service_name: "",
-        cred: [
-            {
-                label: "API key",
-                Credential_name: "apiKey",
-                Credential_value: "",
-                hashed: true,
             },
         ],
     },

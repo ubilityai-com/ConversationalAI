@@ -70,58 +70,13 @@ export const AzureChatModelJson = {
         conditionOnRefresh: [],
       },
       {
-        type: "dropdown",
-        label: "Model",
-        value: "o3-mini",
+        type: "textfield",
+        label: "Deployment Name",
         variableName: "model",
+        value: "",
         required: true,
-        hasDynamicVariable: false,
-        list: [
-          {
-            option: "o3-mini",
-            value: "o3-mini",
-          },
-          {
-            option: "o1",
-            value: "o1",
-          },
-          {
-            option: "o1-preview",
-            value: "o1-preview",
-          },
-          {
-            option: "o1-mini",
-            value: "o1-mini",
-          },
-          {
-            option: "gpt-4o-mini",
-            value: "gpt-4o-mini",
-          },
-          {
-            option: "gpt-4o",
-            value: "gpt-4o",
-          },
-          {
-            option: "gpt-4",
-            value: "gpt-4",
-          },
-          {
-            option: "gpt-4-32k",
-            value: "gpt-4-32k",
-          },
-          {
-            option: "gpt-35-turbo",
-            value: "gpt-35-turbo",
-          },
-          {
-            option: "gpt-35-turbo-16k",
-            value: "gpt-35-turbo-16k",
-          },
-          {
-            option: "gpt-4-vision-preview",
-            value: "gpt-4-vision-preview",
-          },
-        ],
+        placeholder: "e.g.: gpt-4o",
+        hasDynamicVariable: true,
       },
       {
         title: "Additional Fields",
@@ -157,23 +112,23 @@ export const AzureChatModelJson = {
           ],
         ],
       },
-      {
-        type: "accordion",
-        accTitle: "Top K",
-        variableName: "topK",
-        fieldsArray: [
-          [
-            {
-              type: "textfield",
-              variableName: "topK",
-              value: 40,
-              numberField: true,
-              placeholder: "Top K",
-              hasDynamicVariable: true,
-            },
-          ],
-        ],
-      },
+      // {
+      //   type: "accordion",
+      //   accTitle: "Top K",
+      //   variableName: "topK",
+      //   fieldsArray: [
+      //     [
+      //       {
+      //         type: "textfield",
+      //         variableName: "topK",
+      //         value: 40,
+      //         numberField: true,
+      //         placeholder: "Top K",
+      //         hasDynamicVariable: true,
+      //       },
+      //     ],
+      //   ],
+      // },
       {
         type: "accordion",
         accTitle: "Top P",
