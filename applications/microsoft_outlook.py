@@ -1,4 +1,4 @@
-import aiohttp,sys,os
+import aiohttp,sys,os,json
 import  requests, base64
 from models.credentials import get_credentials_by_names
 from applications.functions import get_file_data,upload_file
@@ -32,13 +32,13 @@ async def microsoft_refresh_token(refresh_token: str, client_id: str, client_sec
     
 ########################################## CONTACT ##########################################
 
-async def outlook_get_many_contacts(credential_name, params, **kwargs):
+async def outlook_get_many_contacts(json_cred, params, **kwargs):
     """
     Retrieve multiple contacts from Outlook using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']):
             return  {"Error": "Missing required data."}
@@ -74,7 +74,7 @@ async def outlook_get_many_contacts(credential_name, params, **kwargs):
 
 
 
-async def outlook_get_contact(credential_name, params, **kwargs):
+async def outlook_get_contact(json_cred, params, **kwargs):
 
     """
     Retrieve a contact from Outlook using the Microsoft Graph API.
@@ -82,7 +82,7 @@ async def outlook_get_contact(credential_name, params, **kwargs):
     """
     
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'contact_id' not in params:
             return {"Error": "Missing required data."}
@@ -103,13 +103,13 @@ async def outlook_get_contact(credential_name, params, **kwargs):
 
 
 
-async def outlook_create_contact(credential_name, params, **kwargs):
+async def outlook_create_contact(json_cred, params, **kwargs):
     """
     Create a contact in Outlook using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'givenName' not in params:
             return {"Error": "Missing required data."}
@@ -132,14 +132,14 @@ async def outlook_create_contact(credential_name, params, **kwargs):
 
 
 
-async def outlook_update_contact(credential_name, params, **kwargs):
+async def outlook_update_contact(json_cred, params, **kwargs):
     """
     Update a contact in Outlook using the Microsoft Graph API.
 
     """
     try:
 
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'contact_id' not in params:
             return {"Error": "Missing required data."}
@@ -172,7 +172,7 @@ async def outlook_update_contact(credential_name, params, **kwargs):
 
 
 
-async def outlook_delete_contact(credential_name, params, **kwargs):
+async def outlook_delete_contact(json_cred, params, **kwargs):
 
     """
     Delete a contact in Outlook using the Microsoft Graph API.
@@ -180,7 +180,7 @@ async def outlook_delete_contact(credential_name, params, **kwargs):
     """
     try:
 
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'contact_id' not in params:
             return {"Error": "Missing required data."}
@@ -203,13 +203,13 @@ async def outlook_delete_contact(credential_name, params, **kwargs):
 ########################################## calendar ##########################################
 
 
-async def outlook_get_many_calendars(credential_name, params, **kwargs):
+async def outlook_get_many_calendars(json_cred, params, **kwargs):
     """
     Retrieve multiple calendars from Outlook using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']):
             return {"Error": "Missing required data."}
@@ -243,14 +243,13 @@ async def outlook_get_many_calendars(credential_name, params, **kwargs):
 
 
 
-async def outlook_get_calendar(credential_name, params, **kwargs):
+async def outlook_get_calendar(json_cred, params, **kwargs):
     """
     Retrieve a calendar from Outlook using the Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
-
+        json_cred = json.loads(json_cred)
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'calendar_id' not in params:
             return {"Error": "Missing required data."}
 
@@ -272,13 +271,13 @@ async def outlook_get_calendar(credential_name, params, **kwargs):
 
 
 
-async def outlook_create_calendar(credential_name, params, **kwargs):
+async def outlook_create_calendar(json_cred, params, **kwargs):
     """
     Create a calendar in Outlook using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'name' not in params:
             return {"Error": "Missing required data."}
@@ -316,14 +315,14 @@ async def outlook_create_calendar(credential_name, params, **kwargs):
 
 
 
-async def outlook_update_calendar(credential_name, params, **kwargs):
+async def outlook_update_calendar(json_cred, params, **kwargs):
     """
     Update a calendar in Outlook using the Microsoft Graph API.
 
     """
     try:
 
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'calendar_id' not in params:
             return {"Error": "Missing required data."}
@@ -355,13 +354,13 @@ async def outlook_update_calendar(credential_name, params, **kwargs):
 
 
 
-async def outlook_delete_calendar(credential_name, params, **kwargs):
+async def outlook_delete_calendar(json_cred, params, **kwargs):
     """
     Delete a calendar in Outlook using the Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'calendar_id' not in params:
             return {"Error": "Missing required data."}
@@ -384,14 +383,14 @@ async def outlook_delete_calendar(credential_name, params, **kwargs):
 
 ########################################## folder ##########################################
 
-async def outlook_get_many_folders(credential_name, params, **kwargs):
+async def outlook_get_many_folders(json_cred, params, **kwargs):
 
     """
     Retrieve multiple folders from Outlook using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']):
             return {"Error": "Missing required data."}
@@ -423,14 +422,14 @@ async def outlook_get_many_folders(credential_name, params, **kwargs):
       return {"Error": str(e)}
  
 
-async def outlook_get_folder(credential_name, params, **kwargs):
+async def outlook_get_folder(json_cred, params, **kwargs):
     """
     Retrieve a folder from Outlook using the Microsoft Graph API.
 
     """
     try:
 
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'folder_id' not in params:
             return {"Error": "Missing required data."}
@@ -453,14 +452,14 @@ async def outlook_get_folder(credential_name, params, **kwargs):
       return {"Error": str(e)}
 
 
-async def outlook_create_folder(credential_name, params, **kwargs):
+async def outlook_create_folder(json_cred, params, **kwargs):
 
     """
     Create a folder in Outlook using Microsoft Graph API.
 
     """
     try:
-            json_cred = get_credentials_by_names(credential_name)[credential_name]
+            json_cred = json.loads(json_cred)
 
             if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'displayName' not in params:
                 return {"Error": "Missing required data."}
@@ -483,14 +482,14 @@ async def outlook_create_folder(credential_name, params, **kwargs):
 
 
 
-async def outlook_update_folder(credential_name, params, **kwargs):
+async def outlook_update_folder(json_cred, params, **kwargs):
 
     """
     Update a folder in Outlook using the Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'folder_id' not in params:
             return {"Error": "Missing required data."}
@@ -522,14 +521,14 @@ async def outlook_update_folder(credential_name, params, **kwargs):
 
 
 
-async def outlook_delete_folder(credential_name, params, **kwargs):
+async def outlook_delete_folder(json_cred, params, **kwargs):
 
     """
     Delete an folder by ID using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'folder_id' not in params:
             return {"Error": "Missing required data."}
@@ -554,13 +553,13 @@ async def outlook_delete_folder(credential_name, params, **kwargs):
 ########################################## folder message ##########################################
 
 
-async def outlook_get_many_folder_messages(credential_name, params, **kwargs):
+async def outlook_get_many_folder_messages(json_cred, params, **kwargs):
     """
     Retrieves the messages in a folder from Outlook using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'folder_id' not in params:
             return {"Error": "Missing required data."}
@@ -598,13 +597,13 @@ async def outlook_get_many_folder_messages(credential_name, params, **kwargs):
 ##########################################  message ##########################################
 
 
-async def outlook_get_many_message(credential_name, params, **kwargs):
+async def outlook_get_many_message(json_cred, params, **kwargs):
     """
     Retrieve multiple messages from Outlook using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']):
             return {"Error": "Missing required data."}
@@ -639,13 +638,13 @@ async def outlook_get_many_message(credential_name, params, **kwargs):
       return {"Error": str(e)}
 
 
-async def outlook_get_message(credential_name, params, **kwargs):
+async def outlook_get_message(json_cred, params, **kwargs):
     """
     Retrieve a message from Outlook using the Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'message_id' not in params:
             return {"Error": "Missing required data."}
@@ -670,13 +669,13 @@ async def outlook_get_message(credential_name, params, **kwargs):
 
 
 
-async def outlook_delete_message(credential_name, params, **kwargs):
+async def outlook_delete_message(json_cred, params, **kwargs):
     """
     Delete an message by ID using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'message_id' not in params:
             return {"Error": "Missing required data."}
@@ -698,14 +697,14 @@ async def outlook_delete_message(credential_name, params, **kwargs):
             
 
 
-async def outlook_move_message(credential_name, params, **kwargs):
+async def outlook_move_message(json_cred, params, **kwargs):
 
     """
     Move a message to a specific folder in Outlook using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'message_id' not in params:
             return {"Error": "Missing required data."}
@@ -736,7 +735,7 @@ async def outlook_move_message(credential_name, params, **kwargs):
         
 
 
-async def outlook_reply_message(credential_name, params, **kwargs):
+async def outlook_reply_message(json_cred, params, **kwargs):
     """
     Create a reply to a message in Outlook.
 
@@ -754,7 +753,7 @@ async def outlook_reply_message(credential_name, params, **kwargs):
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or not all(param in params for param in ['message_id', 'reply_content_body', 'reply_contentType_body']):
             return {"Error": "Missing required data."}
@@ -838,7 +837,7 @@ async def outlook_reply_message(credential_name, params, **kwargs):
       return {"Error": str(e)}
 
 
-async def outlook_send_message(credential_name, params, **kwargs):
+async def outlook_send_message(json_cred, params, **kwargs):
     """
     Send a message in Outlook.
 
@@ -865,7 +864,7 @@ async def outlook_send_message(credential_name, params, **kwargs):
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or not all(param in params for param in ['subject', 'body', 'bodyFormat','to_emails']):
             return {"Error": "Missing required data."}
@@ -952,13 +951,13 @@ async def outlook_send_message(credential_name, params, **kwargs):
 
 ##########################################  event ##########################################
 
-async def outlook_get_event(credential_name, params, **kwargs):
+async def outlook_get_event(json_cred, params, **kwargs):
     """
     Retrieve a specific event from a calendar using the Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or not all(param in params for param in ['calendar_id', 'event_id']):
             return  {"Error": "Missing required data."}
@@ -982,13 +981,13 @@ async def outlook_get_event(credential_name, params, **kwargs):
     
 
 
-async def outlook_delete_event(credential_name, params, **kwargs):
+async def outlook_delete_event(json_cred, params, **kwargs):
     """
     Delete an event by ID using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or not all(param in params for param in ['calendar_id', 'event_id']):
             return {"Error": "Missing required data."}
@@ -1011,14 +1010,14 @@ async def outlook_delete_event(credential_name, params, **kwargs):
 
 
 
-async def outlook_get_many_event(credential_name, params, **kwargs):
+async def outlook_get_many_event(json_cred, params, **kwargs):
 
     """
     Retrieve multiple events from Outlook using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'calendar_id' not in params:
             return {"Error": "Missing required data."}
@@ -1051,13 +1050,13 @@ async def outlook_get_many_event(credential_name, params, **kwargs):
 
 
 
-async def outlook_create_event(credential_name, params, **kwargs):
+async def outlook_create_event(json_cred, params, **kwargs):
     """
     Create an event in Outlook using Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or not all(param in params for param in ['calendar_id', 'subject', 'start_time', 'end_time']):
             return {"Error": "Missing required data."}
@@ -1100,13 +1099,13 @@ async def outlook_create_event(credential_name, params, **kwargs):
     
 
 
-async def outlook_update_event(credential_name,params, **kwargs):
+async def outlook_update_event(json_cred,params, **kwargs):
     """
     Update an event in Outlook using the Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or not all(param in params for param in ['calendar_id', 'event_id']):
             return {"Error": "Missing required data."}
@@ -1155,13 +1154,13 @@ async def outlook_update_event(credential_name,params, **kwargs):
 ##########################################  message attachment ##########################################
 
 
-async def outlook_get_many_message_attachment(credential_name, params, **kwargs):
+async def outlook_get_many_message_attachment(json_cred, params, **kwargs):
     """
     Retrieves many attachments from an Outlook message using the Microsoft Graph API.
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or 'message_id' not in params:
             return {"Error": "Missing required data."}
@@ -1193,7 +1192,7 @@ async def outlook_get_many_message_attachment(credential_name, params, **kwargs)
     except aiohttp.ClientError as e:
       return {"Error": str(e)}
 
-async def outlook_get_message_attachment(credential_name, params, **kwargs):
+async def outlook_get_message_attachment(json_cred, params, **kwargs):
     """
     Retrieve information about an attachment of a message in Outlook.
 
@@ -1210,7 +1209,7 @@ async def outlook_get_message_attachment(credential_name, params, **kwargs):
 
     """
     try:
-        json_cred = get_credentials_by_names(credential_name)[credential_name]
+        json_cred = json.loads(json_cred)
 
         if not all(cred in json_cred for cred in ['refreshToken', 'clientSecret', 'clientId']) or not all(param in params for param in ['message_id', 'attachment_id']):
             return {"Error": "Missing required data."}

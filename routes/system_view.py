@@ -41,7 +41,7 @@ async def test_node(payload: Union[TestNodeRequest, TestAINodeRequest,TestNodeTo
     try:
         if isinstance(payload, TestNodeRequest):
             credential_obj = get_credential(payload.credential)
-            result = AppIntegration(payload.app_type,json.loads(credential_obj['data']),payload.operation,payload.content_json).run_process(payload.chatbot_id,"testNode")
+            result = await AppIntegration(payload.app_type,json.loads(credential_obj['data']),payload.operation,payload.content_json).run_process(payload.chatbot_id,"testNode")
 
         if isinstance(payload, TestAINodeRequest):
             creds_obj = get_credentials_by_names(payload.credentials)

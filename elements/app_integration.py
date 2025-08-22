@@ -1,6 +1,5 @@
 # app_integration.py
-import importlib
-import json
+import importlib,json,inspect
 
 
 class AppIntegration:
@@ -10,7 +9,7 @@ class AppIntegration:
         self.operation = operation
         self.params = params
 
-    def run_process(self,dialogue_id,conversation_id):
+    async def run_process(self,dialogue_id,conversation_id):
         try:
 
             # Dynamically import the app module
@@ -28,7 +27,10 @@ class AppIntegration:
                 raise ValueError(f"Unknown operation '{self.operation}' for app '{self.app_type}'")
 
             # Call the function
-            return func(json.dumps(self.credentials), self.params, dialogue_id= dialogue_id, conv_id = conversation_id) # dialogue_id & conv_id are for files 
+            if inspect.iscoroutinefunction(func):
+                return await func(json.dumps(self.credentials), self.params, dialogue_id= dialogue_id, conv_id = conversation_id) # dialogue_id & conv_id are for files 
+            else:
+                return func(json.dumps(self.credentials), self.params, dialogue_id= dialogue_id, conv_id = conversation_id)  
 
         except Exception as e:
             print(f"Error during app integration: {e}")
