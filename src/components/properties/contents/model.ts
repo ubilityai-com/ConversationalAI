@@ -225,22 +225,22 @@ export const GroqChatModel = (selectedNode: any) => {
 
     }
 }
-export const AI21ChatModel = (selectedNode: any) => {
-    const model = selectedNode.data.rightSideData.extras.model
-    const json = model.content.json
-    return {
-        provider: "ai21",
-        model: json.model,
-        credential: json.cred,
-        params: {
-            optionals: {
-                max_tokens: getAccvalue(json, "maxOutputTokens"),
-                temperature: getAccvalue(json, "temperature"),
-                top_p: getAccvalue(json, "topP"),
-            },
-        },
-    }
-}
+// export const AI21ChatModel = (selectedNode: any) => {
+//     const model = selectedNode.data.rightSideData.extras.model
+//     const json = model.content.json
+//     return {
+//         provider: "ai21",
+//         model: json.model,
+//         credential: json.cred,
+//         params: {
+//             optionals: {
+//                 max_tokens: getAccvalue(json, "maxOutputTokens"),
+//                 temperature: getAccvalue(json, "temperature"),
+//                 top_p: getAccvalue(json, "topP"),
+//             },
+//         },
+//     }
+// }
 export const FireworksChatModel = (selectedNode: any) => {
     const model = selectedNode.data.rightSideData.extras.model
     const json = model.content.json
