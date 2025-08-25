@@ -15,7 +15,7 @@ export default function getContent(selectedNode: any, params: any) {
         })
         : [];
 
-    const selected_tools = [
+    const selectedTools = [
         ...new Set(
             tool.list
                 .filter((t: any) => t.type === "McpTool" && t.content?.json?.selectedTools)
@@ -30,10 +30,10 @@ export default function getContent(selectedNode: any, params: any) {
             chainMemory: require("../../../properties/contents/memory")[memory.type](selectedNode),
             cred: extractCreds(selectedNode?.data.rightSideData.extras),
             requiredInputs: arr.length !== 0 ? Object.fromEntries(arr.map(({ name, description }: any) => [name, description])) : undefined,
-            tools: toolConfigs.length > 0 || selected_tools.length > 0 ?
+            tools: toolConfigs.length > 0 || selectedTools.length > 0 ?
                 {
                     ...(toolConfigs.length > 0 && { toolConfigs }),
-                    ...(selected_tools.length > 0 && { selected_tools }),
+                    ...(selectedTools.length > 0 && { selectedTools }),
                 } : undefined
         }
     }
