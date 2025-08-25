@@ -50,6 +50,8 @@ def list_credentials(type=None) -> List[Dict]:
             if "data" in entry:
                 del entry["data"]
             if type:
+                if "/" in type: # extract cred type if it includes mcp server name (e.g., 'SlackMcpServer/Slack' -> 'Slack')
+                    type = type.split("/")[-1]
                 if entry["type"] == type:
                     credentials.append(entry)
             else:
