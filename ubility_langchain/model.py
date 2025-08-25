@@ -31,7 +31,7 @@ import json
 
 class Model:
     
-    _VALID_PROVIDERS=["openAi","ollama","anthropic","awsBedrock","azureOpenAi","mistralAi","cohere","togetherAi","huggingFace","vertexAi","googleGenerativeAi","groq","ai21","fireworks","nvidia","nomic", "deepseek", "xai", "openRouter", "cerebras", "ibm", "liteLLM"]
+    _VALID_PROVIDERS=["openAi","ollama","anthropic","awsBedrock","azureOpenAi","mistralAi","cohere","togetherAi","huggingFace","vertexAi","googleGenerativeAi","groq","fireworks","nvidia","nomic", "deepseek", "xai", "openRouter", "cerebras", "ibm", "liteLLM"]
     
     def __init__(
         self,
@@ -124,9 +124,9 @@ class Model:
         elif self.provider == "fireworks":
             logging.info("It is an Fireworks provider")
             self._setup_fireworks(self.credentials)
-        elif self.provider == "ai21":
-            logging.info("It is an Ai21 provider")
-            self._setup_ai21(self.credentials)
+        # elif self.provider == "ai21":
+        #     logging.info("It is an Ai21 provider")
+        #     self._setup_ai21(self.credentials)
         elif self.provider =="nvidia" :
             logging.info("It is a nvidia provider")
             self._setup_nvidia(self.credentials)
@@ -309,7 +309,6 @@ class Model:
     def _setup_vertexAi(self,cred):
         try:
             if "projectId" in cred and 'credentials' in cred:
-                optionals = self.params
                 from google.oauth2 import service_account
                 service_account_info = json.load(cred["credentials"])
                 self.kwargs = {
@@ -356,15 +355,15 @@ class Model:
             raise Exception(error)
 
     # set up ai21 object
-    def _setup_ai21(self,cred):
-        try:
-            if "apiKey" in cred:
-                self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
-            else:
-                raise Exception("missing AI21 credentials")
-        except Exception as error:
-            raise Exception(error) 
+    # def _setup_ai21(self,cred):
+    #     try:
+    #         if "apiKey" in cred:
+    #             self.api_key=cred["apiKey"]
+    #             logging.info("--------------Done--------------")
+    #         else:
+    #             raise Exception("missing AI21 credentials")
+    #     except Exception as error:
+    #         raise Exception(error) 
         
     def _setup_nvidia(self,cred):
         try:
@@ -402,7 +401,7 @@ class Model:
                     from langchain_openai import OpenAIEmbeddings
                     response = OpenAIEmbeddings(openai_api_key= self.api_key,model=self.model,**optionals)
                 elif self.provider == "ollama":
-                    from langchain_community.embeddings import OllamaEmbeddings
+                    from langchain_ollama import OllamaEmbeddings
                     response = OllamaEmbeddings(base_url=self.base_url,model=self.model,**optionals)
                 elif self.provider == "googleGenerativeAi":
                     from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -456,7 +455,7 @@ class Model:
                     from langchain_openai import ChatOpenAI
                     llm = ChatOpenAI(model=self.model, api_key=self.api_key,**optionals)
                 elif self.provider == "ollama":
-                    from langchain_community.chat_models.ollama import ChatOllama
+                    from langchain_ollama import ChatOllama
                     llm = ChatOllama(model=self.model, base_url=self.base_url,**optionals)
                 elif self.provider == "anthropic":
                     from langchain_anthropic import ChatAnthropic
@@ -511,9 +510,9 @@ class Model:
                 elif self.provider == "fireworks":
                     from langchain_fireworks import ChatFireworks
                     llm = ChatFireworks(api_key=self.api_key, model=self.model, **optionals)
-                elif self.provider == "ai21":
-                    from langchain_ai21 import ChatAI21
-                    llm = ChatAI21(api_key=self.api_key, model=self.model, **optionals)
+                # elif self.provider == "ai21":
+                #     from langchain_ai21 import ChatAI21
+                #     llm = ChatAI21(api_key=self.api_key, model=self.model, **optionals)
                 elif self.provider == "nvidia":    
                     from langchain_nvidia_ai_endpoints import ChatNVIDIA 
                     if self.api_key:
