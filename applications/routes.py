@@ -896,7 +896,7 @@ async def gmail_get_labels(payload: GmailAppIntegration):
 class McpTools(BaseModel):
     data: dict
 
-@http_app.post("/bot/langchain/listMcps")
+@http_app.post("/bot/langchain/listMcpTools")
 async def list_all_tool_names(tools: McpTools):
     def setup_mcp_servers(mcp):
         mcps = {}
@@ -986,3 +986,23 @@ async def list_all_tool_names(tools: McpTools):
     tools = await client.get_tools()
     
     return [tool.name for tool in tools]
+
+
+@http_app.get("/bot/langchain/listMcps")
+async def list_mcps():
+    current_dir = os.getcwd()
+    mcp_servers_dir = f"{current_dir}/mcpServers"
+
+    mcp_names = []
+    for mcpname in os.listdir(mcp_servers_dir):
+        if os.path.isfile(os.path.join(mcp_servers_dir, mcpname)):
+            mcpname = os.path.splitext(mcpname)[0]
+            type = mcpname.split("McpServer")[0]
+            google_mcps = ["Gmail", "GoogleCalendar", "GoogleDrive", "GoogleSheets"]
+            if type in google_mcps:
+                type = "Google"
+            mcp_names.append({
+                "name": mcpname,
+                "type": f"{mcpname}/{type}"
+            })
+    return mcp_names
