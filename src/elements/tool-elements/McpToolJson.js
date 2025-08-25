@@ -28,7 +28,7 @@ export const McpToolJson = {
           name: [
             {
               type: "api",
-              label: "Name",
+              label: "Mcp Name",
               variableName: "name",
               required: true,
               value: "None",
@@ -66,55 +66,191 @@ export const McpToolJson = {
                     {
                       type: "static",
                       value:
-                        process.env.REACT_APP_DNS_URL + "api/mcp/list_mcp_files",
+                        process.env.REACT_APP_DNS_URL + "langchain/listMcps",
                     },
                   ],
                 },
               ],
               res: {
                 path: "data",
+                keys: {
+                  option: {
+                    fields: ["name"],
+                  },
+                  value: {
+                    fields: ["type"],
+                  },
+                },
               },
               apiDependsOn: [],
             },
             {
-              type: "dropdown",
-              label: "Name",
-              variableName: "name",
-              value: "SlackMcpServer",
-              placeholder: "Name",
-              hasDynamicVariable: true,
+              type: "api",
+              label: "Credentials",
+              variableName: "cred",
               required: true,
-              list: [
+              // credential: true,
+              value: "None",
+              list: [],
+              config: [
                 {
-                  option: "SlackMcpServer",
-                  value: "SlackMcpServer",
+                  key: "method",
+                  value: "get",
                 },
                 {
-                  option: "AirtableMcpServer",
-                  value: "AirtableMcpServer",
+                  key: "params",
+                  obj: [
+                    {
+                      key: "type",
+                      dependOn: "name",
+                      isAutomation: true,
+                    },
+                  ]
                 },
                 {
-                  option: "HubspotMcpServer",
-                  value: "HubspotMcpServer",
+                  key: "headers",
+                  obj: [
+                    {
+                      key: "Authorization",
+                      dependOn: [
+                        {
+                          type: "static",
+                          value: "Bearer ",
+                        },
+                        {
+                          type: "redux",
+                          value: "authentication.authToken",
+                        },
+                      ],
+                    },
+                    {
+                      key: "content-type",
+                      value: "application/json",
+                    },
+                  ],
                 },
                 {
-                  option: "WhatsappMcpServer",
-                  value: "WhatsappMcpServer",
+                  key: "url",
+                  dependOn: [
+                    {
+                      type: "static",
+                      value:
+                        process.env.REACT_APP_DNS_URL + "credentials",
+                    },
+                  ],
                 },
+              ],
+              res: {
+                path: "data",
+                keys: {
+                  option: {
+                    fields: ["name"],
+                  },
+                  value: {
+                    fields: ["name"],
+                  },
+                  type: { fields: ["type"] },
+                },
+              },
+              apiDependsOn: [
                 {
-                  option: "NotionMcpServer",
-                  value: "NotionMcpServer",
+                  type: "dropdown",
+                  name: "name",
+                  isAutomation: true,
                 },
               ],
             },
             {
-              type: "textfield",
-              label: "Credential",
-              variableName: "cred",
-              value: "",
-              placeholder: "credential",
-              hasDynamicVariable: true,
+              type: "api",
+              label: "Selected Tools",
+              variableName: "selectedTools",
+              value: [],
               required: true,
+              multiselect: true,
+              list: [],
+              config: [
+                {
+                  key: "method",
+                  value: "post",
+                },
+                {
+                  key: "url",
+                  dependOn: [
+                    {
+                      type: "static",
+                      value:
+                        process.env.REACT_APP_DNS_URL +
+                        "langchain/listMcpTools",
+                    },
+                  ],
+                },
+                {
+                  key: "headers",
+                  obj: [
+                    {
+                      key: "Authorization",
+                      dependOn: [
+                        {
+                          type: "static",
+                          value: "Bearer ",
+                        },
+                        {
+                          type: "redux",
+                          value: "authentication.authToken",
+                        },
+                      ],
+                    },
+                    {
+                      key: "content-type",
+                      value: "application/json",
+                    },
+                  ],
+                },
+                {
+                  key: "data",
+                  obj: [
+                    {
+                      key: "data",
+                      obj: [
+                        {
+                          key: "name",
+                          dependOn: "name",
+                          isAutomation: true,
+                        },
+                        {
+                          key: "credential",
+                          dependOn: "cred",
+                          isAutomation: true,
+                        },
+                        {
+                          key: "type",
+                          value: "mcp"
+                        }
+
+                      ]
+                    },
+
+                  ],
+                },
+              ],
+              res: {
+                path: "data",
+                type: [],
+                key: true,
+              },
+              apiDependsOn: [
+                {
+                  type: "dropdown",
+                  name: "name",
+                  isAutomation: true,
+                },
+                {
+                  type: "api",
+                  name: "cred",
+                  isAutomation: true,
+                },
+              ],
+
             },
           ],
           url: [
@@ -138,8 +274,8 @@ export const McpToolJson = {
             },
             {
               type: "api",
-              label: "Mcps",
-              variableName: "mcps",
+              label: "Selected Tools",
+              variableName: "selectedTools",
               value: [],
               required: true,
               multiselect: true,
@@ -156,7 +292,7 @@ export const McpToolJson = {
                       type: "static",
                       value:
                         process.env.REACT_APP_DNS_URL +
-                        "langchain/listMcps",
+                        "langchain/listMcpTools",
                     },
                   ],
                 },

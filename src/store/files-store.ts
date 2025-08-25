@@ -58,7 +58,7 @@ interface FilesActions {
   retryUpload: (fileId: string) => void;
   removeFile: (fileId: string) => Promise<void>;
   formatFileSize: (bytes: number) => string;
-  getFiles: () => void;
+  getFiles: (botID?: string) => void;
   resetFilesState: () => void;
   addDownloadingFileId: (fileId: string) => void;
   removeDownloadingFileId: (fileId: string) => void;
@@ -457,12 +457,12 @@ export const useFilesStore = create<FilesStore>()(
         removeRemovingFileId(fileId);
       }
     },
-    getFiles: async () => {
+    getFiles: async (botID) => {
       const { selectedBot } = useFlowStore.getState()
       try {
         get().setIsLoadingFiles(true);
         const result = await axios.get(
-          process.env.REACT_APP_DNS_URL + `list_uploaded_files?dialogue=${selectedBot?.id}`
+          process.env.REACT_APP_DNS_URL + `list_uploaded_files?dialogue=${botID ? botID : selectedBot?.id}`
         );
         const sortedFiles = result.data.files.sort(
           (a: FileItem, b: FileItem) => {

@@ -52,7 +52,7 @@ export const McpTool = (content: any) => {
     const json = content.json
     return {
         type: "mcp",
-        name: json.name,
+        name: json.name.split("/")[0],
         credential: json.getMcpBy === "name" ? json.cred : undefined,
         url: json.getMcpBy === "url" ? json.url : undefined
     }

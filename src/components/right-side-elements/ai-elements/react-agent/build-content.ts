@@ -9,6 +9,19 @@ export default function getContent(selectedNode: any, params: any) {
     const tool = rightSideData.extras.tool
     const { edges, nodes } = params
     const arr = getAccvalue(rightSideData.json, "requiredInputs") || []
+    const toolConfigs = tool.list.length !== 0
+        ? tool.list.map((el: any) => {
+            return require("../../../properties/contents/tool")[el.type](el.content);
+        })
+        : [];
+
+    const selected_tools = [
+        ...new Set(
+            tool.list
+                .filter((t: any) => t.type === "McpTool" && t.content?.json?.selectedTools)
+                .flatMap((t: any) => t.content.json.selectedTools.map((st: any) => st.value))
+        )
+    ];
     const content = {
         type: "data",
         data: {
@@ -16,10 +29,12 @@ export default function getContent(selectedNode: any, params: any) {
             model: require("../../../properties/contents/model")[model.type](selectedNode),
             chainMemory: require("../../../properties/contents/memory")[memory.type](selectedNode),
             cred: extractCreds(selectedNode?.data.rightSideData.extras),
-            requiredInputs: arr.length !== 0 ? Object.fromEntries(arr.map(({ key, value }: any) => [key, value])) : undefined,
-            tools: tool.list.length !== 0 ? tool.list.map((el: any) => {
-                return require("../../../properties/contents/tool")[el.type](el.content)
-            }) : undefined
+            requiredInputs: arr.length !== 0 ? Object.fromEntries(arr.map(({ name, description }: any) => [name, description])) : undefined,
+            tools: toolConfigs.length > 0 || selected_tools.length > 0 ?
+                {
+                    ...(toolConfigs.length > 0 && { toolConfigs }),
+                    ...(selected_tools.length > 0 && { selected_tools }),
+                } : undefined
         }
     }
 

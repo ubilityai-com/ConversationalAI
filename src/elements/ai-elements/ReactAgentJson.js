@@ -82,20 +82,20 @@ export const ReactAgentJson = {
                 "removeButton": true
               },
               {
-                "label": "Key",
+                "label": "Name",
                 "type": "textfield",
-                "placeholder": "key",
+                "placeholder": "Name",
                 "value": "",
-                "variableName": "key",
+                "variableName": "name",
                 "hasDynamicVariable": true,
                 "rightSideInput": true
               },
               {
-                "label": "Value",
+                "label": "Description",
                 "type": "textfield",
                 "value": "",
-                "placeholder": "value",
-                "variableName": "value",
+                "placeholder": "description",
+                "variableName": "description",
                 "hasDynamicVariable": true,
                 "rightSideInput": true
               }

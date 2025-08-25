@@ -153,7 +153,7 @@ export function AgentPaletteDialog({
   sourceHandle,
 }: AgentPaletteDialogProps) {
 
-  const { reactFlowInstance, nodes, setIsFormDialogOpen, addNodesValidation } = useFlowStore()
+  const { reactFlowInstance, nodes, setIsFormDialogOpen, addNodesValidation, setClickedElement } = useFlowStore()
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
@@ -237,6 +237,10 @@ export function AgentPaletteDialog({
       reactFlowInstance.addEdges(edge);
       addNodesValidation(generateID, element.defaultValid);
       setIsFormDialogOpen(false);
+      setClickedElement(null)
+      setTimeout(() => {
+        setClickedElement(newElement)
+      }, 300);
     }
   };
   return (

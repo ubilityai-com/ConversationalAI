@@ -23,14 +23,14 @@ export default function MainLayout() {
         reactFlowInstance,
         failedLoadingBot,
     } = useFlowStore()
-    const getFiles=useFilesStore(state=>state.getFiles)
+    const getFiles = useFilesStore(state => state.getFiles)
     const { botID } = useParams();
 
     useEffect(() => {
         initializeAllDroppedElementsByHandler()
         fetchBots()
         OAuth2AuthenticationFlow()
-        getFiles()
+        getFiles(botID)
     }, [])
     useEffect(() => {
         const fetchBot = async () => {
@@ -77,7 +77,7 @@ export default function MainLayout() {
         <div className='min-h-screen flex flex-col' >
             <DialogManager />
             <Toolbar />
-            <LiveUrlDisplay/>
+            <LiveUrlDisplay />
             <LoadingOverlay />
             <div className="flex-1 flex overflow-hidden">
                 <div className="flex-1 relative overflow-hidden bg-gray-50">
