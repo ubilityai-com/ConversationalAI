@@ -397,7 +397,108 @@ async def get_slack_channels(payload: SlackAppIntegration):
 
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
-        
+
+
+############################# Gemini Connector API's  ###############################
+class GeminiAppIntegration(BaseModel):
+    credential_name: str
+    api_version: str
+
+@http_app.post("/bot/gemini/getModels")
+async def gemini_list_models(payload: GeminiAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+
+        apiKey = json_cred["apiKey"]
+        apiVersion = payload.api_version
+        url = f"https://generativelanguage.googleapis.com/{apiVersion}/models?key={apiKey}"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "models" in result:
+            filtered_models = []
+            for model in result["models"]:
+                if "generateContent" in model.get("supportedGenerationMethods", []):
+                    filtered_models.append({
+                        "name": model.get("name"),
+                        "displayName": model.get("displayName")
+                    })
+            return {"models": filtered_models}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/gemini/getFiles")
+async def gemini_get_many_file(payload: GeminiAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+
+        apiKey = json_cred["apiKey"]
+        # apiVersion = payload.api_version
+        url = "https://generativelanguage.googleapis.com/v1beta/files"
+        headers = {"x-goog-api-key": apiKey}
+        files = []
+        page_token = None
+        async with aiohttp.ClientSession() as session:
+            while True:
+                params = {"pageSize": 100}
+                if page_token:
+                    params["pageToken"] = page_token
+                async with session.get(url, headers=headers, params=params) as response:
+                    response.raise_for_status()
+                    data = await response.json()
+                files.extend(data.get("files", []))
+                page_token = data.get("nextPageToken")
+                if not page_token:
+                    break
+            if "error" in data:
+                JSONResponse(status_code=500, content={"Error": str(data)})
+            else:
+                return {"files":files}
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+############################# OpenAI Connector API's  ###############################
+class OpenAiAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/openaiConnector/getModels")
+async def openai_connector_list_models(payload: OpenAiAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+
+        apiKey = json_cred["apiKey"]
+        url = "https://api.openai.com/v1/models"
+        headers = {"Authorization": f"Bearer {apiKey}"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "data" in result:
+            models = result["data"]
+            models_data = [m["id"] for m in models if "gpt-4o" in m["id"]]
+            return {"Models": models_data}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
 
 ################################ AI Providers List Models BaseModel ################################
 
@@ -1008,3 +1109,6 @@ async def list_mcps():
                 "type": f"{mcpname}/{type}"
             })
     return mcp_names
+
+
+
