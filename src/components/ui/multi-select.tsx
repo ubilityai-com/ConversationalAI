@@ -29,7 +29,7 @@ interface MultiSelectProps {
 
 export function MultiSelect({
   options,
-  selected,
+  selected = [],
   onChange,
   placeholder = "Select options...",
   className,
