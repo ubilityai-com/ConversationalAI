@@ -23,7 +23,7 @@ from elements.app_integration import AppIntegration
 from elements.http_request import HttpRequest
 from dialogues.dialogues import active_dialogues
 import gzip, os, gzip,magic,uuid
-import os.path
+import os.path, io
 
 
 
@@ -62,9 +62,11 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue):
     # Element processing
     if element_type == 'Greet':
         await Message(current_dialogue['greet']).send(sio, sid)
+        save_data_to_global_history(conversation_id=conversation_id, input=conversation['variables']['last_input_value'], output=current_dialogue['greet'])
 
     elif element_type == 'Message':
         await Message(content["data"]['text']).send(sio, sid)
+        save_data_to_global_history(conversation_id=conversation_id, input=conversation['variables']['last_input_value'], output=content["data"]['text'])
 
     elif "LC" in element_type:
         await handle_ai_integration(sio, sid, element_type, credentials, conversation, conversation_id, current_dialogue, content)
@@ -77,7 +79,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue):
             content["data"]['choices'],
             current_dialogue.get('usedVariables', [])
         ).send(sio, sid)
-
+        save_data_to_global_history(conversation_id=conversation_id, input="", output=content["data"]['message'])
 
     elif element_type == 'Handler':
         await handle_multiple_choice(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content)
@@ -99,14 +101,19 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue):
 
     elif element_type == 'VariableManager':
         handle_variable_manager(conversation,content)
+    
     elif element_type == 'AppIntegration':
         await handle_app_integration(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content)
         return
+    
     elif element_type == 'Attachement':
         await handle_attachement(sio, sid,conversation,conversation_id,content)
+    
     else:
         print(f'[Warning] Invalid element type: {element_type}')
 
+    conversation['variables']['last_input_value'] = ''
+    
     # Post-processing: move to next step if not waiting for user input
     if not wait_for_user:
         next_step = current_dialogue.get('next')
@@ -166,6 +173,61 @@ def replace_variables(template: Union[str, list, dict], variables: dict, used_va
         return {k: replace_variables(v, variables, used_variables) for k, v in template.items()}
     else:
         return template  # If template is an unexpected type, return it as-is
+
+
+def create_global_history(conversation_id):
+    logger.info(f"Create global history for the conversation ID: {conversation_id}")
+    current_dir = os.getcwd()
+    fullHistoryDir = f"{current_dir}/langchain_history/{conversation_id}"
+
+    # Create history directory if it doesn't exist
+    if not os.path.exists(fullHistoryDir):
+        logger.info(f"History directory not found, creating: /{conversation_id}")
+        os.makedirs(fullHistoryDir)
+
+    # Set the full file path for history data
+    historyFilePath = f"{fullHistoryDir}/{conversation_id}.json"
+    
+    # Load existing data if file exists, otherwise initialize empty structure
+    if not os.path.exists(historyFilePath):
+        with io.open(historyFilePath, "w", encoding="utf-8") as historyFile:
+            data = {"context": []}
+            str_ = json.dumps(
+                data,
+                indent=4,
+                sort_keys=True,
+                separators=(",", ": "),
+                ensure_ascii=False,
+            )
+            historyFile.write(str_)
+
+
+def save_data_to_global_history(conversation_id, input, output):
+    logger.info("====== save data to history ==========")
+    current_dir = os.getcwd()
+    filePath = f"{current_dir}/langchain_history/{conversation_id}/{conversation_id}.json"
+    if os.path.exists(filePath):
+        f = open(filePath)
+        try:
+            history = json.load(f)
+        except Exception:
+            history = {"context": []}
+        f.close()
+        if 'context' in history:
+            history['context'].append({"HumanMessage":f"{input}", "AIMessage":f"{output}"})
+        else:
+            history['context'] = []
+            history['context'].append({"HumanMessage":f"{input}", "AIMessage":f"{output}"})
+
+        with io.open(filePath, "w", encoding="utf-8") as historyFile:
+            str_ = json.dumps(
+                history,
+                indent=4,
+                sort_keys=True,
+                separators=(",", ": "),
+                ensure_ascii=False,
+            )
+            historyFile.write(str_)
 
 
 async def handle_multiple_choice(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content):
@@ -306,6 +368,7 @@ async def handle_app_integration(sio, sid, conversation, conversation_id, dialog
 
 async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, dialogue, content):
     result = await AIIntegration(chain_type, credentials, content['data']).execute_ai_element(sio, sid, conversation, conversation_id)
+    save_data_to_global_history(conversation_id=conversation_id, input=content['data']['inputs']['query'], output=str(result))
     
     # save result in a variable if user want to
     if result and 'saveOutputAs' in dialogue:

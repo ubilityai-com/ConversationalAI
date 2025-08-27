@@ -9,7 +9,7 @@ import json,socketio,shutil,os,asyncio
 from datetime import datetime,timedelta
 from fastapi import FastAPI
 from elements.message import Message
-from functions import execute_process, save_user_input,save_file_input,restore_active_chatbots
+from functions import execute_process, save_user_input,save_file_input,restore_active_chatbots, save_data_to_global_history, create_global_history
 from logger_config import logger, setup_logger
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
@@ -85,6 +85,9 @@ async def connect(sid, environ, auth=None):
 
     logger.info(f"A new client connected with conversation ID: {conversation_id} to the dialogue ID : {dialogue_id}")
 
+    # Create global history
+    create_global_history(conversation_id)
+
     # Disconnect existing session
     if dialogue_id in session and conversation_id in session[dialogue_id]:
         logger.warning("The session was terminated due to a new login")
@@ -122,6 +125,7 @@ async def connect(sid, environ, auth=None):
         logger.info("Ubility bot will send greet message on connection")
         greet_message = Message(dialogue[current_step]['greet'])
         await greet_message.send(sio, sid)
+        save_data_to_global_history(conversation_id=conversation_id, input=conversation['variables']['last_input_value'], output=dialogue[current_step]['greet'])
         conversation['current_step'] = dialogue[current_step]['next']
         await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
