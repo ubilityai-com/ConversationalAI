@@ -30,7 +30,7 @@ async def microsoft_refresh_token(refresh_token: str, client_id: str, client_sec
         async with session.post(token_endpoint, data=dataa) as response:
             response.raise_for_status()
             result = await response.json()
-            if response.status in status:
+            if response.status in status and "access_token" in result:
                 return result
             return {"Error" : result}
 
@@ -527,6 +527,164 @@ async def openai_connector_list_models(payload: OpenAiAppIntegration):
             return {"Models": models_data}
         return JSONResponse(status_code=500, content={"Error": str(result)})
 
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+############################# Microsoft Excel API's  ###############################
+class MicrosoftExcelAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/excel/getWorkbooks")
+async def excel_get_workbooks(payload: MicrosoftExcelAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "refreshToken" not in json_cred or "clientId" not in json_cred or "clientSecret" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        refresh_token = json_cred['refreshToken']
+        client_id=json_cred['clientId']
+        client_secret=json_cred['clientSecret']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        EXCEL_API_URL = f"https://graph.microsoft.com/v1.0/me/drive/root/search(q='.xlsx')"
+        headers = {
+            'Content-Type': 'application/json',
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(EXCEL_API_URL, headers=headers) as response:
+                response.raise_for_status()
+                data = await response.json()
+                if response.status in status and data:
+                    workbooks = data.get("value", [])
+                    workbook_info = [{"id": workbook["id"], "name": workbook['name'].rsplit('.', 1)[0]}
+                                for workbook in workbooks]
+                    return {"workbooks": workbook_info}
+                raise Exception(
+                    f"Failed to retrieve Workbooks. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class MicrosoftExcelGetWorksheetsAppIntegration(BaseModel):
+    credential_name: str
+    workbookId: str
+
+@http_app.post("/bot/excel/getWorksheets")
+async def excel_get_worksheets(payload: MicrosoftExcelGetWorksheetsAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "refreshToken" not in json_cred or "clientId" not in json_cred or "clientSecret" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        workbookId = payload.workbookId
+        refresh_token = json_cred['refreshToken']
+        client_id=json_cred['clientId']
+        client_secret=json_cred['clientSecret']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        EXCEL_API_URL = f"https://graph.microsoft.com/v1.0/me/drive/items/{workbookId}/workbook/worksheets"
+        headers = {
+            'Content-Type': 'application/json',
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(EXCEL_API_URL, headers=headers) as response:
+                response.raise_for_status()
+                data = await response.json()
+                if response.status in status and data:
+                    worksheets = data.get("value", [])
+                    worksheet_info = [{"id": worksheet["id"], "name": worksheet['name']}
+                                for worksheet in worksheets]
+                    return {"worksheets": worksheet_info}
+                raise Exception(
+                    f"Failed to retrieve Worksheets. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class MicrosoftExcelGetTablesAppIntegration(BaseModel):
+    credential_name: str
+    workbookId: str
+    worksheetId:str
+
+@http_app.post("/bot/excel/getTables")
+async def excel_get_tables(payload: MicrosoftExcelGetTablesAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "refreshToken" not in json_cred or "clientId" not in json_cred or "clientSecret" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        workbookId = payload.workbookId
+        worksheetId = payload.worksheetId
+        refresh_token = json_cred['refreshToken']
+        client_id=json_cred['clientId']
+        client_secret=json_cred['clientSecret']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        EXCEL_API_URL = f"https://graph.microsoft.com/v1.0/me/drive/items/{workbookId}/workbook/worksheets/{worksheetId}/tables"
+        headers = {
+            'Content-Type': 'application/json',
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(EXCEL_API_URL, headers=headers) as response:
+                response.raise_for_status()
+                data = await response.json()
+                if response.status in status and data:
+                    tables = data.get("value", [])
+                    table_info = [{"id": table["id"], "name": table['name']}
+                                for table in tables]
+                    return {"tables": table_info}
+                raise Exception(
+                    f"Failed to retrieve Tables. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class MicrosoftExcelGetColumnsAppIntegration(BaseModel):
+    credential_name: str
+    workbookId: str
+    worksheetId: str
+    tableID: str
+
+@http_app.post("/bot/excel/getColumns")
+async def excel_get_columns(payload: MicrosoftExcelGetColumnsAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "refreshToken" not in json_cred or "clientId" not in json_cred or "clientSecret" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        workbookId = payload.workbookId
+        worksheetId = payload.worksheetId
+        tableID = payload.tableID
+        refresh_token = json_cred['refreshToken']
+        client_id=json_cred['clientId']
+        client_secret=json_cred['clientSecret']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        EXCEL_API_URL = f"https://graph.microsoft.com/v1.0/me/drive/items/{workbookId}/workbook/worksheets/{worksheetId}/tables/{tableID}/columns"
+        headers = {
+            'Content-Type': 'application/json',
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(EXCEL_API_URL, headers=headers) as response:
+                response.raise_for_status()
+                data = await response.json()
+                if response.status in status and data:
+                    columns = data.get("value", [])
+                    column_info = [{"id": column["id"], "name": column['name']}
+                                for column in columns]
+                    return {"columns": column_info}
+                raise Exception(
+                    f"Failed to retrieve Columns. Status Code: {response.status}. Response: {await response.text()}"
+                )
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
 

@@ -110,19 +110,19 @@ async def gemini_upload_file(json_cred, params, **kwargs):
                         async with session.post(base_url,headers=start_headers,data=json.dumps(start_payload)) as res:
                             res.raise_for_status()
                             upload_url = res.headers.get("X-Goog-Upload-URL")
-                    if upload_url:
-                        upload_headers = {
-                            "Content-Length": str(contentData["file_size"]),
-                            "X-Goog-Upload-Offset": "0",
-                            "X-Goog-Upload-Command": "upload, finalize",
-                        }
-                        async with aiohttp.ClientSession() as session:
-                            async with session.post(upload_url, headers=upload_headers, data=file_content) as upload_res:
-                                upload_res.raise_for_status()
-                                file_info = await upload_res.json()
-                                return file_info
-                    else:
-                        raise Exception(f"Failed to get upload URL. Response: {res.text}")
+                            if upload_url:
+                                upload_headers = {
+                                    "Content-Length": str(contentData["file_size"]),
+                                    "X-Goog-Upload-Offset": "0",
+                                    "X-Goog-Upload-Command": "upload, finalize",
+                                }
+                                async with aiohttp.ClientSession() as session:
+                                    async with session.post(upload_url, headers=upload_headers, data=file_content) as upload_res:
+                                        upload_res.raise_for_status()
+                                        file_info = await upload_res.json()
+                                        return file_info
+                            else:
+                                raise Exception(f"Failed to get upload URL. Response: {await res.text()}")
                 else:
                     raise Exception(f"File extension does not match MIME type. File: {file_name}, MIME: {mime_type}")
             else:
@@ -348,20 +348,20 @@ async def gemini_edit_image(json_cred, params, **kwargs):
                                     delete_response.raise_for_status()
                                     if delete_response.status != 200:
                                         raise Exception(f"File delete failed: {delete_response.status} - {delete_response.text()}")
-                        if rs_js:
-                            parts = rs_js["candidates"][0]["content"]["parts"]
-                            parts[1].get("inlineData", {}).get("data")
-                            inline_data = parts[1].get("inlineData", {})
-                            binary_res = inline_data.get("data")
-                            image_bytes = base64.b64decode(binary_res)
-                            if kwargs:
-                                # Extra conv_id & dialogue_id
-                                dialogue_id = kwargs.get("dialogue_id")
-                                conv_id = kwargs.get("conv_id")
-                                fileData = upload_file(dialogue_id, conv_id, image_bytes)
-                            return fileData
-                        else:
-                            raise Exception(f"Status Code: {response.status}. Response: {await response.text()}")
+                            if rs_js:
+                                parts = rs_js["candidates"][0]["content"]["parts"]
+                                parts[1].get("inlineData", {}).get("data")
+                                inline_data = parts[1].get("inlineData", {})
+                                binary_res = inline_data.get("data")
+                                image_bytes = base64.b64decode(binary_res)
+                                if kwargs:
+                                    # Extra conv_id & dialogue_id
+                                    dialogue_id = kwargs.get("dialogue_id")
+                                    conv_id = kwargs.get("conv_id")
+                                    fileData = upload_file(dialogue_id, conv_id, image_bytes)
+                                return fileData
+                            else:
+                                raise Exception(f"Status Code: {response.status}. Response: {await response.text()}")
                 else:
                     raise Exception(f"Unsupported image MIME type: {mime_type}")
             else:
