@@ -10,12 +10,13 @@ import axios from "axios";
 import { v4 } from "uuid";
 import { create } from "zustand";
 import { camelToDashCase } from "../lib/utils";
-import { ChatbotSlice, createChatbotSlice } from "./chatbot-store";
-import { createVariablesSlice, VariablesSlice } from "./variables-store";
 import {
   replaceVariablesInObject,
   VariableReplacementError,
 } from "../lib/variable-replacement";
+import { ChatbotSlice, createChatbotSlice } from "./chatbot-store";
+import { useFilesStore } from "./files-store";
+import { createVariablesSlice, VariablesSlice } from "./variables-store";
 
 type SubNodesValidation = {
   [parentId: string]: {
@@ -208,32 +209,32 @@ export interface FlowState extends SlicesStates {
   }) => void;
 
   showSnackBarMessage:
-    | {
-        open: true;
-        message: string | null;
-        color:
-          | "default"
-          | "destructive"
-          | "success"
-          | "warning"
-          | "info"
-          | null;
-        duration: number;
-      }
-    | {
-        open: false;
-      };
+  | {
+    open: true;
+    message: string | null;
+    color:
+    | "default"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info"
+    | null;
+    duration: number;
+  }
+  | {
+    open: false;
+  };
   setShowSnackBarMessage: (
     message:
       | {
-          open: true;
-          message: string;
-          color: "default" | "destructive" | "success" | "warning" | "info";
-          duration: number;
-        }
+        open: true;
+        message: string;
+        color: "default" | "destructive" | "success" | "warning" | "info";
+        duration: number;
+      }
       | {
-          open: false;
-        }
+        open: false;
+      }
   ) => void;
 
   handleFlowZoneCheckIfAllHandlesAreConnected: () => boolean;
@@ -277,19 +278,17 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
   resetData: () => {
     const id = v4();
     const {
-      setAllConstantVariables,
       setNodes,
       setEdges,
       setNodesValidation,
       addNodesValidation,
-      setAllDialogueVariables,
-      setAllOutputVariables,
+
       setSelectedBot,
+      clearAllVariables
     } = get();
-    // setSelectedBot(null)
-    setAllConstantVariables({});
-    setAllDialogueVariables({});
-    setAllOutputVariables({});
+    const { resetFilesState } = useFilesStore.getState()
+    clearAllVariables()
+    resetFilesState()
 
     setNodes([
       {

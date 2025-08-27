@@ -19,7 +19,7 @@ export function createFlowObject(): Flow {
     }, {});
     const flow: Flow = {
         credentials: [],
-        constant_variables: Object.assign(constantVariables, files),
+        constant_variables: Object.assign({}, constantVariables, files),
         bot: {},
     };
 
