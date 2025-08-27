@@ -271,7 +271,7 @@ async def gemini_generate_image(json_cred, params, **kwargs):
             if "prompt" in params:
                 prompt = params["prompt"]
                 headers = {"Content-Type": "application/json","x-goog-api-key": apiKey}
-                url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent"
+                url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent"
                 body = {
                     "contents": [{"parts": [{"text": prompt}]}],
                     "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]}
@@ -331,7 +331,7 @@ async def gemini_edit_image(json_cred, params, **kwargs):
                         "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]}
                     }
                     uploaded_file_id = file_data.get("name") 
-                    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent"
+                    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent"
                     headers = {"Content-Type": "application/json", "x-goog-api-key": apiKey}
                     async with aiohttp.ClientSession() as session:
                         async with session.post(url, headers=headers, json=body) as response:
