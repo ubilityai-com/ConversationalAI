@@ -48,7 +48,7 @@ export function PropertiesPanel() {
     return (
         <div className="bg-white border-l border-gray-200 flex flex-col">
             <style>{sliderStyles}</style>
-            <div className="sticky bg-white top-0 z-10 p-4 border-b border-gray-200 flex items-center justify-between">
+            <div className="sticky bg-white top-0 z-[100] p-4 border-b border-gray-200 flex items-center justify-between">
                 <div className="flex items-center min-w-0">
                     <h2 className="text-lg font-semibold text-gray-900 flex items-center truncate">
                         <Settings className="w-5 h-5 mr-2 flex-shrink-0" />
