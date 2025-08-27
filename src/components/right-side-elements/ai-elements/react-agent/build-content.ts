@@ -8,7 +8,6 @@ export default function getContent(selectedNode: any, params: any) {
     const memory = rightSideData.extras.memory
     const tool = rightSideData.extras.tool
     const { edges, nodes } = params
-    const arr = getAccvalue(rightSideData.json, "requiredInputs") || []
     const toolConfigs = tool.list.length !== 0
         ? tool.list.map((el: any) => {
             return require("../../../properties/contents/tool")[el.type](el.content);
@@ -29,7 +28,6 @@ export default function getContent(selectedNode: any, params: any) {
             model: require("../../../properties/contents/model")[model.type](selectedNode),
             chainMemory: require("../../../properties/contents/memory")[memory.type](selectedNode),
             cred: extractCreds(selectedNode?.data.rightSideData.extras),
-            requiredInputs: arr.length !== 0 ? Object.fromEntries(arr.map(({ name, description }: any) => [name, description])) : undefined,
             tools: toolConfigs.length > 0 || selectedTools.length > 0 ?
                 {
                     ...(toolConfigs.length > 0 && { toolConfigs }),

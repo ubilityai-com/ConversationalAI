@@ -63,46 +63,6 @@ export const ReactAgentJson = {
             hasDynamicVariable: true,
           },]]
       },
-      {
-        type: "accordion",
-        accTitle: "Required inputs",
-        variableName: "requiredInputs",
-        required: true,
-        fieldsArray: [
-          [{
-            "type": "dynamic",
-            "fieldsArray": [],
-            "title": "Required inputs",
-            "variableName": "requiredInputs",
-            "structure": [
-              {
-                "type": "row",
-                "title": "Required inputs",
-                "variableName": "requiredInputs",
-                "removeButton": true
-              },
-              {
-                "label": "Name",
-                "type": "textfield",
-                "placeholder": "Name",
-                "value": "",
-                "variableName": "name",
-                "hasDynamicVariable": true,
-                "rightSideInput": true
-              },
-              {
-                "label": "Description",
-                "type": "textfield",
-                "value": "",
-                "placeholder": "description",
-                "variableName": "description",
-                "hasDynamicVariable": true,
-                "rightSideInput": true
-              }
-            ]
-          }
-          ]]
-      }
     ]
   }
 }

@@ -125,10 +125,10 @@ export default function ConditionAgentForm({ content, onContentUpdate, selectedN
       </div>
       <div>
         <Label htmlFor={`input`} className="block text-sm mb-2 font-normal">
-          Input
+          Query
         </Label>
         <FieldWrapper
-          field={{ type: "textfield", placeholder: "Input", multiline: true }}
+          field={{ type: "textfield", placeholder: "query", multiline: true }}
           value={input || ""}
           onChange={(value) => updateNestedConfig("input", value)}
           variableName={"input"}
@@ -136,7 +136,7 @@ export default function ConditionAgentForm({ content, onContentUpdate, selectedN
         >
           <Textarea
             id={`input`}
-            placeholder="Input"
+            placeholder="Query"
             value={input || ""}
             onChange={(e) => updateNestedConfig("input", e.target.value)}
             className="text-xs resize-none"

@@ -1,4 +1,3 @@
-import { Database } from "lucide-react";
 
 export const DataCollectorJson = {
   type: "DataCollector",

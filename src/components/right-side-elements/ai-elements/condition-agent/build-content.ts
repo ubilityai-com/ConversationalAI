@@ -10,7 +10,7 @@ export default function getContent(selectedNode: any, params: any) {
         data: {
             inputs: {
                 scenarios: rightSideData.scenarios.map((el: any) => el.label),
-                input: rightSideData.input,
+                query: rightSideData.input,
                 instruction: rightSideData.instruction,
             },
             model: require("../../../properties/contents/model")[model.type](
