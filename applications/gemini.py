@@ -259,6 +259,7 @@ async def gemini_generate_image(json_cred, params, **kwargs):
     :param dict params: A dictionary containing parameters for the request.
         
         - :prompt: (str, required) - The prompt text to generate the image from.
+        - :model: (string,required) - The model to use for image generation. Example: "gemini-2.5-flash-image-preview"
 
     Returns:
         dict: A dictionary containing the response from the Flask file upload endpoint.
@@ -268,10 +269,11 @@ async def gemini_generate_image(json_cred, params, **kwargs):
         creds = json.loads(json_cred)
         if "apiKey" in creds:
             apiKey = creds["apiKey"]
-            if "prompt" in params:
+            if "prompt" in params and "model" in params:
                 prompt = params["prompt"]
+                model = params["model"]
                 headers = {"Content-Type": "application/json","x-goog-api-key": apiKey}
-                url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent"
+                url = f"https://generativelanguage.googleapis.com/v1beta/{model}:generateContent"
                 body = {
                     "contents": [{"parts": [{"text": prompt}]}],
                     "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]}
@@ -307,6 +309,7 @@ async def gemini_edit_image(json_cred, params, **kwargs):
         - :prompt: (str,required) - The actual text of the prompt. 
         - :mime_type: (str,required) - MIME type of the image
         - :file: (str,required) - File identifier
+        - :model: (string,required) - The model to use for image editing. Example: "gemini-2.5-flash-image-preview"
 
     Returns:
         dict : A dictionary containing the response from the Flask file upload endpoint.
@@ -316,10 +319,11 @@ async def gemini_edit_image(json_cred, params, **kwargs):
         creds = json.loads(json_cred)
         if "apiKey" in creds:
             apiKey = creds["apiKey"]
-            required_keys = ["user_id", "flow_id", "mime_type","prompt","file"]
+            required_keys = ["mime_type","prompt","file", "model"]
             if all(key in params for key in required_keys):
                 mime_type = params["mime_type"]
                 prompt = params["prompt"]
+                model = params["model"]
                 uploaded_file_id = None  # Track uploaded file ID for deletion
                 if mime_type.startswith("image/"):
                     file_info = await gemini_upload_file(json_cred, params, **kwargs)
@@ -331,7 +335,7 @@ async def gemini_edit_image(json_cred, params, **kwargs):
                         "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]}
                     }
                     uploaded_file_id = file_data.get("name") 
-                    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent"
+                    url = f"https://generativelanguage.googleapis.com/v1beta/{model}:generateContent"
                     headers = {"Content-Type": "application/json", "x-goog-api-key": apiKey}
                     async with aiohttp.ClientSession() as session:
                         async with session.post(url, headers=headers, json=body) as response:

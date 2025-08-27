@@ -434,6 +434,37 @@ async def gemini_list_models(payload: GeminiAppIntegration):
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
+
+@http_app.post("/bot/gemini/getImageModels")
+async def gemini_list_image_models(payload: GeminiAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+
+        apiKey = json_cred["apiKey"]
+        url = f"https://generativelanguage.googleapis.com/v1beta/models?key={apiKey}"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                response.raise_for_status()
+                result = await response.json()
+        if "models" in result:
+            filtered_models = []
+            for model in result["models"]:
+                if "generateContent" in model.get("supportedGenerationMethods", []) and "image" in model.get("name", "").lower():
+                    filtered_models.append({
+                        "name": model.get("name"),
+                        "displayName": model.get("displayName")
+                    })
+            return {"models": filtered_models}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
 @http_app.post("/bot/gemini/getFiles")
 async def gemini_get_many_file(payload: GeminiAppIntegration):
     try:
