@@ -24,6 +24,7 @@ const FlowZone = () => {
     ConditionAgent: ConditionAgentNode,
     QuestionAndAnswer: LlmNode,
     // integration nodes
+    Gemini: IntegrationNode,
     Slack: IntegrationNode,
     Gmail: IntegrationNode,
     HttpRequest: IntegrationNode,
