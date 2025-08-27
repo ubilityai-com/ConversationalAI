@@ -5,7 +5,9 @@ import RightSideBody from "./right-side-body"
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
+import { IntegrationElements } from "../elements/integration-elements"
 
+const testableNodes = [...IntegrationElements.map(elt => elt.type), "HttpRequest", "ReactAgent", "ConditionAgent", "QuestionAndAnswer"]
 export function PropertiesPanel() {
     const selectedNode = useFlowStore(state => state.clickedElement)
     const setClickedElement = useFlowStore(state => state.setClickedElement)
@@ -58,7 +60,7 @@ export function PropertiesPanel() {
                     </h2>
                 </div>
                 <div className="flex items-center space-x-2 flex-shrink-0 ">
-                    {(selectedNode.data.category === "ai" || selectedNode.data.category === "integration" || selectedNode.type == "HttpRequest") &&
+                    {testableNodes.includes(selectedNode.type) &&
                         <Button
                             size="sm"
                             onClick={() => {

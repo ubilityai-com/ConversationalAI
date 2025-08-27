@@ -100,7 +100,7 @@ export function BaseNode({
                 {
                   IconComponent ? <IconComponent className="w-6 h-6 text-white" />
                     :
-                    <img src={"/components-icons/" + type + ".png"} alt="img" className="w-10 h-10 object-contain" />
+                    <img src={"/components-icons/" + type + ".png"} alt="img" className="w-7 h-7 object-contain" />
 
                 }
               </div>

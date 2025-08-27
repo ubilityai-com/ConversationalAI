@@ -22,11 +22,13 @@ import { ScrollArea } from "./ui/scroll-area";
 import { QuestionAndAnswerJson } from "../elements/ai-elements/QuestionAndAnswerJson";
 import { BasicLLMJson } from "../elements/ai-elements/BasicLLMJson";
 import { AutomationToolsElements } from "../elements/automation-tools-elements";
+import { DataCollectorJson } from "../elements/ai-elements/DataCollectorJson";
 
 const agentTypes = [
   // BasicLLMJson,
   ReactAgentJson,
   QuestionAndAnswerJson,
+  DataCollectorJson,
   {
     type: "ConditionAgent",
     label: "Condition Agent",
@@ -295,14 +297,14 @@ export function AgentPaletteDialog({
                   >
                     <div className="flex items-start space-x-3">
                       <div
-                        className={`w-10 h-10 ${agent.color} rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}
+                        className={`w-12 h-12 ${agent.color} rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow`}
                       >
                         {
-                          IconComponent ? <IconComponent className="w-5 h-5 text-white" /> :
+                          IconComponent ? <IconComponent className="w-6 h-6 text-white" /> :
                             <img
                               src={"/components-icons/" + agent.type + ".png"}
                               alt="img"
-                              className="w-9 h-9 object-contain"
+                              className="w-8 h-8 object-contain"
                             />
                         }
                       </div>

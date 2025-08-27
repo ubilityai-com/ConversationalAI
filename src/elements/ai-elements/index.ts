@@ -7,6 +7,7 @@ import { ConditionAgentJson } from "./ConditionAgentJson";
 import { ConversationalAgentJson } from "./ConversationalAgentJson";
 import { ConversationalRetrievalQaChainJson } from "./ConversationalRetrievalQaChainJson";
 import { ConversationChainJson } from "./ConversationChainJson";
+import { DataCollectorJson } from "./DataCollectorJson";
 import { OpenAIFunctionsAgentJson } from "./OpenAIFunctionsAgentJson";
 import { QuestionAndAnswerJson } from "./QuestionAndAnswerJson";
 import { ReactAgentJson } from "./ReactAgentJson";
@@ -17,6 +18,7 @@ import { WebSearchAgentJson } from "./WebSearchAgentJson";
 
 export const AIElements = [
     //add Component
+    DataCollectorJson,
     ReactAgentJson,
     OpenAIFunctionsAgentJson,
     ConversationalAgentJson,
