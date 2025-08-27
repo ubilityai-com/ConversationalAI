@@ -6,9 +6,71 @@ from langgraph.store.memory import InMemoryStore
 from ubility_langchain.customTools import create_custom_tools
 from langchain_core.messages.ai import AIMessage, AIMessageChunk
 from ubility_langchain.model import Model
-import sys, os, json, logging
+import sys, os, json, logging, re
 from dotenv import load_dotenv
 load_dotenv(override=True)
+
+DEFAULT_REACT_AGENT_STATUS_PROMPT = """
+You are a strict evaluator AI that determines whether a given response represents a completed task or not.
+
+You will be given a response from a previous agent.
+
+Your job is to analyze the content and return the following key: status.
+
+If the response asks for more input, provides general greetings, or indicates it is waiting for more information or clarification, then status must be "fail".
+If the response represents a complete and meaningful answer to a user request or clearly finishes a task, then status must be "pass"
+
+Only "pass" or "fail" are allowed as status values. Do not use any other status or format.
+
+REMEMBER you job is not to provide a new answer, it is only to determine the status of a previous agent’s response.
+
+Output should be like this: {"status": ""}. No explanation is needed.
+"""
+
+
+DEFAULT_DATA_COLLECTOR_SYSTEM_PROMPT = """
+You are a data collector agent. Your role is to interact with the user, gather all required inputs accurately, and ensure the information is complete and well-structured. Always clarify unclear responses, confirm completeness, and avoid assumptions.
+Requirements to collect:
+
+{required_inputs}
+
+Make sure to collect these data no matter the user query was.
+Always check for the existence of these data in your memory before asking the user about them, and when you do finish your task, the collected data as a clear, professional plain-text phrase, not in JSON or any other formatting.
+"""
+
+
+DEFAULT_DATA_COLLECTOR_STATUS_PROMPT="""
+You are a strict evaluator AI that determines whether a given response represents a completed task or not.
+
+You will be given:
+1. The response from a previous agent.
+2. A list of required inputs (with name and description):
+{required_inputs_definition}
+
+Your job:
+
+1. Analyze if the given response represents a completed task.
+   - If the response asks for more input, provides general greetings, or indicates it is waiting for more information or clarification, then status must be "fail".
+   - If the response represents a complete and meaningful answer to a user request, then continue to step 2.
+
+2. Extract the required inputs from either the given response or the conversation history.
+   - If a required input is found, include its value.
+   - If not found, return it as an empty string "".
+
+3. Determine the final status:
+   - If any required input is empty, status must be "fail".
+   - Status is "pass" only if the task is completed AND all required inputs are present with non-empty values.
+
+REMEMBER you job is not to provide a new answer, it is only to determine the status of a previous agent’s response with specified required inputs.
+
+Output format must strictly follow this JSON structure:
+{{
+  "status": "pass" or "fail",
+  "required_inputs": {{
+{required_inputs_dict}
+  }}
+}}
+"""
 
 
 class REACT_AGENT:
@@ -43,9 +105,9 @@ class REACT_AGENT:
                     envVars = {'SLACK_BOT_TOKEN': self.credentials[mcp['credential']]['accessToken']}
                 elif mcp['name'] == 'NotionMcpServer':
                     envVars = {'NOTION_BOT_TOKEN': self.credentials[mcp['credential']]['accessToken']}
-                elif mcp['name'] == 'WhatsAppMcpServer':
+                elif mcp['name'] == 'WhatsappMcpServer':
                     envVars = {'WHATSAPP_TOKEN': self.credentials[mcp['credential']]['accessToken'], 'WHATSAPP_ACCOUNT_ID': self.credentials[mcp['credential']]['whatsappAccountId']}
-                elif mcp['name'] == 'AirTableMcpServer':
+                elif mcp['name'] == 'AirtableMcpServer':
                     envVars = {'AIRTABLE_BOT_TOKEN': self.credentials[mcp['credential']]['accesstoken']}
                 elif mcp['name'] == 'GoogleSheetsMcpServer':
                     envVars = {
@@ -68,7 +130,7 @@ class REACT_AGENT:
                         'HUBSPOT_CLIENT_ID': self.credentials[mcp['credential']]['clientID'],
                         'HUBSPOT_CLIENT_SECRET': self.credentials[mcp['credential']]['clientSecret']
                         }
-                elif mcp['name'] == 'MailChimpMcpServer':
+                elif mcp['name'] == 'MailchimpMcpServer':
                     envVars = {
                         'MAILCHIMP_API_KEY': self.credentials[mcp['credential']]['apiKey'],
                         'MAILCHIMP_SERVER_PREFIX': self.credentials[mcp['credential']]['serverPrefix']
@@ -111,20 +173,11 @@ class REACT_AGENT:
 
     def _status(self, llm, response):
         try:
-            prompt = """
-You are a strict evaluator AI that determines whether a given response represents a completed task or not.
+            if "requiredInputs" in self.data:
+                prompt = self._build_data_collector_status_prompt()
+            else:
+                prompt = DEFAULT_REACT_AGENT_STATUS_PROMPT
 
-You will be given a response from a previous agent.
-
-Your job is to analyze the content and return the following key: status.
-
-If the response asks for more input, provides general greetings, or indicates it is waiting for more information or clarification, then status must be "fail".
-If the response represents a complete and meaningful answer to a user request or clearly finishes a task, then status must be "pass"
-
-Only "pass" or "fail" are allowed as status values. Do not use any other status or format.
-
-Output should be like this: {"status": ""}. No explanation is needed.
-"""
             agent = RunnableWithMessageHistory(
                 create_react_agent(model=llm, prompt=prompt, tools=[]),
                 get_session_history,
@@ -136,8 +189,8 @@ Output should be like this: {"status": ""}. No explanation is needed.
                 for msg in status['messages']:
                     if isinstance(msg, AIMessage):
                         status = msg.content
-            print("status")
-            print(status)
+            logging.info("status")
+            logging.info(status)
             return status
         except Exception as exc:
             raise Exception(exc)
@@ -145,9 +198,31 @@ Output should be like this: {"status": ""}. No explanation is needed.
     def _get_selected_tools(self, all_tools):
         selected_tools = []
         for tool in all_tools:
-            if tool.name in self.data['tools']['selected_tools']:
+            if tool.name in self.data['tools']['selectedTools']:
                 selected_tools.append(tool)
         return selected_tools
+    
+    def _build_data_collector_system_prompt(self):
+        required_inputs = ""
+        for name, description in self.data["requiredInputs"].items():
+            required_inputs += f"{name}: {description}\n"
+        return DEFAULT_DATA_COLLECTOR_SYSTEM_PROMPT.format(
+            required_inputs=required_inputs
+        )
+
+    def _build_data_collector_status_prompt(self):
+        required_inputs_definition = ""
+        for name, description in self.data["requiredInputs"].items():
+            required_inputs_definition += f"    - {name}: {description}\n"
+
+        required_inputs_dict = ""
+        for name, description in self.data["requiredInputs"].items():
+            required_inputs_dict += f'    "{name}": "<value or empty string>",\n'
+
+        return DEFAULT_DATA_COLLECTOR_STATUS_PROMPT.format(
+            required_inputs_definition=required_inputs_definition,
+            required_inputs_dict=required_inputs_dict
+        )
     
     async def stream(self, sio, sid, conversation_id, input=None): # input used for the recursive functionality
         try:
@@ -155,7 +230,7 @@ Output should be like this: {"status": ""}. No explanation is needed.
             if 'tools' in self.data:
                 client = MultiServerMCPClient(self._setup_mcp_servers())
                 # Retrieve MCP tools if exist
-                if isinstance(self.data['tools'], dict) and "selected_tools" in self.data['tools']:
+                if isinstance(self.data['tools'], dict) and "selectedTools" in self.data['tools']:
                     all_tools = await client.get_tools()
                     tools = self._get_selected_tools(all_tools)
                 else:
@@ -167,31 +242,33 @@ Output should be like this: {"status": ""}. No explanation is needed.
                 else:
                     tools = create_custom_tools(tools, self.data['tools'], self.credentials)
 
-                # if tools == []:
-                #     raise Exception("Missing Tool(s)")
-
             llm_model = Model(provider=self.data['model']["provider"], model=self.data['model']["model"] if "model" in self.data['model'] else "", credentials=self.credentials[self.data['model']['credential']], params=self.data['model']["params"]).chat()
 
             if conversation_id:
-                if 'type' in self.data['chainMemory']:
-                    if self.data['chainMemory']["type"] == "ConversationSummaryBufferMemory":
-                        self.data['chainMemory']["llm"] = llm_model
+                if 'chainMemory' not in self.data and 'type' not in self.data['chainMemory']:
+                    self.data['chainMemory']["type"] = "ConversationBufferMemory"
 
-                    memory = Memory(type=self.data['chainMemory']["type"], historyId=self.data['chainMemory']["historyId"], params=self.data['chainMemory'])
-                    
-                    if 'context' in self.data['chainMemory']:
-                        memory.load_external_context()
+                if self.data['chainMemory']["type"] == "ConversationSummaryBufferMemory":
+                    self.data['chainMemory']["llm"] = llm_model
 
-                    if "historyId" in self.data['chainMemory']:
-                        memory.load_streaming_memory(conversation_id)
+                memory = Memory(type=self.data['chainMemory']["type"], historyId=conversation_id, params=self.data['chainMemory'])
+                
+                if 'context' in self.data['chainMemory']:
+                    memory.load_external_context()
 
-                else:
-                    raise Exception("Missing memory type") 
+                # if "historyId" in self.data['chainMemory']:
+                memory.load_streaming_memory(conversation_id)
 
-            if "prompt" in self.data['inputs'] and self.data['inputs']["prompt"]:
-                raw_agent = create_react_agent(model=llm_model, tools=tools, prompt=self.data['inputs']["prompt"])
+
+            if "prompt" in self.data['inputs'] and self.data['inputs']["prompt"] and "requiredInputs" not in self.data:
+                logging.info("initialize the react agent with custom prompt")
+                raw_agent = create_react_agent(model=llm_model, tools=tools, prompt=self.data['inputs']["prompt"]) # If the user provides a custom prompt, initialize the react agent with it
+            elif "requiredInputs" in self.data:
+                logging.info("initialize the data collector agent with custom prompt")
+                raw_agent = create_react_agent(model=llm_model, tools=tools, prompt=self._build_data_collector_system_prompt()) # this agent is a data collector
             else:
-                raw_agent = create_react_agent(model=llm_model, tools=tools) 
+                logging.info("initialize react agent without prompt")
+                raw_agent = create_react_agent(model=llm_model, tools=tools) # react agent without prompt
 
 
             if sio and sid:
@@ -226,14 +303,20 @@ Output should be like this: {"status": ""}. No explanation is needed.
 
                 return {"answer": result}
             
-            # Update history with new messages
-            memory.add_new_message(self.data['inputs']["query"], result)
+            # # Update history with new messages
+            # memory.add_new_message(self.data['inputs']["query"], result)
 
-            status = json.loads(self._status(llm_model, result))
+            status = self._status(llm_model, result)
+            try:
+                status = json.loads(status)
+            except Exception as ex:
+                cleaned = re.sub(r"^```json\n|\n```$", "", status)
+                status = json.loads(cleaned)
+
             result = {"answer":result, **status}
 
-            if result['status'] == 'pass':
-                memory.reset_memory(conversation_id)
+            # if result['status'] == 'pass':
+            #     memory.reset_memory(conversation_id)
 
             return result
         except Exception as exc:
