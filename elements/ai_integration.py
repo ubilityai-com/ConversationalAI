@@ -10,14 +10,19 @@ class AIIntegration:
         self.credentials = credentials
         self.data = data
 
-    def _update_conversation_vars(self, conversation: dict, llm_result: dict) -> dict:
+    def _update_conversation_vars(self, chain_type: str, conversation: dict, llm_result: dict) -> dict:
         """Updates the conversation variables based on the structured output parser configuration."""
-        output_parser = self.data['params']['outputParser']
-        if output_parser['type'] == 'StructuredOutputParser':
-            for schema in output_parser["responseSchemas"]:
-                if schema['name'] in llm_result:
-                    conversation['variables'][schema['name']] = llm_result[schema['name']]
-                
+        if chain_type == "LC_BASIC_LLM":
+            output_parser = self.data['params']['outputParser']
+            if output_parser['type'] == 'StructuredOutputParser':
+                for schema in output_parser["responseSchemas"]:
+                    if schema['name'] in llm_result:
+                        conversation['variables'][schema['name']] = llm_result[schema['name']]
+        
+        elif chain_type == "LC_REACT_AGENT":
+            for key, value in llm_result["required_inputs"].items():
+                if value:
+                    conversation['variables'][key] = value
         return conversation
 
     def _handle_status(self, status: str, conversation: dict):
@@ -33,7 +38,7 @@ class AIIntegration:
         print(f"Executing Basic LLM chain")
         result = await BasicLLM(self.data, self.credentials).stream(sio, sid)
         if conversation and 'outputParser' in self.data['params']:
-            conversation = self._update_conversation_vars(conversation, result)
+            conversation = self._update_conversation_vars("LC_BASIC_LLM", conversation, result)
         
         return result
     
@@ -51,12 +56,17 @@ class AIIntegration:
             print(f"Executing REACT agent with last input value")
             result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id, last_input_value)
             self._handle_status(result["status"], conversation)
+            if 'required_inputs' in result:
+                conversation = self._update_conversation_vars("LC_REACT_AGENT", conversation, result)
+
         else:
             print(f"Executing REACT agent with first input value")
             result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id)
             if conversation:
                 self._handle_status(result["status"], conversation)
-
+                if 'required_inputs' in result:
+                    conversation = self._update_conversation_vars("LC_REACT_AGENT", conversation, result)
+        
         return result
 
     async def _get_ai_execution(self, sio, sid, conversation, conversation_id) -> dict:

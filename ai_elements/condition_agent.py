@@ -1,7 +1,7 @@
 from langgraph.prebuilt import create_react_agent
 from langchain_core.messages.ai import AIMessage, AIMessageChunk
 from ubility_langchain.model import Model
-import json
+import json, logging, re
 
 
 DEFAULT_SYSTEM_PROMPT = """
@@ -49,7 +49,7 @@ class CONDITION_AGENT:
 
             result = ''
             if sio and sid and self.data['params']['stream']:
-                for chunk in agent.stream(input={"messages": self.data['inputs']["input"]}, stream_mode="messages"):
+                for chunk in agent.stream(input={"messages": self.data['inputs']["query"]}, stream_mode="messages"):
                     if isinstance(chunk[0], AIMessageChunk):
                         await sio.emit('message', {
                                     'type': 'chunk',
@@ -62,18 +62,24 @@ class CONDITION_AGENT:
                 }, room=sid)
 
             else:
-                result = agent.invoke(input={"messages": self.data['inputs']["input"]})
+                result = agent.invoke(input={"messages": self.data['inputs']["query"]})
                 if 'messages' in result:
                     for msg in result['messages']:
                         if isinstance(msg, AIMessage):
                             result = msg.content
 
-            return json.loads(result)
+            try:
+                return json.loads(result)
+            except Exception as ex:
+                logging.warning(result)
+                cleaned = re.sub(r"^```json\n|\n```$", "", result)
+                return json.loads(cleaned)
 
         except Exception as exc:
             if sio and sid and self.data['params']['stream']:
+                logging.error(f"an error occurred while running this ai node: {str(exc)}")
                 await sio.emit('error_message', {
                     'type': 'error_message',
-                    'error': str(exc)
+                    'error': 'an error occurred while running this ai node'
                     }, room=sid)
             raise Exception(exc)

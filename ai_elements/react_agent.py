@@ -245,7 +245,8 @@ class REACT_AGENT:
             llm_model = Model(provider=self.data['model']["provider"], model=self.data['model']["model"] if "model" in self.data['model'] else "", credentials=self.credentials[self.data['model']['credential']], params=self.data['model']["params"]).chat()
 
             if conversation_id:
-                if 'chainMemory' not in self.data and 'type' not in self.data['chainMemory']:
+                if 'chainMemory' not in self.data or 'type' not in self.data['chainMemory']:
+                    self.data['chainMemory'] = {}
                     self.data['chainMemory']["type"] = "ConversationBufferMemory"
 
                 if self.data['chainMemory']["type"] == "ConversationSummaryBufferMemory":
@@ -307,6 +308,7 @@ class REACT_AGENT:
             # memory.add_new_message(self.data['inputs']["query"], result)
 
             status = self._status(llm_model, result)
+            status = status.replace("'", '"')
             try:
                 status = json.loads(status)
             except Exception as ex:
