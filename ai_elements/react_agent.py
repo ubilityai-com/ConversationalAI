@@ -2,7 +2,7 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.prebuilt import create_react_agent
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from ubility_langchain.langchain_memory import Memory, get_session_history
-from langgraph.store.memory import InMemoryStore
+# from langgraph.store.memory import InMemoryStore
 from ubility_langchain.customTools import create_custom_tools
 from langchain_core.messages.ai import AIMessage, AIMessageChunk
 from ubility_langchain.model import Model
@@ -182,7 +182,7 @@ class REACT_AGENT:
                 create_react_agent(model=llm, prompt=prompt, tools=[]),
                 get_session_history,
                 input_messages_key="messages",
-                store=InMemoryStore()
+                # store=InMemoryStore()
             )
             status = agent.invoke(input={"messages": response})
             if 'messages' in status:
@@ -277,7 +277,7 @@ class REACT_AGENT:
                     raw_agent,
                     get_session_history,
                     input_messages_key="messages",
-                    store=InMemoryStore()
+                    # store=InMemoryStore()
                 )
 
                 if input:
@@ -317,8 +317,8 @@ class REACT_AGENT:
 
             result = {"answer":result, **status}
 
-            # if result['status'] == 'pass':
-            #     memory.reset_memory(conversation_id)
+            if result['status'] == 'pass':
+                memory.reset_memory()
 
             return result
         except Exception as exc:

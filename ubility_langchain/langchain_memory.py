@@ -179,22 +179,23 @@ class Memory:
             )
             file.write(str_)
 
-    def reset_memory(self, convId):
-        logging.info("Delete memory")
+    def reset_memory(self):
+        logging.info("Reset memory")
+        store.clear()
 
-        convDir = f"/{convId}" # Subdirectory for specific conversation
-        fullDirPath = f"{basePath}{convDir}"  # Complete directory path
+        # convDir = f"/{convId}" # Subdirectory for specific conversation
+        # fullDirPath = f"{basePath}{convDir}"  # Complete directory path
 
-        # Create directories if they don't exist
-        if os.path.exists(fullDirPath):
-            logging.info(f"conversation directory found, deleting: {convDir}")
+        # # Create directories if they don't exist
+        # if os.path.exists(fullDirPath):
+        #     logging.info(f"conversation directory found, deleting: {convDir}")
 
-            # Set the full file path for history data
-            self.filePath = f"{fullDirPath}/{self.historyId}.json"
+        #     # Set the full file path for history data
+        #     self.filePath = f"{fullDirPath}/{self.historyId}.json"
 
-            # Load existing data if file exists, otherwise initialize empty structure
-            if os.path.exists(self.filePath):
-                os.remove(self.filePath)
+        #     # Load existing data if file exists, otherwise initialize empty structure
+        #     if os.path.exists(self.filePath):
+        #         os.remove(self.filePath)
 
 def summarize_memory(current_buffer, messages, llm, max_token_limit):
     from langchain_core.prompts.prompt import PromptTemplate
