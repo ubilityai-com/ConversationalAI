@@ -182,7 +182,7 @@ class REACT_AGENT:
                 create_react_agent(model=llm, prompt=prompt, tools=[]),
                 get_session_history,
                 input_messages_key="messages",
-                store=InMemoryStore()
+                # store=InMemoryStore()
             )
             status = agent.invoke(input={"messages": response})
             if 'messages' in status:
