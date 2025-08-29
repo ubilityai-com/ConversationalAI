@@ -14,7 +14,7 @@ export default function Header() {
                     <NodeLabel />
                 </h2>
             </div>
-            <ActionButtons category={selectedNode.data.category} id={selectedNode.id} type={selectedNode.type} />
+            <ActionButtons category={selectedNode.data.category} id={selectedNode.id} type={selectedNode.type} cantTest={selectedNode.data.notTestable}/>
         </div>
     );
 }

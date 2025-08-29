@@ -7,6 +7,7 @@ export const DataCollectorJson = {
   category: "ai",
   automated: "json",
   automationConfig: "automated",
+  notTestable:true,
   defaults: {
     extras: {
       model: {

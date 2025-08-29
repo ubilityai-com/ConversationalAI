@@ -2,7 +2,7 @@ import { Loader2, Trash2, X } from "lucide-react";
 import { useFlowStore } from "../../store/flow-store";
 import { Button } from "../ui/button";
 
-export default function ActionButtons({ id, category, type }: { id: string, category: string, type: string }) {
+export default function ActionButtons({ id, category, type, cantTest }: { id: string, category: string, type: string, cantTest?: boolean }) {
   const deleteNode = useFlowStore((state) => state.deleteNode);
   const setClickedElement = useFlowStore((state) => state.setClickedElement);
   const selectedBot = useFlowStore((state) => state.selectedBot);
@@ -12,9 +12,9 @@ export default function ActionButtons({ id, category, type }: { id: string, cate
   const isThisNodeRunning = useFlowStore((state) => state.runningNodeIds.has(id));
   const nodesValidation = useFlowStore((state) => state.nodesValidation);
 
-  const canTest = category === "ai" ||
+  const canTest = cantTest ? false: (category === "ai" ||
     category === "integration" ||
-    type === "HttpRequest";
+    category === "automationTools");
 
   return (
     <div className="flex items-center space-x-2 flex-shrink-0">

@@ -10,18 +10,31 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { ReactAgentJson } from "../elements/ai-elements/ReactAgentJson";
 import { IntegrationElements } from "../elements/integration-elements";
-import { objToReturnDynamicv2, setAutomationArray } from "../lib/automation-utils";
-import { ApiResItem, generateUniqueName, objToReturnDynamic } from "../lib/utils";
+import { objToReturnDynamicv2 } from "../lib/automation-utils";
+import { generateUniqueName } from "../lib/utils";
 import { useFlowStore } from "../store/flow-store";
 import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 
+import { DataCollectorJson } from "../elements/ai-elements/DataCollectorJson";
 import { QuestionAndAnswerJson } from "../elements/ai-elements/QuestionAndAnswerJson";
 import { AutomationToolsElements } from "../elements/automation-tools-elements";
-import { DataCollectorJson } from "../elements/ai-elements/DataCollectorJson";
-
+interface ElementType {
+  id: string;
+  type: string;
+  position: { x: number; y: number };
+  data: {
+    label: string;
+    description: string;
+    category: string;
+    automationConfig: string;
+    rightSideData: any;
+    color: string;
+    notTestable?: boolean; // Optional property
+  };
+}
 const agentTypes = [
   // BasicLLMJson,
   ReactAgentJson,
@@ -187,7 +200,7 @@ export function AgentPaletteDialog({
       let newDefaults = { ...clonedElement.defaults };
 
       if (clonedElement.automated) {
-  
+
         newDefaults = {
           ...newDefaults,
           [clonedElement.automated]: objToReturnDynamicv2(
@@ -196,8 +209,8 @@ export function AgentPaletteDialog({
 
           ),
         };
-      }      
-      let newElement = {
+      }
+      let newElement: ElementType = {
         id: generateID,
         type: clonedElement.type,
         position: {
@@ -205,7 +218,7 @@ export function AgentPaletteDialog({
           y: sourceNode?.position.y || 0,
         },
         data: {
-          label:generateUniqueName(clonedElement.type),
+          label: generateUniqueName(clonedElement.type),
           description: clonedElement.description,
           category: clonedElement.category,
           automationConfig: clonedElement.automationConfig,
@@ -213,6 +226,9 @@ export function AgentPaletteDialog({
           color: clonedElement.color
         },
       };
+      if (clonedElement.notTestable) {
+        newElement.data["notTestable"] = clonedElement.notTestable
+      }
 
       reactFlowInstance.addNodes(newElement);
       const edge = {

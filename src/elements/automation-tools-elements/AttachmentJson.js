@@ -7,6 +7,7 @@ export const AttachmentJson = {
     defaultValid: false,
     automated: "json",
     automationConfig: "automated",
+    notTestable: true,
     "defaults": {
         "json": [
             {
