@@ -1,0 +1,437 @@
+import { Button } from "../ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+import { Badge } from "../ui/badge";
+import { useState } from "react";
+import { useFlowStore } from "../../store/flow-store";
+import {
+  Database,
+  Edit2,
+  Save,
+  X,
+  Plus,
+  Trash2,
+  Eye,
+  Search,
+  Filter,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+import { Checkbox } from "../ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+
+interface NodeStatesDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function NodeStatesDialog({
+  open,
+  onOpenChange,
+}: NodeStatesDialogProps) {
+  const {
+    nodes,
+    nodeStates,
+    addNodeState,
+    updateNodeState,
+    removeNodeState,
+    setClickedElement,
+    setIsRightOpen,
+  } = useFlowStore();
+
+  const [editingNodeId, setEditingNodeId] = useState<string | null>(null);
+  const [editDescription, setEditDescription] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState<
+    "all" | "withState" | "withoutState"
+  >("all");
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(
+    new Set()
+  );
+
+  // Filter out excluded nodes and get available nodes
+  const excludedTypes = new Set(["Handler", "End", "Router"]);
+  const availableNodes = nodes.filter((node) => 
+    !excludedTypes.has(node.type)
+  );  const getNodeLabel = (node: any) => {
+    return node.data?.label || node.type || "Unnamed Node";
+  };
+
+  // Apply search and filter
+  const filteredNodes = availableNodes.filter((node) => {
+    const hasState = nodeStates.hasOwnProperty(node.id);
+    const matchesSearch =
+      getNodeLabel(node).toLowerCase().includes(searchTerm.toLowerCase()) ||
+      node.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (nodeStates[node.id] || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+
+    const matchesFilter =
+      filterType === "all" ||
+      (filterType === "withState" && hasState) ||
+      (filterType === "withoutState" && !hasState);
+
+    return matchesSearch && matchesFilter;
+  });
+
+  const handleEditStart = (nodeId: string, currentDescription: string) => {
+    setEditingNodeId(nodeId);
+    setEditDescription(currentDescription);
+  };
+
+  const handleEditSave = (nodeId: string) => {
+    updateNodeState(nodeId, editDescription.trim());
+    setEditingNodeId(null);
+    setEditDescription("");
+  };
+
+  const handleEditCancel = () => {
+    setEditingNodeId(null);
+    setEditDescription("");
+  };
+
+  const handleToggleNodeState = (nodeId: string, hasState: boolean) => {
+    if (hasState) {
+      // Add state with empty description
+      addNodeState(nodeId, "");
+    } else {
+      // Remove state
+      removeNodeState(nodeId);
+    }
+  };
+
+  const handleViewNode = (nodeId: string) => {
+    const node = nodes.find((n) => n.id === nodeId);
+    if (node) {
+      setClickedElement(node);
+      setIsRightOpen(true);
+      onOpenChange(false);
+    }
+  };
+
+  const toggleDescriptionExpansion = (nodeId: string) => {
+    setExpandedDescriptions((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(nodeId)) {
+        newSet.delete(nodeId);
+      } else {
+        newSet.add(nodeId);
+      }
+      return newSet;
+    });
+  };
+
+  const truncateDescription = (text: string, maxLength: number = 150) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
+
+  const getCategoryColor = (category: string) => {
+    const colors = {
+      basic: "bg-blue-100 text-blue-800",
+      ai: "bg-purple-100 text-purple-800",
+      automationTools: "bg-green-100 text-green-800",
+      rpa: "bg-orange-100 text-orange-800",
+      dialogue: "bg-pink-100 text-pink-800",
+    };
+    return (
+      colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800"
+    );
+  };
+
+  const truncateText = (text: string, maxLength: number = 30) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
+
+  const nodesWithState = Object.keys(nodeStates).length;
+  const totalNodes = availableNodes.length;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-5xl max-h-[85vh] overflow-hidden flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Database className="w-5 h-5" />
+              Node States Management
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <span>
+                {nodesWithState} of {totalNodes} nodes have state
+              </span>
+            </div>
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="flex-1 overflow-hidden flex flex-col">
+          {/* Search and Filter Controls */}
+          <div className="flex gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input
+                  placeholder="Search nodes by name, type, or description..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+            </div>
+            <div className="w-48">
+              <Select
+                value={filterType}
+                onValueChange={(value: any) => setFilterType(value)}
+              >
+                <SelectTrigger>
+                  <Filter className="w-4 h-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Nodes</SelectItem>
+                  <SelectItem value="withState">With State</SelectItem>
+                  <SelectItem value="withoutState">Without State</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Info Banner */}
+          <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg mb-4">
+            <p>
+              Manage which nodes have state and add descriptions to help track
+              their purpose. Nodes with state can store and maintain information
+              throughout the workflow execution.
+            </p>
+          </div>
+
+          {/* Nodes List */}
+          <div className="flex-1 overflow-auto">
+            {filteredNodes.length === 0 ? (
+              <Card>
+                <CardContent className="py-8 text-center text-gray-500">
+                  <Database className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+                  {searchTerm || filterType !== "all" ? (
+                    <div>
+                      <p className="font-medium">
+                        No nodes match your criteria
+                      </p>
+                      <p className="text-sm">
+                        Try adjusting your search or filter
+                      </p>
+                    </div>
+                  ) : (
+                    <p>No nodes available in the workflow</p>
+                  )}
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-3">
+                {filteredNodes.map((node) => {
+                  const hasState = nodeStates.hasOwnProperty(node.id);
+                  const currentDescription = nodeStates[node.id] || "";
+                  const isEditing = editingNodeId === node.id;
+                  const nodeCategory = node.data?.category || "basic";
+                  const isExpanded = expandedDescriptions.has(node.id);
+                  const shouldTruncate = currentDescription.length > 150;
+
+                  return (
+                    <Card
+                      key={node.id}
+                      className="hover:shadow-md transition-shadow"
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-3 mb-3">
+                              <Checkbox
+                                checked={hasState}
+                                onCheckedChange={(checked) =>
+                                  handleToggleNodeState(node.id, !!checked)
+                                }
+                              />
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <h3
+                                  className="font-medium text-lg truncate"
+                                  title={getNodeLabel(node)}
+                                >
+                                  {truncateText(getNodeLabel(node))}
+                                </h3>
+                                <Badge
+                                  variant="outline"
+                                  className="text-xs shrink-0"
+                                >
+                                  {node.type}
+                                </Badge>
+                                <Badge
+                                  className={`text-xs shrink-0 ${getCategoryColor(
+                                    nodeCategory
+                                  )}`}
+                                >
+                                  {nodeCategory}
+                                </Badge>
+                                {hasState && (
+                                  <Badge className="bg-green-100 text-green-800 text-xs shrink-0">
+                                    Has State
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+
+                            {hasState && (
+                              <div className="ml-6 space-y-2">
+                                <Label className="text-sm font-medium">
+                                  State Description
+                                </Label>
+                                {isEditing ? (
+                                  <div className="space-y-2">
+                                    <Textarea
+                                      value={editDescription}
+                                      onChange={(e) =>
+                                        setEditDescription(e.target.value)
+                                      }
+                                      placeholder="Describe what this node's state represents..."
+                                      className="min-h-[80px]"
+                                      autoFocus
+                                    />
+                                    <div className="flex gap-2">
+                                      <Button
+                                        size="sm"
+                                        onClick={() => handleEditSave(node.id)}
+                                      >
+                                        <Save className="w-3 h-3 mr-1" />
+                                        Save
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={handleEditCancel}
+                                      >
+                                        <X className="w-3 h-3 mr-1" />
+                                        Cancel
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="bg-gray-50 rounded p-3">
+                                    {currentDescription ? (
+                                      <div>
+                                        <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                                          {shouldTruncate && !isExpanded
+                                            ? truncateDescription(
+                                                currentDescription
+                                              )
+                                            : currentDescription}
+                                        </p>
+                                        {shouldTruncate && (
+                                          <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            onClick={() =>
+                                              toggleDescriptionExpansion(
+                                                node.id
+                                              )
+                                            }
+                                            className="h-6 px-2 text-xs mt-2 text-blue-600 hover:text-blue-700"
+                                          >
+                                            {isExpanded ? (
+                                              <>
+                                                <ChevronUp className="w-3 h-3 mr-1" />
+                                                Show less
+                                              </>
+                                            ) : (
+                                              <>
+                                                <ChevronDown className="w-3 h-3 mr-1" />
+                                                Show more
+                                              </>
+                                            )}
+                                          </Button>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <p className="text-sm text-gray-400 italic">
+                                        No description provided
+                                      </p>
+                                    )}
+                                    <div className="flex gap-2 mt-2">
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() =>
+                                          handleEditStart(
+                                            node.id,
+                                            currentDescription
+                                          )
+                                        }
+                                        className="h-6 px-2 text-xs"
+                                      >
+                                        <Edit2 className="w-3 h-3 mr-1" />
+                                        Edit
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        onClick={() => handleViewNode(node.id)}
+                                        className="h-6 px-2 text-xs"
+                                      >
+                                        <Eye className="w-3 h-3 mr-1" />
+                                        View
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleViewNode(node.id)}
+                              className="h-8 px-2"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            {hasState && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => removeNodeState(node.id)}
+                                className="h-8 px-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-between items-center pt-4 border-t">
+          <div className="text-sm text-gray-600">
+            {filteredNodes.length} of {totalNodes} nodes shown
+          </div>
+          <Button onClick={() => onOpenChange(false)}>Close</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

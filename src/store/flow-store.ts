@@ -55,19 +55,7 @@ export interface FlowState extends SlicesStates {
   setVarPicker: (value: boolean) => void;
   varPickerProps: { allowedNodeIds: string[] } | null;
   setVarPickerProps: (props: { allowedNodeIds: string[] } | null) => void;
-  addVariable: (
-    variable: Omit<WorkflowVariable, "id" | "createdAt" | "updatedAt">
-  ) => void;
-  updateVariable: (
-    id: VariableCategory,
-    name: string,
-    updates: Partial<Omit<WorkflowVariable, "id" | "createdAt">>
-  ) => void;
-  deleteVariable: (id: string) => void;
-  getVariableByName: (name: string) => WorkflowVariable | undefined;
-  getVariablesByCategory: (category: VariableCategory) => WorkflowVariable[];
-  clearVariables: () => void;
-  clearVariablesByCategory: (category: VariableCategory) => void;
+
   // Flow instance
   reactFlowInstance: ReactFlowInstance | null;
   setReactFlowInstance: (instance: ReactFlowInstance) => void;
@@ -188,26 +176,6 @@ export interface FlowState extends SlicesStates {
   formDialogApplyValues: string;
   setFormDialogApplyValues: (values: string) => void;
 
-  mousePositionHandleMenu: {
-    mouseX: number | null;
-    mouseY: number | null;
-    handle: string | null;
-  };
-  setMousePositionHandleMenu: (position: {
-    mouseX: number | null;
-    mouseY: number | null;
-    handle: string | null;
-  }) => void;
-
-  mousePositionManySelectedElementMenu: {
-    mouseX: number | null;
-    mouseY: number | null;
-  };
-  setMousePositionManySelectedElementMenu: (position: {
-    mouseX: number | null;
-    mouseY: number | null;
-  }) => void;
-
   showSnackBarMessage:
   | {
     open: true;
@@ -255,10 +223,6 @@ export interface FlowState extends SlicesStates {
   setEntities: (entities: string[]) => void;
 
   // Constants
-  operations: string[];
-  limitArray: string[];
-  scoreArray: string[];
-  components: any[];
   error: string | null;
   runningNodeIds: Set<string>; // replace single runningNodeId with Set
 
@@ -268,6 +232,13 @@ export interface FlowState extends SlicesStates {
   nodeResults: Record<string, any>;
   setNodeResult: (id: string, result: any) => void;
   resetData: () => void;
+
+  nodeStates: Record<string, string>; // nodeId -> description
+  setNodeStates: (nodeStates: Record<string, string>) => void;
+  addNodeState: (nodeId: string, description: string) => void;
+  updateNodeState: (nodeId: string, description: string) => void;
+  removeNodeState: (nodeId: string) => void;
+  clearNodeStates: () => void;
 }
 export const useFlowStore = create<FlowState>()((set, get, store) => ({
   ...createVariablesSlice(set, get, store),
@@ -284,11 +255,13 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
       addNodesValidation,
 
       setSelectedBot,
-      clearAllVariables
+      clearAllVariables,
+      clearNodeStates
     } = get();
     const { resetFilesState } = useFilesStore.getState()
     clearAllVariables()
     resetFilesState()
+    clearNodeStates()
 
     setNodes([
       {
@@ -489,54 +462,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
   setVarPickerProps: (props) => {
     set({ varPickerProps: props });
   },
-  addVariable: (variable) => {
-    const newVariable: WorkflowVariable = {
-      ...variable,
-      id: crypto.randomUUID(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-  },
-
-  updateVariable: (origin, name, updates) => {
-    console.log({ origin, name, updates, va: get().variables });
-    const newV = get().variables.map((variable) =>
-      variable.category === origin && variable.name === name
-        ? { ...variable, ...updates, updatedAt: new Date() }
-        : variable
-    );
-    console.log({ newV });
-
-    set({
-      variables: newV,
-    });
-  },
-
-  deleteVariable: (id) => {
-    set((state) => ({
-      variables: state.variables.filter((variable) => variable.id !== id),
-    }));
-  },
-
-  getVariableByName: (name) => {
-    return get().variables.find((variable) => variable.name === name);
-  },
-
-  getVariablesByCategory: (category) => {
-    return get().variables.filter((variable) => variable.category === category);
-  },
-
-  clearVariables: () => {
-    set({ variables: [] });
-  },
-
-  clearVariablesByCategory: (category) => {
-    set((state) => ({
-      variables: state.variables.filter(
-        (variable) => variable.category !== category
-      ),
-    }));
-  },
+  
   // Flow instance
   reactFlowInstance: null,
   setReactFlowInstance: (instance) => set({ reactFlowInstance: instance }),
@@ -777,14 +703,6 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
   formDialogApplyValues: "Draft",
   setFormDialogApplyValues: (values) => set({ formDialogApplyValues: values }),
 
-  mousePositionHandleMenu: { mouseX: null, mouseY: null, handle: null },
-  setMousePositionHandleMenu: (position) =>
-    set({ mousePositionHandleMenu: position }),
-
-  mousePositionManySelectedElementMenu: { mouseX: null, mouseY: null },
-  setMousePositionManySelectedElementMenu: (position) =>
-    set({ mousePositionManySelectedElementMenu: position }),
-
   showSnackBarMessage: {
     open: false,
     message: null,
@@ -916,87 +834,23 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
   entities: [],
   setEntities: (entities) => set({ entities }),
 
-  // Constants
-  operations: ["==", "!=", "<=", "<", ">=", ">"],
-  limitArray: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
-  scoreArray: [
-    "0.1",
-    "0.2",
-    "0.3",
-    "0.4",
-    "0.5",
-    "0.6",
-    "0.7",
-    "0.8",
-    "0.9",
-    "1.0",
-  ],
-  components: [
-    {
-      name: "Message",
-      type: "Message",
-      icon: "QuestionAnswer",
-      color: "#4b98ea",
-      defaultValid: false,
-      defaults: {
-        botSays: "",
-        advanced: false,
-        regex: "",
-        errorMessage: "",
-        save: false,
-        variableName: "",
-        loopFromSwitch: false,
-        loopFromName: "",
-      },
-    },
-    {
-      name: "Choice",
-      type: "ChoicePrompt",
-      icon: "InsertComment",
-      color: "#61b765",
-      defaultValid: false,
-      defaults: {
-        botSays: "",
-        save: false,
-        variableName: "",
-        formData: [{ text: "", id: v4() }],
-        loopFromSwitch: false,
-        loopFromName: "",
-      },
-    },
-    {
-      name: "End",
-      type: "End",
-      icon: "Stop",
-      color: "#E32212",
-      defaultValid: false,
-      defaults: {
-        botSays: "",
-        loopFromSwitch: false,
-        loopFromName: "None",
-      },
-    },
-    {
-      name: "Switch",
-      type: "Switch",
-      icon: "Switch",
-      color: "#00AFB9",
-      defaultValid: false,
-      defaults: {
-        cases: [
-          {
-            id: "case-1",
-            operator: "equals",
-            firstOperand: "status",
-            secondOperand: "active",
-            checkType: "string",
-            label: "Active Status",
-          },
-        ],
-        defaultCase: { id: "default", label: "Default Case" },
-        loopFromSwitch: false,
-        loopFromName: "",
-      },
-    },
-  ],
+  nodeStates: {},
+  setNodeStates: (nodeStates) => set({ nodeStates }),
+  addNodeState: (nodeId, description) =>
+    set((state) => ({
+      nodeStates: { ...state.nodeStates, [nodeId]: description },
+    })),
+
+  updateNodeState: (nodeId, description) =>
+    set((state) => ({
+      nodeStates: { ...state.nodeStates, [nodeId]: description },
+    })),
+
+  removeNodeState: (nodeId) =>
+    set((state) => {
+      const { [nodeId]: _, ...rest } = state.nodeStates;
+      return { nodeStates: rest };
+    }),
+
+  clearNodeStates: () => set({ nodeStates: {} }),
 }));

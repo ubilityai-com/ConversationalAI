@@ -1,6 +1,5 @@
 import { MarkerType } from "@xyflow/react";
 import {
-  Bot,
   CheckSquare,
   GitBranch,
   MessageCircle,
@@ -12,7 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ReactAgentJson } from "../elements/ai-elements/ReactAgentJson";
 import { IntegrationElements } from "../elements/integration-elements";
 import { objToReturnDynamicv2, setAutomationArray } from "../lib/automation-utils";
-import { ApiResItem, objToReturnDynamic } from "../lib/utils";
+import { ApiResItem, generateUniqueName, objToReturnDynamic } from "../lib/utils";
 import { useFlowStore } from "../store/flow-store";
 import { Badge } from "./ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -20,7 +19,6 @@ import { Input } from "./ui/input";
 import { ScrollArea } from "./ui/scroll-area";
 
 import { QuestionAndAnswerJson } from "../elements/ai-elements/QuestionAndAnswerJson";
-import { BasicLLMJson } from "../elements/ai-elements/BasicLLMJson";
 import { AutomationToolsElements } from "../elements/automation-tools-elements";
 import { DataCollectorJson } from "../elements/ai-elements/DataCollectorJson";
 
@@ -189,14 +187,7 @@ export function AgentPaletteDialog({
       let newDefaults = { ...clonedElement.defaults };
 
       if (clonedElement.automated) {
-        console.log({
-          sss: objToReturnDynamic(
-            setAutomationArray(
-              clonedElement.defaults[clonedElement.automated]
-            ) as ApiResItem[]
-          ),
-        });
-
+  
         newDefaults = {
           ...newDefaults,
           [clonedElement.automated]: objToReturnDynamicv2(
@@ -205,7 +196,7 @@ export function AgentPaletteDialog({
 
           ),
         };
-      }
+      }      
       let newElement = {
         id: generateID,
         type: clonedElement.type,
@@ -214,7 +205,7 @@ export function AgentPaletteDialog({
           y: sourceNode?.position.y || 0,
         },
         data: {
-          label: clonedElement.label,
+          label:generateUniqueName(clonedElement.type),
           description: clonedElement.description,
           category: clonedElement.category,
           automationConfig: clonedElement.automationConfig,

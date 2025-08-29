@@ -20,6 +20,7 @@ export interface BotSchema extends BotItem {
     constantVariables: ConstantVariable,
     outputVariables: OutputVariables,
     dialogueVariables: DialogueVariables
+    nodeStates: Record<string, string>
   }
   token: string
 }
@@ -259,8 +260,8 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
   },
   updateBotUiJson: async () => {
     try {
-      const { nodesValidation, nodes, edges, constantVariables, outputVariables, dialogueVariables, updateBot, setShowSnackBarMessage } = get()
-      await updateBot({ ui_json: { constantVariables, dialogueVariables, edges, nodes, nodesValidation, outputVariables } })
+      const { nodesValidation, nodes, edges, constantVariables, outputVariables, dialogueVariables, updateBot, setShowSnackBarMessage, nodeStates } = get()
+      await updateBot({ ui_json: { constantVariables, dialogueVariables, edges, nodes, nodesValidation, outputVariables, nodeStates: nodeStates } })
       return true
     } catch (error) {
       const { setShowSnackBarMessage } = get()
@@ -283,23 +284,20 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
       constantVariables,
       outputVariables,
       dialogueVariables,
+      nodeStates
     } = ui_json;
     set({ isLoadingBot: true, error: null });
 
     try {
       // These setters should be available from the main store
-      const store = get() as any;
-      if (store.setNodes) store.setNodes(nodes || []);
-      if (store.setEdges) store.setEdges(edges || []);
-      if (store.setNodesValidation)
-        store.setNodesValidation(nodesValidation || {});
-      if (store.setAllConstantVariables)
-        store.setAllConstantVariables(constantVariables ?? {});
-      if (store.setAllOutputVariables)
-        store.setAllOutputVariables(outputVariables ?? {});
-      if (store.setAllDialogueVariables)
-        store.setAllDialogueVariables(dialogueVariables ?? {});
-
+      const store = get();
+      store.setNodes(nodes || []);
+      store.setEdges(edges || []);
+      store.setNodesValidation(nodesValidation || {});
+      store.setAllConstantVariables(constantVariables ?? {});
+      store.setAllOutputVariables(outputVariables ?? {});
+      store.setAllDialogueVariables(dialogueVariables ?? {});
+      store.setNodeStates(nodeStates || {})
       set({ isLoadingBot: false });
     } catch (error: any) {
       const errorMessage =
@@ -374,7 +372,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
 
   activateBot: async () => {
     set({ isLoadingActivate: true, error: null });
-    const { selectedBot, nodes, edges, nodesValidation, constantVariables, dialogueVariables, outputVariables, updateSelectedBot, setShowSnackBarMessage } = get()
+    const { selectedBot, nodes, edges, nodesValidation, constantVariables, dialogueVariables, outputVariables, updateSelectedBot, setShowSnackBarMessage, nodeStates } = get()
     try {
       const res = await axios.post(
         process.env.REACT_APP_DNS_URL + "activate/" + selectedBot?.id,
@@ -387,7 +385,8 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
             nodesValidation,
             constantVariables,
             outputVariables,
-            dialogueVariables
+            dialogueVariables,
+            nodeStates
           }
         },
         {

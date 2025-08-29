@@ -50,13 +50,6 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
     deleteOutputVariable,
   } = useFlowStore();
 
-  const {
-    variables,
-    addVariable,
-    updateVariable,
-    deleteVariable,
-    getVariablesByCategory,
-  } = useFlowStore();
   const [editingVariable, setEditingVariable] = useState<any | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [activeTab, setActiveTab] = useState<VariableCategory>("global");

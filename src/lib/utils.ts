@@ -747,3 +747,28 @@ export function formatTimestamp(timestamp: string | number): string {
     year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
   })
 }
+export function generateUniqueName(type: string, label?: string): string {
+  const nodes = useFlowStore.getState().nodes
+  const namesOfType = nodes.filter(n => n.type === type).map(n => n.data.label);
+  const baseName = label ?? type;
+
+
+  if (!namesOfType.includes(baseName)) return baseName;
+
+  let counter = 1;
+  let candidate = `${baseName} ${counter}`;
+
+  while (namesOfType.includes(candidate)) {
+    counter++;
+    candidate = `${baseName} ${counter}`;
+  }
+
+  return candidate;
+}
+export function reverseObject<T extends Record<string, string | number | symbol>>(
+  obj: T
+): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [String(value), key])
+  ) as Record<string, string>;
+}

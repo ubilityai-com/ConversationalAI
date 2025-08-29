@@ -1,8 +1,7 @@
-import { useFlowStore } from "../store/flow-store";
-import ConfigCard from "./config-panel/config-card";
-import Header from "./config-panel/header";
-import RightSideBody from "./right-side-body";
-
+import { useFlowStore } from "../../store/flow-store";
+import RightSideBody from "../right-side-body";
+import ConfigCard from "./config-card";
+import Header from "./header";
 
 export function PropertiesPanel() {
   const selectedNode = useFlowStore((state) => state.clickedElement);

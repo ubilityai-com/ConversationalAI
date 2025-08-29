@@ -71,7 +71,6 @@ export default function ChoicePromptForm({ content, onContentUpdate, selectedNod
             },
         },
     )
-    const addVariable = useFlowStore(state => state.addVariable)
     const updateDialogueVariable = useFlowStore(state => state.updateDialogueVariable)
     const choices: Choice[] = localConfig.choices ?? []
     const botSays = localConfig.botSays ?? ""
@@ -194,8 +193,6 @@ export default function ChoicePromptForm({ content, onContentUpdate, selectedNod
                     checked={save || false}
                     onCheckedChange={(checked) => {
                         updateNestedConfig("save", checked)
-                        if (checked)
-                            addVariable({ origin: selectedNodeId, category: "dialogue", name: "", type: "string", value: "" })
                     }}
                     id="save-switch"
                 />

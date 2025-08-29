@@ -1,55 +1,67 @@
-"use client"
+"use client";
 
-import { TooltipArrow } from "@radix-ui/react-tooltip"
-import { FileText, Key, Loader2, Rocket, Save } from "lucide-react"
-import { useState } from "react"
-import { useFlowStore } from "../../store/flow-store"
-import { Button } from "../ui/button"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
+import { TooltipArrow } from "@radix-ui/react-tooltip";
+import { FileText, Goal, Key, Loader2, Rocket, Save } from "lucide-react";
+import { useState } from "react";
+import { useFlowStore } from "../../store/flow-store";
+import { Button } from "../ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 function hasFalseValue(obj: Record<string, boolean>): boolean {
   return Object.values(obj).includes(false);
 }
 export function ToolbarActions() {
-  const { selectedBot, isLoadingActivate, updateBotUiJson, activateBot, deactivateBot, setIsFormDialogOpen, setFormDialogStatus, setDialogProps, handleFlowZoneCheckIfAllHandlesAreConnected } = useFlowStore()
-  const [isUpdatingBot, setIsUpdatingBot] = useState(false)
+  const {
+    selectedBot,
+    isLoadingActivate,
+    updateBotUiJson,
+    activateBot,
+    deactivateBot,
+    setIsFormDialogOpen,
+    setFormDialogStatus,
+    setDialogProps,
+    handleFlowZoneCheckIfAllHandlesAreConnected,
+  } = useFlowStore();
+  const [isUpdatingBot, setIsUpdatingBot] = useState(false);
   const handleVariablesClick = async () => {
     setIsFormDialogOpen(true);
     setFormDialogStatus("variables");
-  }
+  };
 
   const handleFilesClick = async () => {
     setIsFormDialogOpen(true);
     setFormDialogStatus("files");
-  }
+  };
   const handleCredentialsClick = async () => {
     setIsFormDialogOpen(true);
     setFormDialogStatus("manageCred");
-  }
+  };
   const handleSaveClick = async () => {
     if (selectedBot) {
-      setIsUpdatingBot(true)
-      await updateBotUiJson()
-      setIsUpdatingBot(false)
-
+      setIsUpdatingBot(true);
+      await updateBotUiJson();
+      setIsUpdatingBot(false);
     } else {
       setFormDialogStatus("save");
       setIsFormDialogOpen(true);
     }
-  }
+  };
   const handlePublishToggle = async () => {
-    const nodesValidation = useFlowStore.getState().nodesValidation
-    const warnings = []
+    const nodesValidation = useFlowStore.getState().nodesValidation;
+    const warnings = [];
 
-
-    const connected = handleFlowZoneCheckIfAllHandlesAreConnected()
+    const connected = handleFlowZoneCheckIfAllHandlesAreConnected();
     if (!connected) {
       warnings.push({
         id: "missing-handler",
         title: "Missing Connections",
-        description:
-          "Please connect all the nodes together.",
+        description: "Please connect all the nodes together.",
         severity: "high",
-      })
+      });
     }
     if (hasFalseValue(nodesValidation)) {
       warnings.push({
@@ -57,25 +69,21 @@ export function ToolbarActions() {
         title: "Missing Configuration data",
         description: "Please fill all the required fields in all nodes.",
         severity: "high",
-      })
+      });
     }
     if (warnings.length > 0) {
-      setIsFormDialogOpen(true)
-      setDialogProps({ warnings })
-      setFormDialogStatus("validation")
-    }
-    else if (!selectedBot) {
-      setIsFormDialogOpen(true)
-      setFormDialogStatus("save")
-    }
-    else if (selectedBot.status === "Inactive") {
-      activateBot()
-    }
-    else
-      deactivateBot()
-  }
+      setIsFormDialogOpen(true);
+      setDialogProps({ warnings });
+      setFormDialogStatus("validation");
+    } else if (!selectedBot) {
+      setIsFormDialogOpen(true);
+      setFormDialogStatus("save");
+    } else if (selectedBot.status === "Inactive") {
+      activateBot();
+    } else deactivateBot();
+  };
 
-  const isPublished = selectedBot?.status === "Active"
+  const isPublished = selectedBot?.status === "Active";
 
   return (
     <div className="flex items-center gap-3">
@@ -86,7 +94,12 @@ export function ToolbarActions() {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="outline" size="sm" onClick={handleFilesClick} disabled={!selectedBot}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleFilesClick}
+              disabled={!selectedBot}
+            >
               <FileText className="w-4 h-4 mr-2" />
               Files
             </Button>
@@ -104,9 +117,24 @@ export function ToolbarActions() {
         <Save className="w-4 h-4 mr-2" />
         Variables
       </Button>
-
+      {/* New Node States Button */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          setIsFormDialogOpen(true);
+          setFormDialogStatus("nodeStates");
+        }}
+      >
+        <Goal className="w-4 h-4 mr-2" />
+        Node States
+      </Button>
       <Button variant="outline" size="sm" onClick={handleSaveClick}>
-        {isUpdatingBot ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+        {isUpdatingBot ? (
+          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        ) : (
+          <Save className="w-4 h-4 mr-2" />
+        )}
         Save
       </Button>
       <TooltipProvider>
@@ -133,8 +161,8 @@ export function ToolbarActions() {
                   ? "Unpublishing..."
                   : "Publishing..."
                 : isPublished
-                  ? "Unpublish"
-                  : "Publish Bot"}
+                ? "Unpublish"
+                : "Publish Bot"}
             </Button>
           </TooltipTrigger>
           {!selectedBot && (
@@ -146,5 +174,5 @@ export function ToolbarActions() {
         </Tooltip>
       </TooltipProvider>
     </div>
-  )
+  );
 }

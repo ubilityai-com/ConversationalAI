@@ -1,11 +1,7 @@
-import { useState } from "react"
+import { createFlowObject } from "../../lib/build-json"
 import { useFlowStore } from "../../store/flow-store"
 import { Button } from "../ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
-import { Input } from "../ui/input"
-import { Label } from "../ui/label"
-import { RadioGroup, RadioGroupItem } from "../ui/radio-group"
-import { createFlowObject } from "../../lib/build-json"
 
 
 interface ConfigurationDialogProps {
@@ -18,7 +14,7 @@ export function UpdateDialog({
     onOpenChange,
 }: ConfigurationDialogProps) {
 
-    const { nodes, edges, nodesValidation, formDialogBotName, dialogueVariables, outputVariables, constantVariables, updateBot, selectedBot } = useFlowStore();
+    const { nodes, edges, nodesValidation, dialogueVariables, outputVariables, constantVariables, updateBot, selectedBot, nodeStates } = useFlowStore();
 
     const handleUpdate = () => {
         const data = createFlowObject()
@@ -31,7 +27,8 @@ export function UpdateDialog({
                 nodesValidation,
                 constantVariables,
                 outputVariables,
-                dialogueVariables
+                dialogueVariables,
+                nodeStates
             }
         })
     }

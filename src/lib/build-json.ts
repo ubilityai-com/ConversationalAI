@@ -2,16 +2,19 @@ import { Node } from "@xyflow/react";
 import { useFilesStore } from "../store/files-store";
 import { useFlowStore } from "../store/flow-store";
 import { ConstantVariable } from "../store/variables-store";
-import { camelToDashCase, getNextNodeId, stringifyAndExtractVariables } from "./utils";
-
+import { camelToDashCase, getNextNodeId, reverseObject, stringifyAndExtractVariables } from "./utils";
+type State = {
+    scenarios: [...string[], "Other"];
+} & { [key: Exclude<string, "scenarios">]: string };
 interface Flow {
     credentials: any[];
     constant_variables: ConstantVariable
     bot: Record<string, any>;
+    state: State
 }
 
 export function createFlowObject(): Flow {
-    const { nodes, edges, constantVariables } = useFlowStore.getState()
+    const { nodes, edges, constantVariables, nodeStates } = useFlowStore.getState()
     const { files: filesList } = useFilesStore.getState()
     const files = filesList.reduce((acc: ConstantVariable, file) => {
         acc[file.file_name] = file.file_name;
@@ -20,6 +23,7 @@ export function createFlowObject(): Flow {
     const flow: Flow = {
         credentials: [],
         constant_variables: Object.assign({}, constantVariables, files),
+        state: { scenarios: [...Object.values(nodeStates), "Other"], ...reverseObject(nodeStates) } as State,
         bot: {},
     };
 
