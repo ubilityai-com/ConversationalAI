@@ -1,4 +1,5 @@
 //add import
+import { OpenAIJson } from "./OpenAIJson";
 import { OnedriveJson } from "./OnedriveJson";
 import { ExcelJson } from "./ExcelJson";
 import { GeminiJson } from "./GeminiJson";
@@ -7,6 +8,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    OpenAIJson,
     OnedriveJson,
     ExcelJson,
     GeminiJson,
