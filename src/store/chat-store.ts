@@ -97,45 +97,84 @@ export const useChatStore = create<ChatState>((set, get) => ({
     },
 
     streamMessage: async (data) => {
-        const streamingId = get().addStreamingMessage("assistant")
-        set({ currentStreamingId: streamingId })
+        const createStreamingMessage = () => {
+            const id = get().addStreamingMessage("assistant")
+            set({ currentStreamingId: id, isLoading: false })
+            return id
+        }
 
-        const text = data.text || ""
-        let currentText = ""
+        // --- Case 1: "message" / "file" / "multipleChoice" ---
+        if (["message", "file", "multipleChoice"].includes(data.type)) {
+            const streamingId = createStreamingMessage()
+            const text = data.text || ""
 
-        if (text) {
+            // Stream character-by-character
+            let currentText = ""
             for (let i = 0; i < text.length; i++) {
                 currentText += text[i]
                 get().updateStreamingMessage(streamingId, currentText)
                 await new Promise((resolve) => setTimeout(resolve, 5))
             }
+
+            // Attachments or choices
+            if (data.type === "file" || data.choices) {
+                set((state) => ({
+                    messages: state.messages.map((msg) =>
+                        msg.id === streamingId
+                            ? {
+                                ...msg,
+                                attachments: data || msg.attachments,
+                                multipleChoice: data.choices || msg.multipleChoice,
+                            }
+                            : msg,
+                    ),
+                }))
+            }
+
+            get().finishStreamingMessage(streamingId)
+            set({ currentStreamingId: null, isLoading: false })
+            return
         }
 
-        // Add attachments and choices after streaming
-        if (data?.type === "file" || data.choices) {
-            set((state) => ({
-                messages: state.messages.map((msg) =>
-                    msg.id === streamingId
-                        ? {
-                            ...msg,
-                            attachments: data || msg.attachments,
-                            multipleChoice: data.choices || msg.multipleChoice,
-                        }
-                        : msg,
-                ),
-            }))
+        // --- Case 2: "agent" / "rag" chunks ---
+        let streamingId = get().currentStreamingId || createStreamingMessage()
+        const currentMessage = get().messages.find((msg) => msg.id === streamingId) || null
+        const existingContent = currentMessage?.content || ""
+
+        if (data.type === "agent" && data.chunk) {
+            get().updateStreamingMessage(streamingId, existingContent + data.chunk)
         }
 
-        get().finishStreamingMessage(streamingId)
-        set({ currentStreamingId: null, isLoading: false })
+        if (data.type === "rag") {
+            let [answerContent, referencesContent] = existingContent.split("\n\nReferences:\n")
+            answerContent = answerContent || ""
+            referencesContent = referencesContent || ""
+
+            if (data.data.answer !== undefined) answerContent = data.data.answer
+            if (Array.isArray(data.data.references))
+                referencesContent = data.data.references.join("\n")
+
+            const combinedContent = referencesContent
+                ? `${answerContent}\n\nReferences:\n${referencesContent}`
+                : answerContent
+
+            if (combinedContent !== existingContent)
+                get().updateStreamingMessage(streamingId, combinedContent)
+        }
+
+        // --- Case 3: "end" event ---
+        if (data.type === "end") {
+            get().finishStreamingMessage(streamingId)
+            set({ currentStreamingId: null, isLoading: false })
+        }
     },
-
     initializeSocket: (botToken) => {
         const { socket } = get()
         if (socket) return
         set({ isLoadingConnect: true })
         const conversationId = `conv-${v4()}`
-        const newSocket = io(window.location.origin, {
+        const newSocket = io("http://23.88.122.180", {
+            // const newSocket = io(window.location.origin, {
             path: '/socket.io',
             transports: ["websocket", "polling"],
             query: {
@@ -156,89 +195,38 @@ export const useChatStore = create<ChatState>((set, get) => ({
             console.log(" Connection error :", error)
             set({ isLoadingConnect: false })
         })
+        newSocket.on("agent", (data) => {
+            console.log("agent data", data);
 
-        newSocket.on("rag", (data) => {
-            console.log("rag data:", data)
-
-            if (data.type === "chunk") {
-                const { currentStreamingId } = get()
-
-                // If no streaming message exists, create one
-                if (!currentStreamingId) {
-                    const streamingId = get().addStreamingMessage("assistant")
-                    set({ currentStreamingId: streamingId, isLoading: false })
-                }
-
-                const streamingId = get().currentStreamingId
-                if (streamingId) {
-                    const currentMessage = get().messages.find((msg) => msg.id === streamingId)
-
-                    let answerContent = ""
-                    let referencesContent = ""
-
-                    // Parse existing content to extract answer and references
-                    const existingContent = currentMessage?.content || ""
-                    const parts = existingContent.split("\n\nReferences:\n")
-                    if (parts.length > 1) {
-                        answerContent = parts[0]
-                        referencesContent = parts[1]
-                    } else {
-                        answerContent = existingContent
-                    }
-
-                    // Handle answer format: { "type": "chunk", "answer": "" }
-                    if (data.answer !== undefined) {
-                        answerContent = data.answer
-                    }
-                    // Handle references format: { "type": "chunk", "references": [str] }
-                    else if (data.references && Array.isArray(data.references)) {
-                        referencesContent = data.references.join("\n")
-                    }
-
-                    // Combine answer and references for display
-                    let combinedContent = answerContent
-                    if (referencesContent) {
-                        combinedContent += "\n\nReferences:\n" + referencesContent
-                    }
-
-                    if (combinedContent !== existingContent) {
-                        get().updateStreamingMessage(streamingId, combinedContent)
-                    }
-                }
+            if (data.type === "chunk" && data.chunk) {
+                get().enqueueMessage({ type: "agent", chunk: data.chunk })
+                get().processQueue()
             }
         })
-        newSocket.on("agent", (data) => {
-            console.log("agent data:", data)
 
-            // Handle streaming chunks from agent
-            if (data.type === "chunk" && data.chunk) {
-                const { currentStreamingId } = get()
-
-                // If no streaming message exists, create one
-                if (!currentStreamingId) {
-                    const streamingId = get().addStreamingMessage("assistant")
-                    set({ currentStreamingId: streamingId, isLoading: false })
-                }
-
-                // Append the chunk to the current streaming message
-                const streamingId = get().currentStreamingId
-                if (streamingId) {
-                    const currentMessage = get().messages.find((msg) => msg.id === streamingId)
-                    const newContent = (currentMessage?.content || "") + data.chunk
-                    get().updateStreamingMessage(streamingId, newContent)
-                }
+        newSocket.on("rag", (data) => {
+            if (data.type === "chunk") {
+                get().enqueueMessage({ type: "rag", data })
+                get().processQueue()
             }
+        })
+        newSocket.on("message", (data) => {
+            console.log("Received from server:", data)
+            get().enqueueMessage(data)
+            get().processQueue()
         })
 
         newSocket.on("end", (data) => {
             console.log("end data:", data)
-            if (data.type === "end of chunks") {
-                const { currentStreamingId } = get()
-                if (currentStreamingId) {
-                    get().finishStreamingMessage(currentStreamingId)
-                    set({ currentStreamingId: null, isLoading: false })
-                }
-            }
+            get().enqueueMessage({ type: "end", data: data })
+            // get().processQueue()
+            // if (data.type === "end of chunks") {
+            //     const { currentStreamingId } = get()
+            //     if (currentStreamingId) {
+            //         get().finishStreamingMessage(currentStreamingId)
+            //         set({ currentStreamingId: null, isLoading: false })
+            //     }
+            // }
         })
 
         newSocket.on("disconnect", () => {
@@ -253,13 +241,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
             console.error("Socket error:", error)
             get().addMessage(error.error || "Sorry, there was an error processing your message.", "assistant")
             set({ isLoading: false })
-        })
-
-        // 👇 updated message handler to use queue
-        newSocket.on("message", (data) => {
-            console.log("Received from server:", data)
-            get().enqueueMessage(data)
-            get().processQueue()
         })
 
         set({ socket: newSocket })

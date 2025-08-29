@@ -8,7 +8,7 @@ import TypingIndicator from "./typing-indicator"
 import { LoadingOverlay } from "../loading-overlay"
 
 export default function ChatPage() {
-    const { messages, isLoading, initializeSocket, disconnectSocket } = useChatStore()
+    const { messages, isLoading, initializeSocket, disconnectSocket, isConnected } = useChatStore()
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     const scrollToBottom = () => {
@@ -53,7 +53,7 @@ export default function ChatPage() {
                             {messages.map((message) => (
                                 <ChatMessage key={message.id} message={message} />
                             ))}
-                            {isLoading && !hasStreamingMessage && <TypingIndicator />}
+                            {isLoading && !hasStreamingMessage && isConnected && <TypingIndicator />}
                             <div ref={messagesEndRef} />
                         </div>
                     </div>
