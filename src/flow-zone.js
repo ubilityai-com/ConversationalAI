@@ -25,6 +25,7 @@ const FlowZone = () => {
     ConditionAgent: ConditionAgentNode,
     QuestionAndAnswer: LlmNode,
     // integration nodes
+    OpenAI: IntegrationNode,
     Onedrive: IntegrationNode,
     Excel: IntegrationNode,
     Gemini: IntegrationNode,
