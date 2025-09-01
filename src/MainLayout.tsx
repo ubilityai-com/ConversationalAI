@@ -1,3 +1,4 @@
+import { FilePlus2, StickyNote } from "lucide-react";
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
@@ -9,9 +10,12 @@ import { LoadingOverlay } from "./components/loading-overlay";
 import RightSideDrawer from "./components/right-side-drawer";
 import { Toolbar } from "./components/toolbar";
 import { Toaster } from "./components/ui/toaster";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./components/ui/tooltip";
 import FlowZone from "./flow-zone";
 import { useFilesStore } from "./store/files-store";
 import { useFlowStore } from "./store/flow-store";
+import { Button } from "./components/ui/button";
+import { TooltipArrow } from "@radix-ui/react-tooltip";
 
 export default function MainLayout() {
     // Get state and actions from Zustand stores
@@ -21,6 +25,7 @@ export default function MainLayout() {
     const getBotById = useFlowStore(state => state.getBotById)
     const reactFlowInstance = useFlowStore(state => state.reactFlowInstance)
     const failedLoadingBot = useFlowStore(state => state.failedLoadingBot)
+    const nodes = useFlowStore(state => state.nodes)
     const getFiles = useFilesStore(state => state.getFiles)
     const { botID } = useParams();
     useEffect(() => {
@@ -72,6 +77,29 @@ export default function MainLayout() {
         ])
         addNodesValidation(id, false)
     }
+
+    const addStickyNote = () => {
+        const id = uuidv4()
+        setNodes([
+            ...nodes,
+            {
+                id: id,
+                type: "StickyNote",
+                data: {
+                    category: "basic",
+                    label: "Sticky Note",
+                    rightSideData: {
+                        color: "#bfdbfe",
+                        content: "",
+                    },
+                },
+                position: { x: -20, y: -80 },
+            },
+        ])
+        addNodesValidation(id, true)
+    }
+
+
     return (
         <div className='min-h-screen flex flex-col' >
             <DialogManager />
@@ -85,6 +113,28 @@ export default function MainLayout() {
                 </div>
                 <RightSideDrawer />
 
+                <TooltipProvider delayDuration={200}>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-10 h-10 absolute top-20 right-4"
+                                onClick={addStickyNote}
+                            >
+                                <FilePlus2 style={{ width: "1.5rem", height: "1.5rem" }} />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent
+                            className="bg-gray-800 text-white text-xs rounded px-2 py-1 shadow-md"
+                            side="right"
+                            align="center"
+                        >
+                            Add a Sticky Note
+                            <TooltipArrow className="fill-gray-800" />
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             </div>
             <Toaster />
         </div>
