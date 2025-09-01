@@ -1,8 +1,9 @@
 import aiohttp, sys, os, json
 import base64
-from applications.functions import get_file_data, upload_file
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from applications.functions import get_file_data, upload_file
+
 
 status = [200, 201, 202, 204, 206, 207, 208]
 
