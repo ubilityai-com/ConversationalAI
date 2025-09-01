@@ -1,4 +1,5 @@
 
+import { useFilesStore } from "../store/files-store";
 import { useFlowStore } from "../store/flow-store";
 
 // Custom error class for variable replacement errors
@@ -26,6 +27,7 @@ export function replaceVariablesInObject(obj: any): any {
     dialogueVariables,
     nodeResults,
   } = useFlowStore.getState();
+  const { files } = useFilesStore.getState()
 
   const errors: string[] = [];
 
@@ -80,6 +82,9 @@ export function replaceVariablesInObject(obj: any): any {
       errors.push(`Dialogue variables are not allowed in test node: "${variableName}"`);
       return undefined;
     }
+    // Check file variables
+    if(files.find(file=>file.file_name === variableName))
+      return variableName
 
     // If variable doesn't exist in any type, add error
     errors.push(`Variable "${variableName}" does not exist in any variable store`);
