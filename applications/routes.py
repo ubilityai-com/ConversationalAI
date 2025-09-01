@@ -9,7 +9,7 @@ from google.oauth2.credentials import Credentials
 from langchain_nvidia_ai_endpoints import ChatNVIDIA,NVIDIAEmbeddings
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from aiohttp import BasicAuth
-import sys, os
+import sys, os,base64
 status = [200, 201, 202, 204, 206, 207, 208]
 
 
@@ -763,6 +763,177 @@ async def freshdesk_get_all_contacts(payload: FreshdeskAppIntegration):
         else:
             return JSONResponse(status_code=500, content={"Error": str(e)})
 
+############################# Zendesk API's  ###############################
+
+class ZendeskTokenIntegration(BaseModel):
+    baseUrl: str
+    clientId: str
+    clientSecret : str
+    redirectUri: str
+    code: str
+
+@http_app.post("/bot/zendesk/getToken")
+async def zendesk_get_oauth_token(payload: ZendeskTokenIntegration):
+    try:
+        baseUrl = payload.baseUrl
+        clientId = payload.clientId
+        clientSecret = payload.clientSecret
+        redirectUri = payload.redirectUri 
+        code = payload.code
+        url = f"https://{baseUrl}.zendesk.com/oauth/tokens"
+        headers = {"Content-Type": "application/json"}
+        data = {
+            "grant_type": "authorization_code",
+            "code": code,
+            "client_id": clientId,
+            "client_secret": clientSecret,
+            "redirect_uri": redirectUri,
+            "scope": "read write",
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url=url,headers=headers, data=data) as response:
+                result = await response.json()
+                if response.status in status:
+                    return result
+                return JSONResponse(status_code=500, content={"Error": str(result)})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+async def zendesk_process_credentials(creds):
+    try:
+        if "accessToken" in creds and "baseUrl" in creds:
+            accessToken = creds["accessToken"]
+            baseUrl = creds["baseUrl"]
+            Authorization = f"Bearer {accessToken}"
+        elif "apiToken" in creds and "baseUrl" in creds and "email" in creds:
+            email = creds["email"]
+            apiToken = creds["apiToken"]
+            baseUrl = creds["baseUrl"]
+            Authorization = f"Basic {base64.b64encode(f'{email}/token:{apiToken}'.encode()).decode()}"
+        else:
+            return {"error": "missing required data"} 
+        return {"Authorization": Authorization, "baseUrl": baseUrl}
+    except Exception as error:
+        raise Exception({"error":error})
+
+class ZendeskAppIntegration(BaseModel):
+    credential_name: str
+ 
+@http_app.post("/bot/zendesk/getUsers")
+async def zendesk_get_users(payload: ZendeskAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        creds = await zendesk_process_credentials(json_cred)
+        if "error" not in creds:
+            Authorization = creds["Authorization"]
+            baseUrl = creds["baseUrl"]
+            headers = {
+                "Authorization": Authorization,
+                "Content-Type": "application/json",
+            }
+            url = f"https://{baseUrl}.zendesk.com/api/v2/users"
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers) as response:
+                    response.raise_for_status()
+                    result = await response.json()
+                    if response.status in status:
+                        users_info = [{"id": user['id'], "name": user['name']}
+                        for user in result.get('users', [])]
+                        return {"users": users_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error": str(result)})
+        else:
+            return JSONResponse(status_code=500, content={"Error": creds})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+@http_app.post("/bot/zendesk/getOrganizations")
+async def zendesk_get_organizations(payload: ZendeskAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        creds = await zendesk_process_credentials(json_cred)
+        if "error" not in creds:
+            Authorization = creds["Authorization"]
+            baseUrl = creds["baseUrl"]
+            headers = {
+                "Authorization": Authorization,
+                "Content-Type": "application/json",
+            }
+            url = f"https://{baseUrl}.zendesk.com/api/v2/organizations" 
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers) as response:
+                    response.raise_for_status()
+                    result = await response.json()
+                    if response.status in status:
+                        organizations_info = [{"id": organization['id'], "name": organization['name']}
+                        for organization in result.get('organizations', [])]
+                        return {"organizations": organizations_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error": str(result)})
+        else:
+            return JSONResponse(status_code=500, content={"Error": creds})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/zendesk/getGroups")
+async def zendesk_get_groups(payload: ZendeskAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        creds = await zendesk_process_credentials(json_cred)
+        if "error" not in creds:
+            Authorization = creds["Authorization"]
+            baseUrl = creds["baseUrl"]
+            headers = {
+                "Authorization": Authorization,
+                "Content-Type": "application/json",
+            }
+            url = f"https://{baseUrl}.zendesk.com/api/v2/groups"
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers) as response:
+                    response.raise_for_status()
+                    result = await response.json()
+                    if response.status in status:
+                        groups_info = [{"id": group['id'], "name": group['name']}
+                        for group in result.get('groups', [])]
+                        return {"groups":groups_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error": str(result)})
+        else:
+            return JSONResponse(status_code=500, content={"Error": creds})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/zendesk/getTags")
+async def zendesk_get_tags(payload: ZendeskAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        creds = await zendesk_process_credentials(json_cred)
+        if "error" not in creds:
+            Authorization = creds["Authorization"]
+            baseUrl = creds["baseUrl"]
+            headers = {
+                "Authorization": Authorization,
+                "Content-Type": "application/json",
+            }
+            url = f"https://{baseUrl}.zendesk.com/api/v2/tags"
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers) as response:
+                    response.raise_for_status()
+                    result = await response.json()
+                    if response.status in status:
+                        tags_info = [{"name": tag['name']}
+                        for tag in result.get('tags', [])]
+                        return {"tags":tags_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error": str(result)})
+        else:
+            return JSONResponse(status_code=500, content={"Error": creds})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
 
 ################################ AI Providers List Models BaseModel ################################
 
