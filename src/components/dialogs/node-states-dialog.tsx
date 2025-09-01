@@ -1,26 +1,24 @@
-import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
-import { Badge } from "../ui/badge";
-import { useState } from "react";
-import { useFlowStore } from "../../store/flow-store";
 import {
-  Database,
-  Edit2,
-  Save,
-  X,
-  Plus,
-  Trash2,
-  Eye,
-  Search,
-  Filter,
   ChevronDown,
   ChevronUp,
+  Database,
+  Edit2,
+  Eye,
+  Filter,
+  Save,
+  Search,
+  Trash2,
+  X
 } from "lucide-react";
+import { useState } from "react";
+import { useFlowStore } from "../../store/flow-store";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
 import { Checkbox } from "../ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import {
   Select,
   SelectContent,
@@ -28,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Textarea } from "../ui/textarea";
 
 interface NodeStatesDialogProps {
   open: boolean;
@@ -60,9 +59,9 @@ export function NodeStatesDialog({
 
   // Filter out excluded nodes and get available nodes
   const excludedTypes = new Set(["Handler", "End", "Router"]);
-  const availableNodes = nodes.filter((node) => 
+  const availableNodes = nodes.filter((node) =>
     !excludedTypes.has(node.type)
-  );  const getNodeLabel = (node: any) => {
+  ); const getNodeLabel = (node: any) => {
     return node.data?.label || node.type || "Unnamed Node";
   };
 
@@ -113,7 +112,8 @@ export function NodeStatesDialog({
   const handleViewNode = (nodeId: string) => {
     const node = nodes.find((n) => n.id === nodeId);
     if (node) {
-      setClickedElement(node);
+      setClickedElement(null)
+      setTimeout(() => setClickedElement(node), 300)
       setIsRightOpen(true);
       onOpenChange(false);
     }
@@ -329,8 +329,8 @@ export function NodeStatesDialog({
                                         <p className="text-sm text-gray-700 whitespace-pre-wrap">
                                           {shouldTruncate && !isExpanded
                                             ? truncateDescription(
-                                                currentDescription
-                                              )
+                                              currentDescription
+                                            )
                                             : currentDescription}
                                         </p>
                                         {shouldTruncate && (
