@@ -35,7 +35,7 @@ export default function getContent(selectedNode: any, params: any) {
                 ].forEach((f) => {
                     if (
                         getAccvalue(json, f.option) &&
-                        getAccvalue(json, f.option).trim()
+                        getAccvalue(json, f.option).toString().trim()
                     )
                         jsonToSend = {
                             ...jsonToSend,

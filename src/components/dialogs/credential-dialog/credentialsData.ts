@@ -843,13 +843,13 @@ const serviceFields: CredentialInfo[] = [
             {
                 label: "Client ID",
                 Credential_name: "clientID",
-                Credential_value: "1093036340405-lr76sjvtd2n78k4og8qlah99uo6fa9ke.apps.googleusercontent.com",
+                Credential_value: "",
                 hashed: true,
             },
             {
                 label: "Client Secret",
                 Credential_name: "clientSecret",
-                Credential_value: "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",
+                Credential_value: "",
                 hashed: true,
             },
             {
