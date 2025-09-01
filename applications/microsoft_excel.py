@@ -1,4 +1,4 @@
-import aiohttp, sys, os, json
+import aiohttp, json
 
 status = [200, 201, 202, 204, 206, 207, 208]
 
