@@ -123,12 +123,19 @@ async def connect(sid, environ, auth=None):
 
     # Greet the user if the current step is configured to do so
     if dialogue[current_step].get('start'):
-        logger.info("Ubility bot will send greet message on connection")
-        greet_message = Message(dialogue[current_step]['greet'])
-        await greet_message.send(sio, sid)
-        save_data_to_global_history(conversation_id=conversation_id, input=conversation['variables']['last_input_value'], output=dialogue[current_step]['greet'])
-        conversation['current_step'] = dialogue[current_step]['next']
-        await execute_process(sio, sid, conversation, conversation_id, dialogue)
+        async def greet_and_execute():
+            logger.info("Ubility bot will send greet message on connection")
+            greet_message = Message(dialogue[current_step]['greet'])
+            await greet_message.send(sio, sid)
+            save_data_to_global_history(
+                conversation_id=conversation_id,
+                input=conversation['variables']['last_input_value'],
+                output=dialogue[current_step]['greet']
+            )
+            conversation['current_step'] = dialogue[current_step]['next']
+            await execute_process(sio, sid, conversation, conversation_id, dialogue)
+
+        asyncio.create_task(greet_and_execute())
 
 
 @sio.event
