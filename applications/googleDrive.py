@@ -33,7 +33,7 @@ from applications.functions import get_file_data,upload_file
     # :return: The response from the Google Drive API after creating the folder.
     # :rtype: dict
     # """
-def create_service(access_token, API_SERVICE_NAME, API_VERSION):
+def create_service(access_token, API_SERVICE_NAME="drive", API_VERSION="v3"):
     try:
         creds_data = json.loads(access_token)
         creds = Credentials.from_authorized_user_info(creds_data)
