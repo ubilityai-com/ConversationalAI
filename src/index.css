@@ -256,3 +256,6 @@ code {
   background: #6b7280 ; 
   border-radius: 4px;
 }
+.react-flow__node-StickyNote{
+  z-index: -1 !important;
+}

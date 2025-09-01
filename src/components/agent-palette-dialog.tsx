@@ -4,7 +4,8 @@ import {
   GitBranch,
   MessageCircle,
   Search,
-  Square
+  Square,
+  StickyNote
 } from "lucide-react";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -126,6 +127,19 @@ const agentTypes = [
   ...AutomationToolsElements,
   ...IntegrationElements,
   {
+    type: "StickyNote",
+    label: "Sticky Note",
+    description: "Sticky paper for quick notes and reminders",
+    icon: StickyNote,
+    category: "basic",
+    color: "bg-lime-500",
+    defaultValid: true,
+    defaults: {
+      color: "#bfdbfe",
+      content: ""
+    },
+  },
+  {
     type: "End",
     label: "End",
     description: "Terminates the chat with a custom message",
@@ -230,7 +244,6 @@ export function AgentPaletteDialog({
         newElement.data["notTestable"] = clonedElement.notTestable
       }
 
-      reactFlowInstance.addNodes(newElement);
       const edge = {
         source,
         target: generateID,
@@ -243,13 +256,18 @@ export function AgentPaletteDialog({
         style: { stroke: "#afafb5", strokeWidth: 2 },
         id: `xy-edge__${source}${sourceHandle}-${generateID}${null}`,
       };
-      reactFlowInstance.addEdges(edge);
+      if (clonedElement.type !== "StickyNote") {
+
+        reactFlowInstance.addEdges(edge);
+        setClickedElement(null)
+        setTimeout(() => {
+          setClickedElement(newElement)
+        }, 300);
+      }
+      reactFlowInstance.addNodes(newElement);
       addNodesValidation(generateID, element.defaultValid);
       setIsFormDialogOpen(false);
-      setClickedElement(null)
-      setTimeout(() => {
-        setClickedElement(newElement)
-      }, 300);
+
     }
   };
   return (

@@ -11,6 +11,7 @@ import { LlmNode } from './components/nodes/llm-node';
 import { MessageNode } from './components/nodes/message-node';
 import { RouterNode } from './components/nodes/router-node';
 import { useFlowStore } from './store/flow-store';
+import StickyNoteNode from './components/nodes/stickyNote-node';
 
 const FlowZone = () => {
   const nodeTypes = {
@@ -33,6 +34,7 @@ const FlowZone = () => {
     Gmail: IntegrationNode,
     HttpRequest: IntegrationNode,
     Attachment: IntegrationNode,
+    StickyNote: StickyNoteNode
   };
   const edgeTypes = {
     buttonEdge: ButtonEdge
@@ -75,7 +77,7 @@ const FlowZone = () => {
     setIsRightOpen(true)
   }
   const onElementClick = (event, element) => {
-    if (element) {
+    if (element && element.type !== "StickyNote") {
       if (clickedElement?.id !== element.id) {
         setClickedElement(false)
         handleRightDrawerClose()

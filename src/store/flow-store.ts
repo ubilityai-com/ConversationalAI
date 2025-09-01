@@ -462,7 +462,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
   setVarPickerProps: (props) => {
     set({ varPickerProps: props });
   },
-  
+
   // Flow instance
   reactFlowInstance: null,
   setReactFlowInstance: (instance) => set({ reactFlowInstance: instance }),
@@ -765,6 +765,10 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
           "condition-agent-default",
         ],
       },
+      StickyNote: {
+        requireIncoming: false,
+        requireOutgoing: false,
+      }
     };
 
     for (const node of nodes) {

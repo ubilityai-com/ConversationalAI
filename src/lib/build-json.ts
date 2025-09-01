@@ -38,7 +38,11 @@ export function createFlowObject(): Flow {
                 greet,
                 cancel,
             };
-        } else {
+        }
+        else if (element.type === "StickyNote") {
+            return
+        }
+        else {
 
             const selectedNodeModule = require(`../components/right-side-elements/${camelToDashCase(element.data.category as string)}-elements/${camelToDashCase(element.type as string)}/build-content.ts`).default
             const result = selectedNodeModule(element,

@@ -58,7 +58,7 @@ export function NodeStatesDialog({
   );
 
   // Filter out excluded nodes and get available nodes
-  const excludedTypes = new Set(["Handler", "End", "Router"]);
+  const excludedTypes = new Set(["Handler", "End", "Router", "StickyNote"]);
   const availableNodes = nodes.filter((node) =>
     !excludedTypes.has(node.type)
   ); const getNodeLabel = (node: any) => {
