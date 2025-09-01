@@ -7,12 +7,19 @@ import logging, os, io, json
 currentDir = os.getcwd() # get current working directory 
 basePath = f"{currentDir}/langchain_history"
 
-store = ChatMessageHistory()
+# store = ChatMessageHistory()
 
 
-def get_session_history() -> BaseChatMessageHistory:
-    return store
+# def get_session_history() -> BaseChatMessageHistory:
+#     return store
 
+
+store = {}
+
+def get_session_history(session_id: str) -> BaseChatMessageHistory:
+    if session_id not in store:
+        store[session_id] = ChatMessageHistory()
+    return store[session_id]
 
 class Memory:
 
@@ -83,7 +90,7 @@ class Memory:
         except Exception as error:
             raise Exception(error)
 
-    def load_external_context(self):
+    def load_external_context(self, conv_id):
         logging.info("Loading external context")
  
         if self.streaming:
@@ -94,7 +101,11 @@ class Memory:
                         conv.append(HumanMessage(content=str(value)))
                     if key == "AIMessage":
                         conv.append(AIMessage(content=str(value)))
-                store.add_messages(conv)
+                if conv_id in store:
+                    store[conv_id].add_messages(conv)
+                else:
+                    store[conv_id] = ChatMessageHistory()
+                    store[conv_id].add_messages(conv)
         else:
             for context in self.params["context"]:
                 self.memory.save_context({"input": str(context["HumanMessage"])},{"output": str(context["AIMessage"])})
@@ -135,9 +146,13 @@ class Memory:
                             obj_conv.append(HumanMessage(content=str(value)))
                         if key == "AIMessage":
                             obj_conv.append(AIMessage(content=str(value)))
-                    store.add_messages(obj_conv)
+                    if convId in store:
+                        store[convId].add_messages(obj_conv)
+                    else:
+                        store[convId] = ChatMessageHistory()
+                        store[convId].add_messages(obj_conv)
                 if self.type == 'ConversationSummaryBufferMemory':
-                    summarize_memory(store.messages, str_messages, self.llm, self.max_token_limit)
+                    summarize_memory(store[convId].messages, str_messages, self.llm, self.max_token_limit)
             else:
                 for context in data["context"]:
                     self.memory.save_context({"input": str(context["HumanMessage"])},{"output": str(context["AIMessage"])})
@@ -179,9 +194,10 @@ class Memory:
             )
             file.write(str_)
 
-    def reset_memory(self):
+    def reset_memory(self, conv_id):
         logging.info("Reset memory")
-        store.clear()
+        if conv_id in store:
+            store[conv_id].clear()
 
         # convDir = f"/{convId}" # Subdirectory for specific conversation
         # fullDirPath = f"{basePath}{convDir}"  # Complete directory path
