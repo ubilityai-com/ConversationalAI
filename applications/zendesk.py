@@ -648,7 +648,7 @@ async def zendesk_get_organization(cred,params, **kwargs):
         return {"Error": str(err)}
 
 
-async def zendesk_get_all_organizations(cred):
+async def zendesk_get_all_organizations(cred,params, **kwargs):
     """
     Retrieves all organizations in Zendesk.
 
@@ -842,7 +842,7 @@ async def zendesk_get_data_related_to_org(cred,params, **kwargs):
         return {"Error": str(err)}
 
 
-async def zendesk_count_organizations(cred):
+async def zendesk_count_organizations(cred,params, **kwargs):
     """
     Retrieves the count of organizations in Zendesk .
 
