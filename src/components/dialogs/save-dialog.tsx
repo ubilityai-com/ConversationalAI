@@ -18,7 +18,7 @@ export function SaveDialog({
     onOpenChange,
 }: ConfigurationDialogProps) {
 
-    const { nodes, edges, nodesValidation, outputVariables, constantVariables, dialogueVariables, saveBot, selectedBot } = useFlowStore();
+    const { nodes, edges, nodesValidation, outputVariables, constantVariables, dialogueVariables, saveBot, selectedBot,nodeStates } = useFlowStore();
     const [botName, setBotName] = useState(selectedBot?.name ?? `Bot ${getRandomNumber()}`)
     const [isLoading, setIsLoading] = useState(false)
 
@@ -35,6 +35,7 @@ export function SaveDialog({
                 name: botName,
                 dialogue: {},
                 ui_json: {
+                    nodeStates,
                     nodes,
                     edges,
                     nodesValidation,
