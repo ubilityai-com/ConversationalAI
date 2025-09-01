@@ -8,6 +8,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from langchain_nvidia_ai_endpoints import ChatNVIDIA,NVIDIAEmbeddings
 from langchain_mcp_adapters.client import MultiServerMCPClient
+from aiohttp import BasicAuth
 import sys, os
 status = [200, 201, 202, 204, 206, 207, 208]
 
@@ -687,6 +688,80 @@ async def excel_get_columns(payload: MicrosoftExcelGetColumnsAppIntegration):
                 )
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+############################# Freshdesk API's  ###############################
+
+class FreshdeskAppIntegration(BaseModel):
+    credential_name: str
+
+
+@http_app.post("/bot/freshdesk/listTickets")
+async def freshdesk_get_all_tickets(payload: FreshdeskAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred or "domain" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        domain = json_cred["domain"]
+        apiKey = json_cred["apiKey"]
+        url = f"https://{domain}.freshdesk.com/api/v2/tickets"
+        if ".freshdesk.com" in domain:
+            raise Exception(f"Invalid URL detected. Please verify your domain name. Domain: {domain}, URL: {url}")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, auth=BasicAuth(apiKey, "X")) as response:
+                response.raise_for_status()
+                result = await response.json()
+        for item in result:
+            if item == "errors" or item == "code":
+                raise Exception(result)
+        tickets = []
+        for ticket in result:
+            ticketId = ticket["id"]
+            tickets.append({"id": ticketId})
+        return {"tickets": tickets}
+
+    except Exception as e:
+        if "Expecting value" in str(e):
+            return JSONResponse(status_code=500, content={"Error": "Invalid Domain"})
+        else:
+            return JSONResponse(status_code=500, content={"Error": str(e)})
+
+@http_app.post("/bot/freshdesk/listContacts")
+async def freshdesk_get_all_contacts(payload: FreshdeskAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "apiKey" not in json_cred or "domain" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        domain = json_cred["domain"]
+        apiKey = json_cred["apiKey"]
+        url = f"https://{domain}.freshdesk.com/api/v2/contacts"
+        if ".freshdesk.com" in domain:
+            raise Exception(f"Invalid URL detected. Please verify your domain name. Domain: {domain}, URL: {url}")
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, auth=BasicAuth(apiKey, "X")) as response:
+                response.raise_for_status()
+                result = await response.json()
+        for item in result:
+            if item == "errors" or item == "code":
+                raise Exception(result)
+        contacts = []
+        for contact in result:
+            contactId = contact["id"]
+            contactName = contact["name"]
+            contacts.append({"id": contactId, "name": contactName})
+        return {"contacts": contacts}
+
+    except Exception as e:
+        if "Expecting value" in str(e):
+            return JSONResponse(status_code=500, content={"Error": "Invalid Domain"})
+        else:
+            return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
 ################################ AI Providers List Models BaseModel ################################
