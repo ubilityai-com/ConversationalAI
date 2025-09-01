@@ -546,7 +546,7 @@ export function ApiCaller({
                     onChange={handleChange}
                     options={finalList}
                     disabled={disable}
-                    placeholder={apiJson.placeholder || `Select ${apiJson.label.toLowerCase()}`}
+                    placeholder={apiJson.placeholder || `Select ${apiJson.label?.toLowerCase() || "an option"}`}
                     className="w-full"
                 />
             )}

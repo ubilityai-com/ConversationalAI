@@ -27,6 +27,7 @@ const FlowZone = () => {
     QuestionAndAnswer: LlmNode,
     // integration nodes
     Freshdesk: IntegrationNode,
+    Zendesk: IntegrationNode,
     OpenAI: IntegrationNode,
     Onedrive: IntegrationNode,
     Excel: IntegrationNode,

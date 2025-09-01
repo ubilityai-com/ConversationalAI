@@ -1,5 +1,6 @@
 //add import
 import { FreshdeskJson } from "./FreshdeskJson";
+import { ZendeskJson } from "./ZendeskJson";
 import { OpenAIJson } from "./OpenAIJson";
 import { OnedriveJson } from "./OnedriveJson";
 import { ExcelJson } from "./ExcelJson";
@@ -10,6 +11,7 @@ import { SlackJson } from "./SlackJson";
 export const IntegrationElements = [
     //add Component
     FreshdeskJson,
+    ZendeskJson,
     OpenAIJson,
     OnedriveJson,
     ExcelJson,
