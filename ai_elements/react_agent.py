@@ -171,7 +171,7 @@ class REACT_AGENT:
                 }
         return mcps
 
-    def _status(self, llm, response):
+    def _status(self, llm, response, conv_id):
         try:
             if "requiredInputs" in self.data:
                 prompt = self._build_data_collector_status_prompt()
@@ -184,7 +184,7 @@ class REACT_AGENT:
                 input_messages_key="messages",
                 # store=InMemoryStore()
             )
-            status = agent.invoke(input={"messages": response})
+            status = agent.invoke(input={"messages": response}, config={'configurable': {'session_id': conv_id}})
             if 'messages' in status:
                 for msg in status['messages']:
                     if isinstance(msg, AIMessage):
@@ -255,7 +255,7 @@ class REACT_AGENT:
                 memory = Memory(type=self.data['chainMemory']["type"], historyId=conversation_id, params=self.data['chainMemory'])
                 
                 if 'context' in self.data['chainMemory']:
-                    memory.load_external_context()
+                    memory.load_external_context(conversation_id)
 
                 # if "historyId" in self.data['chainMemory']:
                 memory.load_streaming_memory(conversation_id)
@@ -284,7 +284,7 @@ class REACT_AGENT:
                     self.data['inputs']["query"] = input # set the last input value
                 
                 result = ""
-                async for chunk in agent.astream_events(input={"messages": self.data['inputs']["query"]}):
+                async for chunk in agent.astream_events(input={"messages": self.data['inputs']["query"]}, config={"configurable": {"session_id": conversation_id}}):
                     if 'event' in chunk and chunk['event'] == 'on_chat_model_stream':
                         await sio.emit('agent', {
                                     'type': 'chunk',
@@ -307,7 +307,7 @@ class REACT_AGENT:
             # # Update history with new messages
             # memory.add_new_message(self.data['inputs']["query"], result)
 
-            status = self._status(llm_model, result)
+            status = self._status(llm_model, result, conversation_id)
             status = status.replace("'", '"')
             try:
                 status = json.loads(status)
@@ -318,7 +318,7 @@ class REACT_AGENT:
             result = {"answer":result, **status}
 
             if result['status'] == 'pass':
-                memory.reset_memory()
+                memory.reset_memory(conversation_id)
 
             return result
         except Exception as exc:
