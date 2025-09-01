@@ -17,6 +17,7 @@ from uvicorn import Config, Server
 from config import SECRET_KEY
 from cryptography.fernet import Fernet
 from urllib.parse import parse_qs
+from ubility_langchain.langchain_memory import store
 
 # Initialize logging
 setup_logger()
@@ -213,6 +214,9 @@ async def disconnect(sid):
         del session[dialogue_id][conversation_id]
 
         # Delete conversation history directory if it exists
+        if conversation_id in store:
+            store[conversation_id].clear()
+            del store[conversation_id]
         lc_history_dir = os.path.join(os.getcwd(), "langchain_history", conversation_id)
         if os.path.exists(lc_history_dir):
             try:
