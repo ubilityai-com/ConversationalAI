@@ -580,7 +580,8 @@ async def restore_active_chatbots():
             new_dialogue = {
                 "credentials": cred_obj,
                 "constant_variables": dialogue['constant_variables'],
-                "bot": dialogue['bot']
+                "bot": dialogue['bot'],
+                "state": dialogue['state']
             }
             if not dialogue_id or not dialogue:
                 logger.warning(f"Skipping chatbot ID {dialogue_id} due to missing info.")

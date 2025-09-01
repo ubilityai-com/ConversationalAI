@@ -198,6 +198,7 @@ class Memory:
         logging.info("Reset memory")
         if conv_id in store:
             store[conv_id].clear()
+            del store[conv_id]
 
         # convDir = f"/{convId}" # Subdirectory for specific conversation
         # fullDirPath = f"{basePath}{convDir}"  # Complete directory path

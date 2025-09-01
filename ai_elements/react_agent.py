@@ -324,6 +324,8 @@ class REACT_AGENT:
         except Exception as exc:
             if sio and sid:
                 logging.error(f"an error occurred while running this ai node: {str(exc)}")
+                if memory:
+                    memory.reset_memory(conversation_id)
                 await sio.emit('error_message', {
                     'type': 'error_message',
                     'error': 'an error occurred while running this ai node'

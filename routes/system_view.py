@@ -91,7 +91,8 @@ def activate_chatbot_view(chatbot_id: int, payload: ChatbotActivateRequest):
         new_dialogue = {
             "credentials": cred_obj,
             "constant_variables": chatbot_obj['dialogue']['constant_variables'],
-            "bot": chatbot_obj['dialogue']['bot']
+            "bot": chatbot_obj['dialogue']['bot'],
+            "state": chatbot_obj['dialogue']['state']
         }
         file_name = chatbot_obj['name']+".json"
         create_json_file = save_json_to_file(new_dialogue,file_name)
