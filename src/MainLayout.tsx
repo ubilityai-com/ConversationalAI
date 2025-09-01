@@ -4,33 +4,33 @@ import { v4 as uuidv4 } from "uuid";
 import { ChatbotNotFoundNotice } from "./components/chatbot-not-found-notice";
 import { OAuth2AuthenticationFlow } from "./components/dialogs/credential-dialog/credOAuth2";
 import DialogManager from "./components/dialogs/dialog-manager";
+import { LiveUrlDisplay } from "./components/live-url-display";
 import { LoadingOverlay } from "./components/loading-overlay";
 import RightSideDrawer from "./components/right-side-drawer";
-import { Toolbar } from "./components/toolbarv2";
+import { Toolbar } from "./components/toolbar";
 import { Toaster } from "./components/ui/toaster";
 import FlowZone from "./flow-zone";
-import { useFlowStore } from "./store/flow-store";
-import { LiveUrlDisplay } from "./components/live-url-display";
 import { useFilesStore } from "./store/files-store";
+import { useFlowStore } from "./store/flow-store";
 
 export default function MainLayout() {
     // Get state and actions from Zustand stores
-    const {
-        setNodes,
-        addNodesValidation,
-        fetchBots,
-        getBotById,
-        reactFlowInstance,
-        failedLoadingBot,
-    } = useFlowStore()
+    const setNodes = useFlowStore(state => state.setNodes)
+    const addNodesValidation = useFlowStore(state => state.addNodesValidation)
+    const fetchBots = useFlowStore(state => state.fetchBots)
+    const getBotById = useFlowStore(state => state.getBotById)
+    const reactFlowInstance = useFlowStore(state => state.reactFlowInstance)
+    const failedLoadingBot = useFlowStore(state => state.failedLoadingBot)
     const getFiles = useFilesStore(state => state.getFiles)
     const { botID } = useParams();
-
+    useEffect(() => {
+        if (botID)
+            getFiles(botID)
+    }, [botID, getFiles])
     useEffect(() => {
         initializeAllDroppedElementsByHandler()
         fetchBots()
         OAuth2AuthenticationFlow()
-        getFiles(botID)
     }, [])
     useEffect(() => {
         const fetchBot = async () => {
@@ -72,7 +72,6 @@ export default function MainLayout() {
         ])
         addNodesValidation(id, false)
     }
-
     return (
         <div className='min-h-screen flex flex-col' >
             <DialogManager />

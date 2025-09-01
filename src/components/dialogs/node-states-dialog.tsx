@@ -166,7 +166,7 @@ export function NodeStatesDialog({
               <Database className="w-5 h-5" />
               Node States Management
             </div>
-            <div className="flex items-center gap-2 text-sm text-gray-600">
+            <div className="flex items-center gap-2 text-sm text-gray-600 mr-6">
               <span>
                 {nodesWithState} of {totalNodes} nodes have state
               </span>

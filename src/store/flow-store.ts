@@ -46,7 +46,7 @@ export interface FlowState extends SlicesStates {
   setFocusedField: (field: string | null) => void;
   blurTimeoutRef: NodeJS.Timeout | null;
   setBlurTimeoutRef: (timeout: NodeJS.Timeout | null) => void;
-  variables: WorkflowVariable[];
+ 
   variablesPickerVisible: boolean;
   selectedOutputOrVariable: string | null;
   setSelectedOutputOrVariable: (name: string | null) => void;
@@ -64,22 +64,9 @@ export interface FlowState extends SlicesStates {
   theme: boolean;
   toggleTheme: () => void;
 
-  // Elements
-  droppedElement: any | null;
-  setDroppedElement: (element: any | null) => void;
 
   clickedElement: any | null;
   setClickedElement: (element: any | null) => void;
-
-  flowZoneSelectedManyElement: any[];
-  setFlowZoneSelectedManyElement: (elements: any[]) => void;
-
-  zoomAndMoveValues: { x: number; y: number; zoom: number };
-  setZoomAndMoveValues: (values: {
-    x: number;
-    y: number;
-    zoom: number;
-  }) => void;
 
   // Nodes and edges
   nodes: any[];
@@ -125,41 +112,7 @@ export interface FlowState extends SlicesStates {
   deleteNode: (id: string) => void;
   duplicateNode: (id: string) => void;
 
-  // User and authentication
-  userData: any;
-  setUserData: (data: any) => void;
-
-  authToken: string | boolean;
-  setAuthToken: (token: string | boolean) => void;
-
-  // Bot data
-  updatingBot: any;
-  setUpdatingBot: (bot: any) => void;
-
-  isLoadingBot: boolean;
-  setIsLoadingBot: (loading: boolean) => void;
-
-  IDOnSelectionContextMenu: string;
-  setIDOnSelectionContextMenu: (id: string) => void;
-
-  flow: any;
-  setFlow: (flow: any) => void;
-
-  formDialogBotName: string;
-  setFormDialogBotName: (name: string) => void;
-
-  botType: string;
-  setBotType: (type: string) => void;
-
-  variablesNamesOfEachRPA: Record<string, string[]>;
-  setVariablesNamesOfEachRPA: (variables: Record<string, string[]>) => void;
-
-  endLoopFromNodesNames: Record<string, string[]>;
-  setEndLoopFromNodesNames: (names: Record<string, string[]>) => void;
-
   // UI state
-  isLeftOpen: boolean;
-  setIsLeftOpen: (open: boolean) => void;
 
   isRightOpen: boolean;
   setIsRightOpen: (open: boolean) => void;
@@ -172,9 +125,6 @@ export interface FlowState extends SlicesStates {
 
   formDialogStatus: any;
   setFormDialogStatus: (status: any) => void;
-
-  formDialogApplyValues: string;
-  setFormDialogApplyValues: (values: string) => void;
 
   showSnackBarMessage:
   | {
@@ -207,20 +157,6 @@ export interface FlowState extends SlicesStates {
 
   handleFlowZoneCheckIfAllHandlesAreConnected: () => boolean;
 
-  checkIfWebUrlIsEmpty: () => boolean;
-
-  // Data lists
-  cards: any[];
-  setCards: (cards: any[]) => void;
-
-  rpasList: any[];
-  setRpasList: (list: any[]) => void;
-
-  intents: string[];
-  setIntents: (intents: string[]) => void;
-
-  entities: string[];
-  setEntities: (entities: string[]) => void;
 
   // Constants
   error: string | null;
@@ -233,6 +169,7 @@ export interface FlowState extends SlicesStates {
   setNodeResult: (id: string, result: any) => void;
   resetData: () => void;
 
+  // Node states 
   nodeStates: Record<string, string>; // nodeId -> description
   setNodeStates: (nodeStates: Record<string, string>) => void;
   addNodeState: (nodeId: string, description: string) => void;
@@ -471,23 +408,12 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
   theme: localStorage.getItem("darkMode") === "true",
   toggleTheme: () => set((state) => ({ theme: !state.theme })),
 
-  // Elements
-  droppedElement: null,
-  setDroppedElement: (element) => set({ droppedElement: element }),
-
   clickedElement: null,
   setClickedElement: (element) => {
     console.log({ element });
 
     set({ clickedElement: element });
   },
-
-  flowZoneSelectedManyElement: [],
-  setFlowZoneSelectedManyElement: (elements) =>
-    set({ flowZoneSelectedManyElement: elements }),
-
-  zoomAndMoveValues: { x: 0, y: 0, zoom: 1 },
-  setZoomAndMoveValues: (values) => set({ zoomAndMoveValues: values }),
 
   // Nodes and edges
   nodes: [],
@@ -651,42 +577,9 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
       return { nodes: [...state.nodes, cloned] };
     });
   },
-  // User and authentication
-  userData: {},
-  setUserData: (data) => set({ userData: data }),
-
-  authToken: false,
-  setAuthToken: (token) => set({ authToken: token }),
-
-  // Bot data
-  updatingBot: {},
-  setUpdatingBot: (bot) => set({ updatingBot: bot }),
-
-  isLoadingBot: false,
-  setIsLoadingBot: (loading) => set({ isLoadingBot: loading }),
-
-  IDOnSelectionContextMenu: "",
-  setIDOnSelectionContextMenu: (id) => set({ IDOnSelectionContextMenu: id }),
-
-  flow: {},
-  setFlow: (flow) => set({ flow }),
-
-  formDialogBotName: "Workflow",
-  setFormDialogBotName: (name) => set({ formDialogBotName: name }),
-
-  botType: "Web",
-  setBotType: (type) => set({ botType: type }),
-
-  variablesNamesOfEachRPA: {},
-  setVariablesNamesOfEachRPA: (variables) =>
-    set({ variablesNamesOfEachRPA: variables }),
-
-  endLoopFromNodesNames: {},
-  setEndLoopFromNodesNames: (names) => set({ endLoopFromNodesNames: names }),
+ 
 
   // UI state
-  isLeftOpen: true,
-  setIsLeftOpen: (open) => set({ isLeftOpen: open }),
 
   isRightOpen: false,
   setIsRightOpen: (open) => set({ isRightOpen: open }),
@@ -699,9 +592,6 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
 
   formDialogStatus: null,
   setFormDialogStatus: (status) => set({ formDialogStatus: status }),
-
-  formDialogApplyValues: "Draft",
-  setFormDialogApplyValues: (values) => set({ formDialogApplyValues: values }),
 
   showSnackBarMessage: {
     open: false,
@@ -814,29 +704,6 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
 
     return true;
   },
-
-  // Check if web URL is empty
-  checkIfWebUrlIsEmpty: () => {
-    const userData = get().userData;
-    if (
-      !userData.bot_configuration?.web_staging_url.trim() ||
-      !userData.bot_configuration?.web_production_url.trim()
-    ) {
-      return false;
-    } else return true;
-  },
-  // Data lists
-  cards: [],
-  setCards: (cards) => set({ cards }),
-
-  rpasList: [],
-  setRpasList: (list) => set({ rpasList: list }),
-
-  intents: [],
-  setIntents: (intents) => set({ intents }),
-
-  entities: [],
-  setEntities: (entities) => set({ entities }),
 
   nodeStates: {},
   setNodeStates: (nodeStates) => set({ nodeStates }),

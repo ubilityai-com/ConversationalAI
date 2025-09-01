@@ -41,7 +41,6 @@ const FlowZone = () => {
     buttonEdge: ButtonEdge
   }
   const nodes = useFlowStore(state => state.nodes)
-  const setNodes = useFlowStore(state => state.setNodes)
   const edges = useFlowStore(state => state.edges)
   const setEdges = useFlowStore(state => state.setEdges)
   const applyNodeChangesFunc = useFlowStore(state => state.applyNodeChangesFunc)
@@ -51,28 +50,17 @@ const FlowZone = () => {
   const clickedElement = useFlowStore(state => state.clickedElement)
   const setIsRightOpen = useFlowStore(state => state.setIsRightOpen)
   const setShowSnackBarMessage = useFlowStore(state => state.setShowSnackBarMessage)
-  const setMousePositionManySelectedElementMenu = useFlowStore(state => state.setMousePositionManySelectedElementMenu)
-  const setZoomAndMoveValues = useFlowStore(state => state.setZoomAndMoveValues)
-  const setIDOnSelectionContextMenu = useFlowStore(state => state.setIDOnSelectionContextMenu)
-
 
 
 
 
   const theme = useFlowStore(state => state.theme)
 
-
-  const onDragOver = (event, node) => {
-    event.preventDefault();
-  };
   const handleRightDrawerClose = () => {
     setClickedElement(null)
     setIsRightOpen(false)
   }
-  const onDrop = (event, node) => {
-    event.preventDefault()
-    handleRightDrawerClose()
-  }
+
 
   const handleRightDrawerOpen = () => {
     setIsRightOpen(true)
@@ -124,46 +112,6 @@ const FlowZone = () => {
     setEdges((prevEdges) => addEdge(newEdge, prevEdges));
   };
 
-  const onNodeDragStop = (event, node) => {
-    const elementsIndex = nodes.findIndex((element) => element.id === node.id)
-
-    const newArray = [...nodes]
-    newArray[elementsIndex] = {
-      ...newArray[elementsIndex],
-      position: { x: node.position.x, y: node.position.y },
-    }
-
-    setNodes(newArray)
-  }
-  const onSelectionDragStop = (event, selectedNodes) => {
-    if (selectedNodes) {
-      selectedNodes.forEach((node) => {
-        const elementsIndex = nodes.findIndex((element) => element.id === node.id)
-
-        const newArray = [...nodes]
-        newArray[elementsIndex] = {
-          ...newArray[elementsIndex],
-          position: { x: node.position.x, y: node.position.y },
-        }
-
-        setNodes(newArray)
-      })
-    }
-  }
-  const onSelectionContextMenu = (event, selectedNodes) => {
-    event.preventDefault()
-
-    setMousePositionManySelectedElementMenu({ mouseX: event.clientX - 2, mouseY: event.clientY - 4 })
-    setClickedElement(null)
-    setIsRightOpen(false)
-  }
-  const onMoveEnd = (transform) => {
-    if (transform) setZoomAndMoveValues({ x: transform.x, y: transform.y, zoom: transform.zoom })
-  }
-  const handleNodeContextMenu = (event, node) => {
-    event.preventDefault()
-    setIDOnSelectionContextMenu(node.id)
-  }
 
 
   const onPaneClick = () => {
@@ -175,8 +123,6 @@ const FlowZone = () => {
       className='h-full flex-1 w-full'
       onNodesChange={applyNodeChangesFunc}
       onEdgesChange={applyEdgeChangesFunc}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
       onInit={setReactFlowInstance}
       nodes={nodes}
       edges={edges}
@@ -185,29 +131,16 @@ const FlowZone = () => {
       onConnect={onConnect}
       minZoom={0.1}
       colorMode={theme ? "dark" : "light"}
-      onNodeDragStop={onNodeDragStop}
-      onSelectionDragStop={onSelectionDragStop}
-      onSelectionContextMenu={onSelectionContextMenu}
-      onMoveEnd={onMoveEnd}
-      onNodeContextMenu={handleNodeContextMenu}
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
       connectionLineComponent={connectionLine}
     >
       <MiniMap
         className='bg-background'
-        nodeStrokeColor={(n) => {//color of border of nodes in mini-map
-          // if (n.style?.background) return n.style.background;
-          // if (n.type === 'input') return '#0041d0';
-          // if (n.type === 'output') return '#ff0072';
-          // if (n.type === 'default') return '#1a192b';
-
-          return '#ffffff';
+        nodeStrokeColor={(n) => {
+          return '#fff';
         }}
         nodeColor={(n) => {
-          //console.log(n)
-          //if (n.style?.background) return n.style.background;
-          //if (n.type === 'Card') return 'blue';
           return n.data.color;
         }}
         nodeBorderRadius={2}

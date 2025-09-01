@@ -10,7 +10,7 @@ interface Flow {
     credentials: any[];
     constant_variables: ConstantVariable
     bot: Record<string, any>;
-    state: State
+    state: State | null
 }
 
 export function createFlowObject(): Flow {
@@ -20,10 +20,13 @@ export function createFlowObject(): Flow {
         acc[file.file_name] = file.file_name;
         return acc;
     }, {});
+    const state = Object.keys(nodeStates).length === 0 ?
+        null
+        : { scenarios: [...Object.values(nodeStates), "Other"], ...reverseObject(nodeStates) } as State
     const flow: Flow = {
         credentials: [],
         constant_variables: Object.assign({}, constantVariables, files),
-        state: { scenarios: [...Object.values(nodeStates), "Other"], ...reverseObject(nodeStates) } as State,
+        state,
         bot: {},
     };
 

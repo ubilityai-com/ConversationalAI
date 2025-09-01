@@ -28,12 +28,10 @@ export const dialogRegistry: Record<string, React.FC<any>> = {
   nodeStates: NodeStatesDialog,
 };
 export default function DialogManager() {
-  const {
-    isFormDialogOpen,
-    formDialogStatus,
-    dialogProps,
-    setIsFormDialogOpen,
-  } = useFlowStore();
+  const isFormDialogOpen = useFlowStore(state => state.isFormDialogOpen)
+  const formDialogStatus = useFlowStore(state => state.formDialogStatus)
+  const dialogProps = useFlowStore(state => state.dialogProps)
+  const setIsFormDialogOpen = useFlowStore(state => state.setIsFormDialogOpen)
   console.log({ isFormDialogOpen, formDialogStatus, dialogProps });
 
   if (!isFormDialogOpen) return null;
