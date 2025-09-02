@@ -9,7 +9,7 @@ You are part of a multi-agent system designed to make agent coordination and exe
 
     - Input: A string representing the user's query, message or data.
     - Scenarios: A list of predefined scenarios that relate to the input.
-    - Instruction: Determine which of the provided scenarios is the best fit for the input. {instruction}
+    - Instruction: {instruction}
 
 Steps:
 
