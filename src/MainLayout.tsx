@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./comp
 import FlowZone from "./flow-zone";
 import { useFilesStore } from "./store/files-store";
 import { useFlowStore } from "./store/flow-store";
+import { useReactFlow } from "@xyflow/react";
 
 export default function MainLayout() {
     // Get state and actions from Zustand stores
@@ -29,6 +30,7 @@ export default function MainLayout() {
     const selectedBot = useFlowStore(state => state.selectedBot)
     const getFiles = useFilesStore(state => state.getFiles)
     const { botID } = useParams();
+    const reactFlow = useReactFlow()
     useEffect(() => {
         if (botID)
             getFiles(botID)
@@ -81,6 +83,11 @@ export default function MainLayout() {
 
     const addStickyNote = () => {
         const id = uuidv4()
+        const { x, y, zoom } = reactFlow.getViewport()
+        const flowPosition = {
+            x: -x / zoom + window.innerWidth / 2 / zoom,
+            y: -y / zoom + window.innerHeight / 2 / zoom,
+        };
         setNodes([
             ...nodes,
             {
@@ -94,7 +101,7 @@ export default function MainLayout() {
                         content: "",
                     },
                 },
-                position: { x: -20, y: -80 },
+                position: flowPosition,
             },
         ])
         addNodesValidation(id, true)
