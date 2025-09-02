@@ -117,7 +117,7 @@ def googledrive_delete_file(json_cred, params, **kwargs):
                 return response
             else:
                 response = service.files().delete(**data).execute()
-                return "Folder deleted successfully"
+                return {"Message": "Item deleted successfully"}
     except Exception as e:
         raise Exception(str(e))
     

@@ -171,7 +171,7 @@ async def excel_delete_workbook(json_cred, params, **kwargs):
                 async with session.delete(workbook_endpoint, headers=headers) as response:
                     response.raise_for_status()
                     if response.status in status:
-                        return "Workbook deleted successfully."
+                        return {"Message": "Workbook deleted successfully."}
                     raise Exception(
                         f"Status Code: {response.status}. Response: {await response.text()}"
                     )
@@ -208,7 +208,7 @@ async def excel_delete_worksheet(json_cred, params, **kwargs):
                 async with session.delete(worksheet_endpoint, headers=headers) as response:
                     response.raise_for_status()
                     if response.status in status:
-                        return "Worksheet deleted successfully."
+                        return {"Message": "Worksheet deleted successfully."}
                     raise Exception(
                         f"Status Code: {response.status}. Response: {await response.text()}"
                     )
@@ -254,7 +254,7 @@ async def excel_clear_worksheet(json_cred, params, **kwargs):
                 async with session.post(worksheet_endpoint, headers=headers, json=data) as response:
                     response.raise_for_status()
                     if response.status in status:
-                        return "Worksheet cleared successfully."
+                        return {"Message": "Worksheet cleared successfully."}
                     raise Exception(
                         f"Status Code: {response.status}. Response: {await response.text()}"
                     )
@@ -479,7 +479,7 @@ async def excel_delete_table(json_cred, params, **kwargs):
                 async with session.delete(table_endpoint, headers=headers) as response:
                     response.raise_for_status()
                     if response.status in status:
-                        return "Table Deleted successfully."
+                        return {"Message": "Table Deleted successfully."}
                     raise Exception(
                         f"Status Code: {response.status}. Response: {await response.text()}"
                     )
