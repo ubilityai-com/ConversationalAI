@@ -18,14 +18,6 @@ export const ReactAgentJson = {
         description: "Select the model that fits your use case",
         title: "LLM Model",
       },
-      memory: {
-        enabled: true,
-        type: "",
-        content: {},
-        description: "Select the memory that fits your use case",
-        title: "Memory",
-        // optional: true,
-      },
       tool: {
         multiple: true,
         enabled: true,

@@ -50,7 +50,9 @@ export function ToolbarActions() {
       setIsFormDialogOpen(true);
     }
   };
-  const handlePublishToggle = async () => {
+  const handlePublishToggle = () => {
+    if (selectedBot?.status === "Active")
+      return deactivateBot();
     const nodesValidation = useFlowStore.getState().nodesValidation;
     const warnings = [];
 
@@ -80,7 +82,7 @@ export function ToolbarActions() {
       setFormDialogStatus("save");
     } else if (selectedBot.status === "Inactive") {
       activateBot();
-    } else deactivateBot();
+    }
   };
 
   const isPublished = selectedBot?.status === "Active";
@@ -161,8 +163,8 @@ export function ToolbarActions() {
                   ? "Unpublishing..."
                   : "Publishing..."
                 : isPublished
-                ? "Unpublish"
-                : "Publish Bot"}
+                  ? "Unpublish"
+                  : "Publish Bot"}
             </Button>
           </TooltipTrigger>
           {!selectedBot && (

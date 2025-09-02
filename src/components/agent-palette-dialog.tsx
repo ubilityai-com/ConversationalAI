@@ -50,7 +50,7 @@ const agentTypes = [
     color: "bg-yellow-500",
     defaults: {
       scenarios: [{ label: "scenario 1", id: `scenario-${Date.now()}` }],
-      instruction: "",
+      instruction: "Determine which of the provided scenarios is the best fit for the input.",
       input: "",
       extras: {
         model: {
