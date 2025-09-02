@@ -136,6 +136,10 @@ async def connect(sid, environ, auth=None):
             await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
         asyncio.create_task(greet_and_execute())
+        
+    # save user message if user start the conversation
+    if dialogue[current_step]['saveUserInputAs']:
+        conversation['wait_for_user_input'] = dialogue[current_step]['saveUserInputAs']
 
 
 @sio.event
