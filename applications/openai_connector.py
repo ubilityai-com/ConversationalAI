@@ -1,5 +1,6 @@
 import aiohttp, sys, os, json
 import requests, base64
+from logger_config import logger
 from applications.functions import get_file_data, upload_file
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -29,6 +30,10 @@ async def openai_speech_to_text(json_cred, params, **kwargs):
         creds = json.loads(json_cred)
         if "file" in params and "model" in params and "apiKey" in creds:
             file_name = params["file"]
+            data = aiohttp.FormData(quote_fields=False)
+            for key, value in params.items():
+                    if key != 'file' and value is not None:
+                        data.add_field(key, str(value))
             if kwargs:
                 # Extra conv_id & dialogue_id
                 dialogue_id = kwargs.get("dialogue_id")
@@ -45,10 +50,10 @@ async def openai_speech_to_text(json_cred, params, **kwargs):
             file_name = contentData["file_name"]
             url = "https://api.openai.com/v1/audio/transcriptions"
             headers = {"Authorization": f"Bearer {creds['apiKey']}"}
-            files = {"file": (file_name, body)}
+            data.add_field('file', body, filename=file_name, content_type='application/octet-stream')
             async with aiohttp.ClientSession() as session:
                 async with session.post(
-                    url, headers=headers, files=files, data=params
+                    url, headers=headers, data=data
                 ) as response:
                     response.raise_for_status()
                     result = await response.json()
@@ -151,10 +156,10 @@ async def openai_generate_image(json_cred, params, **kwargs):
                 "Authorization": f"Bearer {apiKey}",
             }
 
+            data = {}
             # response_format for dall-e-3 and dall-e-2
-            data = {"response_format": "b64_json"}
-            if model_gpt == "gpt-image-1":
-                data = {}
+            if model_gpt != "gpt-image-1":
+                data["response_format"] = "b64_json"
             for key, value in params.items():
                 keys_to_skip = []
                 if key in keys_to_skip:
@@ -163,10 +168,10 @@ async def openai_generate_image(json_cred, params, **kwargs):
                     data[key] = value
             async with aiohttp.ClientSession() as session:
                 async with session.post(url, headers=headers, json=data) as response:
-                    response.raise_for_status()
+                    # response.raise_for_status()
                     if response.status == 200:
-                        result = await response.json()["data"][0]
-                        b64_json = result["b64_json"]
+                        result = await response.json()
+                        b64_json = result["data"][0]["b64_json"]
                         image_data = base64.b64decode(b64_json)
                         if kwargs:
                             # Extra conv_id & dialogue_id
@@ -300,20 +305,15 @@ async def openai_edit_image(json_cred, params, **kwargs):
                 headers = {"Authorization": f"Bearer {apiKey}"}
 
                 model = params["model"]
+                
+                data = aiohttp.FormData(quote_fields=False)
+                for key, value in params.items():
+                    if key != 'images' and value is not None:
+                        data.add_field(key, str(value))
 
                 # response_format for dall-e-2
-                dataa = {"response_format": "b64_json"}
-
-                if model == "gpt-image-1":
-                    dataa = {}
-
-                # optional params if sent
-                for key, value in params.items():
-                    keys_to_skip = ["flow_id", "user_id", "images"]
-                    if key in keys_to_skip:
-                        continue
-                    if value:
-                        dataa[key] = value
+                if model != "gpt-image-1":
+                    data.add_field("response_format", "b64_json")
 
                 img_data = params["images"]
                 # for loop to handle the edit of many images
@@ -332,31 +332,53 @@ async def openai_edit_image(json_cred, params, **kwargs):
                     
                     # Decode hex content to bytes
                     image_bytes = bytes.fromhex(contentData["file_content"])
-                    files = []
-                    # handle sending one or many images using gpt-1 model
-                    files.append(("image[]", (image, image_bytes)))
 
+                    image_ext = image.split(".")[-1].lower()
                     # handle sending just one image when using dall-e-2
                     if model == "dall-e-2":
-                        files = {"image": (image, image_bytes)}
-
-                    async with aiohttp.ClientSession() as session:
-                        async with session.post(url, headers=headers, data=dataa, files=files) as response:
-                            response.raise_for_status()
-                            if response.status == 200:
-                                result = await response.json()["data"][0]
-                                b64_img = result["b64_json"]
-                                image_bytes = base64.b64decode(b64_img)
-                                if kwargs:
-                                    # Extra conv_id & dialogue_id
-                                    dialogue_id = kwargs.get("dialogue_id")
-                                    conv_id = kwargs.get("conv_id")
-                                    fileData = upload_file(dialogue_id, conv_id, image_bytes)
-                                return fileData
-                            else:
-                                raise Exception(
-                                    f"Status Code: {response.status}. Response: {await response.text()}"
-                                )
+                        if image_ext != "png":
+                            raise Exception("For model 'dall-e-2', only PNG images are supported.")
+                        data.add_field(
+                            "image",
+                            image_bytes,
+                            filename=image,
+                            content_type="image/png"
+                        )
+                    # handle sending one or many images using gpt-1 model
+                    elif model == "gpt-image-1":
+                        contentType = ""
+                        if image_ext in ["jpg", "jpeg"]:
+                            contentType = "image/jpeg"
+                        elif image_ext == "png":
+                            contentType = "image/png"
+                        elif image_ext == "webp":
+                            contentType = "image/webp"
+                        else:
+                            raise Exception("Unsupported image format. Supported formats for gpt-image-1 are jpg, jpeg, png, webp.")
+                        data.add_field(
+                            "image[]",
+                            image_bytes,
+                            filename=image,
+                            content_type=contentType
+                        )
+                logger.info(f"Data prepared for OpenAI edit image request: {str(data.__dict__)}")
+                async with aiohttp.ClientSession() as session:
+                    async with session.post(url, headers=headers, data=data) as response:
+                        # response.raise_for_status()
+                        if response.status == 200:
+                            result = await response.json()
+                            b64_img = result["data"][0]["b64_json"]
+                            image_bytes = base64.b64decode(b64_img)
+                            if kwargs:
+                                # Extra conv_id & dialogue_id
+                                dialogue_id = kwargs.get("dialogue_id")
+                                conv_id = kwargs.get("conv_id")
+                                fileData = upload_file(dialogue_id, conv_id, image_bytes)
+                            return fileData
+                        else:
+                            raise Exception(
+                                f"Status Code: {response.status}. Response: {await response.text()}"
+                            )
             else:
                 raise Exception("missing required param(s)")
         else:
