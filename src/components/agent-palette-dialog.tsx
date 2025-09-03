@@ -64,6 +64,21 @@ const agentTypes = [
     },
   },
   {
+    "type": "Attachment",
+    category: "basic",
+    "label": "Attachment",
+    "color": "#4BBFFF",
+    description: "Attachment",
+    defaultValid: false,
+    "defaults": {
+      method: "send",
+      fileContent: "",
+      message: "please upload your file",
+      save: false,
+      variableName: ""
+    }
+  },
+  {
     type: "Router",
     label: "Router",
     description: "Route workflow based on multiple conditions",
