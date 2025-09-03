@@ -1,28 +1,26 @@
 import { FileJson, PenToolIcon, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 import { v4 } from "uuid"
-import { keyBy, validateArray } from "../../../lib/utils"
-import { useFlowStore } from "../../../store/flow-store"
+import { objToReturnDynamicv2 } from "../../../lib/automation-utils"
+import { keyBy } from "../../../lib/utils"
+import { SearchableSelect } from "../../custom/searchable-select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../ui/accordion"
 import { Button } from "../../ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../ui/card"
 import { Label } from "../../ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
 import { Switch } from "../../ui/switch"
 import { SharedListItemSection } from "./shared-section-list-tem"
-import { objToReturnDynamicv2 } from "../../../lib/automation-utils"
-import { SearchableSelect } from "../../custom/searchable-select"
 
 interface SectionProps {
     config: any
-    onConfigUpdate: (key: string, value: any) => void
+    onConfigUpdate: (key: string, value: any, options?: { replace?: boolean }) => void
     id: string
     defaultType: string
     title: string
     variableName: string
     description: string
     elements: any[]
-    validators:any
+    validators: any
 }
 
 export function SharedListSection({
@@ -40,19 +38,14 @@ export function SharedListSection({
     const optional = config.optional === true
     const list = config.list || []
     const [schemas] = useState<any>(keyBy(elements, "type"))
-    const add = useFlowStore((s) => s.addSubNodeValidation)
-    const del = useFlowStore((s) => s.deleteSubNodeById)
-    const updateSubNodeValidationById = useFlowStore((s) => s.updateSubNodeValidationById)
-
 
     const addTool = () => {
         const currentTools = list
 
         const newToolId = v4()
-        add(id, newToolId, false)
         onConfigUpdate(`extras.${variableName}.list`, [
             ...currentTools,
-            { content: {}, type: "", id: newToolId },
+            { content: {}, type: "", id: newToolId, valid: false },
         ])
     }
 
@@ -63,7 +56,6 @@ export function SharedListSection({
             (tool: any, index: number) => tool.id !== toolId
         );
         onConfigUpdate(`extras.${variableName}.list`, updatedTools);
-        del(id, toolId)
     }
 
     const renderContent = () => (
@@ -101,9 +93,9 @@ export function SharedListSection({
                                         </Button>
                                     </div>
                                 </div>
-                                 <div className="space-y-2">
-                        
-                                 <Label htmlFor={`tool-type-${tool.id}`} className="text-sm font-medium">{title} Type</Label>
+                                <div className="space-y-2">
+
+                                    <Label htmlFor={`tool-type-${tool.id}`} className="text-sm font-medium">{title} Type</Label>
 
                                     <SearchableSelect
                                         name="type"
@@ -120,12 +112,12 @@ export function SharedListSection({
                                                         id: tool.id,
                                                         type: value,
                                                         content: { json: defaultValues },
+                                                        valid: selectedOption.defaultValid
                                                     }
                                                     : tool,
                                             )
                                             console.log({ updatedTools })
                                             onConfigUpdate(`extras.${variableName}.list`, updatedTools)
-                                            updateSubNodeValidationById(id, tool.id, selectedOption.defaultValid)
 
                                         }}
                                         options={elements.map((el) => ({
@@ -142,7 +134,7 @@ export function SharedListSection({
                                         parentId={id}
                                         id={tool.id}
                                         onConfigUpdate={onConfigUpdate}
-                                        path={`extras.${variableName}.list.${toolIndex}.content`}
+                                        path={`extras.${variableName}.list.${toolIndex}`}
                                         schema={schemas[tool.type]}
                                         type={tool.type}
                                     />

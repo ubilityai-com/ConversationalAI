@@ -1,5 +1,5 @@
+import { cloneDeep, isPlainObject } from 'lodash'; // or your preferred deep clone utility
 import { useCallback, useEffect, useRef, useState } from "react";
-import { cloneDeep } from 'lodash'; // or your preferred deep clone utility
 
 interface UseDebounceConfigOptions {
   delay?: number;
@@ -63,12 +63,13 @@ export function useDebounceConfig<T>(
   );
 
   const updateNestedConfig = useCallback(
-    (path: string, value: any) => {
+    (
+      path: string,
+      value: any,
+      options?: { replace?: boolean } // default is merge
+    ) => {
       updateConfig((prev) => {
         const newConfig = cloneDeep(prev);
-        console.log({path,value,prev});
-        
-
         const keys = path.split(".");
         let current: any = newConfig;
 
@@ -85,12 +86,21 @@ export function useDebounceConfig<T>(
         }
 
         const lastKey = keys[keys.length - 1];
-        current[lastKey] = value;
+
+        if (!options?.replace && isPlainObject(current[lastKey]) && isPlainObject(value)) {
+          // Default: shallow merge
+          current[lastKey] = { ...current[lastKey], ...value };
+        } else {
+          // Replace if explicitly requested
+          current[lastKey] = value;
+        }
+
         return newConfig;
       });
     },
     [updateConfig]
   );
+
 
   return {
     localConfig,

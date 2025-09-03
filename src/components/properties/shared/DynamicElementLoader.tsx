@@ -49,10 +49,8 @@ export function DynamicElementLoader({
     // ////////
 }: DynamicElementLoaderProps) {
     const [elements, setElements] = useState<any>(null);
-    console.log({validators});
     
     useEffect(() => {
-        console.log({extrasKey});
         
         const loaded = loadElementByKey(camelToDashCase(extrasKey));
         setElements(loaded);

@@ -5,20 +5,25 @@ import {
     objToReturnValuesToSend,
 } from "../lib/automation-utils";
 import { validateArray } from "../lib/utils";
-import { useFlowStore } from "../store/flow-store";
 import { useRightDrawerStore } from "../store/right-drawer-store";
 import {
     NodeConfigProps,
 } from "../types/automation-types";
 import AutomationSimple from "./custom/automation-v4";
 import { DynamicElementLoader } from "./properties/shared/DynamicElementLoader";
-
-function isExtrasValid(extras: any, values: Record<string, boolean> = {}) {
+function areAllValid(items: { valid: boolean }[]): boolean {
+    for (let i = 0; i < items.length; i++) {
+        if (!items[i].valid) {
+            return false; // stop immediately on first invalid
+        }
+    }
+    return true;
+}
+export function isExtrasValid(extras: any) {
     for (const key in extras) {
         const item = extras[key];
-        console.log({extras,key,values});
-        
 
+        console.log({ extras, key });
 
         const isRequired = !item.optional;
 
@@ -28,14 +33,9 @@ function isExtrasValid(extras: any, values: Record<string, boolean> = {}) {
             const list = item.list || [];
             if (isRequired && list.length === 0)
                 return false
-            for (const subItem of list) {
-                const id = subItem.id;
-                if (!values[id]) {
-                    return false;
-                }
-            }
+            return areAllValid(list)
         } else {
-            if (!values[key]) {
+            if (!item.valid) {
                 return false;
             }
         }
@@ -54,10 +54,6 @@ export default function TemplateForm({
     CustomComponent,
     contentPath
 }: NodeConfigProps) {
-    console.log({ schema });
-    const setNodeFilledDataByKey = useRightDrawerStore(
-        (state) => state.setNodeFilledDataByKey
-    );
     const parentRef = useRef<{ [key: string]: any }>({})
 
     const { localConfig, updateNestedConfig } = useDebounceConfig<
@@ -70,12 +66,9 @@ export default function TemplateForm({
         {
             delay: 300,
             onSave: (savedConfig) => {
-                setNodeFilledDataByKey(selectedNodeId, "json", savedConfig.json);
                 let extrasValid = true;
                 if (ai) {
-                    const subNodesValidation = useFlowStore.getState().subNodesValidation;
-                    const subs = subNodesValidation[selectedNodeId]?.subs;
-                    extrasValid = isExtrasValid(savedConfig.extras, subs);
+                    extrasValid = isExtrasValid(savedConfig.extras);
                 }
                 const nodeValid = validateArray(schema, savedConfig.json);
                 let customValid = true
@@ -88,12 +81,11 @@ export default function TemplateForm({
                 onContentUpdate({
                     ...savedConfig,
                     json: objToReturnValuesToSend(schema, savedConfig.json),
-                });
+                }, nodeValid && extrasValid && customValid);
             },
         }
     );
     const extras = localConfig.extras || {};
-    console.log({ localConfig, parentRef });
     const onValidate = () => { };
     return (
         <div className="space-y-6">
@@ -103,12 +95,9 @@ export default function TemplateForm({
                 fieldValues={localConfig.json}
                 flowZoneSelectedId={selectedNodeId}
                 onFieldChange={(partialState, replace) => {
-                    if (replace) updateNestedConfig(`${"json"}`, partialState);
+                    if (replace) updateNestedConfig(`${"json"}`, partialState, { replace });
                     else
-                        updateNestedConfig(`${"json"}`, {
-                            ...localConfig.json,
-                            ...partialState,
-                        });
+                        updateNestedConfig(`${"json"}`, partialState,);
                 }}
             />
 

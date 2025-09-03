@@ -45,7 +45,7 @@ interface ActiveFlowsProps {
     webhookActive: string
     flowZoneSelectedID: string
     variableName: string
-    onContentUpdate: (key: string, value: any) => void;
+    onContentUpdate: (key: string, value: any, options?: { replace?: boolean }) => void;
 
 }
 
@@ -118,7 +118,7 @@ const ActiveFlows: React.FC<ActiveFlowsProps> = ({
                 onContentUpdate("webhookUrl", process.env.REACT_APP_GET_ELEMENTS_URL + "webhook?u_id=" + userId + "&file=" + flow.value)
 
                 const inputs = flow.inputs
-                onContentUpdate("inputs", inputs)
+                onContentUpdate("inputs", inputs, { replace: true })
 
                 const getKeys = (inputs: Record<string, any>): Record<string, any> => {
                     let inputsWithoutValue: Record<string, any> = {}
@@ -138,7 +138,7 @@ const ActiveFlows: React.FC<ActiveFlowsProps> = ({
                 }
 
                 if (JSON.stringify(inputs) !== "{}") {
-                    onContentUpdate("inputsDescription", getKeys(inputs))
+                    onContentUpdate("inputsDescription", getKeys(inputs), { replace: true })
 
                 } else {
                     onContentUpdate("inputsDescription", null)

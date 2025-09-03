@@ -112,7 +112,7 @@ export function ProjectNameDropdown() {
       <DropdownMenu open={showDropdown} onOpenChange={setShowDropdown}>
         <DropdownMenuTrigger asChild>
           <button className="flex items-center gap-1 font-medium text-foreground hover:text-blue-600 transition-colors rounded px-2 py-1 hover:bg-accent group">
-            <span>{selectedBot.name}</span>
+            <span className="max-w-52 truncate" title={selectedBot.name}>{selectedBot.name}</span>
             <ChevronDown className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" />
           </button>
         </DropdownMenuTrigger>

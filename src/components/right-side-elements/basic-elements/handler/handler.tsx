@@ -40,8 +40,8 @@ export default function HandlerForm({ selectedNodeId, content, onContentUpdate }
       delay: 300,
       onSave: (savedConfig) => {
         // Save label changes
-        updateNodesValidationById(selectedNodeId, checkIfAllRequiredDataIsFilled(savedConfig))
-        onContentUpdate(savedConfig)
+        const valid = checkIfAllRequiredDataIsFilled(savedConfig)
+        onContentUpdate(savedConfig, valid)
 
       },
     },

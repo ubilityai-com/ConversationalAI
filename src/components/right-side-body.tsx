@@ -37,8 +37,9 @@ export default function RightSideBody() {
     (state) => state.updateNodeRightSideData
   );
 
-  const handleRightSideDataUpdate = (value: any) => {
+  const handleRightSideDataUpdate = (value: any,valid:boolean) => {
     updateNodeRightSideData(clickedElement.id, { rightSideData: value });
+    validate(valid);
   };
   useEffect(() => {
     const loadComponent = async () => {

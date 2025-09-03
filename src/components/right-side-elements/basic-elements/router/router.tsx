@@ -56,8 +56,8 @@ export default function RouterForm({ content, onContentUpdate, validate }: NodeC
       delay: 300,
       onSave: (savedConfig) => {
         // Save the entire config at once
-        validate(checkIfAllRequiredDataIsFilled(savedConfig))
-        onContentUpdate(savedConfig)
+        const valid = checkIfAllRequiredDataIsFilled(savedConfig)
+        onContentUpdate(savedConfig, valid)
       },
     },
   )

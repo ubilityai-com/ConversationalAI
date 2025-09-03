@@ -10,7 +10,7 @@ export function Toolbar() {
     return (
         <div className="border-b bg-card">
             <div className="overflow-x-auto">
-                <div className="flex items-center justify-between px-6 py-3 min-w-max">
+                <div className="flex items-center justify-between gap-4 px-6 py-3 min-w-max">
                     {/* Left Section: Logo and Breadcrumb */}
                     <div className="flex items-center gap-6 flex-shrink-0">
                         <ToolbarLogo />
