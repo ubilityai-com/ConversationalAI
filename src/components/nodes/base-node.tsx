@@ -1,14 +1,8 @@
 import React from "react";
 import { Node, NodeProps } from "@xyflow/react";
 import { cn } from "../../lib/utils";
-import { useNodeSelection } from "./hooks/useNodeState";
-import { NodeErrorBoundary } from "./ErrorBoundary";
-import { RunningIndicator } from "./parts/RunningIndicator";
-import { StateIndicator } from "./parts/StateIndicator";
-import { NodeIcon } from "./parts/NodeIcon";
-import { StatusIndicator } from "./parts/StatusIndicator";
-import { NodeHandles } from "./parts/NodeHandles";
-import { NODE_TYPES } from "./constants";
+import { NODE_TYPES, NodeErrorBoundary, NodeHandles, NodeIcon, RunningIndicator, StateIndicator, StatusIndicator, useNodeSelection ,} from "./index";
+
 
 export type BaseNodeData<T = Record<string, any>> = {
   label: string;

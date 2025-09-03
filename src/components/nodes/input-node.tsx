@@ -1,6 +1,6 @@
 import { type Node, type NodeProps } from "@xyflow/react"
 import { Play } from "lucide-react"
-import { BaseNode, type BaseNodeData } from "./base-node"
+import { BaseNode, type BaseNodeData } from "./index"
 
 export function InputNode(props: NodeProps<Node<BaseNodeData>>) {
   const data = props.data

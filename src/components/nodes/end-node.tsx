@@ -3,7 +3,7 @@ import { Handle, Position, type Node, type NodeProps } from "@xyflow/react"
 import { MessageSquare } from "lucide-react"
 import { useState } from "react"
 import { cn } from "../../lib/utils"
-import { BaseNode, type BaseNodeData } from "./base-node"
+import { BaseNode, type BaseNodeData } from "./index"
 import { NodeHandle } from "./node-handle"
 
 export function EndNode(props: NodeProps<Node<BaseNodeData>>) {

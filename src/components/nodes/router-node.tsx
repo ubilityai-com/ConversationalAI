@@ -2,7 +2,7 @@
 import { Node, Position, type NodeProps } from "@xyflow/react";
 import { GitBranch } from "lucide-react";
 import { NodeHandle } from "../handles/handle";
-import { BaseNode } from "./base-node";
+import { BaseNode } from "./index";
 export interface RouterDefaultBranch {
   label: string
   description: string

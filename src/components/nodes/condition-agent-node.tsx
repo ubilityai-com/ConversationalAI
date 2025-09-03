@@ -2,7 +2,7 @@
 import { Node, Position, type NodeProps } from "@xyflow/react";
 import { CheckSquare, GitBranch } from "lucide-react";
 import { NodeHandle } from "../handles/handle";
-import { BaseNode } from "./base-node";
+import { BaseNode } from "./index";
 interface Scenario {
   id: string;
   label: string;

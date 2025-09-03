@@ -1,6 +1,6 @@
 import { Node, NodeProps } from "@xyflow/react"
 import { Bot } from "lucide-react"
-import { BaseNode } from "./base-node"
+import { BaseNode } from "./index"
 
 export function IntegrationNode(props: NodeProps<Node<any>>) {
   const data = props.data

@@ -1,5 +1,5 @@
 import React from "react";
-import { useNodeRunningState } from "../hooks/useNodeRunningState";
+import { useNodeRunningState } from "../index";
 
 interface RunningIndicatorProps {
   id: string;
@@ -8,7 +8,7 @@ interface RunningIndicatorProps {
 
 export const RunningIndicator = React.memo(
   ({ id, isStartNode = false }: RunningIndicatorProps) => {
-    const { isRunning } = useNodeRunningState(id, isStartNode);
+    const { isRunning } = useNodeRunningState(id);
 
     if (!isRunning) return null;
 

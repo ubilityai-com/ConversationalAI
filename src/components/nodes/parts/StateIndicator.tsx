@@ -6,9 +6,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '../../ui/tooltip';
-import { NODE_CONFIG } from '../constants';
-import { useNodeState } from '../hooks/useNodeState';
-import { truncateText } from '../utils/textUtils';
+import { NODE_CONFIG, truncateText, useNodeState } from '../index';
 
 interface StateIndicatorProps {
   id: string;

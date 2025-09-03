@@ -8,7 +8,7 @@ export const useNodeValidation = (id: string) => {
   return useFlowStore((state: FlowState) => state.nodesValidation?.[id]);
 };
 
-export const useWorkflowStatus = (id: string) => {
+export const useNodeRunningState = (id: string) => {
   return useFlowStore((state: FlowState) => ({
     isRunning: state.runningNodeIds.has(id) || false,
     // Add other workflow-related state here

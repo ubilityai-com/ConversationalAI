@@ -1,7 +1,5 @@
 import React, { useMemo } from "react";
-import { useNodeValidation } from "../hooks/useNodeState";
-import { useNodeRunningState } from "../hooks/useNodeRunningState";
-import { getNodeStatus, getStatusColorClass } from "../utils/textUtils";
+import { getNodeStatus, getStatusColorClass, useNodeRunningState, useNodeValidation } from "../index";
 
 interface StatusIndicatorProps {
   id: string;
@@ -11,7 +9,7 @@ interface StatusIndicatorProps {
 export const StatusIndicator = React.memo(
   ({ id, isStartNode = false }: StatusIndicatorProps) => {
     const isNodeValid = useNodeValidation(id);
-    const { isRunning } = useNodeRunningState(id, isStartNode);
+    const { isRunning } = useNodeRunningState(id);
 
     const workflowRunning = false;
     const statusConfig = useMemo(

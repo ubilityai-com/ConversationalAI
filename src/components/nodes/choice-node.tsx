@@ -2,7 +2,7 @@
 import { Node, Position, type NodeProps } from "@xyflow/react";
 import { CheckSquare } from "lucide-react";
 import { NodeHandle } from "../handles/handle";
-import { BaseNode } from "./base-node";
+import { BaseNode } from "./index";
 interface Choice {
   id: string;
   label: string;
