@@ -53,8 +53,8 @@ def slack_send_message(creds,params,**kwargs):
             return response_json
         else:
             raise Exception("Missing input data")
-    except Exception as error:
-        raise Exception(error)
+    except Exception as e:
+        return {"Error": str(e)}
 
 
 def slack_update_message(creds,params,**kwargs):
@@ -97,7 +97,7 @@ def slack_update_message(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_delete_message(creds,params,**kwargs):
@@ -131,7 +131,7 @@ def slack_delete_message(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_get_permalink(creds,params,**kwargs):
@@ -168,7 +168,7 @@ def slack_get_permalink(creds,params,**kwargs):
         else:
             raise  ("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 #############################################################################################################################
@@ -212,7 +212,7 @@ def slack_get_channel(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_get_many_channels(creds,params,**kwargs):
@@ -251,7 +251,7 @@ def slack_get_many_channels(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_create_channel(creds,params,**kwargs):
@@ -286,7 +286,7 @@ def slack_create_channel(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_archive_conversation(creds,params,**kwargs):
@@ -313,7 +313,7 @@ def slack_archive_conversation(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_unarchive_conversation(creds,params,**kwargs):
@@ -340,7 +340,7 @@ def slack_unarchive_conversation(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_rename_conversation(creds,params,**kwargs):
@@ -376,7 +376,7 @@ def slack_rename_conversation(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_get_members(creds,params,**kwargs):
@@ -408,7 +408,7 @@ def slack_get_members(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_leave_conversation(creds,params,**kwargs):
@@ -435,7 +435,7 @@ def slack_leave_conversation(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_join_conversation(creds,params,**kwargs):
@@ -467,7 +467,7 @@ def slack_join_conversation(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_invite_users(creds,params,**kwargs):
@@ -503,7 +503,7 @@ def slack_invite_users(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 #############################################################################################################################
@@ -541,7 +541,7 @@ def slack_get_user(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_get_many_users(creds,params,**kwargs):
@@ -571,7 +571,7 @@ def slack_get_many_users(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_get_user_status(creds,params,**kwargs):
@@ -603,7 +603,7 @@ def slack_get_user_status(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 #############################################################################################################################
@@ -660,7 +660,7 @@ def slack_get_file(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
     
 
 def slack_get_many_files(creds,params,**kwargs):
@@ -705,7 +705,7 @@ def slack_get_many_files(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_upload_file(creds,params,**kwargs):
@@ -773,7 +773,7 @@ def slack_upload_file(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 #############################################################################################################################
@@ -815,7 +815,7 @@ def slack_get_userGroups(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_create_userGroup(creds,params,**kwargs):
@@ -854,7 +854,7 @@ def slack_create_userGroup(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_update_userGroup(creds,params,**kwargs):
@@ -894,7 +894,7 @@ def slack_update_userGroup(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_enable_userGroup(creds,params,**kwargs):
@@ -930,7 +930,7 @@ def slack_enable_userGroup(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def slack_disable_userGroup(creds,params,**kwargs):
@@ -966,7 +966,7 @@ def slack_disable_userGroup(creds,params,**kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
     
 
 operations = {
