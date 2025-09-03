@@ -15,7 +15,7 @@ export default function getContent(node: { id: string, data: { rightSideData: Ri
         type: "Attachement",
         content: content,
         next: getNextNodeId(node.id, params.edges, params.nodes, null),
-        saveUserInputAs: data.save ? data.variableName : null,
+        saveUserInputAs: data.method === "receive" ? data.variableName : null,
         usedVariables: stringifyAndExtractVariables(content),
     };
 }

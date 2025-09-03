@@ -7,11 +7,9 @@ import { FieldWrapper } from "../../../custom/field-wrapper"
 import { Input } from "../../../ui/input"
 import { Label } from "../../../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../ui/select"
-import { Switch } from "../../../ui/switch"
 
 export interface RightSideData {
     method: string;
-    save?: boolean;
     variableName?: string;
     fileContent: string
     message: string
@@ -25,10 +23,8 @@ function checkIfAllRequiredDataIsFilled(data?: RightSideData): boolean {
     }
 
     if (data.method === "receive") {
-        if (!data.message) return false;
-        if (data.save && !data.variableName) return false;
+        if (!data.message || !data.variableName) return false;
     }
-
     return true;
 }
 
@@ -127,40 +123,31 @@ export default function AttachmentForm({
                             className="h-8 text-xs"
                         />
                     </FieldWrapper>
-                    <div className="flex items-center space-x-2 mx-2 mt-4">
-                        <Switch
-                            checked={localConfig.save || false}
-                            onCheckedChange={(checked) => {
-                                updateNestedConfig("save", checked);
-                            }}
-                            id="save-switch"
-                        />
-                        <Label htmlFor="save-switch" className="text-xs font-normal">
-                            Save user's reply in a variable
+                    <div className="mt-2">
+                        <Label className="text-xs">
+                            Save user file as variable
                         </Label>
+                        <FieldWrapper
+                            field={{ type: "textfield" }}
+                            variableName={`variableName}`}
+                            value={localConfig.variableName || ""}
+                            onChange={(e) => updateNestedConfig("variableName", e)}
+                            className="h-8 text-xs"
+                        >
+                            <Input
+                                name="variableName"
+                                value={localConfig.variableName || ""}
+                                onChange={(event) => {
+                                    // Clear previous timeout (if any)
+                                    debounceAttachVariable(event.target.value)
+                                    updateNestedConfig("variableName", event.target.value);
+                                }}
+                            />
+                        </FieldWrapper>
                     </div>
                 </div>
 
             }
-
-
-            {localConfig.method === "receive" && localConfig.save && (
-                <div>
-                    <Label className="block text-sm mb-1 font-normal">
-                        Variable Name
-                    </Label>
-                    <Input
-                        name="variableName"
-                        placeholder="Variable Name"
-                        value={localConfig.variableName || ""}
-                        onChange={(event) => {
-                            // Clear previous timeout (if any)
-                            debounceAttachVariable(event.target.value)
-                            updateNestedConfig("variableName", event.target.value);
-                        }}
-                    />
-                </div>
-            )}
 
         </div>
     );

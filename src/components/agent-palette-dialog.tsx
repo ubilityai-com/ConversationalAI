@@ -74,7 +74,6 @@ const agentTypes = [
       method: "send",
       fileContent: "",
       message: "please upload your file",
-      save: false,
       variableName: ""
     }
   },
