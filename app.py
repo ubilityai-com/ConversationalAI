@@ -57,7 +57,7 @@ from applications.routes import *
 from routes.files_view import *
 
 # Socket.IO ASGI server
-sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi')
+sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi',max_http_buffer_size=10*1024*1024)
 app = socketio.ASGIApp(sio, other_asgi_app=http_app)
 
 # ---------------------------
