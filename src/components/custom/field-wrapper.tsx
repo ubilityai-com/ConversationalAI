@@ -198,8 +198,8 @@ export function FieldWrapper({
 
   const inputWithoutVariables = () => (
     <div className={`flex items-center gap-2 ${className}`}>
-      <div className="flex-1">{children}
-      {inlineLabel&&  <Label className="text-sm font-medium">
+      <div className={`flex-1`}>{children}
+      {inlineLabel&&  <Label className="text-sm font-medium ml-2">
             {field.label}
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </Label>}
