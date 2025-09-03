@@ -45,7 +45,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         return
 
     current_dialogue = dialogue.get(current_step, {})
-    wait_for_user = current_dialogue.get('saveUserInputAs')
+    wait_for_user = None if current_step == 'firstElementId' else current_dialogue.get('saveUserInputAs')
     element_type = 'Greet' if current_step == 'firstElementId' else current_dialogue.get('type')
     credentials = active_dialogues[conversation['dialogue_id']]["credentials"]
     state = active_dialogues[conversation['dialogue_id']].get('state', None)
