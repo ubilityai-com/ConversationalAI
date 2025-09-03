@@ -60,8 +60,8 @@ export default function AttachmentForm({
     }
     return (
         <div className="space-y-2">
-            <div>
-                <Label htmlFor={`method`} className="text-xs">
+            <div className="space-y-2">
+                <Label htmlFor={`method`} className="text-sm font-medium">
                     Operation
                 </Label>
                 <Select
@@ -71,7 +71,7 @@ export default function AttachmentForm({
                     }
                     }
                 >
-                    <SelectTrigger className="h-8 text-xs">
+                    <SelectTrigger className="h-8 ">
                         <SelectValue placeholder="Type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -82,8 +82,8 @@ export default function AttachmentForm({
             </div>
             {
                 localConfig.method === "send" &&
-                <div>
-                    <Label htmlFor={`fileContent`} className="text-xs">
+                <div className="space-y-2">
+                    <Label htmlFor={`fileContent`} className="text-sm font-medium">
                         file content
                     </Label>
                     <FieldWrapper
@@ -105,8 +105,8 @@ export default function AttachmentForm({
             }
             {
                 localConfig.method === "receive" &&
-                <div>
-                    <Label htmlFor={`message`} className="text-xs">
+                <div className="space-y-2">
+                    <Label htmlFor={`message`} className="text-sm font-medium">
                         Message
                     </Label>
                     <FieldWrapper
@@ -123,8 +123,8 @@ export default function AttachmentForm({
                             className="h-8 text-xs"
                         />
                     </FieldWrapper>
-                    <div className="mt-2">
-                        <Label className="text-xs">
+                    <div className="mt-2 space-y-2">
+                        <Label className="text-sm font-medium">
                             Save user file as variable
                         </Label>
                         <FieldWrapper
