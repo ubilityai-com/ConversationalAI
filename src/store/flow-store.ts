@@ -83,31 +83,6 @@ export interface FlowState extends SlicesStates {
   deleteNodesValidationById: (nodeId: string) => void;
   updateNodesValidationById: (nodeId: string, valid: boolean) => void;
 
-  subNodesValidation: SubNodesValidation;
-
-  // Set the entire validation object
-  setSubNodesValidation: (data: SubNodesValidation) => void;
-
-  // Add or update a sub-node validation
-  addSubNodeValidation: (
-    parentId: string,
-    subId: string,
-    valid: boolean
-  ) => void;
-
-  // Delete all validation under a parent node
-  deleteSubNodesValidationById: (parentId: string) => void;
-
-  // Delete a specific sub-node only
-  deleteSubNodeById: (parentId: string, subId: string) => void;
-
-  // Update a sub-node validation
-  updateSubNodeValidationById: (
-    parentId: string,
-    subId: string,
-    valid: boolean
-  ) => void;
-
   applyEdgeChangesFunc: (changes: any) => void;
   deleteNode: (id: string) => void;
   duplicateNode: (id: string) => void;
@@ -460,59 +435,6 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
       nodesValidation: { ...state.nodesValidation, [nodeId]: valid },
     }));
   },
-  subNodesValidation: {},
-
-  setSubNodesValidation: (data) => set({ subNodesValidation: data }),
-
-  addSubNodeValidation: (parentId, subId, valid) =>
-    set((state) => {
-      console.trace({ parentId });
-
-      const existing = state.subNodesValidation[parentId] || {
-        valid: true,
-        subs: {},
-      };
-      const newSubs = { ...existing.subs, [subId]: valid };
-      const parentValid = Object.values(newSubs).every(Boolean);
-      return {
-        subNodesValidation: {
-          ...state.subNodesValidation,
-          [parentId]: {
-            valid: parentValid,
-            subs: newSubs,
-          },
-        },
-      };
-    }),
-
-  deleteSubNodesValidationById: (parentId) =>
-    set((state) => {
-      const updated = { ...state.subNodesValidation };
-      delete updated[parentId];
-      return { subNodesValidation: updated };
-    }),
-
-  deleteSubNodeById: (parentId, subId) =>
-    set((state) => {
-      const existing = state.subNodesValidation[parentId];
-      if (!existing) return {};
-      const newSubs = { ...existing.subs };
-      delete newSubs[subId];
-      const parentValid = Object.values(newSubs).every(Boolean);
-      return {
-        subNodesValidation: {
-          ...state.subNodesValidation,
-          [parentId]: {
-            valid: parentValid,
-            subs: newSubs,
-          },
-        },
-      };
-    }),
-
-  updateSubNodeValidationById: (parentId, subId, valid) =>
-    // same as addSubNodeValidation
-    get().addSubNodeValidation(parentId, subId, valid),
   applyEdgeChangesFunc: (changes) =>
     set((state) => ({
       edges: applyEdgeChanges(changes, state.edges),

@@ -428,7 +428,7 @@ export interface NodeConfigProps<T=Record<string,any>> {
   schema: any[];
   ai: boolean;
   content: T;
-  onContentUpdate: (value: any) => void;
+  onContentUpdate: (value: any,valid:boolean) => void;
   validate: (isValid: boolean) => void;
   CustomComponent?: React.ComponentType<CustomComponentProps>;
   customValidate?:(val:any)=>boolean

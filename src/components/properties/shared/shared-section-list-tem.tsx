@@ -2,7 +2,6 @@
 
 import { ComponentType, useEffect, useState } from "react";
 import { camelToDashCase } from "../../../lib/utils";
-import { useFlowStore } from "../../../store/flow-store";
 
 interface SectionProps {
   content: any;
@@ -12,7 +11,7 @@ interface SectionProps {
   schema: any;
   path: string;
   parentId: string;
-  validators:any
+  validators: any
 }
 
 export function SharedListItemSection({
@@ -26,21 +25,17 @@ export function SharedListItemSection({
   validators
 }: SectionProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const updateSubNodeValidationById = useFlowStore(
-    (s) => s.updateSubNodeValidationById
-  );
 
   const [Component, setComponent] = useState<ComponentType<any> | null>(null);
   const [CustomComponent, setCustomComponent] =
     useState<ComponentType<any> | null>(null);
   const [customValidate, setCustomValidate] =
     useState<(val: any) => boolean>();
-  const onContentUpdate = (value: any) => {
-    onConfigUpdate(`${path}`, value);
+  const onContentUpdate = (value: any, valid: boolean) => {
+    onConfigUpdate(`${path}`, { content: value, valid });
   };
 
   const validate = (valid: boolean) => {
-    updateSubNodeValidationById(parentId, id, valid);
   };
 
   useEffect(() => {
@@ -84,7 +79,7 @@ export function SharedListItemSection({
       {Component && !isLoading && (
         <Component
           selectedNodeId={parentId}
-          contentPath={path}
+          contentPath={`${path}.content`}
           validators={validators}
           schema={schema.rightSideData.json}
           content={content}

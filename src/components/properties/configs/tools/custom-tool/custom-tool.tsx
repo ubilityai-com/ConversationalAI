@@ -14,7 +14,7 @@ interface CustomToolProps {
   onContentUpdate: (value: any) => void;
   validate: (value: any) => boolean;
   counter: number
-  validators:any
+  validators: any
 
 }
 const checkIfKeysValuesFilled = (inputs: Record<string, any>): boolean => {
@@ -32,8 +32,8 @@ const checkIfKeysValuesFilled = (inputs: Record<string, any>): boolean => {
   return valid
 }
 
-const CustomTool: React.FC<CustomToolProps> = ({ selectedNodeId, content, onContentUpdate, validate, schema,validators }) => {
-  const { localConfig, updateConfig,updateNestedConfig } =
+const CustomTool: React.FC<CustomToolProps> = ({ selectedNodeId, content, onContentUpdate, validate, schema, validators }) => {
+  const { localConfig, updateConfig, updateNestedConfig } =
     useDebounceConfig<any>(
       content,
       {
@@ -46,7 +46,7 @@ const CustomTool: React.FC<CustomToolProps> = ({ selectedNodeId, content, onCont
         },
       }
     );
-   
+
   const inputsDescription = localConfig.inputsDescription
   const webhookActive = localConfig.webhookActive
   const json = localConfig.json
@@ -64,13 +64,10 @@ const CustomTool: React.FC<CustomToolProps> = ({ selectedNodeId, content, onCont
         flowZoneSelectedId={selectedNodeId}
         onFieldChange={(partialState, replace) => {
 
-          if (replace) updateNestedConfig("json",partialState);
+          if (replace) updateNestedConfig("json", partialState, { replace });
           else
-          updateNestedConfig("json",{
-                  ...localConfig.json,
-                  ...partialState,
-              });
-      }}
+            updateNestedConfig("json", partialState);
+        }}
         fieldValues={json}
         path="json"
 

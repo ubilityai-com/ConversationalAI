@@ -77,10 +77,8 @@ export default function MessageForm({
     delay: 300,
     onSave: (savedConfig) => {
       // Save label changes
-      validate(
-        checkIfAllRequiredDataIsFilled(savedConfig)
-      );
-      onContentUpdate(savedConfig);
+      const valid = checkIfAllRequiredDataIsFilled(savedConfig);
+      onContentUpdate(savedConfig, valid);
     },
   });
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);

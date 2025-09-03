@@ -89,10 +89,6 @@ export default function AutomationSimple({
   firstCall,
   ...restProps
 }: AutomationSimpleProps) {
-
-  const setValidationByKey = useRightDrawerStore(
-    (state) => state.setValidationByKey
-  );
   // Helper function to get field value from props or item
   const getFieldValue = (item: any, fieldName = "value") => {
     if (

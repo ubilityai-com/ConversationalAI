@@ -12,7 +12,7 @@ import { Label } from "../../ui/label"
 import { Switch } from "../../ui/switch"
 interface SectionProps {
     config: any
-    onConfigUpdate: (key: string, value: any) => void
+    onConfigUpdate: (key: string, value: any, options?: { replace?: boolean }) => void
     id: string
     defaultType: string
     title: string
@@ -35,19 +35,15 @@ export function SharedSection({
     elements,
     validators
 }: SectionProps) {
-    const setNodeFilledDataByKey = useRightDrawerStore((state) => state.setNodeFilledDataByKey)
-    const { localConfig, updateConfig, updateNestedConfig } =
+    const { localConfig, updateNestedConfig } =
         useDebounceConfig<any>(
             config.content,
             {
                 delay: 300,
                 onSave: (savedConfig) => {
                     // Save label changes   
-                    onConfigUpdate(`extras.${variableName}.content`, savedConfig);
+                    onConfigUpdate(`extras.${variableName}`, { content: savedConfig, valid: validateArray(schema.current.rightSideData.json, savedConfig.json) });
                     console.log({ id, variableName, schema, savedConfig, valid: validateArray(schema.current.rightSideData.json, savedConfig.json) });
-
-                    updateSubNodeValidationById(id, variableName, validateArray(schema.current.rightSideData.json, savedConfig.json))
-                    setNodeFilledDataByKey(id, variableName, savedConfig.json)
                 },
             }
         );
@@ -56,8 +52,6 @@ export function SharedSection({
     const optional = config.optional || false
     const content = localConfig || {}
     const json = content.json
-    const add = useFlowStore((s) => s.addSubNodeValidation)
-    const updateSubNodeValidationById = useFlowStore((s) => s.updateSubNodeValidationById)
     const schema = useRef(getSchema(type, elements));
 
     const [open, setOpen] = useState(!optional || enabled)
@@ -115,10 +109,8 @@ export function SharedSection({
                                     const defaultValues = objToReturnDynamicv2(op.rightSideData.json);
                                     schema.current = op;
                                     onConfigUpdate(`extras.${variableName}.type`, value);
-                                    console.log({defaultValues});
-                                    
-                                    setTimeout(() => updateNestedConfig("json", defaultValues), 1000);
-                                    add(id, variableName, validateArray(op.rightSideData.json, defaultValues));
+                                    console.log({ defaultValues });
+                                    setTimeout(() => updateNestedConfig("json", defaultValues, { replace: true }), 1000);
                                 }}
                                 options={elements.map((el) => ({
                                     label: el.label,
@@ -136,8 +128,8 @@ export function SharedSection({
                                 fieldValues={json}
                                 firstCall={true}
                                 onFieldChange={(partialState, replace) => {
-                                    if (replace) updateNestedConfig("json", partialState);
-                                    else updateNestedConfig("json", { ...json, ...partialState });
+                                    if (replace) updateNestedConfig("json", partialState, { replace });
+                                    else updateNestedConfig("json", partialState);
                                 }}
                             />
                         )}

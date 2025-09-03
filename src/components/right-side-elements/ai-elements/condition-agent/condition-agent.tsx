@@ -3,6 +3,7 @@ import { ListChecks, Plus, Trash2 } from "lucide-react";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
 import { useFlowStore } from "../../../../store/flow-store";
 import { NodeConfigProps } from "../../../../types/automation-types";
+import { isExtrasValid } from "../../../automated-template";
 import { FieldWrapper } from "../../../custom/field-wrapper";
 import { DynamicElementLoader } from "../../../properties/shared/DynamicElementLoader";
 import { Button } from "../../../ui/button";
@@ -54,21 +55,14 @@ function checkIfAllRequiredDataIsFilled(data: RightSideData): boolean {
   return true;
 }
 export default function ConditionAgentForm({ content, onContentUpdate, selectedNodeId, validate }: NodeConfigProps<RightSideData>) {
-  const updateNodesValidationById = useFlowStore(
-    (state) => state.updateNodesValidationById
-  );
   const { localConfig, updateNestedConfig } = useDebounceConfig<
     LLMConfigProps["rightSideData"]
   >(content, {
     delay: 300,
     onSave: (savedConfig) => {
       // Save label changes
-      const subNodesValidation = useFlowStore.getState().subNodesValidation;
-      const subsValid = subNodesValidation[selectedNodeId]?.valid;
-      validate(
-        checkIfAllRequiredDataIsFilled(savedConfig) && subsValid
-      );
-      onContentUpdate(savedConfig);
+      const valid = checkIfAllRequiredDataIsFilled(savedConfig) && isExtrasValid(savedConfig.extras);
+      onContentUpdate(savedConfig, valid);
     },
   });
 
