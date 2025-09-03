@@ -214,6 +214,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
             greet: "",
             cancel: "",
             start: false,
+            save: false,
             variableName: ""
           },
         },

@@ -10,6 +10,7 @@ interface Config {
   greet?: string;
   cancel?: string;
   start: boolean;
+  save?: boolean;
   variableName?: string
 }
 
@@ -21,7 +22,7 @@ function checkIfAllRequiredDataIsFilled(data: Config): boolean {
   if (!data.greet || !data.cancel) {
     return false;
   }
-  if (data.start && !data.variableName) {
+  if (data.start && data.save && !data.variableName) {
     return false;
   }
 
@@ -104,7 +105,19 @@ export default function HandlerForm({ selectedNodeId, content, onContentUpdate }
           Let the user start the diaolg
         </Label>
       </div>
-      {localConfig.start && (
+      {localConfig.start && <div className="flex items-center space-x-2 mx-2 mb-2">
+        <Switch
+          checked={localConfig.save || false}
+          onCheckedChange={(checked) => {
+            updateNestedConfig("save", checked);
+          }}
+          id="save-switch"
+        />
+        <Label htmlFor="save-switch" className="text-xs font-normal">
+          Save user's reply in a variable
+        </Label>
+      </div>}
+      {localConfig.save && localConfig.start && (
         <div>
           <Label className="block text-sm mb-1 font-normal">
             Variable Name

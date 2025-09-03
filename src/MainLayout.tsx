@@ -70,6 +70,7 @@ export default function MainLayout() {
                         greet: "",
                         cancel: "",
                         start: false,
+                        save: false,
                         variableName: ""
                     },
                 },

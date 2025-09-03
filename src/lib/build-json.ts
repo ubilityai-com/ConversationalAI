@@ -31,16 +31,15 @@ export function createFlowObject(): Flow {
     };
 
     nodes.forEach((element: Node & { data: any }) => {
-        console.log({ element });
 
         if (element.type === "Handler") {
-            const { greet, cancel, start, variableName } = element.data.rightSideData;
+            const { greet, cancel, start, variableName, save } = element.data.rightSideData;
             flow.bot.firstElementId = {
                 next: getNextNodeId(element.id, edges, nodes, null),
                 start: !start,
                 greet,
                 cancel,
-                saveUserInputAs: start ? variableName : null,
+                saveUserInputAs: start && save ? variableName : null,
             };
         }
         else if (element.type === "StickyNote") {
