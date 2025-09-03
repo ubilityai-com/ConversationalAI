@@ -185,6 +185,8 @@ async def message(sid, data):
     # Save input and continue process
     if conversation.get('wait_for_user_input') and data_type != "binary":
         save_user_input(conversation, user_input)
+        if conversation['current_step'] == 'firstElementId':
+            dialogue['firstElementId']['saveUserInputAs'] = None
 
     # Save input file and continue process
     if conversation.get('wait_for_user_input') and data_type == "binary":
