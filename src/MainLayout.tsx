@@ -68,11 +68,9 @@ export default function MainLayout() {
                     icon: "PlayArrow",
                     rightSideData: {
                         greet: "",
-                        restart: "",
-                        thankYou: "",
                         cancel: "",
                         start: false,
-                        bye: "",
+                        variableName: ""
                     },
                 },
                 position: { x: 400, y: 40 },

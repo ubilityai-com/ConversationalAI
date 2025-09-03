@@ -1,3 +1,4 @@
+import { useRef } from "react"
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
 import { useFlowStore } from "../../../../store/flow-store"
 import { NodeConfigProps } from "../../../../types/automation-types"
@@ -9,6 +10,7 @@ interface Config {
   greet?: string;
   cancel?: string;
   start: boolean;
+  variableName?: string
 }
 
 
@@ -19,6 +21,9 @@ function checkIfAllRequiredDataIsFilled(data: Config): boolean {
   if (!data.greet || !data.cancel) {
     return false;
   }
+  if (data.start && !data.variableName) {
+    return false;
+  }
 
   return true;
 }
@@ -26,6 +31,7 @@ function checkIfAllRequiredDataIsFilled(data: Config): boolean {
 export default function HandlerForm({ selectedNodeId, content, onContentUpdate }: NodeConfigProps<Config>) {
 
   const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
+  const updateDialogueVariable = useFlowStore((state) => state.updateDialogueVariable);
 
   const { localConfig, updateNestedConfig } = useDebounceConfig<Config>(
     content,
@@ -39,7 +45,17 @@ export default function HandlerForm({ selectedNodeId, content, onContentUpdate }
       },
     },
   )
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const debounceHandlerVariable = (value: string) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    // Set new timeout
+    timeoutRef.current = setTimeout(() => {
+      updateDialogueVariable(selectedNodeId, value);
+    }, 1000);
+  }
   return (
     <div className="space-y-4">
 
@@ -88,6 +104,22 @@ export default function HandlerForm({ selectedNodeId, content, onContentUpdate }
           Let the user start the diaolg
         </Label>
       </div>
+      {localConfig.start && (
+        <div>
+          <Label className="block text-sm mb-1 font-normal">
+            Variable Name
+          </Label>
+          <Input
+            name="variableName"
+            placeholder="Variable Name"
+            value={localConfig.variableName || ""}
+            onChange={(event) => {
+              debounceHandlerVariable(event.target.value)
+              updateNestedConfig("variableName", event.target.value);
+            }}
+          />
+        </div>
+      )}
     </div>
   )
 }

@@ -46,7 +46,7 @@ export interface FlowState extends SlicesStates {
   setFocusedField: (field: string | null) => void;
   blurTimeoutRef: NodeJS.Timeout | null;
   setBlurTimeoutRef: (timeout: NodeJS.Timeout | null) => void;
- 
+
   variablesPickerVisible: boolean;
   selectedOutputOrVariable: string | null;
   setSelectedOutputOrVariable: (name: string | null) => void;
@@ -212,11 +212,9 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
           icon: "PlayArrow",
           rightSideData: {
             greet: "",
-            restart: "",
-            thankYou: "",
             cancel: "",
             start: false,
-            bye: "",
+            variableName: ""
           },
         },
         position: { x: 400, y: 40 },
@@ -577,7 +575,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
       return { nodes: [...state.nodes, cloned] };
     });
   },
- 
+
 
   // UI state
 

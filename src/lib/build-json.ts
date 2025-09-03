@@ -34,12 +34,13 @@ export function createFlowObject(): Flow {
         console.log({ element });
 
         if (element.type === "Handler") {
-            const { greet, cancel, start } = element.data.rightSideData;
+            const { greet, cancel, start, variableName } = element.data.rightSideData;
             flow.bot.firstElementId = {
                 next: getNextNodeId(element.id, edges, nodes, null),
                 start: !start,
                 greet,
                 cancel,
+                saveUserInputAs: start ? variableName : null,
             };
         }
         else if (element.type === "StickyNote") {
