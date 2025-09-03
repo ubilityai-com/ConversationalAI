@@ -44,7 +44,7 @@ def create_service(access_token, API_SERVICE_NAME="drive", API_VERSION="v3"):
         return service
     except Exception as e:
         raise Exception(
-            f'Failed to create service instance for {API_SERVICE_NAME}')
+            f'Failed to create service instance for {API_SERVICE_NAME} with error {str(e)}')
 
 def create_token(cred):
     try:
@@ -87,7 +87,7 @@ def googledrive_create_folder(json_cred, params, **kwargs):
             response = service.files().create(**data).execute()
             return response
     except Exception as e:
-        raise Exception(str(e))
+        return {"Error": str(e)}
       
 def googledrive_delete_file(json_cred, params, **kwargs):
     """
@@ -119,7 +119,7 @@ def googledrive_delete_file(json_cred, params, **kwargs):
                 response = service.files().delete(**data).execute()
                 return {"Message": "Item deleted successfully"}
     except Exception as e:
-        raise Exception(str(e))
+        return {"Error": str(e)}
     
 def googledrive_share_file(json_cred, params, **kwargs):
     """
@@ -154,9 +154,9 @@ def googledrive_share_file(json_cred, params, **kwargs):
                     data[key] = value
             service = create_service(access_token,'drive', 'v3')
             response = service.permissions().create(**data).execute()
-            return response 
+            return response
     except Exception as e:
-        raise Exception(str(e))
+        return {"Error": str(e)}
     
 def googledrive_copy_file(json_cred, params, **kwargs):
     """
@@ -184,9 +184,9 @@ def googledrive_copy_file(json_cred, params, **kwargs):
                     data[key] = value
             service = create_service(access_token,'drive', 'v3')
             response = service.files().copy(**data).execute()
-            return response 
+            return response
     except Exception as e:
-        raise Exception(str(e))
+        return {"Error": str(e)}
        
 def googledrive_move_file(json_cred, params, **kwargs):
     """
@@ -211,9 +211,9 @@ def googledrive_move_file(json_cred, params, **kwargs):
                     data[key] = value
             service = create_service(access_token,'drive', 'v3')
             response = service.files().update(**data).execute()
-            return response 
+            return response
     except Exception as e:
-        raise Exception(str(e))
+        return {"Error": str(e)}
 
 def googledrive_create_file_text(json_cred, params, **kwargs):
     """
@@ -253,7 +253,7 @@ def googledrive_create_file_text(json_cred, params, **kwargs):
             response = service.files().create(**data,media_body=media).execute()
             return response
     except Exception as e:
-        raise Exception(str(e))    
+        return {"Error": str(e)}
 
 def googledrive_upload_file(json_cred, params, **kwargs):
     """
@@ -320,7 +320,7 @@ def googledrive_upload_file(json_cred, params, **kwargs):
         else:
             raise Exception("Missing 'data' or 'url' key in input.")
     except Exception as e:
-        raise Exception(str(e))
+        return {"Error": str(e)}
     
 
 def googledrive_update_file(json_cred, params, **kwargs):
@@ -358,7 +358,7 @@ def googledrive_update_file(json_cred, params, **kwargs):
             response = service.files().update(fileId=data['fileId'],body=data['body'],media_body=media).execute()
             return response
     except Exception as e:
-        raise Exception(str(e))
+        return {"Error": str(e)}
        
 def googledrive_get_many_files(json_cred, params, **kwargs):
     """
@@ -425,7 +425,7 @@ def googledrive_get_many_files(json_cred, params, **kwargs):
                 files = service.files().list(**data2,q=query).execute()
             return files
     except Exception as e:
-        raise Exception(str(e))
+        return {"Error": str(e)}
 
 def googledrive_get_many_folders(json_cred, params, **kwargs):
     """
@@ -482,7 +482,7 @@ def googledrive_get_many_folders(json_cred, params, **kwargs):
                 files = service.files().list(**data2,q=query).execute()
             return files
     except Exception as e:
-        raise Exception(str(e))    
+        return {"Error": str(e)}
     
 def googledrive_get_file(json_cred, params, **kwargs):
     """
@@ -549,7 +549,7 @@ def googledrive_get_file(json_cred, params, **kwargs):
         else:
             raise Exception("Missing input data")
     except Exception as e:
-        raise Exception(str(e))
+        return {"Error": str(e)}
 
 
 

@@ -70,7 +70,9 @@ async def outlook_get_many_contacts(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -99,7 +101,9 @@ async def outlook_get_contact(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -127,7 +131,9 @@ async def outlook_create_contact(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -167,7 +173,9 @@ async def outlook_update_contact(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -198,7 +206,9 @@ async def outlook_delete_contact(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 ########################################## calendar ##########################################
 
@@ -239,7 +249,9 @@ async def outlook_get_many_calendars(json_cred, params, **kwargs):
             return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -267,7 +279,9 @@ async def outlook_get_calendar(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -311,7 +325,9 @@ async def outlook_create_calendar(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -350,7 +366,9 @@ async def outlook_update_calendar(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -379,7 +397,9 @@ async def outlook_delete_calendar(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 ########################################## folder ##########################################
 
@@ -419,7 +439,9 @@ async def outlook_get_many_folders(json_cred, params, **kwargs):
             return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
  
 
 async def outlook_get_folder(json_cred, params, **kwargs):
@@ -449,7 +471,9 @@ async def outlook_get_folder(json_cred, params, **kwargs):
             return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 async def outlook_create_folder(json_cred, params, **kwargs):
@@ -478,7 +502,9 @@ async def outlook_create_folder(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -517,7 +543,9 @@ async def outlook_update_folder(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -546,7 +574,9 @@ async def outlook_delete_folder(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
         
 
@@ -590,7 +620,9 @@ async def outlook_get_many_folder_messages(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
           
              
             
@@ -635,7 +667,9 @@ async def outlook_get_many_message(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 async def outlook_get_message(json_cred, params, **kwargs):
@@ -665,7 +699,9 @@ async def outlook_get_message(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -693,7 +729,9 @@ async def outlook_delete_message(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
             
 
 
@@ -731,7 +769,9 @@ async def outlook_move_message(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
         
 
 
@@ -834,7 +874,9 @@ async def outlook_reply_message(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 async def outlook_send_message(json_cred, params, **kwargs):
@@ -946,7 +988,9 @@ async def outlook_send_message(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 ##########################################  event ##########################################
@@ -977,7 +1021,9 @@ async def outlook_get_event(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
     
 
 
@@ -1006,7 +1052,9 @@ async def outlook_delete_event(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}  
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -1046,7 +1094,9 @@ async def outlook_get_many_event(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)} 
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 
 
@@ -1095,7 +1145,9 @@ async def outlook_create_event(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
     
 
 
@@ -1149,7 +1201,9 @@ async def outlook_update_event(json_cred,params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 ##########################################  message attachment ##########################################
 
@@ -1190,7 +1244,9 @@ async def outlook_get_many_message_attachment(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
 
 async def outlook_get_message_attachment(json_cred, params, **kwargs):
     """
@@ -1241,7 +1297,9 @@ async def outlook_get_message_attachment(json_cred, params, **kwargs):
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
-      return {"Error": str(e)}
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
         
            
 operations = {

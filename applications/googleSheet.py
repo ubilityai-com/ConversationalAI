@@ -88,8 +88,8 @@ def googleSheet_create_spreadsheet(json_cred, params, **kwargs):
         else:
             raise SyntaxError("Missing input data")
 
-    except Exception as error:
-        raise SyntaxError(error)
+    except Exception as e:
+        return {"Error": str(e)}
 
 
 def googleSheet_delete_spreadsheet(json_cred, params, **kwargs):
@@ -118,8 +118,8 @@ def googleSheet_delete_spreadsheet(json_cred, params, **kwargs):
         else:
             raise SyntaxError("Missing input data")
 
-    except Exception as error:
-        raise Exception(error)
+    except Exception as e:
+        return {"Error": str(e)}
 
 
 def googleSheet_get_spreadsheet(json_cred, params, **kwargs):
@@ -148,8 +148,8 @@ def googleSheet_get_spreadsheet(json_cred, params, **kwargs):
         else:
             raise SyntaxError("Missing input data")
 
-    except Exception as error:
-        raise Exception(error)
+    except Exception as e:
+        return {"Error": str(e)}
 
 
 def googleSheet_list_spreadsheets(json_cred, params, **kwargs):
@@ -172,8 +172,8 @@ def googleSheet_list_spreadsheets(json_cred, params, **kwargs):
         results = drive_service.files().list(q=query).execute()
         return results
 
-    except Exception as error:
-        raise Exception(error)
+    except Exception as e:
+        return {"Error": str(e)}
 
 
 #############################################################################################################################
@@ -241,8 +241,8 @@ def googleSheet_create_sheet(json_cred, params, **kwargs):
         else:
             raise SyntaxError("Missing input data")
 
-    except Exception as error:
-        raise Exception(error)
+    except Exception as e:
+        return {"Error": str(e)}
 
 
 def googleSheet_append_data_to_sheet(json_cred, params, **kwargs):
@@ -285,8 +285,8 @@ def googleSheet_append_data_to_sheet(json_cred, params, **kwargs):
         else:
             raise SyntaxError("Missing input data")
         
-    except Exception as error:
-        raise Exception(error)
+    except Exception as e:
+        return {"Error": str(e)}
 
 
 def googleSheet_update_rows_in_sheet(json_cred, params, **kwargs):
@@ -330,8 +330,8 @@ def googleSheet_update_rows_in_sheet(json_cred, params, **kwargs):
         else:
             raise SyntaxError("Missing input data")
         
-    except Exception as error:
-        raise Exception(error)
+    except Exception as e:
+        return {"Error": str(e)}
 
 
 def googleSheet_read_rows_in_sheet(json_cred, params, **kwargs):
@@ -378,8 +378,8 @@ def googleSheet_read_rows_in_sheet(json_cred, params, **kwargs):
         else:
             raise SyntaxError("Missing input data")
         
-    except Exception as error:
-        raise Exception(error)
+    except Exception as e:
+        return {"Error": str(e)}
 
 
 def googleSheet_delete_ColOrRow_from_sheet(json_cred, params, **kwargs):
@@ -435,8 +435,8 @@ def googleSheet_delete_ColOrRow_from_sheet(json_cred, params, **kwargs):
         else:
             raise SyntaxError("Missing input data")
 
-    except Exception as error:
-        raise Exception(error)
+    except Exception as e:
+        return {"Error": str(e)}
 
 
 def googleSheet_remove_sheet(json_cred, params, **kwargs):
@@ -486,8 +486,8 @@ def googleSheet_remove_sheet(json_cred, params, **kwargs):
         else:
             raise SyntaxError("Missing input data")
 
-    except Exception as error:
-        raise Exception(error)
+    except Exception as e:
+        return {"Error": str(e)}
 
 
 def googleSheet_clear_data_from_sheet(json_cred, params, **kwargs):
@@ -529,8 +529,8 @@ def googleSheet_clear_data_from_sheet(json_cred, params, **kwargs):
         else:
             raise SyntaxError("Missing input data")
         
-    except Exception as error:
-        raise Exception(error)
+    except Exception as e:
+        return {"Error": str(e)}
 
 
 
