@@ -1,4 +1,5 @@
 //add import
+import { MicrosoftWordJson } from "./MicrosoftWordJson";
 import { TelegramJson } from "./TelegramJson";
 import { GoogleSheetsJson } from "./GoogleSheetsJson";
 import { GoogleDriveJson } from "./GoogleDriveJson";
@@ -13,6 +14,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    MicrosoftWordJson,
     TelegramJson,
     GoogleSheetsJson,
     GoogleDriveJson,
