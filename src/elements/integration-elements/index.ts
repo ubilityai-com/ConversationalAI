@@ -1,4 +1,5 @@
 //add import
+import { TelegramJson } from "./TelegramJson";
 import { GoogleSheetsJson } from "./GoogleSheetsJson";
 import { GoogleDriveJson } from "./GoogleDriveJson";
 import { FreshdeskJson } from "./FreshdeskJson";
@@ -12,6 +13,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    TelegramJson,
     GoogleSheetsJson,
     GoogleDriveJson,
     FreshdeskJson,

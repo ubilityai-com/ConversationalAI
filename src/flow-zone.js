@@ -26,6 +26,7 @@ const FlowZone = () => {
     ConditionAgent: ConditionAgentNode,
     QuestionAndAnswer: LlmNode,
     // integration nodes
+    Telegram: IntegrationNode,
     GoogleSheets: IntegrationNode,
     GoogleDrive: IntegrationNode,
     Freshdesk: IntegrationNode,
