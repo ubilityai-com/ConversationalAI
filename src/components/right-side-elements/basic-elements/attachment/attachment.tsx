@@ -127,23 +127,16 @@ export default function AttachmentForm({
                         <Label className="text-sm font-medium">
                             Save user file as variable
                         </Label>
-                        <FieldWrapper
-                            field={{ type: "textfield" }}
-                            variableName={`variableName}`}
+                        <Input
+                            name="variableName"
                             value={localConfig.variableName || ""}
-                            onChange={(e) => updateNestedConfig("variableName", e)}
-                            className="h-8 text-xs"
-                        >
-                            <Input
-                                name="variableName"
-                                value={localConfig.variableName || ""}
-                                onChange={(event) => {
-                                    // Clear previous timeout (if any)
-                                    debounceAttachVariable(event.target.value)
-                                    updateNestedConfig("variableName", event.target.value);
-                                }}
-                            />
-                        </FieldWrapper>
+                            onChange={(event) => {
+                                // Clear previous timeout (if any)
+                                debounceAttachVariable(event.target.value)
+                                updateNestedConfig("variableName", event.target.value);
+                            }}
+                            className="h-8"
+                        />
                     </div>
                 </div>
 
