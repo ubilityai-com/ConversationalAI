@@ -55,11 +55,19 @@ def upload_file(dialogue_id,conv_id,file_content, original_filename=None):
         mime = magic.Magic(mime=True)
         detected_mime = mime.from_buffer(raw_data)
 
-        # Match extension by MIME type
-        matched_extension = next(
-            (ext for ext, mimes in ALLOWED_EXTENSIONS.items() if detected_mime in mimes),
-            None
-        )
+        # Fallback to extension if octet-stream
+        if detected_mime == "application/octet-stream" and original_filename:
+            ext = os.path.splitext(original_filename)[1].lower().lstrip(".")
+            if ext in ALLOWED_EXTENSIONS:
+                matched_extension = ext
+            else:
+                matched_extension = None
+        else:
+            # Match extension by MIME type
+            matched_extension = next(
+                (ext for ext, mimes in ALLOWED_EXTENSIONS.items() if detected_mime in mimes),
+                None
+            )
 
         if detected_mime == "text/plain":
             try:
