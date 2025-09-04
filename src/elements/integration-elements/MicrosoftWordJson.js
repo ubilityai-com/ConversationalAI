@@ -4,7 +4,7 @@ export const MicrosoftWordJson = {
   "label": "Microsoft Word",
   "color": "#53D2E2 ",
   "docsPath": "Connectors/Microsoft/getting_started",
-  "description": "MicrosoftWord integration",
+  "description": "Microsoft Word integration",
   "defaultValid": false,
   "automated": "json",
   "automationConfig": "automated",
@@ -335,7 +335,7 @@ export const MicrosoftWordJson = {
                             },
                             {
                               type: "dynamic",
-                              json: {
+                              // json: {
                                 fieldsArray: [],
                                 title: "Cell",
                                 variableName: "cell_ReplaceTable",
@@ -357,7 +357,7 @@ export const MicrosoftWordJson = {
                                   },
                                 ],
                               },
-                            },
+                            // },
                           ],
                         },
                       ],
