@@ -1,8 +1,8 @@
 from docx.oxml import OxmlElement
 from docx import Document
 from io import BytesIO
-import aiohttp, sys, os, json
-import base64
+import aiohttp, sys, os
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from applications.functions import get_file_data, upload_file
 
@@ -10,19 +10,19 @@ from applications.functions import get_file_data, upload_file
 status = [200, 201, 202, 204, 206, 207, 208]
 
 ###################################### Replace Strings #################################################
-async def replace_text_in_paragraph(paragraph, old_text, new_text):
+def replace_text_in_paragraph(paragraph, old_text, new_text):
     """Replace text in a paragraph while preserving formatting."""
     for run in paragraph.runs:
         if old_text in run.text:
             formatted_text = run.text.replace(old_text, str(new_text))
             run.text = str(formatted_text)
 
-async def replace_text_in_cell(cell, old_text, new_text):
+def replace_text_in_cell(cell, old_text, new_text):
     """Replace text in a table cell while preserving formatting."""
     for paragraph in cell.paragraphs:
         replace_text_in_paragraph(paragraph, old_text, new_text)
 
-async def copy_cell_formatting(old_cell, new_cell):
+def copy_cell_formatting(old_cell, new_cell):
     # Copy cell font
     for old_paragraph, new_paragraph in zip(old_cell.paragraphs, new_cell.paragraphs):
         for old_run, new_run in zip(old_paragraph.runs, new_paragraph.runs):
