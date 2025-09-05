@@ -1,19 +1,21 @@
 
 export { BaseNode } from './base-node';
 export type { BaseNodeData, BaseNodeProps } from './base-node';
+export { NODE_CONFIG, NODE_STATUS, NODE_TYPES } from './constants';
+export type { NodeStatus, NodeType } from './constants';
 export { NodeErrorBoundary } from './ErrorBoundary';
-export { NODE_CONFIG, NODE_TYPES, NODE_STATUS } from './constants';
-export type { NodeType, NodeStatus } from './constants';
 
 // Hooks
-export { useNodeState, useNodeValidation, useNodeSelection,useNodeRunningState } from './hooks/useNodeState';
+export { useNodeRunningState, useNodeSelection, useNodeState, useNodeValidation } from './hooks/useNodeState';
 
 // Components
+export { NodeHandles } from './parts/NodeHandles';
+export { NodeIcon } from './parts/NodeIcon';
 export { RunningIndicator } from './parts/RunningIndicator';
 export { StateIndicator } from './parts/StateIndicator';
-export { NodeIcon } from './parts/NodeIcon';
 export { StatusIndicator } from './parts/StatusIndicator';
-export { NodeHandles } from './parts/NodeHandles';
+export { TestStatusIndicator } from "./parts/TestStatusIndicator";
 
 // Utils
-export { truncateText, getNodeStatus,getStatusColorClass } from './utils/textUtils';
+export { getNodeStatus, getStatusColorClass, truncateText } from './utils/textUtils';
+

@@ -25,19 +25,18 @@ export default function RightSideBody() {
     useState<ComponentType<any> | null>(null);
 
   const [schema, setSchema] = useState<ComponentType<any[]> | null>(null);
-  const [activeTab, setActiveTab] = useState('Binary');
+  const [activeTab, setActiveTab] = useState("Binary");
 
   const clickedElement = useFlowStore((state) => state.clickedElement);
   const updateNodesValidationById = useFlowStore(
     (state) => state.updateNodesValidationById
   );
 
-  const nodeResults = useFlowStore((state) => state.nodeResults);
   const updateNodeRightSideData = useRightDrawerStore(
     (state) => state.updateNodeRightSideData
   );
 
-  const handleRightSideDataUpdate = (value: any,valid:boolean) => {
+  const handleRightSideDataUpdate = (value: any, valid: boolean) => {
     updateNodeRightSideData(clickedElement.id, { rightSideData: value });
     validate(valid);
   };
@@ -49,15 +48,18 @@ export default function RightSideBody() {
         setComponent(() => module.default);
         setSchema(
           () =>
-            require(`../elements/${camelToDashCase(clickedElement.data.category)}-elements/${clickedElement.type}Json`)[
+            require(`../elements/${camelToDashCase(
+              clickedElement.data.category
+            )}-elements/${clickedElement.type}Json`)[
               `${clickedElement.type}Json`
             ].defaults.json
         );
         if (clickedElement.data.automationConfig === "semi-automated") {
-          const path = `./${clickedElement.data.category
-            }-elements/${camelToDashCase(
-              clickedElement.type
-            )}/${camelToDashCase(clickedElement.type)}.tsx`;
+          const path = `./${
+            clickedElement.data.category
+          }-elements/${camelToDashCase(clickedElement.type)}/${camelToDashCase(
+            clickedElement.type
+          )}.tsx`;
 
           try {
             const context = require.context(
@@ -78,10 +80,11 @@ export default function RightSideBody() {
         setIsLoading(false);
         return;
       } else {
-        const path = `./${camelToDashCase(clickedElement.data.category)
-          }-elements/${camelToDashCase(
-            clickedElement.type
-          )}/${camelToDashCase(clickedElement.type)}.tsx`;
+        const path = `./${camelToDashCase(
+          clickedElement.data.category
+        )}-elements/${camelToDashCase(clickedElement.type)}/${camelToDashCase(
+          clickedElement.type
+        )}.tsx`;
 
         try {
           const context = require.context(
@@ -107,12 +110,13 @@ export default function RightSideBody() {
   }, [clickedElement?.type, clickedElement?.data?.category]);
 
   const selectedNode = useNodesData(clickedElement?.id);
-  const runResult = selectedNode ? nodeResults[selectedNode.id] : {}
+  const nodeResults = useFlowStore((state) => state.nodeResults);
+  const nodeResult = selectedNode ? nodeResults[selectedNode.id] : null;
+  const runResult = nodeResult?.output || {};
   useEffect(() => {
-    if (hasFileBinaryDataKeyDeep(runResult))
-      setActiveTab("Binary")
-    else setActiveTab("Json")
-  }, [runResult])
+    if (hasFileBinaryDataKeyDeep(runResult)) setActiveTab("Binary");
+    else setActiveTab("Json");
+  }, [runResult]);
   if (!selectedNode) return null;
 
   const handleCopy = (event: any) => {
@@ -153,18 +157,21 @@ export default function RightSideBody() {
           CustomComponent={CustomComponent}
         />
       )}
-      {
-        runResult && hasFileBinaryDataKeyDeep(runResult) &&
+      {runResult && hasFileBinaryDataKeyDeep(runResult) && (
         <ResultOptions activeTab={activeTab} setActiveTab={setActiveTab} />
-      }
-      {runResult && hasFileBinaryDataKeyDeep(runResult) && activeTab === "Binary" &&
-        <BinaryResult
-          runResult={runResult}
-          file={{
-            name: runResult?.file_name,
-            extension: runResult.file_name?.split(".").pop(),
-            displayName: runResult?.file_name
-          }} />}
+      )}
+      {runResult &&
+        hasFileBinaryDataKeyDeep(runResult) &&
+        activeTab === "Binary" && (
+          <BinaryResult
+            runResult={runResult}
+            file={{
+              name: runResult?.file_name,
+              extension: runResult.file_name?.split(".").pop(),
+              displayName: runResult?.file_name,
+            }}
+          />
+        )}
       {runResult && activeTab === "Json" && (
         <ResponseOutput
           runResult={runResult}
@@ -173,7 +180,7 @@ export default function RightSideBody() {
           onMaximize={handleMaximize}
           onCreateVariable={handleCreateVariable}
           collapsed={1}
-        // hasDivider
+          // hasDivider
         />
       )}
     </div>

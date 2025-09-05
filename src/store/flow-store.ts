@@ -64,7 +64,6 @@ export interface FlowState extends SlicesStates {
   theme: boolean;
   toggleTheme: () => void;
 
-
   clickedElement: any | null;
   setClickedElement: (element: any | null) => void;
 
@@ -102,36 +101,35 @@ export interface FlowState extends SlicesStates {
   setFormDialogStatus: (status: any) => void;
 
   showSnackBarMessage:
-  | {
-    open: true;
-    message: string | null;
-    color:
-    | "default"
-    | "destructive"
-    | "success"
-    | "warning"
-    | "info"
-    | null;
-    duration: number;
-  }
-  | {
-    open: false;
-  };
+    | {
+        open: true;
+        message: string | null;
+        color:
+          | "default"
+          | "destructive"
+          | "success"
+          | "warning"
+          | "info"
+          | null;
+        duration: number;
+      }
+    | {
+        open: false;
+      };
   setShowSnackBarMessage: (
     message:
       | {
-        open: true;
-        message: string;
-        color: "default" | "destructive" | "success" | "warning" | "info";
-        duration: number;
-      }
+          open: true;
+          message: string;
+          color: "default" | "destructive" | "success" | "warning" | "info";
+          duration: number;
+        }
       | {
-        open: false;
-      }
+          open: false;
+        }
   ) => void;
 
   handleFlowZoneCheckIfAllHandlesAreConnected: () => boolean;
-
 
   // Constants
   error: string | null;
@@ -140,11 +138,19 @@ export interface FlowState extends SlicesStates {
   testNode: (id: string) => Promise<void>;
   addRunningNodeId: (id: string) => void;
   removeRunningNodeId: (id: string) => void;
-  nodeResults: Record<string, any>;
-  setNodeResult: (id: string, result: any) => void;
+  nodeResults: Record<
+    string,
+    { status: "success" | "error" | "running"; output: any }
+  >;
+  setNodeResult: (
+    id: string,
+    status: "success" | "error" | "running",
+    output: any
+  ) => void;
+
   resetData: () => void;
 
-  // Node states 
+  // Node states
   nodeStates: Record<string, string>; // nodeId -> description
   setNodeStates: (nodeStates: Record<string, string>) => void;
   addNodeState: (nodeId: string, description: string) => void;
@@ -168,12 +174,12 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
 
       setSelectedBot,
       clearAllVariables,
-      clearNodeStates
+      clearNodeStates,
     } = get();
-    const { resetFilesState } = useFilesStore.getState()
-    clearAllVariables()
-    resetFilesState()
-    clearNodeStates()
+    const { resetFilesState } = useFilesStore.getState();
+    clearAllVariables();
+    resetFilesState();
+    clearNodeStates();
 
     setNodes([
       {
@@ -201,11 +207,11 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
     addNodesValidation(id, false);
     setSelectedBot(null);
   },
-  setNodeResult: (id, result) =>
+  setNodeResult: (id, status, output) =>
     set((state) => ({
       nodeResults: {
         ...state.nodeResults,
-        [id]: result,
+        [id]: { status, output },
       },
     })),
   addRunningNodeId: (id) =>
@@ -234,6 +240,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
     } = get();
     set({ error: null });
     addRunningNodeId(id);
+    setNodeResult(id, "running", null);
 
     try {
       const selectedNode = nodes.find((el) => el.id === id);
@@ -305,7 +312,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
         process.env.REACT_APP_DNS_URL + `test_node`,
         payload
       );
-      setNodeResult(id, res.data?.output);
+      setNodeResult(id, "success", res.data?.output);
       console.log("Run node response:", res.data);
       return res.data;
     } catch (error: any) {
@@ -313,7 +320,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
 
       // Check if it's a variable replacement error using instanceof
       if (error instanceof VariableReplacementError) {
-        setNodeResult(id, { error: error.message });
+        setNodeResult(id, "error", { error: error.message });
         set({ error: error.message });
         get().setShowSnackBarMessage({
           color: "destructive",
@@ -324,8 +331,10 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
       } else {
         setNodeResult(
           id,
+          "error",
           error.response?.data || { error: "failed to run this node" }
         );
+
         const errorMessage =
           error?.response?.data?.message ||
           error.message ||
@@ -499,7 +508,6 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
     });
   },
 
-
   // UI state
 
   isRightOpen: false,
@@ -579,7 +587,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
       StickyNote: {
         requireIncoming: false,
         requireOutgoing: false,
-      }
+      },
     };
 
     for (const node of nodes) {

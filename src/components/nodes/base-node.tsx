@@ -1,7 +1,7 @@
-import React from "react";
 import { Node, NodeProps } from "@xyflow/react";
+import React from "react";
 import { cn } from "../../lib/utils";
-import { NODE_TYPES, NodeErrorBoundary, NodeHandles, NodeIcon, RunningIndicator, StateIndicator, StatusIndicator, useNodeSelection ,} from "./index";
+import { NODE_TYPES, NodeErrorBoundary, NodeHandles, NodeIcon, RunningIndicator, StateIndicator, StatusIndicator, TestStatusIndicator, useNodeSelection } from "./index";
 
 
 export type BaseNodeData<T = Record<string, any>> = {
@@ -61,6 +61,7 @@ export const BaseNode = React.memo(
             >
               <RunningIndicator id={id} isStartNode={isStartNode} />
               <StateIndicator id={id} />
+              <TestStatusIndicator id={id} />
 
               <div className="flex items-start space-x-4">
                 <NodeIcon
