@@ -57,7 +57,7 @@ from applications.routes import *
 from routes.files_view import *
 
 # Socket.IO ASGI server
-sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi',max_http_buffer_size=10*1024*1024)
+sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi',max_http_buffer_size=15*1024*1024)
 app = socketio.ASGIApp(sio, other_asgi_app=http_app)
 
 # ---------------------------
@@ -288,7 +288,7 @@ def decrypt_dialogue_id(encrypted_str: str) -> str:
 async def main():
     asyncio.create_task(check_idle_sessions())
     asyncio.create_task(restore_active_chatbots())
-    config = Config(app, host="0.0.0.0", port=8031)
+    config = Config(app, host="0.0.0.0", port=8031,ws_max_size=15*1024*1024)
     server = Server(config)
     await server.serve()
 
