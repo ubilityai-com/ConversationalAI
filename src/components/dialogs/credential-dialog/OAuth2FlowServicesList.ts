@@ -9,8 +9,7 @@ export const OAuth2ServiceTypes = {
                 client_secret: "{{clientSecret}}",
                 code: "{{code::params}}",
                 grant_type: "authorization_code",
-                // redirect_uri: (process.env.APP_PUBLIC_DOMAIN || "") + "/dashboard/credentials",
-                redirect_uri: "http://localhost:3000",
+                redirect_uri: window.location.origin + window.location.pathname,
             },
             response_path: "data",
             fieldsToAdd: [
@@ -99,7 +98,7 @@ export const OAuth2ServiceTypes = {
 
     Microsoft: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/microsoft/getToken`,
+            url: `${process.env.REACT_APP_DNS_URL}microsoft/getToken`,
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer {{auth.token::zustand}}`,
@@ -109,7 +108,7 @@ export const OAuth2ServiceTypes = {
                 clientSecret: "{{clientSecret}}",
                 code: "{{code::params}}",
                 grant_type: "authorization_code",
-                redirectUri: (process.env.APP_PUBLIC_DOMAIN || "") + "/dashboard/credentials",
+                redirectUri: window.location.origin + window.location.pathname,
             },
             response_path: "data",
             fieldsToAdd: [
@@ -319,7 +318,7 @@ export const OAuth2ServiceTypes = {
 
     Zendesk: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/zendesk/getToken`,
+            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}zendesk/getToken`,
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer {{auth.token::zustand}}`,
@@ -329,7 +328,7 @@ export const OAuth2ServiceTypes = {
                 clientSecret: "{{clientSecret}}",
                 code: "{{code::params}}",
                 baseUrl: "{{baseUrl}}",
-                redirectUri: (process.env.APP_PUBLIC_DOMAIN || "") + "/dashboard/credentials",
+                redirectUri: window.location.origin + window.location.pathname,
             },
             response_path: "data",
             fieldsToAdd: ["access_token::response", "clientId", "clientSecret", "baseUrl"],
@@ -397,7 +396,7 @@ export const OAuth2ServiceTypes = {
 
     Slack: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/slack/getToken`,
+            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}slack/getToken`,
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer {{auth.token::zustand}}`,
@@ -406,7 +405,7 @@ export const OAuth2ServiceTypes = {
                 clientId: "{{clientId}}",
                 clientSecret: "{{clientSecret}}",
                 code: "{{code::params}}",
-                redirectUri: (process.env.APP_PUBLIC_DOMAIN || "") + "/dashboard/credentials",
+                redirectUri: window.location.origin + window.location.pathname,
             },
             response_path: "data",
             fieldsToAdd: ["accessToken::response", "clientId", "clientSecret", "redirectUri"],

@@ -13,7 +13,7 @@ const oAuth2RedirectUris: CopyField = {
 };
 const javascriptOrigins: CopyField = {
     label: "Authorized JavaScript origins",
-    value: window.location.href ?? "",
+    value: window.location.origin ?? "",
 };
 const websiteUrl: CopyField = {
     label: "Website Url",
@@ -839,6 +839,7 @@ const serviceFields: CredentialInfo[] = [
         type: "Google",
         service: "Google",
         Service_name: "",
+        defaultRedirectUri: true,
         cred: [
             {
                 label: "Client ID",
