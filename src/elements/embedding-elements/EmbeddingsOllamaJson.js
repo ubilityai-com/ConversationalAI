@@ -14,7 +14,7 @@ export const EmbeddingsOllamaJson = {
                 required: true,
                 credential: true,
                 credType: "Ollama",
-                value: "None",
+                value: "",
                 list: [],
                 config: [
                     {
@@ -74,7 +74,7 @@ export const EmbeddingsOllamaJson = {
                 type: "api",
                 label: "Model",
                 variableName: "model",
-                value: "None",
+                value: "",
                 required: true,
                 list: [],
                 config: [

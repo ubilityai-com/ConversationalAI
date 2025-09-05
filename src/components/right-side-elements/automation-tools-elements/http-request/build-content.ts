@@ -7,7 +7,7 @@ export default function getContent(selectedNode: any) {
     const json = rightSideData.json;
 
     let bodyJsonToSend: any = {
-        type: json.bodyType ? json.bodyType : "None",
+        type: json.bodyType ? json.bodyType : "",
     };
     let authorizationJsonToSend: any = {
         type: json.authorizationType,
@@ -32,7 +32,7 @@ export default function getContent(selectedNode: any) {
             password: json.password,
         };
     }
-    if (json.bodyType === "None") {
+    if (json.bodyType === "") {
         bodyJsonToSend = { ...bodyJsonToSend };
     } else if (json.bodyType === "Form Data") {
         bodyJsonToSend = {

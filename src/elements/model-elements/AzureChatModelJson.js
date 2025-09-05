@@ -13,7 +13,7 @@ export const AzureChatModelJson = {
         required: true,
         credential: true,
         credType: "AzureOpenAi",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {

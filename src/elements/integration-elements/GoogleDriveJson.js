@@ -17,7 +17,7 @@ export const GoogleDriveJson = {
         "required": true,
         "credential": true,
         "credType": "Google",
-        "value": "None",
+        "value": "",
         "list": [],
         "config": [
           {

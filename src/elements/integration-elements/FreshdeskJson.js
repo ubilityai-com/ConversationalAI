@@ -17,7 +17,7 @@ export const FreshdeskJson = {
         "required": true,
         "credential": true,
         "credType": "Freshdesk",
-        "value": "None",
+        "value": "",
         "list": [],
         "config": [
           {
@@ -132,7 +132,7 @@ export const FreshdeskJson = {
                     "type": "api",
                     "label": "Ticket ID",
                     "variableName": "ticketID_GetTicket",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -340,12 +340,8 @@ export const FreshdeskJson = {
                           type: "dropdown",
                           placeholder: "Select",
                           variableName: "order_by_Ticket_Get_Many",
-                          value: "None",
+                          value: "",
                           list: [
-                            {
-                              option: "None",
-                              value: "None",
-                            },
                             {
                               option: "Created At",
                               value: "created_at",
@@ -511,16 +507,12 @@ export const FreshdeskJson = {
                   {
                     type: "dropdown",
                     label: "Status",
-                    value: "None",
+                    value: "",
                     variableName: "status_ticket_create",
                     errorSpan: "Please choose a Status",
                     required: true,
                     hasDynamicVariable: true,
                     list: [
-                      {
-                        option: "None",
-                        value: "None",
-                      },
                       {
                         option: "Pending",
                         value: "3",
@@ -542,16 +534,12 @@ export const FreshdeskJson = {
                   {
                     type: "dropdown",
                     label: "Priority",
-                    value: "None",
+                    value: "",
                     variableName: "priority_ticket_create",
                     errorSpan: "Please choose a Priority",
                     required: true,
                     hasDynamicVariable: true,
                     list: [
-                      {
-                        option: "None",
-                        value: "None",
-                      },
                       {
                         option: "Low",
                         value: "1",
@@ -573,16 +561,12 @@ export const FreshdeskJson = {
                   {
                     type: "dropdown",
                     label: "Source",
-                    value: "None",
+                    value: "",
                     variableName: "source_ticket_create",
                     errorSpan: "Please choose a Source",
                     required: true,
                     hasDynamicVariable: true,
                     list: [
-                      {
-                        option: "None",
-                        value: "None",
-                      },
                       {
                         option: "Portal",
                         value: "2",
@@ -756,13 +740,9 @@ export const FreshdeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "type_ticket_create",
                           list: [
-                            {
-                              option: "None",
-                              value: "None",
-                            },
                             {
                               option: "Refund",
                               value: "Refund",
@@ -834,7 +814,7 @@ export const FreshdeskJson = {
                     "type": "api",
                     "label": "Ticket ID",
                     "variableName": "ticketID_UpdateTicket",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -929,13 +909,9 @@ export const FreshdeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "status_ticket_update",
                           list: [
-                            {
-                              option: "None",
-                              value: "None",
-                            },
                             {
                               option: "Pending",
                               value: "3",
@@ -965,13 +941,9 @@ export const FreshdeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "priority_ticket_update",
                           list: [
-                            {
-                              option: "None",
-                              value: "None",
-                            },
                             {
                               option: "Low",
                               value: "1",
@@ -1001,13 +973,9 @@ export const FreshdeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "source_ticket_update",
                           list: [
-                            {
-                              option: "None",
-                              value: "None",
-                            },
                             {
                               option: "Portal",
                               value: "2",
@@ -1199,13 +1167,9 @@ export const FreshdeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "type_ticket_update",
                           list: [
-                            {
-                              option: "None",
-                              value: "None",
-                            },
                             {
                               option: "Refund",
                               value: "Refund",
@@ -1348,7 +1312,7 @@ export const FreshdeskJson = {
                     "type": "api",
                     "label": "Ticket ID",
                     "variableName": "ticketID_DeleteTicket",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -1475,7 +1439,7 @@ export const FreshdeskJson = {
                     "type": "api",
                     "label": "Contact ID",
                     "variableName": "contactID_GetContact",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -1638,12 +1602,8 @@ export const FreshdeskJson = {
                           type: "dropdown",
                           placeholder: "Select",
                           variableName: "state_Contact_Get_Many",
-                          value: "None",
+                          value: "",
                           list: [
-                            {
-                              option: "None",
-                              value: "None",
-                            },
                             {
                               option: "Blocked",
                               value: "blocked",
@@ -2161,7 +2121,7 @@ export const FreshdeskJson = {
                     "type": "api",
                     "label": "Contact ID",
                     "variableName": "contactID_UpdateContact",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -2365,13 +2325,9 @@ export const FreshdeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "language_Contact_Update",
                           list: [
-                            {
-                              option: "None",
-                              value: "None",
-                            },
                             {
                               option: "English",
                               value: "en",
@@ -2729,7 +2685,7 @@ export const FreshdeskJson = {
                     "type": "api",
                     "label": "Contact ID",
                     "variableName": "contactID_DeleteContact",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],

@@ -14,7 +14,7 @@ export const TogetherAIChatModelJson = {
         required: true,
         credential: true,
         credType: "TogetherAi",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -75,7 +75,7 @@ export const TogetherAIChatModelJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

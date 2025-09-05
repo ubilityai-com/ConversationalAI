@@ -13,7 +13,7 @@ export const EmbeddingsFireworksJson = {
         required: true,
         credential: true,
         credType: "Fireworks",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {

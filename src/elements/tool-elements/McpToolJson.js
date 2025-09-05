@@ -31,7 +31,7 @@ export const McpToolJson = {
               label: "Mcp Name",
               variableName: "name",
               required: true,
-              value: "None",
+              value: "",
               list: [],
               config: [
                 {
@@ -90,7 +90,7 @@ export const McpToolJson = {
               variableName: "cred",
               required: true,
               // credential: true,
-              value: "None",
+              value: "",
               list: [],
               config: [
                 {

@@ -13,7 +13,7 @@ export const EmbeddingsNomicJson = {
         required: true,
         credential: true,
         credType: "Nomic",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {

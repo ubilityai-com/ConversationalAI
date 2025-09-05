@@ -25,7 +25,7 @@ export const TestStatusIndicator: React.FC<TestStatusIndicatorProps> = ({
   } else if (nodeResult) {
     status = nodeResult.status;
   }
-
+  const testMessage = ""
   if (!status) return null;
 
   const getStatusConfig = () => {
@@ -35,12 +35,16 @@ export const TestStatusIndicator: React.FC<TestStatusIndicatorProps> = ({
           icon: CheckCircle,
           containerClass: "bg-gradient-to-br from-emerald-400 to-green-500",
           iconColor: "text-white",
+          glowClass: "shadow-emerald-400/50",
+          ringClass: "ring-emerald-300/30",
         };
       case "error":
         return {
           icon: XCircle,
           containerClass: "bg-gradient-to-br from-red-400 to-rose-500",
           iconColor: "text-white",
+          glowClass: "shadow-red-400/50",
+          ringClass: "ring-red-300/30",
         };
       case "running":
         return {
@@ -56,17 +60,38 @@ export const TestStatusIndicator: React.FC<TestStatusIndicatorProps> = ({
   const config = getStatusConfig();
   if (!config) return null;
 
-  const { icon: Icon, containerClass, iconColor } = config;
+  const { icon: Icon, containerClass, iconColor,ringClass,glowClass } = config;
 
   return (
+    <div className={cn("absolute bottom-3 right-3 z-30", className)}>
+    {/* Outer glow ring */}
     <div
       className={cn(
-        "absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-lg",
-        containerClass,
-        className
+        "absolute inset-0 rounded-full ring-4 transition-all duration-500",
+        ringClass
       )}
+    />
+
+    {/* Main container */}
+    <div
+      className={cn(
+        "relative flex items-center justify-center w-6 h-6 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110",
+        containerClass,
+        glowClass
+      )}
+      title={testMessage || `Test ${status}`}
     >
       <Icon className={cn("w-4 h-4", iconColor)} />
+
+      {/* error shake effect */}
+      {status === "error" && (
+        <div
+          className="absolute inset-0 rounded-full bg-red-600/20 animate-ping"
+          style={{ animationDuration: "2s", animationIterationCount: "2" }}
+        />
+      )}
     </div>
+  </div>
+
   );
 };

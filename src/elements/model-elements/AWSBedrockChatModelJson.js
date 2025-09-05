@@ -13,7 +13,7 @@ export const AWSBedrockChatModelJson = {
                 required: true,
                 credential: true,
                 credType: "AWSBedrock",
-                value: "None",
+                value: "",
                 list: [],
                 config: [
                     {

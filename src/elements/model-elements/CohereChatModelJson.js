@@ -13,7 +13,7 @@ export const CohereChatModelJson = {
         required: true,
         credential: true,
         credType: "Cohere",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -73,7 +73,7 @@ export const CohereChatModelJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

@@ -14,7 +14,7 @@ export const ZepMemoryJson = {
                 required: true,
                 credential: true,
                 credType: "Asana",
-                value: "None",
+                value: "",
                 list: [],
                 config: [
                     {

@@ -70,7 +70,7 @@ export function FieldWrapper({
     string | null
   >(null);
 
-  const handleSave = () => {};
+  const handleSave = () => { };
 
   const handleCancel = () => {
     setEditValue(String(value));
@@ -144,9 +144,8 @@ export function FieldWrapper({
     <Button
       size="sm"
       variant="ghost"
-      className={`h-8 w-8 p-0 text-cyan-700 hover:text-cyan-900 ${
-        isEditing ? "bg-slate-200" : ""
-      }`}
+      className={`h-8 w-8 p-0 text-cyan-700 hover:text-cyan-900 ${isEditing ? "bg-slate-200" : ""
+        }`}
       aria-label="Set dynamic value"
       onClick={handleVariableIconClick}
     >
@@ -174,10 +173,10 @@ export function FieldWrapper({
               field.password
                 ? "password"
                 : field.numberField
-                ? "number"
-                : field.date
-                ? "date"
-                : "text"
+                  ? "number"
+                  : field.date
+                    ? "date"
+                    : "text"
             }
             placeholder={field.placeholder}
             value={value}
@@ -199,11 +198,11 @@ export function FieldWrapper({
   const inputWithoutVariables = () => (
     <div className={`flex items-center gap-2 ${className}`}>
       <div className={`flex-1`}>{children}
-      {inlineLabel&&  <Label className="text-sm font-medium ml-2">
-            {field.label}
-            {field.required && <span className="text-red-500 ml-1">*</span>}
-          </Label>}
-          </div>
+        {inlineLabel && <Label className={`text-sm font-medium ml-2`}>
+          {field.label}
+          {field.required && <span className="text-red-500 ml-1">*</span>}
+        </Label>}
+      </div>
       {/* Show variable button next to input when no label */}
       {(!field.label || inlineLabel) && field.type !== "textfield" && variableButton}
     </div>
@@ -213,8 +212,8 @@ export function FieldWrapper({
     <div className={`space-y-1 ${className}`}>
       {/* Only show label row if label exists */}
       {(!inlineLabel || isEditing) && field.label && (
-        <div className="flex justify-between items-center">
-          <Label className="text-sm font-medium">
+        <div className={`flex justify-between items-center`}>
+          <Label className={`text-sm font-medium ${field.required && field.type !== "checkbox" && !value && `text-red-500`}`}>
             {field.label}
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </Label>

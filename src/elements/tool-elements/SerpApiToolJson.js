@@ -15,7 +15,7 @@ export const SerpApiToolJson = {
         required: true,
         credential: true,
         credType: "SerpApi",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {

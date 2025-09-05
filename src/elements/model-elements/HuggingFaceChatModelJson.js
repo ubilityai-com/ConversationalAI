@@ -13,7 +13,7 @@ export const HuggingFaceChatModelJson = {
         required: true,
         credential: true,
         credType: "HuggingFace",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {

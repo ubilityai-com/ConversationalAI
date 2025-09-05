@@ -14,7 +14,7 @@ export const GoogleSearchToolJson = {
         required: true,
         credential: true,
         credType: "GoogleSearch",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {

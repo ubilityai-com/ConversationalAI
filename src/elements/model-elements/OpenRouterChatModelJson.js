@@ -18,7 +18,7 @@ export const OpenRouterChatModelJson = {
         required: true,
         credential: true,
         credType: "OpenRouter",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -79,7 +79,7 @@ export const OpenRouterChatModelJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

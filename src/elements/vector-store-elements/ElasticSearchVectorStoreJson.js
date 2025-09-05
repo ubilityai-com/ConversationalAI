@@ -14,7 +14,7 @@ export const ElasticSearchVectorStoreJson = {
                 required: true,
                 credential: true,
                 credType: "ElasticSearch",
-                value: "None",
+                value: "",
                 list: [],
                 config: [
                     {

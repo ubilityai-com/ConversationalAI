@@ -111,7 +111,7 @@ const ActiveFlows: React.FC<ActiveFlowsProps> = ({
     const onChange = (value: string | null): void => {
         onContentUpdate("webhookActive", value)
 
-        if (value !== "None") {
+        if (value !== "") {
             const flow = ListsForThisNode?.find((flow) => flow.value === value)
 
             if (flow) {

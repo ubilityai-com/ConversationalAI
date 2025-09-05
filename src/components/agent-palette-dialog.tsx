@@ -163,7 +163,7 @@ const agentTypes = [
     defaults: {
       botSays: "",
       loopFromSwitch: false,
-      loopFromName: "None",
+      loopFromName: "",
     },
   },
 ];

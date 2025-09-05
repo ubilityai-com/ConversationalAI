@@ -17,7 +17,7 @@ export const CerebrasChatModelJson = {
         required: true,
         credential: true,
         credType: "Cerebras",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -78,7 +78,7 @@ export const CerebrasChatModelJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

@@ -13,7 +13,7 @@ export const GoogleGenerativeAiChatModelJson = {
         required: true,
         credential: true,
         credType: "Gemini",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -92,7 +92,7 @@ export const GoogleGenerativeAiChatModelJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

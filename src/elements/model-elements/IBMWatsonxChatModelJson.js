@@ -18,7 +18,7 @@ export const IBMWatsonxChatModelJson = {
         required: true,
         credential: true,
         credType: "IBMWatsonx",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -79,7 +79,7 @@ export const IBMWatsonxChatModelJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

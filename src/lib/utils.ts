@@ -46,7 +46,7 @@ export const objToReturnDynamic = (
 
   apiRes.forEach((item1) => {
     if (item1.type === "dropdown") {
-      if (item1.value !== "None") {
+      if (item1.value !== "") {
         if (item1.typeOfValue === "integer") {
           obj = {
             ...obj,
@@ -538,7 +538,7 @@ export const validateArray = (
       case "api":
         const options = item.options
         if
-          (required && (value === "None" || !value)) {
+          (required && (value === "" || !value)) {
           return false;
         }
         if (options && typeof value === "string" && options[value]) {

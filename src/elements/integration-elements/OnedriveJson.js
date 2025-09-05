@@ -17,7 +17,7 @@ export const OnedriveJson = {
         "required": true,
         "credential": true,
         "credType": "Microsoft",
-        "value": "None",
+        "value": "",
         "list": [],
         "config": [
           {

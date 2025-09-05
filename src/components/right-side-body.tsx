@@ -55,11 +55,10 @@ export default function RightSideBody() {
             ].defaults.json
         );
         if (clickedElement.data.automationConfig === "semi-automated") {
-          const path = `./${
-            clickedElement.data.category
-          }-elements/${camelToDashCase(clickedElement.type)}/${camelToDashCase(
-            clickedElement.type
-          )}.tsx`;
+          const path = `./${clickedElement.data.category
+            }-elements/${camelToDashCase(clickedElement.type)}/${camelToDashCase(
+              clickedElement.type
+            )}.tsx`;
 
           try {
             const context = require.context(
@@ -112,7 +111,8 @@ export default function RightSideBody() {
   const selectedNode = useNodesData(clickedElement?.id);
   const nodeResults = useFlowStore((state) => state.nodeResults);
   const nodeResult = selectedNode ? nodeResults[selectedNode.id] : null;
-  const runResult = nodeResult?.output || {};
+  const runResult = nodeResult?.output ?? false;
+
   useEffect(() => {
     if (hasFileBinaryDataKeyDeep(runResult)) setActiveTab("Binary");
     else setActiveTab("Json");

@@ -14,7 +14,7 @@ export const EmbeddingsOpenAIJson = {
         required: true,
         credential: true,
         credType: "OpenAI",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -74,7 +74,7 @@ export const EmbeddingsOpenAIJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

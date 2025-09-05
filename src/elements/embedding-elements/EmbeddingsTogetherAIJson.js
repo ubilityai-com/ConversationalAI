@@ -13,7 +13,7 @@ export const EmbeddingsTogetherAIJson = {
         required: true,
         credential: true,
         credType: "TogetherAi",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -73,7 +73,7 @@ export const EmbeddingsTogetherAIJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

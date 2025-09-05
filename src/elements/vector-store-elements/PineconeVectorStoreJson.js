@@ -15,7 +15,7 @@ export const PineconeVectorStoreJson = {
                 required: true,
                 credential: true,
                 credType: "Pinecone",
-                value: "None",
+                value: "",
                 list: [],
                 config: [
                     {

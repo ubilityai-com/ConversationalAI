@@ -15,7 +15,7 @@ export const MilvusVectorStoreJson = {
                 required: true,
                 credential: true,
                 credType: "Milvus",
-                value: "None",
+                value: "",
                 list: [],
                 config: [
                     {

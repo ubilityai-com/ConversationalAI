@@ -542,30 +542,6 @@ export default function AutomationSimple({
                 })
               }
               {...commonProps} />
-            {/* <div className="border rounded-md">
-              <div className="flex items-center justify-between p-2 border-b bg-muted">
-                <div className="flex items-center space-x-2">
-                  <Code className="h-4 w-4" />
-                  <span className="text-xs font-medium">
-                    {item.defaultLanguage || "text"}
-                  </span>
-                </div>
-                <Button variant="ghost" size="sm">
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </div>
-              <Textarea
-                value={getFieldValue(item) || ""}
-                onChange={(e) =>
-                  onChangeAutomationSimple({
-                    [item.variableName]: e.target.value,
-                  })
-                }
-                className="min-h-[200px] border-0 resize-none focus-visible:ring-0"
-                placeholder="Enter your code here..."
-                {...commonProps}
-              />
-            </div> */}
           </div>
         );
 

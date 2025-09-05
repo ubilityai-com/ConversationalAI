@@ -2117,13 +2117,13 @@ const serviceFields: CredentialInfo[] = [
             {
                 label: "SSL Mode",
                 Credential_name: "sslMode",
-                Credential_value: "None",
+                Credential_value: "",
                 dropdown: true,
                 optional: true,
                 list: [
                     {
-                        label: "None",
-                        value: "None",
+                        label: "",
+                        value: "",
                     },
                     {
                         label: "Disable",
@@ -2922,7 +2922,7 @@ const setCredOnOneLevel = (apiRes: CredentialField[]): CredentialField[] => {
             // Handle API fields with dynamic data extraction
             const clonedItem: CredentialField = { ...credField }
 
-            if (clonedItem.value && clonedItem.Credential_value !== "None") {
+            if (clonedItem.value && clonedItem.Credential_value !== "") {
                 // Find the selected item from the list
                 const currentItem = clonedItem.list?.find(
                     (item: CredentialOption) => item.value === clonedItem.Credential_value,

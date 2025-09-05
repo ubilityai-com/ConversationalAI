@@ -15,7 +15,7 @@ export const UbilityDataMatrixJson = {
                 required: true,
                 credential: true,
                 credType: "DataMatrix",
-                value: "None",
+                value: "",
                 list: [],
                 config: [
                     {

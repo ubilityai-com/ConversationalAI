@@ -14,7 +14,7 @@ export const MotorheadMemoryJson = {
                 required: true,
                 credential: true,
                 credType: "Asana",
-                value: "None",
+                value: "",
                 list: [],
                 config: [
                     {

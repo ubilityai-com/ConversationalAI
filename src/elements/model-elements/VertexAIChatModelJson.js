@@ -13,7 +13,7 @@ export const VertexAIChatModelJson = {
         required: true,
         credential: true,
         credType: "VertexAi",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {

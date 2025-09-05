@@ -13,7 +13,7 @@ export const NvidiaChatModelJson = {
         required: true,
         credential: true,
         credType: "Nvidia",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -73,7 +73,7 @@ export const NvidiaChatModelJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

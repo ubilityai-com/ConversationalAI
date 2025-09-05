@@ -13,7 +13,7 @@ export const AnthropicChatModelJson = {
         required: true,
         credential: true,
         credType: "Anthropic",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -73,7 +73,7 @@ export const AnthropicChatModelJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

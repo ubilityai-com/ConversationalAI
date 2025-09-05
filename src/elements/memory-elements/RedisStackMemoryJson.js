@@ -15,7 +15,7 @@ export const RedisStackMemoryJson = {
         required: true,
         credential: true,
         credType: "Redis",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -94,7 +94,7 @@ export const RedisStackMemoryJson = {
               "type": "api",
               "label": "Sessions",
               "variableName": "sessions",
-              "value": "None",
+              "value": "",
               "required": true,
               "list": [],
               "config": [

@@ -8,7 +8,7 @@ export const CustomToolJson = {
   automationConfig: "semi-automated",
   rightSideData: {
     inputsDescription: null,
-    webhookActive: "None",
+    webhookActive: "",
     json: [
       {
         type: "textfield",

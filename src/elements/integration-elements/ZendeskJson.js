@@ -17,7 +17,7 @@ export const ZendeskJson = {
         required: true,
         credential: true,
         credType: "Zendesk",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -128,13 +128,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "get_all_tickets_status",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "Closed",
@@ -194,12 +194,12 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "get_all_tickets_sort_by",
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "Priority",
@@ -465,13 +465,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "create_ticket_status",
                           hasDynamicVariable: true,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "Closed",
@@ -506,13 +506,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "create_ticket_priority",
                           hasDynamicVariable: true,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "Low",
@@ -559,12 +559,12 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "create_ticket_type",
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "Question",
@@ -787,13 +787,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "update_ticket_status",
                           hasDynamicVariable: true,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "Closed",
@@ -828,13 +828,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "update_ticket_priority",
                           hasDynamicVariable: true,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "Low",
@@ -947,12 +947,12 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "update_ticket_type",
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "Question",
@@ -1144,13 +1144,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "get_all_users_roles",
                           hasDynamicVariable: true,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "End-User",
@@ -1456,13 +1456,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "create_user_suspended_users",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "True",
@@ -1485,13 +1485,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "create_user_verified_users",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "True",
@@ -1514,13 +1514,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "create_user_report_csv",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "True",
@@ -1543,13 +1543,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "create_user_restricted_agent",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "True",
@@ -1572,13 +1572,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "create_user_moderator",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "True",
@@ -1601,13 +1601,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "create_user_only_private_comments",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "True",
@@ -1630,13 +1630,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "create_user_role",
                           hasDynamicVariable: true,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "End User",
@@ -1663,13 +1663,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "create_user_ticket_restriction",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "Organization",
@@ -2003,13 +2003,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "update_user_suspended_users",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "True",
@@ -2032,13 +2032,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "update_user_verified_users",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "True",
@@ -2061,13 +2061,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "update_user_report_csv",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "True",
@@ -2090,13 +2090,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "update_user_restricted_agent",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "True",
@@ -2119,13 +2119,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "update_user_moderator",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "True",
@@ -2148,13 +2148,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "update_user_only_private_comments",
                           hasDynamicVariable: false,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "True",
@@ -2177,13 +2177,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "update_user_role",
                           hasDynamicVariable: true,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "End User",
@@ -2210,13 +2210,13 @@ export const ZendeskJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "",
                           variableName: "update_user_ticket_restriction",
                           hasDynamicVariable: true,
                           list: [
                             {
-                              option: "None",
-                              value: "None",
+                              option: "",
+                              value: "",
                             },
                             {
                               option: "Organization",

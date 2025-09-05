@@ -13,7 +13,7 @@ export const OllamaChatModelJson = {
         required: true,
         credential: true,
         credType: "Ollama",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -73,7 +73,7 @@ export const OllamaChatModelJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

@@ -34,7 +34,7 @@ export const SqlDatabaseChainJson = {
             "required": true,
             "credential": true,
             "credType": "Postgres",
-            "value": "None",
+            "value": "",
             "list": [],
             "config": [
               {
@@ -100,7 +100,7 @@ export const SqlDatabaseChainJson = {
             "required": true,
             "credential": true,
             "credType": "MySQL",
-            "value": "None",
+            "value": "",
             "list": [],
             "config": [
               {

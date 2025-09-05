@@ -18,7 +18,7 @@ export const LiteLLMChatModelJson = {
         required: true,
         credential: true,
         credType: "LiteLLM",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -79,7 +79,7 @@ export const LiteLLMChatModelJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

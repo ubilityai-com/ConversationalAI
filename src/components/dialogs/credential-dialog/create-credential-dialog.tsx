@@ -178,7 +178,7 @@ export function CreateCredentialDialog({
                 }
                 if (typeof c.Credential_value === "string" && c.Credential_value.trim().length < 3 && !c.optional) {
                     errorMsg = "Credential fields should be at least 3 characters."
-                } else if (c.api && c.Credential_value === "None") {
+                } else if (c.api && c.Credential_value === "") {
                     errorMsg = `Please choose a ${c.label}`
                 }
             })
@@ -198,7 +198,7 @@ export function CreateCredentialDialog({
                 ...newCredInfo,
                 cred: newCredInfo.cred.filter((f) => {
                     if (f.optional && (f.dropdown || f.radio)) {
-                        return f.Credential_value !== "None"
+                        return f.Credential_value !== ""
                     }
                     if (typeof f.Credential_value === "string") {
                         return f.Credential_value.trim().length > 0 || f.credTypeConnection

@@ -13,7 +13,7 @@ export const EmbeddingsGoogleGenerativeAIJson = {
         required: true,
         credential: true,
         credType: "Gemini",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -92,7 +92,7 @@ export const EmbeddingsGoogleGenerativeAIJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

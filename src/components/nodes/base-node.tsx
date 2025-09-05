@@ -59,7 +59,6 @@ export const BaseNode = React.memo(
                 backgroundColor
               )}
             >
-              <RunningIndicator id={id} isStartNode={isStartNode} />
               <StateIndicator id={id} />
               <TestStatusIndicator id={id} />
 

@@ -15,7 +15,7 @@ export const PostgresVectorStoreJson = {
                 required: true,
                 credential: true,
                 credType: "Postgres",
-                value: "None",
+                value: "",
                 list: [],
                 config: [
                     {

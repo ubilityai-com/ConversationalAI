@@ -17,7 +17,7 @@ export const SlackJson = {
         "required": true,
         "credential": true,
         "credType": "Slack",
-        "value": "None",
+        "value": "",
         "list": [],
         "config": [
           {
@@ -160,7 +160,7 @@ export const SlackJson = {
                           "type": "api",
                           "label": "Channel",
                           "variableName": "channel",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -278,7 +278,7 @@ export const SlackJson = {
                           "type": "api",
                           "label": "User",
                           "variableName": "user",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -788,7 +788,7 @@ export const SlackJson = {
                           "type": "api",
                           "label": "Channel",
                           "variableName": "channel",
-                          "value": "None",
+                          "value": "",
                           "list": [],
                           "required": true,
                           "config": [
@@ -907,7 +907,7 @@ export const SlackJson = {
                           "type": "api",
                           "label": "User",
                           "variableName": "user",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -1064,7 +1064,7 @@ export const SlackJson = {
                           "type": "api",
                           "label": "Channel",
                           "variableName": "channel",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -1238,7 +1238,7 @@ export const SlackJson = {
                           "type": "api",
                           "label": "Channel",
                           "variableName": "channel",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -1559,7 +1559,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1859,7 +1859,7 @@ export const SlackJson = {
                     "label": "Channel",
                     "variableName": "channel",
                     "required": true,
-                    "value": "None",
+                    "value": "",
                     "list": [],
                     "config": [
                       {
@@ -1965,7 +1965,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2072,7 +2072,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2193,7 +2193,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2302,7 +2302,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2415,7 +2415,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2522,7 +2522,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2757,7 +2757,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "User",
                     "variableName": "user",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2963,7 +2963,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "User",
                     "variableName": "user",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -3459,7 +3459,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channelNameOrIDFileUpload",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [

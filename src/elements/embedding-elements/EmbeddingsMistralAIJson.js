@@ -13,7 +13,7 @@ export const EmbeddingsMistralAIJson = {
         required: true,
         credential: true,
         credType: "MistralAi",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
@@ -73,7 +73,7 @@ export const EmbeddingsMistralAIJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [

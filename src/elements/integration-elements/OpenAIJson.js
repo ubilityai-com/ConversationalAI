@@ -17,7 +17,7 @@ export const OpenAIJson = {
         "required": true,
         "credential": true,
         "credType": "OpenAI",
-        "value": "None",
+        "value": "",
         "list": [],
         "config": [
           {
@@ -600,7 +600,7 @@ export const OpenAIJson = {
                     type: "api",
                     label: "Model",
                     variableName: "model",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
