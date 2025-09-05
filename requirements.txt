@@ -9,7 +9,7 @@ google-auth==2.31.0
 google-auth-oauthlib==1.2.1
 cryptography==45.0.6
 uvicorn==0.22.0
-
+pymongo==4.14.1
 
 # Core LLM dependencies
 langchain-community==0.3.24
