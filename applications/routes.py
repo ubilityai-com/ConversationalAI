@@ -9,6 +9,8 @@ from google.oauth2.credentials import Credentials
 from langchain_nvidia_ai_endpoints import ChatNVIDIA,NVIDIAEmbeddings
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from aiohttp import BasicAuth
+import asana
+from asana.rest import ApiException
 import sys, os,base64
 status = [200, 201, 202, 204, 206, 207, 208]
 
@@ -934,6 +936,174 @@ async def zendesk_get_tags(payload: ZendeskAppIntegration):
             return JSONResponse(status_code=500, content={"Error": creds})
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+############################# Asana API's  ###############################
+
+class AsanaAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/asana/getWorkspaces")
+async def asana_get_workspaces(payload: AsanaAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = json_cred["accessToken"]
+        configuration = asana.Configuration()
+        configuration.access_token = accessToken
+        api_client = asana.ApiClient(configuration)
+        workspaces_api_instance = asana.WorkspacesApi(api_client)
+        opts = {'opt_fields': "name", }
+        api_response = workspaces_api_instance.get_workspaces(opts)
+        workspaces = list(api_response)
+        return {"workspaces": workspaces}
+    except ApiException as e:
+        return JSONResponse(status_code=500, content={"Error": str(json.loads(e.body))})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class AsanaWithWorkspaceAppIntegration(BaseModel):
+    credential_name: str
+    workspace: str
+
+@http_app.post("/bot/asana/getProjects")
+async def asana_get_projects(payload: AsanaWithWorkspaceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = json_cred["accessToken"]
+        workspace = payload.workspace
+        configuration = asana.Configuration()
+        configuration.access_token = accessToken
+        api_client = asana.ApiClient(configuration)
+        projects_api_instance = asana.ProjectsApi(api_client)
+        opts = {
+            "workspace": workspace,
+            "opt_fields": "name",
+        }
+        api_response = projects_api_instance.get_projects(opts)
+        projects = list(api_response)
+        return {"projects": projects}
+    except ApiException as e:
+        return JSONResponse(status_code=500, content={"Error": str(json.loads(e.body))})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/asana/getTeams")
+async def asana_get_teams(payload: AsanaWithWorkspaceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = json_cred["accessToken"]
+        workspace_gid = payload.workspace
+        configuration = asana.Configuration()
+        configuration.access_token = accessToken
+        api_client = asana.ApiClient(configuration)
+        teams_api_instance = asana.TeamsApi(api_client)
+        opts = {
+            'opt_fields': "name",
+        }
+        api_response = teams_api_instance.get_teams_for_workspace(
+            workspace_gid, opts)
+        teams = list(api_response)
+        return {"teams": teams}
+    except ApiException as e:
+        return JSONResponse(status_code=500, content={"Error": str(json.loads(e.body))})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/asana/getUsers")
+async def asana_get_users(payload: AsanaWithWorkspaceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = json_cred["accessToken"]
+        workspace_gid = payload.workspace
+        configuration = asana.Configuration()
+        configuration.access_token = accessToken
+        api_client = asana.ApiClient(configuration)
+        users_api_instance = asana.UsersApi(api_client)
+        opts = {}
+        api_response = users_api_instance.get_users_for_workspace(
+            workspace_gid, opts)
+        users = list(api_response)
+        return {"users": users}
+    except ApiException as e:
+        return JSONResponse(status_code=500, content={"Error": str(json.loads(e.body))})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class AsanaWithProjectGidAppIntegration(BaseModel):
+    credential_name: str
+    project_gid: str
+
+
+@http_app.post("/bot/asana/getSections")
+async def asana_get_sections(payload: AsanaWithProjectGidAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = json_cred["accessToken"]
+        project_gid = payload.project_gid
+        configuration = asana.Configuration()
+        configuration.access_token = accessToken
+        api_client = asana.ApiClient(configuration)
+        sections_api_instance = asana.SectionsApi(api_client)
+        opts = {'opt_fields': "name", }
+        api_response = sections_api_instance.get_sections_for_project(project_gid, opts)
+        sections = list(api_response)
+        return {"sections": sections}
+    except ApiException as e:
+        return JSONResponse(status_code=500, content={"Error": str(json.loads(e.body))})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/asana/getProjectTemplates")
+async def asana_get_project_templates(payload: AsanaWithWorkspaceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = json_cred["accessToken"]
+        workspace = payload.workspace
+        configuration = asana.Configuration()
+        configuration.access_token = accessToken
+        api_client = asana.ApiClient(configuration)
+        project_templates_api_instance = asana.ProjectTemplatesApi(api_client)
+        opts = {
+            'workspace': workspace,
+        }
+        api_response = project_templates_api_instance.get_project_templates(opts)
+        templates = list(api_response)
+        return {"templates": templates}
+    except ApiException as e:
+        return JSONResponse(status_code=500, content={"Error": str(json.loads(e.body))})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
 
 ################################ AI Providers List Models BaseModel ################################
 
