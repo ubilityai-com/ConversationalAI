@@ -72,9 +72,6 @@ const ActiveFlows: React.FC<ActiveFlowsProps> = ({
         const config: AxiosRequestConfig = {
             method: "get",
             url: process.env.REACT_APP_GET_ELEMENTS_URL + "get_active_triggers/WebhookTrigger",
-            headers: {
-                Authorization: "Bearer " + authToken,
-            },
         }
 
         axios(config)

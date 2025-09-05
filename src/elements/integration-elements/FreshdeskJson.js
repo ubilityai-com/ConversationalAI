@@ -24,28 +24,7 @@ export const FreshdeskJson = {
             "key": "method",
             "value": "get"
           },
-          {
-            "key": "headers",
-            "obj": [
-              {
-                "key": "Authorization",
-                "dependOn": [
-                  {
-                    "type": "static",
-                    "value": "Bearer "
-                  },
-                  {
-                    "type": "redux",
-                    "value": "authentication.authToken"
-                  }
-                ]
-              },
-              {
-                "key": "content-type",
-                "value": "application/json"
-              }
-            ]
-          },
+          
           {
             "key": "url",
             "dependOn": [
@@ -147,28 +126,6 @@ export const FreshdeskJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "freshdesk/listTickets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -833,28 +790,6 @@ export const FreshdeskJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -1331,28 +1266,6 @@ export const FreshdeskJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -1454,28 +1367,6 @@ export const FreshdeskJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "freshdesk/listContacts"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2140,28 +2031,6 @@ export const FreshdeskJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -2700,28 +2569,6 @@ export const FreshdeskJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "freshdesk/listContacts"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },

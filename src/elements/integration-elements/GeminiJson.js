@@ -24,28 +24,7 @@ export const GeminiJson = {
             "key": "method",
             "value": "get"
           },
-          {
-            "key": "headers",
-            "obj": [
-              {
-                "key": "Authorization",
-                "dependOn": [
-                  {
-                    "type": "static",
-                    "value": "Bearer "
-                  },
-                  {
-                    "type": "redux",
-                    "value": "authentication.authToken"
-                  }
-                ]
-              },
-              {
-                "key": "content-type",
-                "value": "application/json"
-              }
-            ]
-          },
+          
           {
             "key": "url",
             "dependOn": [
@@ -154,28 +133,6 @@ export const GeminiJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "gemini/getModels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -422,28 +379,6 @@ export const GeminiJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -527,28 +462,6 @@ export const GeminiJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "gemini/getImageModels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -689,28 +602,6 @@ export const GeminiJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -822,28 +713,6 @@ export const GeminiJson = {
                                 {
                                   "type": "static",
                                   "value": process.env.REACT_APP_DNS_URL + "gemini/getFiles"
-                                }
-                              ]
-                            },
-                            {
-                              "key": "headers",
-                              "obj": [
-                                {
-                                  "key": "Authorization",
-                                  "dependOn": [
-                                    {
-                                      "type": "static",
-                                      "value": "Bearer "
-                                    },
-                                    {
-                                      "type": "redux",
-                                      "value": "authentication.authToken"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "key": "content-type",
-                                  "value": "application/json"
                                 }
                               ]
                             },

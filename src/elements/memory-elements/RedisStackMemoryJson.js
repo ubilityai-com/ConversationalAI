@@ -22,28 +22,7 @@ export const RedisStackMemoryJson = {
             key: "method",
             value: "get",
           },
-          {
-            key: "headers",
-            obj: [
-              {
-                key: "Authorization",
-                dependOn: [
-                  {
-                    type: "static",
-                    value: "Bearer ",
-                  },
-                  {
-                    type: "redux",
-                    value: "authentication.authToken",
-                  },
-                ],
-              },
-              {
-                key: "content-type",
-                value: "application/json",
-              },
-            ],
-          },
+          
           {
             key: "url",
             dependOn: [
@@ -108,28 +87,6 @@ export const RedisStackMemoryJson = {
                     {
                       "type": "static",
                       "value": process.env.REACT_APP_DNS_URL + "api/redis/list_sessions"
-                    }
-                  ]
-                },
-                {
-                  "key": "headers",
-                  "obj": [
-                    {
-                      "key": "Authorization",
-                      "dependOn": [
-                        {
-                          "type": "static",
-                          "value": "Bearer "
-                        },
-                        {
-                          "type": "redux",
-                          "value": "authentication.authToken"
-                        }
-                      ]
-                    },
-                    {
-                      "key": "content-type",
-                      "value": "application/json"
                     }
                   ]
                 },

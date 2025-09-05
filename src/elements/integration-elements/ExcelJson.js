@@ -24,28 +24,7 @@ export const ExcelJson = {
             "key": "method",
             "value": "get"
           },
-          {
-            "key": "headers",
-            "obj": [
-              {
-                "key": "Authorization",
-                "dependOn": [
-                  {
-                    "type": "static",
-                    "value": "Bearer "
-                  },
-                  {
-                    "type": "redux",
-                    "value": "authentication.authToken"
-                  }
-                ]
-              },
-              {
-                "key": "content-type",
-                "value": "application/json"
-              }
-            ]
-          },
+          
           {
             "key": "url",
             "dependOn": [
@@ -147,28 +126,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -252,28 +209,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -389,28 +324,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -475,28 +388,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -631,28 +522,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -717,28 +586,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -864,28 +711,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -950,28 +775,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1056,28 +859,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -1148,28 +929,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -1234,28 +993,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1363,28 +1100,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -1449,28 +1164,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1616,28 +1309,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -1702,28 +1373,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1802,28 +1451,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1943,28 +1570,6 @@ export const ExcelJson = {
                                     {
                                       "type": "static",
                                       "value": process.env.REACT_APP_DNS_URL + "excel/getColumns"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "key": "headers",
-                                  "obj": [
-                                    {
-                                      "key": "Authorization",
-                                      "dependOn": [
-                                        {
-                                          "type": "static",
-                                          "value": "Bearer "
-                                        },
-                                        {
-                                          "type": "redux",
-                                          "value": "authentication.authToken"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "key": "content-type",
-                                      "value": "application/json"
                                     }
                                   ]
                                 },
@@ -2116,28 +1721,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -2202,28 +1785,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2302,28 +1863,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2418,28 +1957,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -2504,28 +2021,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2637,28 +2132,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -2723,28 +2196,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2823,28 +2274,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2939,28 +2368,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -3025,28 +2432,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3125,28 +2510,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3259,28 +2622,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -3345,28 +2686,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3445,28 +2764,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3579,28 +2876,6 @@ export const ExcelJson = {
                         ]
                       },
                       {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
                         "key": "data",
                         "obj": [
                           {
@@ -3665,28 +2940,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3765,28 +3018,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },

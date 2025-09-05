@@ -38,28 +38,7 @@ export const McpToolJson = {
                   key: "method",
                   value: "get",
                 },
-                {
-                  key: "headers",
-                  obj: [
-                    {
-                      key: "Authorization",
-                      dependOn: [
-                        {
-                          type: "static",
-                          value: "Bearer ",
-                        },
-                        {
-                          type: "redux",
-                          value: "authentication.authToken",
-                        },
-                      ],
-                    },
-                    {
-                      key: "content-type",
-                      value: "application/json",
-                    },
-                  ],
-                },
+
                 {
                   key: "url",
                   dependOn: [
@@ -107,28 +86,7 @@ export const McpToolJson = {
                     },
                   ]
                 },
-                {
-                  key: "headers",
-                  obj: [
-                    {
-                      key: "Authorization",
-                      dependOn: [
-                        {
-                          type: "static",
-                          value: "Bearer ",
-                        },
-                        {
-                          type: "redux",
-                          value: "authentication.authToken",
-                        },
-                      ],
-                    },
-                    {
-                      key: "content-type",
-                      value: "application/json",
-                    },
-                  ],
-                },
+
                 {
                   key: "url",
                   dependOn: [
@@ -184,28 +142,7 @@ export const McpToolJson = {
                     },
                   ],
                 },
-                {
-                  key: "headers",
-                  obj: [
-                    {
-                      key: "Authorization",
-                      dependOn: [
-                        {
-                          type: "static",
-                          value: "Bearer ",
-                        },
-                        {
-                          type: "redux",
-                          value: "authentication.authToken",
-                        },
-                      ],
-                    },
-                    {
-                      key: "content-type",
-                      value: "application/json",
-                    },
-                  ],
-                },
+
                 {
                   key: "data",
                   obj: [
@@ -296,28 +233,7 @@ export const McpToolJson = {
                     },
                   ],
                 },
-                {
-                  key: "headers",
-                  obj: [
-                    {
-                      key: "Authorization",
-                      dependOn: [
-                        {
-                          type: "static",
-                          value: "Bearer ",
-                        },
-                        {
-                          type: "redux",
-                          value: "authentication.authToken",
-                        },
-                      ],
-                    },
-                    {
-                      key: "content-type",
-                      value: "application/json",
-                    },
-                  ],
-                },
+
                 {
                   key: "data",
                   obj: [
