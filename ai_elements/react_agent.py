@@ -11,6 +11,10 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 DEFAULT_REACT_AGENT_STATUS_PROMPT = """
+User Prompt: {user_prompt}
+Last User Input: {user_input}
+Last Agent Output: {agent_output}
+
 You are a strict evaluator AI that determines whether a given response represents a completed task or not.
 
 You will be given a response from a previous agent.
@@ -24,7 +28,7 @@ Only "pass" or "fail" are allowed as status values. Do not use any other status 
 
 REMEMBER you job is not to provide a new answer, it is only to determine the status of a previous agent’s response.
 
-Output should be like this: {"status": ""}. No explanation is needed.
+Output should be like this: {{"status": ""}}. No explanation is needed.
 """
 
 
@@ -171,12 +175,15 @@ class REACT_AGENT:
                 }
         return mcps
 
-    def _status(self, llm, response, conv_id):
+    def _status(self, user_prompt, input, llm, response, conv_id):
         try:
             if "requiredInputs" in self.data:
                 prompt = self._build_data_collector_status_prompt()
             else:
-                prompt = DEFAULT_REACT_AGENT_STATUS_PROMPT
+                prompt = self._build_react_agent_status_prompt(user_prompt, input, response)
+                logging.info("================== REACT AGENT STATUS PROMTP ==================")
+                logging.info(prompt)
+                logging.info("===============================================================")
 
             agent = RunnableWithMessageHistory(
                 create_react_agent(model=llm, prompt=prompt, tools=[]),
@@ -184,7 +191,7 @@ class REACT_AGENT:
                 input_messages_key="messages",
                 # store=InMemoryStore()
             )
-            status = agent.invoke(input={"messages": response}, config={'configurable': {'session_id': conv_id}})
+            status = agent.invoke(input={"messages": ""}, config={'configurable': {'session_id': conv_id}})
             if 'messages' in status:
                 for msg in status['messages']:
                     if isinstance(msg, AIMessage):
@@ -201,7 +208,14 @@ class REACT_AGENT:
             if tool.name in self.data['tools']['selectedTools']:
                 selected_tools.append(tool)
         return selected_tools
-    
+
+    def _build_react_agent_status_prompt(self, user_prompt, user_input, agent_output):
+        return DEFAULT_REACT_AGENT_STATUS_PROMPT.format(
+            user_prompt=user_prompt if user_prompt else '',
+            user_input=user_input,
+            agent_output=agent_output
+        )
+
     def _build_data_collector_system_prompt(self):
         required_inputs = ""
         for name, description in self.data["requiredInputs"].items():
@@ -260,10 +274,11 @@ class REACT_AGENT:
                 # if "historyId" in self.data['chainMemory']:
                 memory.load_streaming_memory(conversation_id)
 
-
+            user_prompt = None
             if "prompt" in self.data['inputs'] and self.data['inputs']["prompt"] and "requiredInputs" not in self.data:
                 logging.info("initialize the react agent with custom prompt")
-                raw_agent = create_react_agent(model=llm_model, tools=tools, prompt=self.data['inputs']["prompt"]) # If the user provides a custom prompt, initialize the react agent with it
+                user_prompt = self.data['inputs']["prompt"]
+                raw_agent = create_react_agent(model=llm_model, tools=tools, prompt=user_prompt) # If the user provides a custom prompt, initialize the react agent with it
             elif "requiredInputs" in self.data:
                 logging.info("initialize the data collector agent with custom prompt")
                 raw_agent = create_react_agent(model=llm_model, tools=tools, prompt=self._build_data_collector_system_prompt()) # this agent is a data collector
@@ -307,7 +322,7 @@ class REACT_AGENT:
             # # Update history with new messages
             # memory.add_new_message(self.data['inputs']["query"], result)
 
-            status = self._status(llm_model, result, conversation_id)
+            status = self._status(user_prompt, self.data['inputs']["query"], llm_model, result, conversation_id)
             status = status.replace("'", '"')
             try:
                 status = json.loads(status)
