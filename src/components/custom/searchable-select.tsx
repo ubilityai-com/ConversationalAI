@@ -1,11 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
-import { Button } from '../ui/button';
-import { ScrollArea } from '../ui/scroll-area';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { cn } from '../../lib/utils';
-import { Check, ChevronsUpDown, RefreshCcw, X } from 'lucide-react';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command';
-import { SelectUtilButton } from './button-with-tooltip';
+import { useEffect, useRef, useState } from "react";
+import { Button } from "../ui/button";
+import { ScrollArea } from "../ui/scroll-area";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { cn } from "../../lib/utils";
+import { Check, ChevronsUpDown, RefreshCcw, X, Loader2 } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../ui/command";
+import { SelectUtilButton } from "./button-with-tooltip";
 
 type SelectOption<T> = {
   value: T;
@@ -18,13 +25,13 @@ type SearchableSelectProps<T> = {
   onChange: (value: T | null) => void;
   value: T | undefined;
   placeholder: string;
-  name: string
+  name: string;
   disabled?: boolean;
   loading?: boolean;
   showDeselect?: boolean;
   onRefresh?: () => void;
   showRefresh?: boolean;
-  className?: string
+  className?: string;
 };
 
 export const SearchableSelect = <T extends React.Key>({
@@ -37,20 +44,20 @@ export const SearchableSelect = <T extends React.Key>({
   showDeselect,
   onRefresh,
   showRefresh,
-  className
+  className,
 }: SearchableSelectProps<T>) => {
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [open, setOpen] = useState(false);
   const [filterOptionsIndices, setFilteredOptions] = useState<number[]>([]);
   const triggerWidth = `${triggerRef.current?.clientWidth ?? 0}px`;
   const [selectedIndex, setSelectedIndex] = useState(
-    options.findIndex((option) => option.value === value) ?? -1,
+    options.findIndex((option) => option.value === value) ?? -1
   );
 
   useEffect(() => {
     setSelectedIndex(
-      options.findIndex((option) => option.value === value) ?? -1,
+      options.findIndex((option) => option.value === value) ?? -1
     );
   }, [value, options]);
 
@@ -64,7 +71,7 @@ export const SearchableSelect = <T extends React.Key>({
             label: option.label,
             value: option.value,
             index: index,
-            description: option.description ?? '',
+            description: option.description ?? "",
           };
         })
         .filter((option) => {
@@ -83,7 +90,7 @@ export const SearchableSelect = <T extends React.Key>({
         ? parseInt(index)
         : -1;
     setSelectedIndex(optionIndex);
-    setSearchTerm('');
+    setSearchTerm("");
 
     if (optionIndex === -1) {
       return;
@@ -95,11 +102,11 @@ export const SearchableSelect = <T extends React.Key>({
     <Popover modal={true} open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         asChild
-        className={cn('', {
-          'cursor-not-allowed opacity-80 ': disabled
+        className={cn("", {
+          "cursor-not-allowed opacity-80 ": disabled || loading,
         })}
         onClick={(e) => {
-          if (disabled) {
+          if (disabled || loading) {
             e.preventDefault();
           }
           e.stopPropagation();
@@ -109,13 +116,14 @@ export const SearchableSelect = <T extends React.Key>({
           <Button
             ref={triggerRef}
             variant="outline"
-            disabled={disabled}
+            disabled={disabled || loading}
             role="combobox"
-            // loading={loading}
             aria-expanded={open}
             className={cn("w-full justify-between font-normal text-foreground")}
             onClick={(e) => {
-              setOpen((prev) => !prev);
+              if (!loading) {
+                setOpen((prev) => !prev);
+              }
               e.preventDefault();
             }}
           >
@@ -124,12 +132,16 @@ export const SearchableSelect = <T extends React.Key>({
                 ? options[selectedIndex].label
                 : placeholder}
             </span>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            {loading ? (
+              <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin" />
+            ) : (
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            )}
           </Button>
           <div className="right-10 top-2 absolute flex gap-2  z-50 items-center">
             {showDeselect && !disabled && value && !loading && (
               <SelectUtilButton
-                tooltipText={('Unset')}
+                tooltipText={"Unset"}
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -140,7 +152,7 @@ export const SearchableSelect = <T extends React.Key>({
             )}
             {showRefresh && !loading && (
               <SelectUtilButton
-                tooltipText={('Refresh')}
+                tooltipText={"Refresh"}
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -168,56 +180,63 @@ export const SearchableSelect = <T extends React.Key>({
             onValueChange={(e) => {
               setSearchTerm(e);
             }}
+            disabled={loading}
           />
-          {filterOptionsIndices.length === 0 && (
-            <CommandEmpty>No results found.</CommandEmpty>
-          )}
+          {loading ? (
+            <div className="flex items-center justify-center p-4">
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              <span className="text-sm text-muted-foreground">Loading...</span>
+            </div>
+          ) : (
+            <>
+              {filterOptionsIndices.length === 0 && (
+                <CommandEmpty>No results found.</CommandEmpty>
+              )}
 
-          <CommandGroup>
-            <CommandList>
-              <ScrollArea
-                className="h-full"
-              // viewPortClassName={'max-h-[200px]'}
-              >
-                {filterOptionsIndices &&
-                  filterOptionsIndices.map((filterIndex) => {
-                    const option = options[filterIndex];
-                    if (!option) {
-                      return null;
-                    }
-                    return (
-                      <CommandItem
-                        key={filterIndex}
-                        value={String(filterIndex)}
-                        onSelect={(currentValue) => {
-                          setOpen(false);
-                          onSelect(currentValue);
-                        }}
-                        className="flex gap-2 flex-col items-start"
-                      >
-                        <div className="flex gap-2 items-center justify-between w-full">
-                          {option.label}
-                          <Check
-                            className={cn('flex-shrink-0 w-4 h-4', {
-                              hidden: selectedIndex !== filterIndex,
-                            })}
-                          />
-                        </div>
-                        {option.description && (
-                          <div className="text-sm text-muted-foreground">
-                            {option.description}
-                          </div>
-                        )}
-                      </CommandItem>
-                    );
-                  })}
-              </ScrollArea>
-            </CommandList>
-          </CommandGroup>
+              <CommandGroup>
+                <CommandList>
+                  <ScrollArea className="h-full">
+                    {filterOptionsIndices &&
+                      filterOptionsIndices.map((filterIndex) => {
+                        const option = options[filterIndex];
+                        if (!option) {
+                          return null;
+                        }
+                        return (
+                          <CommandItem
+                            key={filterIndex}
+                            value={String(filterIndex)}
+                            onSelect={(currentValue) => {
+                              setOpen(false);
+                              onSelect(currentValue);
+                            }}
+                            className="flex gap-2 flex-col items-start"
+                          >
+                            <div className="flex gap-2 items-center justify-between w-full">
+                              {option.label}
+                              <Check
+                                className={cn("flex-shrink-0 w-4 h-4", {
+                                  hidden: selectedIndex !== filterIndex,
+                                })}
+                              />
+                            </div>
+                            {option.description && (
+                              <div className="text-sm text-muted-foreground">
+                                {option.description}
+                              </div>
+                            )}
+                          </CommandItem>
+                        );
+                      })}
+                  </ScrollArea>
+                </CommandList>
+              </CommandGroup>
+            </>
+          )}
         </Command>
       </PopoverContent>
     </Popover>
   );
 };
 
-SearchableSelect.displayName = 'SearchableSelect';
+SearchableSelect.displayName = "SearchableSelect";
