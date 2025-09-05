@@ -10,7 +10,7 @@ Includes:
 - Dynamic routing and formatting
 """
 from logger_config import logger
-import json,base64
+import json,base64,openai
 from typing import Union
 from elements.message import Message
 from elements.multiple_choice import MultipleChoice
@@ -609,3 +609,22 @@ async def restore_active_chatbots():
         return True
     except Exception as e:
         return False
+    
+
+def speech_to_text_openai(api_key,audio_binary: bytes, filename: str ):
+    """
+    Converts audio binary data to text using OpenAI Whisper API.
+    
+    :param audio_binary: Binary data of the audio file
+    :param filename: Name of the file (extension required, e.g., .wav, .mp3, .m4a)
+    :return: Transcribed text
+    """
+    openai.api_key = api_key
+    audio_file = io.BytesIO(audio_binary)
+    audio_file.name = filename  # OpenAI needs filename to detect format
+
+    transcript = openai.audio.transcriptions.create(
+        model="whisper-1",
+        file=audio_file
+    )
+    return transcript.text

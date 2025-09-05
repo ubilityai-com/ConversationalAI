@@ -9,7 +9,7 @@ import json,socketio,shutil,os,asyncio
 from datetime import datetime,timedelta
 from fastapi import FastAPI
 from elements.message import Message
-from functions import execute_process, save_user_input,save_file_input,restore_active_chatbots, save_data_to_global_history, create_global_history
+from functions import execute_process, save_user_input,save_file_input,restore_active_chatbots, save_data_to_global_history, create_global_history,speech_to_text_openai
 from logger_config import logger, setup_logger
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
@@ -110,12 +110,18 @@ async def connect(sid, environ, auth=None):
         'variables': active_dialogues[dialogue_id]['constant_variables'],
         'current_step': 'firstElementId',
         'wait_for_user_input': None,
-        'dialogue_id':dialogue_id
+        'dialogue_id':dialogue_id,
+        'audio_configuration':None
     }
 
     conversation = session[dialogue_id][conversation_id]
     current_step = conversation['current_step']
     dialogue = active_dialogues[dialogue_id]['bot']
+
+    # add audio configuration
+    if 'audio_configuration' in  active_dialogues[dialogue_id]:
+        audio_configuration = active_dialogues[dialogue_id]['audio_configuration']
+        session[dialogue_id][conversation_id]['audio_configuration'] = audio_configuration
 
     # used for the recursive functionality in react agent
     conversation['variables']['react_fail'] = False
@@ -181,6 +187,16 @@ async def message(sid, data):
         conversation['variables'] = {}
         conversation['wait_for_user_input'] = None
         return
+    
+    # check if user send audio
+    if data_type == 'voice_audio':
+        if not conversation['audio_configuration']: # user didn't support voice conversation
+            return
+        api_key = conversation['variables'][conversation['audio_configuration']]
+        user_input['data'] = bytes(user_input["data"])
+        user_message = speech_to_text_openai(api_key,user_input,user_input['filename'])
+        user_input['data'] = user_message
+
 
     # Save input and continue process
     if conversation.get('wait_for_user_input') and data_type != "binary":
@@ -194,12 +210,7 @@ async def message(sid, data):
 
     await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
-# def get_conversation_id_from_sid(dialogue_id, sid):
-#     dialogue_sessions = session.get(dialogue_id, {})
-#     for conv_id, conv in dialogue_sessions.items():
-#         if conv.get('sid') == sid:
-#             return conv_id
-#     return None
+
 
 def get_dialogue_id_from_sid(sid):
     for d_id, conversations in session.items():
