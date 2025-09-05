@@ -24,7 +24,7 @@ export const automateOAuthSignIn = ({
     customLogic,
 }: OAuthSignInParams): void => {
     const clientId = Cookies.get(clientIdKey)
-    const finalRedirectUri = redirectUri || `http://localhost:3000`
+    const finalRedirectUri = redirectUri || window.location.href
 
     if (!clientId) {
         console.error(`Client ID not found with key: ${clientIdKey}`)

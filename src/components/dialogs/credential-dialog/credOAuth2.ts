@@ -156,12 +156,6 @@ const getFieldValue = ({ path, functionName, name, apiRes, isApiResJson }: GetFi
     return null
 }
 
-// Notification function (placeholder - replace with your actual notification system)
-const openNotificationWithIcon = (type: string, title: string, message: string): void => {
-    console.log(`${type.toUpperCase()}: ${title} - ${message}`)
-    // Replace with your actual notification implementation
-    alert(`${title}: ${message}`)
-}
 
 export const automateOAuth2 = async ({
     url,
@@ -280,8 +274,7 @@ export const automateOAuth2 = async ({
         // // Use Zustand store instead of dispatch
         useCredentialStore.getState().createCred(credentialPayload)
     } catch (error) {
-        openNotificationWithIcon("error", "Failed Creating Credential", "Please Make sure you filled correct Credentials")
-        console.log({ error })
+        console.log("error", "Failed Creating Credential", "Please Make sure you filled correct Credentials")
     } finally {
         for (const key of fieldsToAdd) {
             Cookies.remove(key.trim().split("::")[0])
