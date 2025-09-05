@@ -1,4 +1,5 @@
 //add import
+import { MongoDbJson } from "./MongoDbJson";
 import { MicrosoftWordJson } from "./MicrosoftWordJson";
 import { TelegramJson } from "./TelegramJson";
 import { GoogleSheetsJson } from "./GoogleSheetsJson";
@@ -14,6 +15,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    MongoDbJson,
     MicrosoftWordJson,
     TelegramJson,
     GoogleSheetsJson,
