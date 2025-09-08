@@ -205,14 +205,6 @@ export const OpenAIJson = {
                     ],
                     ]
                   },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {},
-                      "Error": "",
-                      "Status": ""
-                    },
-                  },
                 ],
                 "Speech To Text": [
                   {
@@ -267,17 +259,6 @@ export const OpenAIJson = {
                       },
                     ],
                     ]
-                  },
-
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        "text": ""
-                      }
-
-
-                    },
                   },
                 ],
 
@@ -554,14 +535,6 @@ export const OpenAIJson = {
                       ]
                     },
                   },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {},
-                      Error: "",
-                      Status: "",
-                    },
-                  },
                 ],
                 "Analyze Image": [
                   {
@@ -577,7 +550,7 @@ export const OpenAIJson = {
                   {
                     type: "api",
                     label: "Model",
-                    variableName: "model",
+                    variableName: "model_AnalyzeImage",
                     value: "",
                     required: true,
                     list: [],
@@ -697,14 +670,6 @@ export const OpenAIJson = {
                           hasDynamicVariable: true,
                         },
                       ],
-                    },
-                  },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {},
-                      Error: "",
-                      Status: "",
                     },
                   },
                 ],
