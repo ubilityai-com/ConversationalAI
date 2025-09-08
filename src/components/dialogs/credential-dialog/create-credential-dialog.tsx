@@ -475,7 +475,7 @@ export function CreateCredentialDialog({
                             <div className="space-y-3">
                                 <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">Service Provider</Label>
                                 <ServiceSelector
-                                    // disabled
+                                    disabled
                                     value={searchText}
                                     onChange={handleServiceChange}
                                     options={autoCompleteList}
