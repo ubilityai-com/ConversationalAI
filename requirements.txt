@@ -11,6 +11,7 @@ cryptography==45.0.6
 uvicorn==0.22.0
 pymongo==4.14.1
 asana==5.2.1
+python-decouple==3.8
 
 # Core LLM dependencies
 langchain-community==0.3.24
