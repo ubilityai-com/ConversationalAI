@@ -467,7 +467,7 @@ def save_file_input(conversation,conversation_id,user_input):
             except Exception:
                 logger.warning("fail svg")
                 
-        random_suffix = str(uuid.uuid4())[:6]
+        random_suffix = str(uuid.uuid4())[:3]
         current_dir = os.getcwd()
         STORAGE_DIR = os.path.join(
             current_dir,
@@ -478,7 +478,8 @@ def save_file_input(conversation,conversation_id,user_input):
 
         os.makedirs(STORAGE_DIR, exist_ok=True)  # Create dirs if they don't exist
 
-        file_name = f"{random_suffix}.{matched_extension}"
+        original_name = os.path.splitext(user_input["filename"])[0]
+        file_name = f"{original_name}_{random_suffix}.{matched_extension}"
         file_path = os.path.join(STORAGE_DIR, file_name)
 
         # Save file

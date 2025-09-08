@@ -32,6 +32,8 @@ session = defaultdict(dict)
 
 # Keep a global dictionary to map sid -> dialogue_id , conv_id
 connected_clients = {}
+# Temporary buffer for incoming file chunks
+file_chunks_buffer = {}
 
 # All active dialogues
 from dialogues.dialogues import active_dialogues
@@ -205,8 +207,36 @@ async def message(sid, data):
 
     # Save input file and continue process
     if conversation.get('wait_for_user_input') and data_type == "binary":
-        user_input['data'] = bytes(user_input["data"]) #should be removed
-        save_file_input(conversation,conversation_id, user_input)
+        filename = user_input["filename"]
+        mimetype = user_input["mimetype"]
+        chunk_index = user_input["chunk_index"]
+        total_chunks = user_input["total_chunks"]
+        chunk_data = user_input["data"]
+
+        # Ensure we have a buffer for this file
+        key = f"{sid}:{filename}"
+        if key not in file_chunks_buffer:
+            file_chunks_buffer[key] = [None] * total_chunks
+
+        file_chunks_buffer[key][chunk_index] = bytes(chunk_data)
+
+        logger.info(f"Received chunk {chunk_index+1}/{total_chunks} for {filename}")
+
+        # If all chunks are received, assemble the file
+        if all(chunk is not None for chunk in file_chunks_buffer[key]):
+            full_file = b"".join(file_chunks_buffer[key])
+            logger.info(f"All chunks received for {filename}, total size={len(full_file)} bytes")
+
+            # Clean up buffer
+            del file_chunks_buffer[key]
+
+            # Save file into conversation
+            file_input = {
+                "data": full_file,
+                "filename": filename,
+                "mimetype": mimetype
+            }
+            save_file_input(conversation, conversation_id, file_input)
 
     await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
