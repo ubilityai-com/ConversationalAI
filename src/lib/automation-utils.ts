@@ -629,7 +629,7 @@ export function objToReturnDynamicv2(apiRes: ApiResponse): Record<string, any> {
       }
     };
 
-    if (["dropdown", "api"].includes(type) && value !== "None") {
+    if (["dropdown", "api"].includes(type) && value !== "") {
       if (credential && list) {
         obj[variableName!] =
           list.length > 1
@@ -872,7 +872,7 @@ export function objToReturnValuesToSend(
     };
 
     if (
-      (["dropdown", "api"].includes(type) && valueToSend !== "None") ||
+      (["dropdown", "api"].includes(type) && valueToSend !== "") ||
       valueToSend
     ) {
       if (credential && list) {
@@ -983,7 +983,7 @@ export function objToReturnDefaultValues(
       };
 
       if (
-        (["dropdown", "api"].includes(type) && valueToSend !== "None") ||
+        (["dropdown", "api"].includes(type) && valueToSend !== "") ||
         valueToSend
       ) {
         if (credential && list) {

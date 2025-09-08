@@ -161,7 +161,7 @@ export function ApiCaller({
 
                 if (
                     !isUsingVariable(value) &&
-                    (value !== "None" && value) &&
+                    (value !== "" && value) &&
                     !ListsForThisNode.find((elt) => elt.value === value)
                 ) {
                     if (inDynamic === undefined || inDynamic) {
@@ -304,7 +304,7 @@ export function ApiCaller({
 
                 if (
                     !multiSelect &&
-                    (value !== "None" && value) &&
+                    (value !== "" && value) &&
                     !isUsingVariable(value) &&
                     !checkIfVariableInDropDown(
                         value,
@@ -484,7 +484,7 @@ export function ApiCaller({
     })
 
     if (isDisabled && isLoadingList === false) {
-        if (!multiSelect && (value !== "None" && value)) {
+        if (!multiSelect && (value !== "" && value)) {
             console.trace("innnnnnnnnnnnnnnnnnn")
             onChange({
                 name: "value",

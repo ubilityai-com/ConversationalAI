@@ -29,7 +29,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/zohoCRM/getRefreshToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 client_id: "{{clientID}}",
@@ -52,7 +51,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/zoom/getRefreshToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 client_id: "{{clientID}}",
@@ -68,7 +66,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/hubspot/getRefresh`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 client_id: "{{clientID}}",
@@ -101,7 +98,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.REACT_APP_DNS_URL}microsoft/getToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 clientId: "{{clientId}}",
@@ -126,7 +122,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/xero/getAccessToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 client_id: "{{clientID}}",
@@ -149,7 +144,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/pipedrive/getToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 clientID: "{{clientID}}",
@@ -172,7 +166,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/quickbooks/getRefreshToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 client_id: "{{clientID}}",
@@ -197,7 +190,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/jira/getCredsInfo`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 client_id: "{{clientID}}",
@@ -215,7 +207,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/facebook/getCredsInfo`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 client_id: "{{clientID}}",
@@ -233,7 +224,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/instagram/getToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 clientId: "{{clientID}}",
@@ -250,7 +240,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/linkedin/getToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 clientId: "{{clientID}}",
@@ -267,7 +256,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/x/getToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 code: "{{code::params}}",
@@ -285,7 +273,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/serviceNow/getToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 clientID: "{{clientID}}",
@@ -304,7 +291,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/reddit/getToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 clientId: "{{clientID}}",
@@ -321,7 +307,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}zendesk/getToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 clientId: "{{clientId}}",
@@ -339,7 +324,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/clickup/getToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 clientID: "{{clientID}}",
@@ -355,7 +339,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/mailchimp/getToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 clientID: "{{clientID}}",
@@ -372,7 +355,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/snowflake/getToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 clientId: "{{clientId}}",
@@ -399,7 +381,6 @@ export const OAuth2ServiceTypes = {
             url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}slack/getToken`,
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer {{auth.token::zustand}}`,
             },
             payload: {
                 clientId: "{{clientId}}",

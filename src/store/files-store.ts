@@ -248,17 +248,11 @@ export const useFilesStore = create<FilesStore>()(
       try {
         setIsUploading(true);
 
-        const authToken = localStorage.getItem("authToken") || "";
         const { selectedBot } = useFlowStore.getState()
         const response = await axios.post(
           process.env.REACT_APP_DNS_URL + `upload_file?dialogue=${selectedBot?.id}`,
           file,
           {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-              Filename: file.name,
-              "Content-Type": file.type || "application/octet-stream",
-            },
             onUploadProgress: (progressEvent) => {
               if (progressEvent.total) {
                 const percentCompleted = Math.round(
@@ -410,19 +404,12 @@ export const useFilesStore = create<FilesStore>()(
       addRemovingFileId(fileId);
 
       try {
-        // Get auth token
-        const authToken = localStorage.getItem("authToken") || "";
         const { selectedBot } = useFlowStore.getState()
         // Make API call to delete file
         await axios.delete(
           process.env.REACT_APP_DNS_URL + `delete_file?dialogue=${selectedBot?.id}&filename=${encodeURIComponent(
             fileId
           )}`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-          }
         );
 
         // Remove from local state after successful API call
@@ -514,20 +501,11 @@ export const useFilesStore = create<FilesStore>()(
           addPreviewingFileId(fileName);
         }
 
-        // Get auth token
-        const authToken = localStorage.getItem("authToken") || "";
-
         // Make request to get file
         const response = await axios.get(
           process.env.REACT_APP_DNS_URL + `get_file?dialogue=${selectedBot?.id}&filename=${encodeURIComponent(
             fileName
-          )}`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-            },
-            responseType: "blob",
-          }
+          )}`
         );
 
         return response.data;

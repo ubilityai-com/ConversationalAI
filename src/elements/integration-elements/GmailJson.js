@@ -17,7 +17,7 @@ export const GmailJson = {
         required: true,
         credential: true,
         credType: "Google",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {

@@ -14,35 +14,14 @@ export const TogetherAIChatModelJson = {
         required: true,
         credential: true,
         credType: "TogetherAi",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
             key: "method",
             value: "get",
           },
-          {
-            key: "headers",
-            obj: [
-              {
-                key: "Authorization",
-                dependOn: [
-                  {
-                    type: "static",
-                    value: "Bearer ",
-                  },
-                  {
-                    type: "redux",
-                    value: "authentication.authToken",
-                  },
-                ],
-              },
-              {
-                key: "content-type",
-                value: "application/json",
-              },
-            ],
-          },
+          
           {
             key: "url",
             dependOn: [
@@ -75,7 +54,7 @@ export const TogetherAIChatModelJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [
@@ -94,28 +73,7 @@ export const TogetherAIChatModelJson = {
               },
             ],
           },
-          {
-            key: "headers",
-            obj: [
-              {
-                key: "Authorization",
-                dependOn: [
-                  {
-                    type: "static",
-                    value: "Bearer ",
-                  },
-                  {
-                    type: "redux",
-                    value: "authentication.authToken",
-                  },
-                ],
-              },
-              {
-                key: "content-type",
-                value: "application/json",
-              },
-            ],
-          },
+          
           {
             key: "data",
             obj: [

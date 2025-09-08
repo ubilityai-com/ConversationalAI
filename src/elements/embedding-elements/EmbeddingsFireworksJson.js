@@ -13,35 +13,14 @@ export const EmbeddingsFireworksJson = {
         required: true,
         credential: true,
         credType: "Fireworks",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
             key: "method",
             value: "get",
           },
-          {
-            key: "headers",
-            obj: [
-              {
-                key: "Authorization",
-                dependOn: [
-                  {
-                    type: "static",
-                    value: "Bearer ",
-                  },
-                  {
-                    type: "redux",
-                    value: "authentication.authToken",
-                  },
-                ],
-              },
-              {
-                key: "content-type",
-                value: "application/json",
-              },
-            ],
-          },
+          
           {
             key: "url",
             dependOn: [

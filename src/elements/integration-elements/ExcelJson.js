@@ -17,35 +17,14 @@ export const ExcelJson = {
         "required": true,
         "credential": true,
         "credType": "Microsoft",
-        "value": "None",
+        "value": "",
         "list": [],
         "config": [
           {
             "key": "method",
             "value": "get"
           },
-          {
-            "key": "headers",
-            "obj": [
-              {
-                "key": "Authorization",
-                "dependOn": [
-                  {
-                    "type": "static",
-                    "value": "Bearer "
-                  },
-                  {
-                    "type": "redux",
-                    "value": "authentication.authToken"
-                  }
-                ]
-              },
-              {
-                "key": "content-type",
-                "value": "application/json"
-              }
-            ]
-          },
+          
           {
             "key": "url",
             "dependOn": [
@@ -128,7 +107,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idCreateSheet",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -143,28 +122,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -237,7 +194,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idDeleteWorkbook",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -252,28 +209,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -370,7 +305,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idAppend",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -385,28 +320,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -460,7 +373,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Sheet ID",
                     "variableName": "idSheetAppend",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -475,28 +388,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -612,7 +503,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idClear",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -627,28 +518,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -702,7 +571,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Sheet ID",
                     "variableName": "idSheetClear",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -717,28 +586,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -845,7 +692,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idDelete",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -860,28 +707,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -935,7 +760,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Sheet ID",
                     "variableName": "idSheetDelete",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -950,28 +775,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1037,7 +840,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idGetManyWorkbook",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -1052,28 +855,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1129,7 +910,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idUpdateSheet",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -1144,28 +925,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1219,7 +978,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Sheet ID",
                     "variableName": "idUpdateSheetSheet",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -1234,28 +993,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1344,7 +1081,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idGetRows",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -1359,28 +1096,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1434,7 +1149,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Sheet ID",
                     "variableName": "idSheetGetRows",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -1449,28 +1164,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1597,7 +1290,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idAppendRows",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -1612,28 +1305,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1687,7 +1358,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Sheet ID",
                     "variableName": "idAppendRowsSheet",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -1702,28 +1373,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1787,7 +1436,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Table ID",
                     "variableName": "idAppendRowsTable",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -1802,28 +1451,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1928,7 +1555,7 @@ export const ExcelJson = {
                               "type": "api",
                               "label": "Column ID",
                               "variableName": "idAppendRowsColumns",
-                              "value": "None",
+                              "value": "",
                               "required": true,
                               "hasDynamicVariable": true,
                               "list": [],
@@ -1943,28 +1570,6 @@ export const ExcelJson = {
                                     {
                                       "type": "static",
                                       "value": process.env.REACT_APP_DNS_URL + "excel/getColumns"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "key": "headers",
-                                  "obj": [
-                                    {
-                                      "key": "Authorization",
-                                      "dependOn": [
-                                        {
-                                          "type": "static",
-                                          "value": "Bearer "
-                                        },
-                                        {
-                                          "type": "redux",
-                                          "value": "authentication.authToken"
-                                        }
-                                      ]
-                                    },
-                                    {
-                                      "key": "content-type",
-                                      "value": "application/json"
                                     }
                                   ]
                                 },
@@ -2097,7 +1702,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idConvert",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -2112,28 +1717,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2187,7 +1770,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Sheet ID",
                     "variableName": "idConvertSheet",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -2202,28 +1785,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2287,7 +1848,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Table ID",
                     "variableName": "idConvertTable",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -2302,28 +1863,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2399,7 +1938,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idAddTable",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -2414,28 +1953,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2489,7 +2006,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Sheet ID",
                     "variableName": "idAddTableSheet",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -2504,28 +2021,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2618,7 +2113,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idDeleteTable",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -2633,28 +2128,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2708,7 +2181,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Sheet ID",
                     "variableName": "idDeleteTableSheet",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -2723,28 +2196,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2808,7 +2259,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Table ID",
                     "variableName": "idDeleteTableTable",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -2823,28 +2274,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2920,7 +2349,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idGetColumns",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -2935,28 +2364,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3010,7 +2417,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Sheet ID",
                     "variableName": "idGetColumnsSheet",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -3025,28 +2432,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3110,7 +2495,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Table ID",
                     "variableName": "idGetColumnsTable",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -3125,28 +2510,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3240,7 +2603,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idGetRows",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -3255,28 +2618,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3330,7 +2671,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Sheet ID",
                     "variableName": "idGetRowsSheet",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -3345,28 +2686,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3430,7 +2749,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Table ID",
                     "variableName": "idGetRowsTable",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -3445,28 +2764,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3560,7 +2857,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Workbook ID",
                     "variableName": "idLookup",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -3575,28 +2872,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorkbooks"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3650,7 +2925,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Sheet ID",
                     "variableName": "idLookupSheet",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -3665,28 +2940,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getWorksheets"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3750,7 +3003,7 @@ export const ExcelJson = {
                     "type": "api",
                     "label": "Table ID",
                     "variableName": "idLookupTable",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "hasDynamicVariable": true,
                     "list": [],
@@ -3765,28 +3018,6 @@ export const ExcelJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "excel/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },

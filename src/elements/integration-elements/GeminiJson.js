@@ -17,35 +17,14 @@ export const GeminiJson = {
         "required": true,
         "credential": true,
         "credType": "Gemini",
-        "value": "None",
+        "value": "",
         "list": [],
         "config": [
           {
             "key": "method",
             "value": "get"
           },
-          {
-            "key": "headers",
-            "obj": [
-              {
-                "key": "Authorization",
-                "dependOn": [
-                  {
-                    "type": "static",
-                    "value": "Bearer "
-                  },
-                  {
-                    "type": "redux",
-                    "value": "authentication.authToken"
-                  }
-                ]
-              },
-              {
-                "key": "content-type",
-                "value": "application/json"
-              }
-            ]
-          },
+          
           {
             "key": "url",
             "dependOn": [
@@ -139,7 +118,7 @@ export const GeminiJson = {
                     "type": "api",
                     "label": "Model",
                     "variableName": "model_TextGeneration",
-                    "value": "None",
+                    "value": "",
                     "helperSpan": "The model to use for generating content.",
                     "required": true,
                     "list": [],
@@ -154,28 +133,6 @@ export const GeminiJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "gemini/getModels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -403,7 +360,7 @@ export const GeminiJson = {
                     "type": "api",
                     "label": "Model",
                     "variableName": "model_GenerateImage",
-                    "value": "None",
+                    "value": "",
                     "helperSpan": "The model to use for Generating an image.",
                     "required": true,
                     "list": [],
@@ -418,28 +375,6 @@ export const GeminiJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "gemini/getImageModels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -512,7 +447,7 @@ export const GeminiJson = {
                     "type": "api",
                     "label": "Model",
                     "variableName": "model_EditImage",
-                    "value": "None",
+                    "value": "",
                     "helperSpan": "The model to use for Editing an image.",
                     "required": true,
                     "list": [],
@@ -527,28 +462,6 @@ export const GeminiJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "gemini/getImageModels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -670,7 +583,7 @@ export const GeminiJson = {
                     "type": "api",
                     "label": "Model",
                     "variableName": "model_AnalyzeFile",
-                    "value": "None",
+                    "value": "",
                     "helperSpan": "The model to use for analyze file.",
                     "required": true,
                     "list": [],
@@ -685,28 +598,6 @@ export const GeminiJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "gemini/getModels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -808,7 +699,7 @@ export const GeminiJson = {
                           "type": "api",
                           "label": "Files",
                           "variableName": "uri_AnalyzeFile",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -822,28 +713,6 @@ export const GeminiJson = {
                                 {
                                   "type": "static",
                                   "value": process.env.REACT_APP_DNS_URL + "gemini/getFiles"
-                                }
-                              ]
-                            },
-                            {
-                              "key": "headers",
-                              "obj": [
-                                {
-                                  "key": "Authorization",
-                                  "dependOn": [
-                                    {
-                                      "type": "static",
-                                      "value": "Bearer "
-                                    },
-                                    {
-                                      "type": "redux",
-                                      "value": "authentication.authToken"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "key": "content-type",
-                                  "value": "application/json"
                                 }
                               ]
                             },

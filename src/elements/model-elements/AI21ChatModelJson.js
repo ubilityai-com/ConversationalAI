@@ -13,7 +13,7 @@
 //         required: true,
 //         credential: true,
 //         credType: "AI21",
-//         value: "None",
+//         value: "",
 //         list: [],
 //         config: [
 //           {

@@ -17,34 +17,12 @@ export const SlackJson = {
         "required": true,
         "credential": true,
         "credType": "Slack",
-        "value": "None",
+        "value": "",
         "list": [],
         "config": [
           {
             "key": "method",
             "value": "get"
-          },
-          {
-            "key": "headers",
-            "obj": [
-              {
-                "key": "Authorization",
-                "dependOn": [
-                  {
-                    "type": "static",
-                    "value": "Bearer "
-                  },
-                  {
-                    "type": "redux",
-                    "value": "authentication.authToken"
-                  }
-                ]
-              },
-              {
-                "key": "content-type",
-                "value": "application/json"
-              }
-            ]
           },
           {
             "key": "url",
@@ -160,7 +138,7 @@ export const SlackJson = {
                           "type": "api",
                           "label": "Channel",
                           "variableName": "channel",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -174,28 +152,6 @@ export const SlackJson = {
                                 {
                                   "type": "static",
                                   "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                                }
-                              ]
-                            },
-                            {
-                              "key": "headers",
-                              "obj": [
-                                {
-                                  "key": "Authorization",
-                                  "dependOn": [
-                                    {
-                                      "type": "static",
-                                      "value": "Bearer "
-                                    },
-                                    {
-                                      "type": "redux",
-                                      "value": "authentication.authToken"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "key": "content-type",
-                                  "value": "application/json"
                                 }
                               ]
                             },
@@ -278,7 +234,7 @@ export const SlackJson = {
                           "type": "api",
                           "label": "User",
                           "variableName": "user",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -292,28 +248,6 @@ export const SlackJson = {
                                 {
                                   "type": "static",
                                   "value": process.env.REACT_APP_DNS_URL + "slack/listUsers"
-                                }
-                              ]
-                            },
-                            {
-                              "key": "headers",
-                              "obj": [
-                                {
-                                  "key": "Authorization",
-                                  "dependOn": [
-                                    {
-                                      "type": "static",
-                                      "value": "Bearer "
-                                    },
-                                    {
-                                      "type": "redux",
-                                      "value": "authentication.authToken"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "key": "content-type",
-                                  "value": "application/json"
                                 }
                               ]
                             },
@@ -788,7 +722,7 @@ export const SlackJson = {
                           "type": "api",
                           "label": "Channel",
                           "variableName": "channel",
-                          "value": "None",
+                          "value": "",
                           "list": [],
                           "required": true,
                           "config": [
@@ -802,28 +736,6 @@ export const SlackJson = {
                                 {
                                   "type": "static",
                                   "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                                }
-                              ]
-                            },
-                            {
-                              "key": "headers",
-                              "obj": [
-                                {
-                                  "key": "Authorization",
-                                  "dependOn": [
-                                    {
-                                      "type": "static",
-                                      "value": "Bearer "
-                                    },
-                                    {
-                                      "type": "redux",
-                                      "value": "authentication.authToken"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "key": "content-type",
-                                  "value": "application/json"
                                 }
                               ]
                             },
@@ -907,7 +819,7 @@ export const SlackJson = {
                           "type": "api",
                           "label": "User",
                           "variableName": "user",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -921,28 +833,6 @@ export const SlackJson = {
                                 {
                                   "type": "static",
                                   "value": process.env.REACT_APP_DNS_URL + "slack/listUsers"
-                                }
-                              ]
-                            },
-                            {
-                              "key": "headers",
-                              "obj": [
-                                {
-                                  "key": "Authorization",
-                                  "dependOn": [
-                                    {
-                                      "type": "static",
-                                      "value": "Bearer "
-                                    },
-                                    {
-                                      "type": "redux",
-                                      "value": "authentication.authToken"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "key": "content-type",
-                                  "value": "application/json"
                                 }
                               ]
                             },
@@ -1064,7 +954,7 @@ export const SlackJson = {
                           "type": "api",
                           "label": "Channel",
                           "variableName": "channel",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -1078,28 +968,6 @@ export const SlackJson = {
                                 {
                                   "type": "static",
                                   "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                                }
-                              ]
-                            },
-                            {
-                              "key": "headers",
-                              "obj": [
-                                {
-                                  "key": "Authorization",
-                                  "dependOn": [
-                                    {
-                                      "type": "static",
-                                      "value": "Bearer "
-                                    },
-                                    {
-                                      "type": "redux",
-                                      "value": "authentication.authToken"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "key": "content-type",
-                                  "value": "application/json"
                                 }
                               ]
                             },
@@ -1238,7 +1106,7 @@ export const SlackJson = {
                           "type": "api",
                           "label": "Channel",
                           "variableName": "channel",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -1252,28 +1120,6 @@ export const SlackJson = {
                                 {
                                   "type": "static",
                                   "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                                }
-                              ]
-                            },
-                            {
-                              "key": "headers",
-                              "obj": [
-                                {
-                                  "key": "Authorization",
-                                  "dependOn": [
-                                    {
-                                      "type": "static",
-                                      "value": "Bearer "
-                                    },
-                                    {
-                                      "type": "redux",
-                                      "value": "authentication.authToken"
-                                    }
-                                  ]
-                                },
-                                {
-                                  "key": "content-type",
-                                  "value": "application/json"
                                 }
                               ]
                             },
@@ -1559,7 +1405,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1573,28 +1419,6 @@ export const SlackJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1859,7 +1683,7 @@ export const SlackJson = {
                     "label": "Channel",
                     "variableName": "channel",
                     "required": true,
-                    "value": "None",
+                    "value": "",
                     "list": [],
                     "config": [
                       {
@@ -1872,28 +1696,6 @@ export const SlackJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -1965,7 +1767,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1979,28 +1781,6 @@ export const SlackJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2072,7 +1852,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2086,28 +1866,6 @@ export const SlackJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2193,7 +1951,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2207,28 +1965,6 @@ export const SlackJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2302,7 +2038,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2316,28 +2052,6 @@ export const SlackJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2415,7 +2129,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2429,28 +2143,6 @@ export const SlackJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2522,7 +2214,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channel",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2536,28 +2228,6 @@ export const SlackJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2636,28 +2306,6 @@ export const SlackJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "slack/listUsers"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2757,7 +2405,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "User",
                     "variableName": "user",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2771,28 +2419,6 @@ export const SlackJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "slack/listUsers"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -2963,7 +2589,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "User",
                     "variableName": "user",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2977,28 +2603,6 @@ export const SlackJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "slack/listUsers"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },
@@ -3459,7 +3063,7 @@ export const SlackJson = {
                     "type": "api",
                     "label": "Channel",
                     "variableName": "channelNameOrIDFileUpload",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -3473,28 +3077,6 @@ export const SlackJson = {
                           {
                             "type": "static",
                             "value": process.env.REACT_APP_DNS_URL + "slack/listChannels"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
                           }
                         ]
                       },

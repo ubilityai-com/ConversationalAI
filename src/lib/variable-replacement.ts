@@ -1,4 +1,3 @@
-
 import { useFilesStore } from "../store/files-store";
 import { useFlowStore } from "../store/flow-store";
 
@@ -7,11 +6,14 @@ export class VariableReplacementError extends Error {
   public errors: string[];
 
   constructor(errors: string[]) {
-    const message = errors.length === 1
-      ? errors[0]
-      : `Multiple variable errors found:\n${errors.map((err, index) => `${index + 1}. ${err}`).join('\n')}`;
+    const message =
+      errors.length === 1
+        ? errors[0]
+        : `Multiple variable errors found:\n${errors
+            .map((err, index) => `${index + 1}. ${err}`)
+            .join("\n")}`;
     super(message);
-    this.name = 'VariableReplacementError';
+    this.name = "VariableReplacementError";
     this.errors = errors;
   }
 }
@@ -21,20 +23,16 @@ export class VariableReplacementError extends Error {
  * with their actual values based on variable type (constant, output, dialogue, files)
  */
 export function replaceVariablesInObject(obj: any): any {
-  const {
-    constantVariables,
-    outputVariables,
-    dialogueVariables,
-    nodeResults,
-  } = useFlowStore.getState();
-  const { files } = useFilesStore.getState()
+  const { constantVariables, outputVariables, dialogueVariables, nodeResults } =
+    useFlowStore.getState();
+  const { files } = useFilesStore.getState();
 
   const errors: string[] = [];
 
   // Helper function to resolve path in nested object
   const getValueByPath = (obj: any, path: string): any => {
     if (!path) return obj; // if path is empty string, return whole object
-    return path.split('.').reduce((current, key) => {
+    return path.split(".").reduce((current, key) => {
       return current && current[key] !== undefined ? current[key] : undefined;
     }, obj);
   };
@@ -47,8 +45,8 @@ export function replaceVariablesInObject(obj: any): any {
     }
 
     // Check output variables
-    const outputVar = Object.entries(outputVariables).find(([nodeId, variables]) =>
-      variables.hasOwnProperty(variableName)
+    const outputVar = Object.entries(outputVariables).find(
+      ([nodeId, variables]) => variables.hasOwnProperty(variableName)
     );
 
     if (outputVar) {
@@ -56,38 +54,44 @@ export function replaceVariablesInObject(obj: any): any {
       let path = variables[variableName];
 
       // Remove leading dot if present
-      if (typeof path === 'string' && path.startsWith('.')) {
+      if (typeof path === "string" && path.startsWith(".")) {
         path = path.substring(1);
       }
 
       // Get value from nodeResults
       const nodeResult = nodeResults[nodeId];
-      if (nodeResult && typeof path === 'string') {
-        const value = getValueByPath(nodeResult, path);
+      if (nodeResult?.output && typeof path === "string") {
+        const value = getValueByPath(nodeResult.output, path);
         if (value !== undefined) {
           return value;
         }
       }
 
-      errors.push(`Output variable "${variableName}" value not found in node results`);
+      errors.push(
+        `Output variable "${variableName}" value not found in node results`
+      );
       return undefined;
     }
 
     // Check dialogue variables
-    const dialogueVar = Object.entries(dialogueVariables).find(([nodeId, varName]) =>
-      varName === variableName
+    const dialogueVar = Object.entries(dialogueVariables).find(
+      ([nodeId, varName]) => varName === variableName
     );
 
     if (dialogueVar) {
-      errors.push(`Dialogue variables are not allowed in test node: "${variableName}"`);
+      errors.push(
+        `Dialogue variables are not allowed in test node: "${variableName}"`
+      );
       return undefined;
     }
     // Check file variables
-    if(files.find(file=>file.file_name === variableName))
-      return variableName
+    if (files.find((file) => file.file_name === variableName))
+      return variableName;
 
     // If variable doesn't exist in any type, add error
-    errors.push(`Variable "${variableName}" does not exist in any variable store`);
+    errors.push(
+      `Variable "${variableName}" does not exist in any variable store`
+    );
     return undefined;
   };
 
@@ -108,7 +112,7 @@ export function replaceVariablesInObject(obj: any): any {
       const value = getVariableValue(variableName);
       if (value !== undefined) {
         // Handle different value types for string interpolation
-        if (typeof value === 'object') {
+        if (typeof value === "object") {
           return JSON.stringify(value);
         }
         return String(value);
@@ -119,11 +123,11 @@ export function replaceVariablesInObject(obj: any): any {
 
   // Recursive function to process the object
   const processValue = (value: any): any => {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       return replaceVariablesInString(value);
     } else if (Array.isArray(value)) {
       return value.map(processValue);
-    } else if (value !== null && typeof value === 'object') {
+    } else if (value !== null && typeof value === "object") {
       const result: any = {};
       for (const [key, val] of Object.entries(value)) {
         result[key] = processValue(val);
@@ -144,6 +148,3 @@ export function replaceVariablesInObject(obj: any): any {
 
   return processedObj;
 }
-
-
-

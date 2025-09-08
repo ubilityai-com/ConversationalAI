@@ -15,35 +15,14 @@ export const RedisStackMemoryJson = {
         required: true,
         credential: true,
         credType: "Redis",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
             key: "method",
             value: "get",
           },
-          {
-            key: "headers",
-            obj: [
-              {
-                key: "Authorization",
-                dependOn: [
-                  {
-                    type: "static",
-                    value: "Bearer ",
-                  },
-                  {
-                    type: "redux",
-                    value: "authentication.authToken",
-                  },
-                ],
-              },
-              {
-                key: "content-type",
-                value: "application/json",
-              },
-            ],
-          },
+          
           {
             key: "url",
             dependOn: [
@@ -94,7 +73,7 @@ export const RedisStackMemoryJson = {
               "type": "api",
               "label": "Sessions",
               "variableName": "sessions",
-              "value": "None",
+              "value": "",
               "required": true,
               "list": [],
               "config": [
@@ -108,28 +87,6 @@ export const RedisStackMemoryJson = {
                     {
                       "type": "static",
                       "value": process.env.REACT_APP_DNS_URL + "api/redis/list_sessions"
-                    }
-                  ]
-                },
-                {
-                  "key": "headers",
-                  "obj": [
-                    {
-                      "key": "Authorization",
-                      "dependOn": [
-                        {
-                          "type": "static",
-                          "value": "Bearer "
-                        },
-                        {
-                          "type": "redux",
-                          "value": "authentication.authToken"
-                        }
-                      ]
-                    },
-                    {
-                      "key": "content-type",
-                      "value": "application/json"
                     }
                   ]
                 },

@@ -14,34 +14,12 @@ export const EmbeddingsOllamaJson = {
                 required: true,
                 credential: true,
                 credType: "Ollama",
-                value: "None",
+                value: "",
                 list: [],
                 config: [
                     {
                         key: "method",
                         value: "get",
-                    },
-                    {
-                        key: "headers",
-                        obj: [
-                            {
-                                key: "Authorization",
-                                dependOn: [
-                                    {
-                                        type: "static",
-                                        value: "Bearer ",
-                                    },
-                                    {
-                                        type: "redux",
-                                        value: "authentication.authToken",
-                                    },
-                                ],
-                            },
-                            {
-                                key: "content-type",
-                                value: "application/json",
-                            },
-                        ],
                     },
                     {
                         key: "url",
@@ -74,7 +52,7 @@ export const EmbeddingsOllamaJson = {
                 type: "api",
                 label: "Model",
                 variableName: "model",
-                value: "None",
+                value: "",
                 required: true,
                 list: [],
                 config: [
@@ -90,28 +68,6 @@ export const EmbeddingsOllamaJson = {
                                 value:
                                     process.env.REACT_APP_DNS_URL +
                                     "ollama/listModels",
-                            },
-                        ],
-                    },
-                    {
-                        key: "headers",
-                        obj: [
-                            {
-                                key: "Authorization",
-                                dependOn: [
-                                    {
-                                        type: "static",
-                                        value: "Bearer ",
-                                    },
-                                    {
-                                        type: "redux",
-                                        value: "authentication.authToken",
-                                    },
-                                ],
-                            },
-                            {
-                                key: "content-type",
-                                value: "application/json",
                             },
                         ],
                     },

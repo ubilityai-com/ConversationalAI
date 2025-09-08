@@ -18,35 +18,14 @@ export const OpenRouterChatModelJson = {
         required: true,
         credential: true,
         credType: "OpenRouter",
-        value: "None",
+        value: "",
         list: [],
         config: [
           {
             key: "method",
             value: "get",
           },
-          {
-            key: "headers",
-            obj: [
-              {
-                key: "Authorization",
-                dependOn: [
-                  {
-                    type: "static",
-                    value: "Bearer ",
-                  },
-                  {
-                    type: "redux",
-                    value: "authentication.authToken",
-                  },
-                ],
-              },
-              {
-                key: "content-type",
-                value: "application/json",
-              },
-            ],
-          },
+          
           {
             key: "url",
             dependOn: [
@@ -79,7 +58,7 @@ export const OpenRouterChatModelJson = {
         type: "api",
         label: "Model",
         variableName: "model",
-        value: "None",
+        value: "",
         required: true,
         list: [],
         config: [
@@ -98,28 +77,7 @@ export const OpenRouterChatModelJson = {
               },
             ],
           },
-          {
-            key: "headers",
-            obj: [
-              {
-                key: "Authorization",
-                dependOn: [
-                  {
-                    type: "static",
-                    value: "Bearer ",
-                  },
-                  {
-                    type: "redux",
-                    value: "authentication.authToken",
-                  },
-                ],
-              },
-              {
-                key: "content-type",
-                value: "application/json",
-              },
-            ],
-          },
+          
           {
             key: "data",
             obj: [

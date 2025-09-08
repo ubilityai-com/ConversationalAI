@@ -17,34 +17,12 @@ export const GoogleDriveJson = {
         "required": true,
         "credential": true,
         "credType": "Google",
-        "value": "None",
+        "value": "",
         "list": [],
         "config": [
           {
             "key": "method",
             "value": "get"
-          },
-          {
-            "key": "headers",
-            "obj": [
-              {
-                "key": "Authorization",
-                "dependOn": [
-                  {
-                    "type": "static",
-                    "value": "Bearer "
-                  },
-                  {
-                    "type": "redux",
-                    "value": "authentication.authToken"
-                  }
-                ]
-              },
-              {
-                "key": "content-type",
-                "value": "application/json"
-              }
-            ]
           },
           {
             "key": "url",

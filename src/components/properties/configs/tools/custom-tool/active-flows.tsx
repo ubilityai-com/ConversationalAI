@@ -72,9 +72,6 @@ const ActiveFlows: React.FC<ActiveFlowsProps> = ({
         const config: AxiosRequestConfig = {
             method: "get",
             url: process.env.REACT_APP_GET_ELEMENTS_URL + "get_active_triggers/WebhookTrigger",
-            headers: {
-                Authorization: "Bearer " + authToken,
-            },
         }
 
         axios(config)
@@ -111,7 +108,7 @@ const ActiveFlows: React.FC<ActiveFlowsProps> = ({
     const onChange = (value: string | null): void => {
         onContentUpdate("webhookActive", value)
 
-        if (value !== "None") {
+        if (value !== "") {
             const flow = ListsForThisNode?.find((flow) => flow.value === value)
 
             if (flow) {
