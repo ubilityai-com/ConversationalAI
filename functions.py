@@ -313,9 +313,9 @@ async def handle_attachement(sio, sid,conversation,conversation_id,content):
     elif 'file' in content["data"]: # send file to user
         file = get_file_data(conversation,conversation_id,content["data"]['file'])
         file_bytes = base64.b64decode(file['data_base64'])
-        await send_file_in_chunks(sio, file_bytes, file['file_name'],file['content_type'])
+        await send_file_in_chunks(sio,sid, file_bytes, file['file_name'],file['content_type'])
 
-async def send_file_in_chunks(sio, file_bytes, filename,mimetype):
+async def send_file_in_chunks(sio,sid, file_bytes, filename,mimetype):
     total_size = len(file_bytes)
     for i in range(0, total_size, CHUNK_SIZE):
         chunk = file_bytes[i:i+CHUNK_SIZE]
@@ -326,7 +326,7 @@ async def send_file_in_chunks(sio, file_bytes, filename,mimetype):
             "mimetype": mimetype,
             "chunk_index": i // CHUNK_SIZE,
             "total_chunks": (total_size + CHUNK_SIZE - 1) // CHUNK_SIZE
-        })
+        },room=sid)
     
 
 async def handle_flow_invoker(conversation,content):
