@@ -27,6 +27,7 @@ const FlowZone = () => {
     QuestionAndAnswer: LlmNode,
     // integration nodes
     MongoDb: IntegrationNode,
+    Asana: IntegrationNode,
     MicrosoftWord: IntegrationNode,
     Telegram: IntegrationNode,
     GoogleSheets: IntegrationNode,

@@ -23,7 +23,15 @@ interface ChatState {
     // Queue helpers
     messageQueue: any[]
     processing: boolean
-
+    fileChunks: Record<
+        string, // filename or fileId
+        {
+            chunks: Uint8Array[]
+            total: number
+            received: number
+            mimetype: string
+        }
+    >
     initializeSocket: (botToken: string | undefined) => void
     disconnectSocket: () => void
     sendMessage: (content: string, attachments?: any[]) => void
@@ -38,6 +46,7 @@ interface ChatState {
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
+    fileChunks: {},
     messages: [],
     isLoading: false,
     isLoadingConnect: false,
@@ -105,9 +114,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
         // --- Case 1: "message" / "file" / "multipleChoice" ---
         if (["message", "file", "multipleChoice"].includes(data.type)) {
-            const streamingId = createStreamingMessage()
+            const streamingId = data.type === "file" ? "" : createStreamingMessage()
             const text = data.text || ""
-
             // Stream character-by-character
             let currentText = ""
             for (let i = 0; i < text.length; i++) {
@@ -116,14 +124,66 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 await new Promise((resolve) => setTimeout(resolve, 5))
             }
 
-            // Attachments or choices
-            if (data.type === "file" || data.choices) {
+            if (data.type === "file") {
+                const { filename, mimetype, total_chunks, chunk_index } = data
+                const chunk = new Uint8Array(data.data) // ensure it's a Uint8Array
+
+                set((state) => {
+                    const existing = state.fileChunks[filename] || {
+                        chunks: [],
+                        total: total_chunks,
+                        received: 0,
+                        mimetype,
+                    }
+
+                    const updated = {
+                        ...existing,
+                        chunks: [...existing.chunks, chunk],
+                        received: existing.received + 1,
+                    }
+
+                    return {
+                        fileChunks: {
+                            ...state.fileChunks,
+                            [filename]: updated,
+                        },
+                    }
+                })
+
+                // If all chunks are received, reconstruct the file
+                const { fileChunks } = get()
+                const fileData = fileChunks[filename]
+                if (fileData.received === fileData.total && fileData) {
+                    const blob = new Blob(fileData.chunks as BlobPart[], { type: fileData.mimetype })
+                    const fileUrl = URL.createObjectURL(blob)
+
+                    // Attach as a message
+                    const streamingId = get().addStreamingMessage("assistant")
+                    set((state) => ({
+                        messages: state.messages.map((msg) =>
+                            msg.id === streamingId
+                                ? { ...msg, attachments: [{ filename, url: fileUrl }] }
+                                : msg
+                        ),
+                    }))
+
+                    get().finishStreamingMessage(streamingId)
+
+                    //  clean up chunk storage
+                    set((state) => {
+                        const { [filename]: _, ...rest } = state.fileChunks
+                        return { fileChunks: rest }
+                    })
+                }
+            }
+
+            // choices
+            if (data.choices) {
                 set((state) => ({
                     messages: state.messages.map((msg) =>
                         msg.id === streamingId
                             ? {
                                 ...msg,
-                                attachments: data || msg.attachments,
                                 multipleChoice: data.choices || msg.multipleChoice,
                             }
                             : msg,
@@ -173,7 +233,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
         if (socket) return
         set({ isLoadingConnect: true })
         const conversationId = `conv-${v4()}`
-        // const newSocket = io("http://23.88.122.180", {
         const newSocket = io(window.location.origin, {
             path: '/socket.io',
             transports: ["websocket", "polling"],
@@ -219,14 +278,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
         newSocket.on("end", (data) => {
             console.log("end data:", data)
             get().enqueueMessage({ type: "end", data: data })
-            // get().processQueue()
-            // if (data.type === "end of chunks") {
-            //     const { currentStreamingId } = get()
-            //     if (currentStreamingId) {
-            //         get().finishStreamingMessage(currentStreamingId)
-            //         set({ currentStreamingId: null, isLoading: false })
-            //     }
-            // }
         })
 
         newSocket.on("disconnect", () => {
@@ -272,32 +323,51 @@ export const useChatStore = create<ChatState>((set, get) => ({
                 get().addMessage("Connection error. Please try again.", "assistant")
             }
         }
-
         if (attachments?.length) {
             for (const attach of attachments) {
-                const { file } = attach
-                if (!file) continue
+                const { file } = attach;
+                if (!file) continue;
 
-                const reader = new FileReader()
-                reader.onload = (e) => {
-                    const arrayBuffer = e.target?.result
-                    if (!arrayBuffer) return
+                const chunkSize = 1024 * 1024; // 1 MB per chunk
+                const totalChunks = Math.ceil(file.size / chunkSize);
+                let chunkIndex = 0;
 
-                    const byteArray = new Uint8Array(arrayBuffer as ArrayBuffer)
-                    const fileMessageObj = {
-                        type: "Message",
-                        data: Array.from(byteArray),
-                        filename: file.name,
-                        mimetype: file.type,
-                        data_type: "binary",
-                    }
-                    console.log("Sending file to server:", fileMessageObj)
-                    socket?.emit("message", JSON.stringify(fileMessageObj))
-                }
-                reader.onerror = (err) => {
-                    console.error("Error reading file:", file.name, err)
-                }
-                reader.readAsArrayBuffer(file)
+                const reader = new FileReader();
+
+                const readNextChunk = (start: number) => {
+                    const end = Math.min(start + chunkSize, file.size);
+                    const blob = file.slice(start, end);
+
+                    reader.onload = (e) => {
+                        const arrayBuffer = e.target?.result as ArrayBuffer;
+                        if (!arrayBuffer) return;
+
+                        const chunkMessage = {
+                            filename: file.name,
+                            mimetype: file.type,
+                            chunk_index: chunkIndex,
+                            total_chunks: totalChunks,
+                            data: arrayBuffer,
+                            data_type: "binary",
+                        };
+
+                        console.log(`Sending chunk ${chunkIndex + 1}/${totalChunks}`, chunkMessage);
+                        socket?.emit("message", chunkMessage);
+
+                        chunkIndex++;
+                        if (chunkIndex < totalChunks) {
+                            readNextChunk(chunkIndex * chunkSize);
+                        }
+                    };
+
+                    reader.onerror = (err) => {
+                        console.error("Error reading file:", file.name, err);
+                    };
+
+                    reader.readAsArrayBuffer(blob);
+                };
+
+                readNextChunk(0);
             }
         }
     },

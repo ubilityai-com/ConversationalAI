@@ -146,6 +146,7 @@ export function ChatInput() {
           <textarea
             ref={textareaRef}
             value={input}
+            disabled={!isConnected}
             onChange={(e) => setInput(e.target.value)}
             onInput={handleInput}
             onKeyDown={handleKeyDown}
