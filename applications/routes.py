@@ -1105,6 +1105,162 @@ async def asana_get_project_templates(payload: AsanaWithWorkspaceAppIntegration)
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
 
+######################################## Airtable Routes ######################################
+
+class AirtableAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/airtable/getBases")
+async def airtable_get_bases(payload: AirtableAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accesstoken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = json_cred["accesstoken"]
+        url = "https://api.airtable.com/v0/meta/bases"
+        headers = {
+            "Authorization": f"Bearer {accessToken}"
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                json_response = await response.json()
+                if response.status == 200 and json_response:
+                    bases = json_response.get("bases", [])
+                    if bases:
+                        bases_info = [
+                            {"id": base["id"], "name": base["name"]}
+                            for base in bases
+                        ]
+                    return {"bases": bases_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class AirtableGetTablesAppIntegration(BaseModel):
+    credential_name: str
+    baseID: str
+
+@http_app.post("/bot/airtable/getTables")
+async def airtable_get_tables(payload: AirtableGetTablesAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accesstoken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = json_cred["accesstoken"]
+        base_id = payload.baseID
+        url = f"https://api.airtable.com/v0/meta/bases/{base_id}/tables"
+        headers = {
+            "Authorization": f"Bearer {accessToken}"
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                json_response = await response.json()
+                if response.status == 200 and json_response:
+                    tables = json_response.get("tables", [])
+                    if tables:
+                        tables_info = [
+                            {"id": table["id"], "name": table["name"]}
+                            for table in tables
+                        ]
+                    return {"tables": tables_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class AirtableGetTableDataAppIntegration(BaseModel):
+    credential_name: str
+    baseID: str
+    tableID: str
+
+@http_app.post("/bot/airtable/getTableFields")
+async def airtable_get_table_fields(payload: AirtableGetTableDataAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accesstoken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = json_cred["accesstoken"]
+        base_id = payload.baseID
+        table_id = payload.tableID
+        fields = []
+        url = f"https://api.airtable.com/v0/meta/bases/{base_id}/tables"
+        headers = {
+            "Authorization": f"Bearer {accessToken}"
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                json_response = await response.json()
+                if response.status == 200 and json_response:
+                    for table in json_response.get("tables", []):
+                        if table["id"] == table_id:
+                            fields = table.get("fields", [])
+                            break
+                    if fields:
+                        fields_info = [
+                            {"id": field["id"], "name": field["name"]}
+                            for field in fields
+                        ]
+                    return {"fields": fields_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/airtable/getTableViews")
+async def airtable_get_table_views(payload: AirtableGetTableDataAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accesstoken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = json_cred["accesstoken"]
+        base_id = payload.baseID
+        table_id = payload.tableID
+        views = []
+        url = f"https://api.airtable.com/v0/meta/bases/{base_id}/tables"
+        headers = {
+            "Authorization": f"Bearer {accessToken}"
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                response.raise_for_status()
+                json_response = await response.json()
+                if response.status == 200 and json_response:
+                    for table in json_response.get("tables", []):
+                        if table["id"] == table_id:
+                            views = table.get("views", [])
+                            break
+                    if views:
+                        views_info = [
+                            {"id": view["id"], "name": view["name"]}
+                            for view in views
+                        ]
+                    return {"views": views_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
 ################################ AI Providers List Models BaseModel ################################
 
 class AiProvidersListModelsAppIntegration(BaseModel):
