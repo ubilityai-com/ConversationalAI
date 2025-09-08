@@ -8,13 +8,9 @@ import { useRightDrawerStore } from "../store/right-drawer-store";
 import { ResponseOutput } from "./custom/response-output";
 import BinaryResult, { ResultOptions } from "./file-components/BinaryResult";
 
-function hasFileBinaryDataKeyDeep(jsonObj: any) {
+function hasFileNameKey(jsonObj: any) {
   for (let key in jsonObj) {
     if (key === "file_name") return true;
-
-    if (typeof jsonObj[key] === "object" && jsonObj[key] !== null) {
-      if (hasFileBinaryDataKeyDeep(jsonObj[key])) return true;
-    }
   }
   return false;
 }
@@ -114,9 +110,10 @@ export default function RightSideBody() {
   const runResult = nodeResult?.output ?? false;
 
   useEffect(() => {
-    if (hasFileBinaryDataKeyDeep(runResult)) setActiveTab("Binary");
-    else setActiveTab("Json");
-  }, [runResult]);
+    if (hasFileNameKey(runResult))
+      setActiveTab("Binary")
+    else setActiveTab("Json")
+  }, [runResult])
   if (!selectedNode) return null;
 
   const handleCopy = (event: any) => {
@@ -157,21 +154,18 @@ export default function RightSideBody() {
           CustomComponent={CustomComponent}
         />
       )}
-      {runResult && hasFileBinaryDataKeyDeep(runResult) && (
+      {
+        runResult && hasFileNameKey(runResult) &&
         <ResultOptions activeTab={activeTab} setActiveTab={setActiveTab} />
-      )}
-      {runResult &&
-        hasFileBinaryDataKeyDeep(runResult) &&
-        activeTab === "Binary" && (
-          <BinaryResult
-            runResult={runResult}
-            file={{
-              name: runResult?.file_name,
-              extension: runResult.file_name?.split(".").pop(),
-              displayName: runResult?.file_name,
-            }}
-          />
-        )}
+      }
+      {runResult && hasFileNameKey(runResult) && activeTab === "Binary" &&
+        <BinaryResult
+          runResult={runResult}
+          file={{
+            name: runResult?.file_name,
+            extension: runResult.file_name?.split(".").pop(),
+            displayName: runResult?.file_name
+          }} />}
       {runResult && activeTab === "Json" && (
         <ResponseOutput
           runResult={runResult}
@@ -180,7 +174,7 @@ export default function RightSideBody() {
           onMaximize={handleMaximize}
           onCreateVariable={handleCreateVariable}
           collapsed={1}
-          // hasDivider
+        // hasDivider
         />
       )}
     </div>
