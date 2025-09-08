@@ -31,7 +31,7 @@ def asana_get_many_project(json_cred, params, **kwargs):
                     opts[key] = value
             api_response = projects_api_instance.get_projects(opts)
             projects = list(api_response)
-            return projects
+            return {"projects": projects}
         else:
             raise Exception("Missing Input Data")
     except ApiException as e:
@@ -351,7 +351,7 @@ def asana_get_many_task(json_cred, params, **kwargs):
                     opts[key] = value
             api_response = tasks_api_instance.get_tasks(opts)
             tasks = list(api_response)
-            return tasks
+            return {"tasks": tasks}
         else:
             raise Exception("Missing Input Data")
     except ApiException as e:
@@ -474,7 +474,7 @@ def asana_search_task(json_cred, params, **kwargs):
                 workspace_gid, opts
             )
             tasks = list(api_response)
-            return tasks
+            return {"tasks": tasks}
         else:
             raise Exception("Missing Input Data")
     except ApiException as e:
@@ -619,7 +619,7 @@ def asana_get_many_user(json_cred, params, **kwargs):
             api_response = users_api_instance.get_users_for_workspace(
                 workspace_gid, opts)
             users = list(api_response)
-            return users
+            return {"users": users}
         else:
             raise Exception("Missing Input Data")
     except ApiException as e:
@@ -696,7 +696,7 @@ def asana_get_section_project(json_cred, params, **kwargs):
             api_response = sections_api_instance.get_sections_for_project(
                 project_gid, opts)
             sections = list(api_response)
-            return sections
+            return {"sections": sections}
         else:
             raise Exception("Missing Input Data")
     except ApiException as e:
@@ -872,7 +872,7 @@ def asana_get_tasks_for_project(json_cred, params, **kwargs):
             api_response = tasks_api_instance.get_tasks_for_project(
                 project_gid, opts)
             tasks = list(api_response)
-            return tasks
+            return {"tasks": tasks}
         else:
             raise Exception("Missing Input Data")
     except ApiException as e:
@@ -955,7 +955,7 @@ def asana_get_many_subtask(json_cred, params, **kwargs):
             api_response = tasks_api_instance.get_subtasks_for_task(
                 task_gid, opts)
             subtasks = list(api_response)
-            return subtasks
+            return {"subtasks": subtasks}
         else:
             raise Exception("Missing Input Data")
     except ApiException as e:
