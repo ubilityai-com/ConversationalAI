@@ -1,4 +1,5 @@
 //add import
+import { AirTableJson } from "./AirTableJson";
 import { NotionJson } from "./NotionJson";
 import { MongoDbJson } from "./MongoDbJson";
 import { AsanaJson } from "./AsanaJson";
@@ -17,6 +18,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    AirTableJson,
     NotionJson,
     MongoDbJson,
     AsanaJson,
