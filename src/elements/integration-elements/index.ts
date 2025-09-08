@@ -1,4 +1,5 @@
 //add import
+import { NotionJson } from "./NotionJson";
 import { MongoDbJson } from "./MongoDbJson";
 import { AsanaJson } from "./AsanaJson";
 import { MicrosoftWordJson } from "./MicrosoftWordJson";
@@ -16,6 +17,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    NotionJson,
     MongoDbJson,
     AsanaJson,
     MicrosoftWordJson,

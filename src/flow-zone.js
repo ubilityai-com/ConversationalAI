@@ -26,6 +26,7 @@ const FlowZone = () => {
     ConditionAgent: ConditionAgentNode,
     QuestionAndAnswer: LlmNode,
     // integration nodes
+    Notion: IntegrationNode,
     MongoDb: IntegrationNode,
     Asana: IntegrationNode,
     MicrosoftWord: IntegrationNode,
