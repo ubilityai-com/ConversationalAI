@@ -1,6 +1,5 @@
 import aiohttp, sys, os, json
 import requests, base64
-from logger_config import logger
 from applications.functions import get_file_data, upload_file
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -361,7 +360,6 @@ async def openai_edit_image(json_cred, params, **kwargs):
                             filename=image,
                             content_type=contentType
                         )
-                logger.info(f"Data prepared for OpenAI edit image request: {str(data.__dict__)}")
                 async with aiohttp.ClientSession() as session:
                     async with session.post(url, headers=headers, data=data) as response:
                         # response.raise_for_status()
