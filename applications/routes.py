@@ -1616,6 +1616,43 @@ async def clickup_get_token(payload: ClickupGetTokenAppIntegration):
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
 
+############################# Zoom API's  ###############################
+
+class ZoomGetTokenAppIntegration(BaseModel):
+    client_id: str
+    client_secret: str
+    code: str
+    redirect_uri: str
+
+@http_app.post("/bot/getRefreshToken")
+async def zoom_generate_refresh_token(payload: ZoomGetTokenAppIntegration):
+    try:
+        client_id=payload.client_id
+        client_secret=payload.client_secret
+        code=payload.code
+        redirect_uri=payload.redirect_uri
+        token_url = 'https://zoom.us/oauth/token'
+        token_params = {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri':redirect_uri,
+        'client_id': client_id,
+        'client_secret': client_secret,
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(token_url,data=token_params) as response:
+                response.raise_for_status()
+                response_json = await response.json()
+                if "refresh_token" in response_json:
+                    return response_json['refresh_token']
+                raise Exception(
+                    f"Invalid refresh_token. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
 ################################ AI Providers List Models BaseModel ################################
 
 class AiProvidersListModelsAppIntegration(BaseModel):
