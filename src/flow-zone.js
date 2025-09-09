@@ -27,6 +27,7 @@ const FlowZone = () => {
     QuestionAndAnswer: LlmNode,
     // integration nodes
     GraphQL: IntegrationNode,
+    Zoom: IntegrationNode,
     ClickUp: IntegrationNode,
     GoogleCalendar: IntegrationNode,
     GoogleMeet: IntegrationNode,
