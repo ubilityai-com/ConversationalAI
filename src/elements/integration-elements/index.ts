@@ -1,5 +1,6 @@
 //add import
 import { GraphQLJson } from "./GraphQLJson";
+import { ZoomJson } from "./ZoomJson";
 import { ClickUpJson } from "./ClickUpJson";
 import { GoogleCalendarJson } from "./GoogleCalendarJson";
 import { GoogleMeetJson } from "./GoogleMeetJson";
@@ -23,6 +24,7 @@ import { SlackJson } from "./SlackJson";
 export const IntegrationElements = [
     //add Component
     GraphQLJson,
+    ZoomJson,
     ClickUpJson,
     GoogleCalendarJson,
     GoogleMeetJson,
