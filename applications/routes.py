@@ -1754,6 +1754,67 @@ async def gmail_get_labels(payload: GmailAppIntegration):
         return JSONResponse(status_code=500, content={"Error": str(error)})
     
 
+#################################################### GOOGLE MEET ############################################################
+
+def google_calendar_create_token(cred):
+    try:
+        result = {}
+        result['token'] = cred['accessToken']
+        result['refresh_token'] = cred['refreshToken']
+        result['token_uri'] = "https://oauth2.googleapis.com/token"
+        result['client_id'] = cred['clientID']
+        result['client_secret'] = cred['clientSecret']
+        result['scopes'] = ['https://www.googleapis.com/auth/calendar']
+        result['expiry'] = cred['expirey']
+        return json.dumps(result)
+    except Exception as e:
+        raise Exception(e)
+    
+class googleMeetAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/google_meet/getCalendars")
+async def google_meet_get_calendars(payload: googleMeetAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        cred = google_calendar_create_token(json_cred)
+        service = google_create_service(cred,'calendar', 'v3')
+        calendar_list = service.calendarList().list().execute()
+        if calendar_list:
+            filtered_calendars = []
+            for calendar in calendar_list.get('items', []):
+                if calendar.get('accessRole') in ['owner', 'writer']:
+                    filtered_calendars.append({
+                        'id': calendar.get('id'),
+                        'summary': calendar.get('summary')
+                    })
+            return {"calendars":filtered_calendars }
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Failed to retrieve Calendars."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class GoogleMeetTimezoneAppIntegration(BaseModel):
+    credential_name: str
+    calendarId: str
+
+@http_app.post("/bot/google_meet/getTimezone")
+async def google_meet_get_timeZone(payload: GoogleMeetTimezoneAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        cred = google_calendar_create_token(json_cred)
+        service = google_create_service(cred,'calendar', 'v3')
+        calendar = service.calendars().get(calendarId=payload.calendarId).execute()
+        if calendar:
+            timeZone = calendar.get('timeZone')
+            return [{"timeZone":timeZone }]
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Failed to retrieve Timezone."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
 ############################# MCP API's  ###############################
 class McpTools(BaseModel):
     data: dict
