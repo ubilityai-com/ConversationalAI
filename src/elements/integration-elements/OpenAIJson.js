@@ -804,16 +804,16 @@ export const OpenAIJson = {
                             [
                               {
                                 "type": "dropdown",
-                                "value": "high",
+                                "value": "medium",
                                 "variableName": "quality_EditImage",
                                 "helperSpan":
                                   "The quality of the image that will be generated.",
                                 "hasDynamicVariable": false,
                                 "list": [
-                                  {
-                                    "option": "High",
-                                    "value": "high",
-                                  },
+                                  // {
+                                  //   "option": "High",
+                                  //   "value": "high",
+                                  // },
                                   {
                                     "option": "Medium",
                                     "value": "medium",
@@ -858,14 +858,6 @@ export const OpenAIJson = {
                           ],
                         },
                       ]
-                    },
-                  },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {},
-                      "Error": "",
-                      "Status": "",
                     },
                   },
                 ],
