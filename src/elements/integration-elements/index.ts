@@ -1,4 +1,5 @@
 //add import
+import { ClickUpJson } from "./ClickUpJson";
 import { GoogleCalendarJson } from "./GoogleCalendarJson";
 import { GoogleMeetJson } from "./GoogleMeetJson";
 import { AirTableJson } from "./AirTableJson";
@@ -20,6 +21,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    ClickUpJson,
     GoogleCalendarJson,
     GoogleMeetJson,
     AirTableJson,
