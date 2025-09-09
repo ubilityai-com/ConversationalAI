@@ -266,6 +266,9 @@ async def openai_analyze_image(json_cred, params, **kwargs):
                 async with session.post(url, headers=headers, json=data) as response:
                     response.raise_for_status()
                     result = await response.json()
+                    if "error" in result:
+                        problem = result.pop("error")
+                        result["model_error"] = problem
                     return result
         else:
             raise Exception("Missing required data.")
