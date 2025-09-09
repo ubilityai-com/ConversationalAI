@@ -1,4 +1,6 @@
 //add import
+import { GoogleCalendarJson } from "./GoogleCalendarJson";
+import { GoogleMeetJson } from "./GoogleMeetJson";
 import { AirTableJson } from "./AirTableJson";
 import { NotionJson } from "./NotionJson";
 import { MongoDbJson } from "./MongoDbJson";
@@ -18,6 +20,8 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    GoogleCalendarJson,
+    GoogleMeetJson,
     AirTableJson,
     NotionJson,
     MongoDbJson,

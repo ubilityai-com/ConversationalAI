@@ -26,6 +26,8 @@ const FlowZone = () => {
     ConditionAgent: ConditionAgentNode,
     QuestionAndAnswer: LlmNode,
     // integration nodes
+    GoogleCalendar: IntegrationNode,
+    GoogleMeet: IntegrationNode,
     AirTable: IntegrationNode,
     Notion: IntegrationNode,
     MongoDb: IntegrationNode,
