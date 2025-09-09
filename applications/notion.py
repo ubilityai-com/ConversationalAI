@@ -32,7 +32,7 @@ async def notion_get_many_users(creds, params, **kwargs):
                 response.raise_for_status()
                 result = await response.json()
                 if response.status in status:
-                    return result["results"]
+                    return result
                 return {"Error": result}
 
     except aiohttp.ClientError as e:
