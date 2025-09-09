@@ -1261,6 +1261,361 @@ async def airtable_get_table_views(payload: AirtableGetTableDataAppIntegration):
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
 
+##################################### Clickup API's ########################################################
+
+class ClickWithListAppIntegration(BaseModel):
+    credential_name: str
+    list_id: str
+
+async def clickup_extract_credentials(creds):
+    if 'accessToken' in creds and 'clientID' in creds:
+        return f"Bearer {creds['accessToken']}"
+    elif 'accessToken' in creds:
+        return creds['accessToken']
+    else:
+        raise Exception("Missing Access Token")
+
+@http_app.post("/bot/clickup/getTasks")
+async def clickup_get_tasks(payload: ClickWithListAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        list_id = payload.list_id
+        accessToken = await clickup_extract_credentials(json_cred)
+        api_url = f"https://api.clickup.com/api/v2/list/{list_id}/task"
+        headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url,headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    tasks_info = [{"id": task['id'], "name": task['name']}
+                    for task in data.get('tasks', [])]
+                    return {"tasks": tasks_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+class ClickupWithFolderAppIntegration(BaseModel):
+    credential_name: str
+    folder_id: str
+
+@http_app.post("/bot/clickup/getLists")
+async def clickup_get_lists(payload: ClickupWithFolderAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        folder_id = payload.folder_id
+        accessToken = await clickup_extract_credentials(json_cred)
+        api_url = f"https://api.clickup.com/api/v2/folder/{folder_id}/list"
+        headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url,headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    lists_info = [{"id": int(list['id']), "name": list['name']}
+                    for list in data.get('lists', [])]
+                    return {"lists": lists_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class ClickupWithSpaceAppIntegration(BaseModel):
+    credential_name: str
+    space_id: str
+
+@http_app.post("/bot/clickup/getFolders")
+async def clickup_get_folders(payload: ClickupWithSpaceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        space_id = payload.space_id
+        accessToken = await clickup_extract_credentials(json_cred)
+        api_url = f"https://api.clickup.com/api/v2/space/{space_id}/folder"
+        headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url,headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    folders_info = [{"id": int(folder['id']), "name": folder['name']}
+                    for folder in data.get('folders', [])]
+                    return {"folders": folders_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class ClickupAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/clickup/getTeams")
+async def clickup_get_teams(payload: ClickupAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        
+        accessToken = await clickup_extract_credentials(json_cred)
+        api_url = "https://api.clickup.com/api/v2/team"
+        headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url,headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    teams_info = [{"id": team['id'], "name": team['name']}
+                    for team in data.get('teams', [])]
+                    return {"teams": teams_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class ClickupWithteamAppIntegration(BaseModel):
+    credential_name: str
+    team_id: str
+
+@http_app.post("/bot/clickup/getSpaces")
+async def clickup_get_spaces(payload: ClickupWithteamAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        
+        team_id = payload.team_id
+        accessToken = await clickup_extract_credentials(json_cred)
+        api_url = f"https://api.clickup.com/api/v2/team/{team_id}/space"
+        headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url,headers=headers, params={"archived":"True"}) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    spaces_info = [{"id": int(space['id']), "name": space['name']}
+                    for space in data.get('spaces', [])]
+                    return {"spaces": spaces_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/clickup/getFolderlessLists")
+async def clickup_get_forderless_lists(payload: ClickupWithSpaceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        space_id = payload.space_id
+        accessToken = await clickup_extract_credentials(json_cred)
+        api_url = f"https://api.clickup.com/api/v2/space/{space_id}/list"
+        headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url,headers=headers, params={"archived":"True"}) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    lists_info = [{"id": int(list['id']), "name": list['name']}
+                    for list in data.get('lists', [])]
+                    return {"lists": lists_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/clickup/getAccessibleCustomFields")
+async def clickup_get_accessible_custom_fields(payload: ClickWithListAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = await clickup_extract_credentials(json_cred)
+        list_id = payload.list_id
+        api_url = f"https://api.clickup.com/api/v2/list/{list_id}/field"
+        headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url,headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    fields_info = [{"id": field['id'], "name": field['name']}
+                    for field in data.get('fields', [])]
+                    return {"fields": fields_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/clickup/getListStatuses")
+async def clickup_get_list_statuses(payload: ClickWithListAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = await clickup_extract_credentials(json_cred)
+        list_id = payload.list_id
+        api_url = f"https://api.clickup.com/api/v2/list/{list_id}"
+        headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url,headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    statuses_info = [{"id": status['status'], "name": status['status']}
+                    for status in data.get('statuses', [])]
+                    return {"statuses": statuses_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/clickup/getListMembers")
+async def clickup_get_list_members(payload: ClickWithListAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = await clickup_extract_credentials(json_cred)
+        list_id = payload.list_id
+        api_url = f"https://api.clickup.com/api/v2/list/{list_id}/member"
+        headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url,headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    members_info = [{"id": member['id'], "name": member['username']}
+                    for member in data.get('members', [])]
+                    return {"members": members_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/clickup/getTags")
+async def clickup_get_tags(payload: ClickupWithSpaceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = await clickup_extract_credentials(json_cred)
+        space_id = payload.space_id
+        api_url = f"https://api.clickup.com/api/v2/space/{space_id}/tag"
+        headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url,headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    tags_info = [{"id": tag['name'], "name": tag['name']}
+                    for tag in data.get('tags', [])]
+                    return {"tags": tags_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/clickup/getTeamMembers")
+async def clickup_get_team_members(payload: ClickupWithteamAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        accessToken = await clickup_extract_credentials(json_cred)
+        team_id = payload.team_id
+        api_url = f"https://api.clickup.com/api/v2/team/{team_id}"
+        headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url,headers=headers) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    members_info = [{"id": member['user']['id'], "name": member['user']['username']}
+                    for member in data['team'].get('members', [])]
+                    return {"members": members_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class ClickupGetTokenAppIntegration(BaseModel):
+    clientID: str
+    clientSecret: str
+    code: str
+
+@http_app.post("/bot/clickup/getToken")
+async def clickup_get_token(payload: ClickupGetTokenAppIntegration):
+    try:
+        status=[200, 201, 202, 204, 206, 207, 208]
+        clientId= payload.clientID
+        clientSecret= payload.clientSecret
+        code= payload.code
+        token_endpoint = "https://api.clickup.com/api/v2/oauth/token"
+        data = {
+            'client_id': clientId,
+            'client_secret': clientSecret,
+            'code': code,
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(token_endpoint,data=data) as response:
+                if response.status in status:
+                    return await response.json()
+                raise Exception(
+                    f"Token request failed. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
 ################################ AI Providers List Models BaseModel ################################
 
 class AiProvidersListModelsAppIntegration(BaseModel):
