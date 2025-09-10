@@ -1430,6 +1430,19 @@ const serviceFields: CredentialInfo[] = [
         ],
     },
     {
+        type: "Linear",
+        service: "Linear",
+        Service_name: "",
+        cred: [
+            {
+                label: "API Key",
+                Credential_name: "apiKey",
+                Credential_value: "",
+                hashed: true,
+            },
+        ],
+    },
+    {
         type: "LinkedIn",
         service: "LinkedIn",
         Service_name: "",
