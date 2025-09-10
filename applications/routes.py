@@ -11,6 +11,7 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from aiohttp import BasicAuth
 import asana
 from asana.rest import ApiException
+import xmlrpc.client
 import sys, os,base64
 status = [200, 201, 202, 204, 206, 207, 208]
 
@@ -1649,6 +1650,371 @@ async def zoom_generate_refresh_token(payload: ZoomGetTokenAppIntegration):
                 raise Exception(
                     f"Invalid refresh_token. Status Code: {response.status}. Response: {await response.text()}"
                 )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+############################# Odoo API's  ###############################
+
+class OdooAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/odoo/getManyContact")
+async def odoo_get_many_contact(payload: OdooAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "url" not in json_cred or "db" not in json_cred or "username" not in json_cred or "apiPassword" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        url = json_cred["url"]
+        db = json_cred["db"]
+        username = json_cred["username"]
+        apiPassword = json_cred["apiPassword"]
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
+        uid = common.authenticate(db, username, apiPassword, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+            model = "res.partner"
+            ids = models.execute_kw(db, uid, apiPassword, model, "search", [[]])
+            data = models.execute_kw(
+                db, uid, apiPassword, model, "read", [ids], {"fields": ["name"]}
+            )
+            return {"Contacts": data}
+        else:
+            raise Exception("Authentication failed. Please check your credentials.")
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/bot/odoo/getManyCompany")
+async def odoo_get_many_company(payload: OdooAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "url" not in json_cred or "db" not in json_cred or "username" not in json_cred or "apiPassword" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        url = json_cred["url"]
+        db = json_cred["db"]
+        username = json_cred["username"]
+        apiPassword = json_cred["apiPassword"]
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
+        uid = common.authenticate(db, username, apiPassword, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+            model = "res.company"
+            ids = models.execute_kw(db, uid, apiPassword, model, "search", [[]])
+            data = models.execute_kw(
+                db, uid, apiPassword, model, "read", [ids], {"fields": ["name"]}
+            )
+            return {"Companies": data}
+        else:
+            raise Exception("Authentication failed. Please check your credentials.")
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/bot/odoo/getAllModel")
+async def odoo_get_all_model(payload: OdooAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "url" not in json_cred or "db" not in json_cred or "username" not in json_cred or "apiPassword" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        url = json_cred["url"]
+        db = json_cred["db"]
+        username = json_cred["username"]
+        apiPassword = json_cred["apiPassword"]
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
+        uid = common.authenticate(db, username, apiPassword, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+            models_list = models.execute_kw(
+                db,
+                uid,
+                apiPassword,
+                "ir.model",
+                "search_read",
+                [[]],
+                {"fields": ["model", "display_name"]},
+            )
+            return {"models": models_list}
+        else:
+            raise Exception("Authentication failed. Please check your credentials.")
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/bot/odoo/getManyOpportunity")
+async def odoo_get_many_opportunity(payload: OdooAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "url" not in json_cred or "db" not in json_cred or "username" not in json_cred or "apiPassword" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        url = json_cred["url"]
+        db = json_cred["db"]
+        username = json_cred["username"]
+        apiPassword = json_cred["apiPassword"]
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
+        uid = common.authenticate(db, username, apiPassword, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+            model = "crm.lead"
+            ids = models.execute_kw(db, uid, apiPassword, model, "search", [[]])
+            data = models.execute_kw(
+                db, uid, apiPassword, model, "read", [ids], {"fields": ["name"]}
+            )
+            return {"Opportunities": data}
+        else:
+            raise Exception("Authentication failed. Please check your credentials.")
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/bot/odoo/getManyUser")
+async def odoo_get_many_user(payload: OdooAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "url" not in json_cred or "db" not in json_cred or "username" not in json_cred or "apiPassword" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        url = json_cred["url"]
+        db = json_cred["db"]
+        username = json_cred["username"]
+        apiPassword = json_cred["apiPassword"]
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
+        uid = common.authenticate(db, username, apiPassword, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+            user_model = "res.users"
+            ids = models.execute_kw(
+                db, uid, apiPassword, user_model, "search", [[]]
+            )
+            data = models.execute_kw(
+                db,
+                uid,
+                apiPassword,
+                user_model,
+                "read",
+                [ids],
+                {"fields": ["name"]},
+            )
+            return {"Users": data}
+        else:
+            raise Exception("Authentication failed. Please check your credentials.")
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/bot/odoo/getManySalesTeam")
+async def odoo_get_many_sales_team(payload: OdooAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "url" not in json_cred or "db" not in json_cred or "username" not in json_cred or "apiPassword" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        url = json_cred["url"]
+        db = json_cred["db"]
+        username = json_cred["username"]
+        apiPassword = json_cred["apiPassword"]
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
+        uid = common.authenticate(db, username, apiPassword, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+            model = "crm.team"
+            ids = models.execute_kw(db, uid, apiPassword, model, "search", [[]])
+            data = models.execute_kw(
+                db, uid, apiPassword, model, "read", [ids], {"fields": ["name"]}
+            )
+            return {"SalesTeam": data}
+        else:
+            raise Exception("Authentication failed. Please check your credentials.")
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/bot/odoo/getManySalesTeamMember")
+async def odoo_get_many_sales_team_member(payload: OdooAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "url" not in json_cred or "db" not in json_cred or "username" not in json_cred or "apiPassword" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        url = json_cred["url"]
+        db = json_cred["db"]
+        username = json_cred["username"]
+        apiPassword = json_cred["apiPassword"]
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
+        uid = common.authenticate(db, username, apiPassword, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+            model = "crm.team.member"
+            ids = models.execute_kw(db, uid, apiPassword, model, "search", [[]])
+            data = models.execute_kw(
+                db, uid, apiPassword, model, "read", [ids], {"fields": ["name"]}
+            )
+            return {"SalesTeamMember": data}
+        else:
+            raise Exception("Authentication failed. Please check your credentials.")
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/bot/odoo/getManySalesOrder")
+async def odoo_get_many_sales_order(payload: OdooAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "url" not in json_cred or "db" not in json_cred or "username" not in json_cred or "apiPassword" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        url = json_cred["url"]
+        db = json_cred["db"]
+        username = json_cred["username"]
+        apiPassword = json_cred["apiPassword"]
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
+        uid = common.authenticate(db, username, apiPassword, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+            model = "sale.order"
+            ids = models.execute_kw(db, uid, apiPassword, model, "search", [[]])
+            data = models.execute_kw(
+                db, uid, apiPassword, model, "read", [ids], {"fields": ["name"]}
+            )
+            return {"SalesOrders": data}
+        else:
+            raise Exception("Authentication failed. Please check your credentials.")
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/bot/odoo/getManyProduct")
+async def odoo_get_many_product(payload: OdooAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "url" not in json_cred or "db" not in json_cred or "username" not in json_cred or "apiPassword" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        url = json_cred["url"]
+        db = json_cred["db"]
+        username = json_cred["username"]
+        apiPassword = json_cred["apiPassword"]
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
+        uid = common.authenticate(db, username, apiPassword, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+            model = "product.template"
+            ids = models.execute_kw(db, uid, apiPassword, model, "search", [[]])
+            data = models.execute_kw(
+                db, uid, apiPassword, model, "read", [ids], {"fields": ["name"]}
+            )
+            return {"Products": data}
+        else:
+            raise Exception("Authentication failed. Please check your credentials.")
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/bot/odoo/getManyProductCategory")
+async def odoo_get_many_product_category(payload: OdooAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "url" not in json_cred or "db" not in json_cred or "username" not in json_cred or "apiPassword" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        url = json_cred["url"]
+        db = json_cred["db"]
+        username = json_cred["username"]
+        apiPassword = json_cred["apiPassword"]
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
+        uid = common.authenticate(db, username, apiPassword, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+            model = "product.category"
+            ids = models.execute_kw(db, uid, apiPassword, model, "search", [[]])
+            data = models.execute_kw(
+                db, uid, apiPassword, model, "read", [ids], {"fields": ["name"]}
+            )
+            return {"Categories": data}
+        else:
+            raise Exception("Authentication failed. Please check your credentials.")
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/bot/odoo/getManyCountry")
+async def odoo_get_many_country(payload: OdooAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "url" not in json_cred or "db" not in json_cred or "username" not in json_cred or "apiPassword" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        url = json_cred["url"]
+        db = json_cred["db"]
+        username = json_cred["username"]
+        apiPassword = json_cred["apiPassword"]
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
+        uid = common.authenticate(db, username, apiPassword, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+            model = "res.country"
+            ids = models.execute_kw(db, uid, apiPassword, model, "search", [[]])
+            data = models.execute_kw(
+                db, uid, apiPassword, model, "read", [ids], {"fields": ["name"]}
+            )
+            return {"Country": data}
+        else:
+            raise Exception("Authentication failed. Please check your credentials.")
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+@http_app.post("/bot/odoo/getManyState")
+async def odoo_get_many_state(payload: OdooAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "url" not in json_cred or "db" not in json_cred or "username" not in json_cred or "apiPassword" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        url = json_cred["url"]
+        db = json_cred["db"]
+        username = json_cred["username"]
+        apiPassword = json_cred["apiPassword"]
+        common = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/common")
+        uid = common.authenticate(db, username, apiPassword, {})
+        if uid:
+            models = xmlrpc.client.ServerProxy(f"{url}/xmlrpc/2/object")
+            model = "res.country.state"
+            ids = models.execute_kw(db, uid, apiPassword, model, "search", [[]])
+            data = models.execute_kw(
+                db, uid, apiPassword, model, "read", [ids], {"fields": ["name"]}
+            )
+            return {"State": data}
+        else:
+            raise Exception("Authentication failed. Please check your credentials.")
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
