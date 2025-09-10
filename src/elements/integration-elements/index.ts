@@ -1,4 +1,5 @@
 //add import
+import { OdooJson } from "./OdooJson";
 import { LinearJson } from "./LinearJson";
 import { GraphQLJson } from "./GraphQLJson";
 import { ZoomJson } from "./ZoomJson";
@@ -24,6 +25,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    OdooJson,
     LinearJson,
     GraphQLJson,
     ZoomJson,
