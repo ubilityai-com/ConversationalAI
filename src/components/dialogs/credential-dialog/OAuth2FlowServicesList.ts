@@ -63,7 +63,7 @@ export const OAuth2ServiceTypes = {
 
     HubSpot: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/hubspot/getRefresh`,
+            url: `${process.env.REACT_APP_DNS_URL}hubspot/getRefresh`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -71,7 +71,7 @@ export const OAuth2ServiceTypes = {
                 client_id: "{{clientID}}",
                 client_secret: "{{clientSecret}}",
                 code: "{{code::params}}",
-                redirect_uri: (process.env.APP_PUBLIC_DOMAIN || "") + "/dashboard/credentials",
+                redirect_uri: window.location.origin + window.location.pathname,
             },
             response_path: "data",
             fieldsToAdd: ["clientID", "clientSecret", "refresh_token::response", "redirectUri"],
