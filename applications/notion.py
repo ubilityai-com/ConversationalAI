@@ -145,6 +145,40 @@ async def notion_get_many_databases(creds, params, **kwargs):
     except Exception as err:
         return {"Error": str(err)}
 
+async def notion_search_database(creds, params, **kwargs):
+    """
+        Returns a database of a specific id.
+    
+    :param str integration_token: (required) Once the integration is created, you can update its settings as needed under the Capabilities tab and retrieve the integration token under Secrets.
+    :param dict params:
+    
+      :id: (str,required) The id of the database to be retrieved
+    :return: details about the retrieved database(id,properties,..)
+    :rtype: dict  
+    """
+    try:
+        cred=json.loads(creds)
+        if 'database_id' in params:
+            url = f"https://api.notion.com/v1/databases/{params['database_id']}/query"
+            headers = {
+                "Authorization": f"Bearer {cred['accessToken']}",
+                "Notion-Version": "2022-06-28",  
+                "Content-Type": "application/json"  
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, headers=headers) as response:
+                    response.raise_for_status()
+                    result = await response.json()
+                    if response.status in status:
+                        return result
+                    return {"Error": result}
+        else:
+            raise Exception("missing database id")
+    except aiohttp.ClientError as e:
+        return {"Error": str(e)}
+    except Exception as err:
+        return {"Error": str(err)}
+
 async def notion_create_page(creds, params, **kwargs):
     """
         Creates a page with properties passed in the parameters
@@ -440,6 +474,7 @@ operations = {
     "Get User": notion_get_user,
     "Get Database": notion_get_database,
     "Get Many Databases": notion_get_many_databases,
+    "Search Database": notion_search_database,
     "Create Page": notion_create_page,
     "Get Page": notion_get_page,
     "Archive Page": notion_archive_page,
