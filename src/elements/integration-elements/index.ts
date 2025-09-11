@@ -1,4 +1,5 @@
 //add import
+import { SalesforceJson } from "./SalesforceJson";
 import { GoogleContactsJson } from "./GoogleContactsJson";
 import { ZohoCRMJson } from "./ZohoCRMJson";
 import { OdooJson } from "./OdooJson";
@@ -27,6 +28,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    SalesforceJson,
     GoogleContactsJson,
     ZohoCRMJson,
     OdooJson,
