@@ -26,7 +26,7 @@ export const OAuth2ServiceTypes = {
 
     ZohoCRM: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/zohoCRM/getRefreshToken`,
+            url: `${process.env.REACT_APP_DNS_URL}zohoCRM/getRefreshToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -34,7 +34,7 @@ export const OAuth2ServiceTypes = {
                 client_id: "{{clientID}}",
                 client_secret: "{{clientSecret}}",
                 code: "{{code::params}}",
-                redirect_uri: (process.env.APP_PUBLIC_DOMAIN || "") + "/dashboard/credentials",
+                redirect_uri: window.location.origin + window.location.pathname,
             },
             fieldsToAdd: ["clientID", "clientSecret", "refresh_token::response"],
         }),
