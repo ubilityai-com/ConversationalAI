@@ -66,6 +66,12 @@ export default function getContent(selectedNode: any) {
                 ...jsonToSend,
                 page_size: inputs.get_many_databases_limit
             }
+        } else if (inputs.operation === "Search Database") {
+            jsonToSend = {
+            ...jsonToSend,
+            database_id: inputs.search_database_id
+            
+            };
         }
     } else if (inputs.type === "Block") {
         if (inputs.operation === "Get Block") {

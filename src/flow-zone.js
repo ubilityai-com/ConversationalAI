@@ -27,6 +27,7 @@ const FlowZone = () => {
     QuestionAndAnswer: LlmNode,
     // integration nodes
     GoogleContacts: IntegrationNode,
+    ZohoCRM: IntegrationNode,
     Odoo: IntegrationNode,
     Linear: IntegrationNode,
     GraphQL: IntegrationNode,

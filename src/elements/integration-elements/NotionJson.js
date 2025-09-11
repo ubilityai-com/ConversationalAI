@@ -137,6 +137,10 @@ export const NotionJson = {
                   option: "Get Many Databases",
                   value: "Get Many Databases",
                 },
+                {
+                  option: "Search Database",
+                  value: "Search Database",
+                },
               ],
               options: {
                 "Get Database": [
@@ -158,6 +162,17 @@ export const NotionJson = {
                     variableName: "get_many_databases_limit",
                     required: false,
                     placeholder: "maximum : 100",
+                    hasDynamicVariable: true,
+                  },
+                ],
+                "Search Database": [
+                  {
+                    type: "textfield",
+                    label: "Database Id",
+                    value: "",
+                    placeholder: "Please Enter database Id",
+                    variableName: "search_database_id",
+                    required: true,
                     hasDynamicVariable: true,
                   },
                 ],
