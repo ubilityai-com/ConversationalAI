@@ -2155,6 +2155,412 @@ async def zohoCRM_list_leads(payload: zohoCRMAppIntegration):
         return JSONResponse(status_code=500, content={"Error": e})
 
 
+############################# Salesforce API's  ###############################
+
+class SalesForceAppIntegration(BaseModel):
+    credential_name: str
+
+async def salesforce_refresh_access_token(client_id, client_secret, refresh_token):
+    try:
+        url = f"https://login.salesforce.com/services/oauth2/token?grant_type=refresh_token&client_id={client_id}&client_secret={client_secret}&refresh_token={refresh_token}"
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url) as response:
+                response_json = await response.json()
+                if "access_token" in response_json:
+                    return response_json["access_token"]
+                raise Exception(
+                    f"Failed refreshing access token. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        raise Exception(error)
+
+@http_app.post("/bot/salesforce/listUsers")
+async def salesforce_list_users(payload: SalesForceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "clientID" not in json_cred or "clientSecret" not in json_cred or "refreshToken" not in json_cred or "domainName" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        domain = json_cred["domainName"]
+        token = await salesforce_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+        url = f"https://{domain}.my.salesforce.com/services/data/v58.0/query?q=SELECT Id, Name FROM User"
+        headers = {"Authorization": f"Bearer {token}"}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                result = await response.json()
+        if type(result) == list:
+            for item in result[0]:
+                if item == "errorCode":
+                    raise Exception(str(result))
+        else:
+            for item in result:
+                if item == "errorCode":
+                    raise Exception(str(result))
+            if "records" in result:
+                users = []
+                for user in result["records"]:
+                    userId = user["Id"]
+                    userName = user["Name"]
+                    users.append({"id": userId, "name": userName})
+                return {"users": users}
+    except Exception as e:
+        if "Expecting value" in str(e):
+            return JSONResponse(status_code=500, content={"Error": "Invalid Domain"})
+        else:
+            return JSONResponse(status_code=500, content={"Error": str(e)})
+
+
+@http_app.post("/bot/salesforce/listTasks")
+async def salesforce_list_tasks(payload: SalesForceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "clientID" not in json_cred or "clientSecret" not in json_cred or "refreshToken" not in json_cred or "domainName" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        domain = json_cred["domainName"]
+        token = await salesforce_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+        url = f"https://{domain}.my.salesforce.com/services/data/v58.0/query?q=SELECT Id FROM Task"
+        headers = {"Authorization": f"Bearer {token}"}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                result = await response.json()
+        if type(result) == list:
+            for item in result[0]:
+                if item == "errorCode":
+                    raise Exception(str(result))
+        else:
+            for item in result:
+                if item == "errorCode":
+                    raise Exception(str(result))
+            if "records" in result:
+                tasks = []
+                for task in result["records"]:
+                    taskId = task["Id"]
+                    tasks.append({"id": taskId})
+                return {"tasks": tasks}
+    except Exception as e:
+        if "Expecting value" in str(e):
+            return JSONResponse(status_code=500, content={"Error": "Invalid Domain"})
+        else:
+            return JSONResponse(status_code=500, content={"Error": str(e)})
+
+
+@http_app.post("/bot/salesforce/listAccounts")
+async def salesforce_list_accounts(payload: SalesForceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "clientID" not in json_cred or "clientSecret" not in json_cred or "refreshToken" not in json_cred or "domainName" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        domain = json_cred["domainName"]
+        token = await salesforce_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+        url = f"https://{domain}.my.salesforce.com/services/data/v58.0/query?q=SELECT Id, Name FROM Account"
+        headers = {"Authorization": f"Bearer {token}"}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                result = await response.json()
+        if type(result) == list:
+            for item in result[0]:
+                if item == "errorCode":
+                    raise Exception(str(result))
+        else:
+            for item in result:
+                if item == "errorCode":
+                    raise Exception(str(result))
+            if "records" in result:
+                accounts = []
+                for account in result["records"]:
+                    accountId = account["Id"]
+                    accountName = account["Name"]
+                    accounts.append({"id": accountId, "name": accountName})
+                return {"accounts": accounts}
+    except Exception as e:
+        if "Expecting value" in str(e):
+            return JSONResponse(status_code=500, content={"Error": "Invalid Domain"})
+        else:
+            return JSONResponse(status_code=500, content={"Error": str(e)})
+
+
+@http_app.post("/bot/salesforce/listAttachments")
+async def salesforce_list_attachments(payload: SalesForceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "clientID" not in json_cred or "clientSecret" not in json_cred or "refreshToken" not in json_cred or "domainName" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        domain = json_cred["domainName"]
+        token = await salesforce_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+        url = f"https://{domain}.my.salesforce.com/services/data/v58.0/query?q=SELECT Id, Name FROM Attachment"
+        headers = {"Authorization": f"Bearer {token}"}
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                result = await response.json()
+        if type(result) == list:
+            for item in result[0]:
+                if item == "errorCode":
+                    raise Exception(str(result))
+        else:
+            for item in result:
+                if item == "errorCode":
+                    raise Exception(str(result))
+            if "records" in result:
+                attachments = []
+                for attachment in result["records"]:
+                    attachmentId = attachment["Id"]
+                    attachmentName = attachment["Name"]
+                    attachments.append({"id": attachmentId, "name": attachmentName})
+                return {"attachments": attachments}
+    except Exception as e:
+        if "Expecting value" in str(e):
+            return JSONResponse(status_code=500, content={"Error": "Invalid Domain"})
+        else:
+            return JSONResponse(status_code=500, content={"Error": str(e)})
+
+
+@http_app.post("/bot/salesforce/listCases")
+async def salesforce_list_cases(payload: SalesForceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "clientID" not in json_cred or "clientSecret" not in json_cred or "refreshToken" not in json_cred or "domainName" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        domain = json_cred["domainName"]
+        token = await salesforce_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+        url = f"https://{domain}.my.salesforce.com/services/data/v58.0/query?q=SELECT Id FROM Case"
+        headers = {"Authorization": f"Bearer {token}"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                result = await response.json()
+        if type(result) == list:
+            for item in result[0]:
+                if item == "errorCode":
+                    raise Exception(str(result))
+        else:
+            for item in result:
+                if item == "errorCode":
+                    raise Exception(str(result))
+            if "records" in result:
+                cases = []
+                for case in result["records"]:
+                    caseId = case["Id"]
+                    cases.append({"id": caseId})
+                return {"cases": cases}
+    except Exception as e:
+        if "Expecting value" in str(e):
+            return JSONResponse(status_code=500, content={"Error": "Invalid Domain"})
+        else:
+            return JSONResponse(status_code=500, content={"Error": str(e)})
+
+
+@http_app.post("/bot/salesforce/listContacts")
+async def salesforce_list_contacts(payload: SalesForceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "clientID" not in json_cred or "clientSecret" not in json_cred or "refreshToken" not in json_cred or "domainName" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        domain = json_cred["domainName"]
+        token = await salesforce_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+        url = f"https://{domain}.my.salesforce.com/services/data/v58.0/query?q=SELECT Id, Name FROM Contact"
+        headers = {"Authorization": f"Bearer {token}"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                result = await response.json()
+        if type(result) == list:
+            for item in result[0]:
+                if item == "errorCode":
+                    raise Exception(str(result))
+        else:
+            for item in result:
+                if item == "errorCode":
+                    raise Exception(str(result))
+            if "records" in result:
+                contacts = []
+                for contact in result["records"]:
+                    contactId = contact["Id"]
+                    contactName = contact["Name"]
+                    contacts.append({"id": contactId, "name": contactName})
+                return {"contacts": contacts}
+    except Exception as e:
+        if "Expecting value" in str(e):
+            return JSONResponse(status_code=500, content={"Error": "Invalid Domain"})
+        else:
+            return JSONResponse(status_code=500, content={"Error": str(e)})
+
+
+@http_app.post("/bot/salesforce/listLeads")
+async def salesforce_list_leads(payload: SalesForceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "clientID" not in json_cred or "clientSecret" not in json_cred or "refreshToken" not in json_cred or "domainName" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        domain = json_cred["domainName"]
+        token = await salesforce_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+        url = f"https://{domain}.my.salesforce.com/services/data/v58.0/query?q=SELECT Id, Name FROM Lead"
+        headers = {"Authorization": f"Bearer {token}"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                result = await response.json()
+        if type(result) == list:
+            for item in result[0]:
+                if item == "errorCode":
+                    raise Exception(str(result))
+        else:
+            for item in result:
+                if item == "errorCode":
+                    raise Exception(str(result))
+            if "records" in result:
+                leads = []
+                for lead in result["records"]:
+                    leadId = lead["Id"]
+                    leadName = lead["Name"]
+                    leads.append({"id": leadId, "name": leadName})
+                return {"leads": leads}
+    except Exception as e:
+        if "Expecting value" in str(e):
+            return JSONResponse(status_code=500, content={"Error": "Invalid Domain"})
+        else:
+            return JSONResponse(status_code=500, content={"Error": str(e)})
+
+
+@http_app.post("/bot/salesforce/listOpportunities")
+async def salesforce_list_opportunities(payload: SalesForceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "clientID" not in json_cred or "clientSecret" not in json_cred or "refreshToken" not in json_cred or "domainName" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        domain = json_cred["domainName"]
+        token = await salesforce_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+        url = f"https://{domain}.my.salesforce.com/services/data/v58.0/query?q=SELECT Id, Name FROM Opportunity"
+        headers = {"Authorization": f"Bearer {token}"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                result = await response.json()
+        if type(result) == list:
+            for item in result[0]:
+                if item == "errorCode":
+                    raise Exception(str(result))
+        else:
+            for item in result:
+                if item == "errorCode":
+                    raise Exception(str(result))
+            if "records" in result:
+                opportunities = []
+                for opportunity in result["records"]:
+                    opportunityId = opportunity["Id"]
+                    opportunityName = opportunity["Name"]
+                    opportunities.append(
+                        {"id": opportunityId, "name": opportunityName}
+                    )
+                return {"opportunities": opportunities}
+    except Exception as e:
+        if "Expecting value" in str(e):
+            return JSONResponse(status_code=500, content={"Error": "Invalid Domain"})
+        else:
+            return JSONResponse(status_code=500, content={"Error": str(e)})
+
+
+@http_app.post("/bot/salesforce/listCampaigns")
+async def salesforce_list_campaigns(payload: SalesForceAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "clientID" not in json_cred or "clientSecret" not in json_cred or "refreshToken" not in json_cred or "domainName" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        domain = json_cred["domainName"]
+        token = await salesforce_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+        url = f"https://{domain}.my.salesforce.com/services/data/v58.0/query?q=SELECT Id, Name FROM Campaign"
+        headers = {"Authorization": f"Bearer {token}"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                result = await response.json()
+        if type(result) == list:
+            for item in result[0]:
+                if item == "errorCode":
+                    raise Exception(str(result))
+        else:
+            for item in result:
+                if item == "errorCode":
+                    raise Exception(str(result))
+            if "records" in result:
+                campaigns = []
+                for campaign in result["records"]:
+                    campaignId = campaign["Id"]
+                    campaignName = campaign["Name"]
+                    campaigns.append({"id": campaignId, "name": campaignName})
+                return {"campaigns": campaigns}
+    except Exception as e:
+        if "Expecting value" in str(e):
+            return JSONResponse(status_code=500, content={"Error": "Invalid Domain"})
+        else:
+            return JSONResponse(status_code=500, content={"Error": str(e)})
+
+class SalesForceWithCustomObjectAppIntegration(BaseModel):
+    credential_name: str
+    customObjectName: str
+
+@http_app.post("/bot/salesforce/listCustomObjectRecords")
+async def salesforce_list_custom_objects(payload: SalesForceWithCustomObjectAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "clientID" not in json_cred or "clientSecret" not in json_cred or "refreshToken" not in json_cred or "domainName" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        domain = json_cred["domainName"]
+        token = await salesforce_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+        custom_object_name = payload.customObjectName
+        url = f"https://{domain}.my.salesforce.com/services/data/v58.0/query?q=Select Id FROM {custom_object_name}"
+        headers = {"Authorization": f"Bearer {token}"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                result = await response.json()
+        if type(result) == list:
+            for item in result[0]:
+                if item == "errorCode":
+                    raise Exception(str(result))
+        else:
+            for item in result:
+                if item == "errorCode":
+                    raise Exception(str(result))
+            if "records" in result:
+                CustomObjs = []
+                for CustomObj in result["records"]:
+                    CustomObjId = CustomObj["Id"]
+                    CustomObjs.append({"id": CustomObjId})
+                return {"CustomObjs": CustomObjs}
+    except Exception as e:
+        if "Expecting value" in str(e):
+            return JSONResponse(status_code=500, content={"Error": "Invalid Domain"})
+        else:
+            return JSONResponse(status_code=500, content={"Error": str(e)})
+
+
 ################################ AI Providers List Models BaseModel ################################
 
 class AiProvidersListModelsAppIntegration(BaseModel):
