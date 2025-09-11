@@ -2561,6 +2561,239 @@ async def salesforce_list_custom_objects(payload: SalesForceWithCustomObjectAppI
             return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
+############################# Hubspot API's  ###############################
+class HubspotGetTokenAppIntegration(BaseModel):
+    client_id: str
+    client_secret: str
+    code: str
+    redirect_uri: str
+
+@http_app.post("/bot/hubspot/getRefresh")
+async def hubspot_get_refresh(payload: HubspotGetTokenAppIntegration):
+    try:
+        client_id=payload.client_id
+        client_secret=payload.client_secret
+        code=payload.code
+        redirect_uri=payload.redirect_uri
+        url = "https://api.hubapi.com/oauth/v1/token"
+        headers = {
+            "Content-Type":"application/x-www-form-urlencoded",
+            "Accept":"application/json",
+        }
+        token_data = {
+            "grant_type":"authorization_code",
+            "client_id":client_id,
+            "client_secret":client_secret,
+            "redirect_uri":redirect_uri,
+            "code":code
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url=url,headers=headers,data=token_data) as response:
+                if response.status == 200:
+                    token_info = await response.json()
+                    accessToken = token_info['access_token']
+                    refresh_token = token_info['refresh_token']
+                    return { "refresh_token":refresh_token ,"access_token":accessToken}
+                else:
+                    return JSONResponse(status_code=500, content={"Error": "Failed to obtain token."})
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+async def hubspot_refresh_token(credentials):
+    try:
+        url = "https://api.hubapi.com/oauth/v1/token"
+        cred = credentials
+        client_id = cred['clientID']
+        client_secret = cred['clientSecret']
+        refresh_token = cred['refreshToken']
+        redirect_uri = cred['redirectUri']
+        headers= {
+            "Content-Type":"application/x-www-form-urlencoded",
+            "Accept":"application/json",
+        }
+        token_data = {
+            "grant_type":"refresh_token",
+            "client_id":client_id,
+            "client_secret":client_secret,
+            "refresh_token":refresh_token,
+            "redirect_uri":redirect_uri
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url=url, headers=headers, data=token_data) as response:
+                response.raise_for_status()
+                if response.status == 200:
+                    token_info = await response.json()
+                    accessToken = token_info['access_token']
+                    return accessToken
+                else:
+                    raise Exception(response.json())
+
+    except Exception as error:
+        raise Exception(error)
+    
+class HubspotAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/hubspot/getContacts")
+async def hubspot_get_contacts(payload: HubspotAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "clientID" and "clientSecret" and "refreshToken" and "redirectUri" in json_cred:
+            access_token = await hubspot_refresh_token(json_cred)
+            api_url = "https://api.hubapi.com/crm/v3/objects/contacts?limit=100"
+            headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': f'Bearer {access_token}'
+                    }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(api_url,headers=headers) as response:
+                    response.raise_for_status()
+                    data = await response.json() 
+                    if response.status==200:
+                        contacts_info = [{"id": contact['id'], "email": contact['properties']['email']}
+                        for contact in data.get('results', [])]
+                        return {"contacts": contacts_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error":data}), 500
+        else:
+            return JSONResponse(status_code=500, content={"Error":"missing required fields"}), 400
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+@http_app.post("/bot/hubspot/getCompanies")
+async def hubspot_get_companies(payload: HubspotAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "clientID" and "clientSecret" and "refreshToken" and "redirectUri" in json_cred:
+            access_token = await hubspot_refresh_token(json_cred)
+            api_url = "https://api.hubapi.com/crm/v3/objects/companies?limit=100"
+            headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': f'Bearer {access_token}'
+                    }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(api_url,headers=headers) as response:
+                    response.raise_for_status()
+                    data = await response.json() 
+                    if response.status==200:
+                        companies_info = [{"id": company['id'], "domain": company['properties']['domain']}
+                        for company in data.get('results', [])]
+                        return {"companies": companies_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error":data}), 500
+        else:
+            return JSONResponse(status_code=500, content={"Error":"missing required fields"}), 400
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+@http_app.post("/bot/hubspot/getDeals")
+async def hubspot_get_deals(payload: HubspotAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "clientID" and "clientSecret" and "refreshToken" and "redirectUri" in json_cred:
+            access_token = await hubspot_refresh_token(json_cred)
+            api_url = "https://api.hubapi.com/crm/v3/objects/deals?limit=100"
+            headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': f'Bearer {access_token}'
+                    }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(api_url,headers=headers) as response:
+                    response.raise_for_status()
+                    data = await response.json() 
+                    if response.status==200:
+                        deals_info = [{"id": deal['id'], "name": deal['properties']['dealname']}
+                        for deal in data.get('results', [])]
+                        return {"deals": deals_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error":data}), 500
+        else:
+            return JSONResponse(status_code=500, content={"Error":"missing required fields"}), 400
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/hubspot/getTickets")
+async def hubspot_get_tickets(payload: HubspotAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "clientID" and "clientSecret" and "refreshToken" and "redirectUri" in json_cred:
+            access_token = await hubspot_refresh_token(json_cred)
+            api_url = "https://api.hubapi.com/crm/v3/objects/tickets?limit=100"
+            headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': f'Bearer {access_token}'
+                    }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(api_url,headers=headers) as response:
+                    response.raise_for_status()
+                    data = await response.json() 
+                    if response.status==200:
+                        tickets_info = [{"id": ticket['id']}
+                        for ticket in data.get('results', [])]
+                        return {"tickets": tickets_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error":data}), 500
+        else:
+            return JSONResponse(status_code=500, content={"Error":"missing required fields"}), 400
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+@http_app.post("/bot/hubspot/getCalls")
+async def hubspot_get_calls(payload: HubspotAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "clientID" and "clientSecret" and "refreshToken" and "redirectUri" in json_cred:
+            access_token = await hubspot_refresh_token(json_cred)
+            api_url = "https://api.hubapi.com/crm/v3/objects/calls?limit=100"
+            headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': f'Bearer {access_token}'
+                    }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(api_url,headers=headers) as response:
+                    response.raise_for_status()
+                    data = await response.json() 
+                    if response.status==200:
+                        calls_info = [{"id": call['id']}
+                        for call in data.get('results', [])]
+                        return {"calls": calls_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error":data}), 500
+        else:
+            return JSONResponse(status_code=500, content={"Error":"missing required fields"}), 400
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+@http_app.post("/bot/hubspot/getDispositions")
+async def hubspot_get_dispositions(payload: HubspotAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "clientID" and "clientSecret" and "refreshToken" and "redirectUri" in json_cred:
+            access_token = await hubspot_refresh_token(json_cred)
+            api_url = "https://api.hubapi.com/calling/v1/dispositions"
+            headers = {
+                        'Content-Type': 'application/json',
+                        'Authorization': f'Bearer {access_token}'
+                    }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(api_url,headers=headers) as response:
+                    response.raise_for_status()
+                    data = await response.json() 
+                    if response.status==200:
+                        return {"Dispositions": data}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error":data}), 500
+        else:
+            return JSONResponse(status_code=500, content={"Error":"missing required fields"}), 400
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+
 ################################ AI Providers List Models BaseModel ################################
 
 class AiProvidersListModelsAppIntegration(BaseModel):
