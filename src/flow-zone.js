@@ -26,6 +26,7 @@ const FlowZone = () => {
     ConditionAgent: ConditionAgentNode,
     QuestionAndAnswer: LlmNode,
     // integration nodes
+    GoogleContacts: IntegrationNode,
     Odoo: IntegrationNode,
     Linear: IntegrationNode,
     GraphQL: IntegrationNode,
