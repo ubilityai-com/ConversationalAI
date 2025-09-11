@@ -2019,6 +2019,142 @@ async def odoo_get_many_state(payload: OdooAppIntegration):
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
 
+############################# Zoho API's  ###############################
+
+class zohoCRMGetTokenAppIntegration(BaseModel):
+    client_id: str
+    client_secret: str
+    code: str
+    redirect_uri: str
+
+@http_app.post("/bot/zohoCRM/getRefreshToken")
+async def zohoCRM_generate_refresh_token(payload: zohoCRMGetTokenAppIntegration):
+    try:
+        client_id=payload.client_id
+        client_secret=payload.client_secret
+        code=payload.code
+        redirect_uri=payload.redirect_uri
+        url = f"https://accounts.zoho.com/oauth/v2/token?client_id={client_id}&client_secret={client_secret}&grant_type=authorization_code&redirect_uri={redirect_uri}&code={code}"
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url) as response:
+                response.raise_for_status()
+                response_json = await response.json()
+                if "refresh_token" in response_json:
+                    return response_json["refresh_token"]
+                else:
+                    return JSONResponse(status_code=500, content={"refresh_token": "Invalid refresh_token"})
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": error})
+
+class zohoCRMAppIntegration(BaseModel):
+    credential_name: str
+
+async def zohoCRM_refresh_access_token(client_id, client_secret, refresh_token):
+    try:
+        url = f"https://accounts.zoho.com/oauth/v2/token?refresh_token={refresh_token}&client_id={client_id}&client_secret={client_secret}&grant_type=refresh_token"
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url) as response:
+                response.raise_for_status()
+                result = await response.json()
+                if "access_token" in result:
+                    return result["access_token"]
+                raise Exception({"access_token": "Invalid access_token"})
+    except Exception as error:
+        raise Exception(error)
+
+@http_app.post("/bot/zohoCRM/listAccounts")
+async def zohoCRM_list_accounts(payload: zohoCRMAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "clientID" in json_cred and "clientSecret" in json_cred and "refreshToken" in json_cred:
+            access_token = await zohoCRM_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+            url = f"https://www.zohoapis.com/crm/v5/Accounts?fields=Account_Name"
+            headers = {"Authorization": f"Bearer {access_token}"}
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers) as response:
+                    response.raise_for_status()
+                    response_json = await response.json()
+                    accounts = []
+                    for account in response_json["data"]:
+                        accountId = account["id"]
+                        accountName = account["Account_Name"]
+                        accounts.append({"id": accountId, "name": accountName})
+                    return {"accounts": accounts}
+        return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"Error": e})
+
+@http_app.post("/bot/zohoCRM/listContacts")
+async def zohoCRM_list_contacts(payload: zohoCRMAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "clientID" in json_cred and "clientSecret" in json_cred and "refreshToken" in json_cred:
+            access_token = await zohoCRM_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+            url = f"https://www.zohoapis.com/crm/v5/Contacts?fields=Full_Name"
+            headers = {"Authorization": f"Bearer {access_token}"}
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers) as response:
+                    response.raise_for_status()
+                    response_json = await response.json()
+                    contacts = []
+                    for contact in response_json["data"]:
+                        contactId = contact["id"]
+                        contactName = contact["Full_Name"]
+                        contacts.append({"id": contactId, "name": contactName})
+                    return {"contacts": contacts}
+        return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"Error": e})
+
+@http_app.post("/bot/zohoCRM/listDeals")
+async def zohoCRM_list_deals(payload: zohoCRMAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "clientID" in json_cred and "clientSecret" in json_cred and "refreshToken" in json_cred:
+            access_token = await zohoCRM_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+            url = f"https://www.zohoapis.com/crm/v5/Deals?fields=Deal_Name"
+            headers = {"Authorization": f"Bearer {access_token}"}
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers) as response:
+                    response.raise_for_status()
+                    response_json = await response.json()
+                    deals = []
+                    for deal in response_json["data"]:
+                        dealId = deal["id"]
+                        dealName = deal["Deal_Name"]
+                        deals.append({"id": dealId, "name": dealName})
+                    return {"deals": deals}
+        return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"Error": e})
+
+@http_app.post("/bot/zohoCRM/listLeads")
+async def zohoCRM_list_leads(payload: zohoCRMAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "clientID" in json_cred and "clientSecret" in json_cred and "refreshToken" in json_cred:
+            access_token = await zohoCRM_refresh_access_token(client_id=json_cred["clientID"],client_secret=json_cred["clientSecret"],refresh_token=json_cred["refreshToken"])
+            url = f"https://www.zohoapis.com/crm/v5/Leads?fields=Full_Name"
+            headers = {"Authorization": f"Bearer {access_token}"}
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers) as response:
+                    response.raise_for_status()
+                    response_json = await response.json()
+                    leads = []
+                    for lead in response_json["data"]:
+                        leadId = lead["id"]
+                        leadName = lead["Full_Name"]
+                        leads.append({"id": leadId, "name": leadName})
+                    return {"leads": leads}
+        return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"Error": e})
+
+
 ################################ AI Providers List Models BaseModel ################################
 
 class AiProvidersListModelsAppIntegration(BaseModel):
