@@ -545,7 +545,7 @@ operations = {
     'Get Account':zohoCRM_get_account,
     'Delete Account':zohoCRM_delete_account,
     'Create Account': zohoCRM_create_account,
-    'Get Deal':zohoCRM_get_contact,
+    'Get Deal':zohoCRM_get_deal,
     'Delete Deal':zohoCRM_delete_deal,
     'Create Deal': zohoCRM_create_deal,
     'Get Lead':zohoCRM_get_lead,
