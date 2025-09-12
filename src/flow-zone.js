@@ -27,6 +27,7 @@ const FlowZone = () => {
     QuestionAndAnswer: LlmNode,
     // integration nodes
     Twilio: IntegrationNode,
+    Whatsapp: IntegrationNode,
     HubSpot: IntegrationNode,
     Salesforce: IntegrationNode,
     GoogleContacts: IntegrationNode,
