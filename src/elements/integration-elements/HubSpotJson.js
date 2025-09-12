@@ -119,10 +119,14 @@ export const HubSpotJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "lead",
+                          value: "none",
                           variableName: "option",
                           hasDynamicVariable: false,
                           list: [
+                            {
+                              option: "None",
+                              value: "none",
+                            },
                             {
                               option: "lead",
                               value: "lead",
@@ -166,13 +170,13 @@ export const HubSpotJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "none",
                           variableName: "option",
                           hasDynamicVariable: false,
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "none",
                             },
                             {
                               option: "1-5",
@@ -218,10 +222,14 @@ export const HubSpotJson = {
                         {
                           type: "dropdown",
                           label: "Gender",
-                          value: "male",
+                          value: "none",
                           variableName: "gender",
                           hasDynamicVariable: false,
                           list: [
+                            {
+                              option: "None",
+                              value: "none",
+                            },
                             {
                               option: "male",
                               value: "male",
@@ -254,13 +262,13 @@ export const HubSpotJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "BAD_TIMING",
+                          value: "none",
                           variableName: "option",
                           hasDynamicVariable: false,
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "none",
                             },
                             {
                               option: "Attempted to Contact",
@@ -895,13 +903,13 @@ export const HubSpotJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "none",
                           variableName: "option",
                           hasDynamicVariable: false,
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "none",
                             },
                             {
                               option: "Existing Business",
@@ -924,13 +932,13 @@ export const HubSpotJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "none",
                           variableName: "option",
                           hasDynamicVariable: false,
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "none",
                             },
                             {
                               option: "Contract Sent",
@@ -1268,13 +1276,13 @@ export const HubSpotJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "none",
                           variableName: "option",
                           hasDynamicVariable: false,
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "none",
                             },
                             {
                               option: "Low",
@@ -1301,13 +1309,13 @@ export const HubSpotJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "none",
                           variableName: "option",
                           hasDynamicVariable: false,
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "none",
                             },
                             {
                               option: "Billing Issue",
@@ -1338,13 +1346,13 @@ export const HubSpotJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "none",
                           variableName: "option",
                           hasDynamicVariable: false,
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "none",
                             },
                             {
                               option: "Support Pipeline",
@@ -1583,13 +1591,13 @@ export const HubSpotJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "none",
                           variableName: "create_call_status",
                           hasDynamicVariable: false,
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "none",
                             },
                             {
                               option: "Completed",
@@ -1676,13 +1684,13 @@ export const HubSpotJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "none",
                           variableName: "create_call_direction",
                           hasDynamicVariable: false,
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "none",
                             },
                             {
                               option: "INBOUND",

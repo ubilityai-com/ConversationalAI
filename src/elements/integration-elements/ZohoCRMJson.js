@@ -110,7 +110,7 @@ export const ZohoCRMJson = {
                     type: "api",
                     label: "Account",
                     variableName: "account_id",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -160,7 +160,7 @@ export const ZohoCRMJson = {
                     type: "api",
                     label: "Account",
                     variableName: "account_id",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -599,7 +599,7 @@ export const ZohoCRMJson = {
                     type: "api",
                     label: "Contact",
                     variableName: "contact_id",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -649,7 +649,7 @@ export const ZohoCRMJson = {
                     type: "api",
                     label: "Contact",
                     variableName: "contact_id",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -1176,7 +1176,7 @@ export const ZohoCRMJson = {
                           label: "Contact",
                           type: "api",
                           variableName: "Who_Id_contact_create_call",
-                          value: "None",
+                          value: "",
                           list: [],
                           config: [
                             { key: "method", value: "post" },
@@ -1230,13 +1230,13 @@ export const ZohoCRMJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "none",
                           variableName: "Outbound_Call_Status_create_call",
                           hasDynamicVariable: true,
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "none",
                             },
                             {
                               option: "Scheduled",
@@ -1275,7 +1275,7 @@ export const ZohoCRMJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "-None-",
                           variableName: "Call_Purpose_create_call",
                           hasDynamicVariable: true,
                           list: [
@@ -1386,7 +1386,7 @@ export const ZohoCRMJson = {
                     type: "api",
                     label: "Deal",
                     variableName: "deal_id",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -1436,7 +1436,7 @@ export const ZohoCRMJson = {
                     type: "api",
                     label: "Deal",
                     variableName: "deal_id",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -1722,7 +1722,7 @@ export const ZohoCRMJson = {
                     type: "api",
                     label: "Lead",
                     variableName: "lead_id",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -1772,7 +1772,7 @@ export const ZohoCRMJson = {
                     type: "api",
                     label: "Lead",
                     variableName: "lead_id",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
