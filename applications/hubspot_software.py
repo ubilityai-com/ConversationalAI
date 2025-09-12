@@ -93,8 +93,7 @@ async def hubspot_create_contact(cred, params, **kwargs):
             access_token = await hubspot_refresh_access_token(cred)
             contact = {}
             for key, value in params.items():
-                if value not in [None, "None", ""]:
-                    contact[key] = value
+                contact[key] = value
             headers = {
                 'Content-Type': 'application/json',
                 'Authorization': f'Bearer {access_token}'
@@ -501,7 +500,7 @@ async def hubspot_create_call(cred, params, **kwargs):
                 async with session.post(url=url, json=call, headers=headers) as response:
                     response.raise_for_status()
                     result = await response.json()
-                    if response.status == 201:
+                    if response:
                         return result
                     else:
                         raise Exception(result)
