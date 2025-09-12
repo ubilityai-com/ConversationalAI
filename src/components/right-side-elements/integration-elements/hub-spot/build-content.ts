@@ -1,6 +1,25 @@
 import { getAccvalue } from "../../../../lib/automation-utils";
 import { getOutputVariablesByNodeId } from "../../../../lib/variable-utils";
 
+const checkValueIfNone = (inputs: Record<string, any>, name: string) => {
+    if (name.includes(".")) {
+        const properties = name.split(".");
+        const firstPart = properties[0];
+        const secondPart = properties[1];
+        return inputs[firstPart]
+            ? inputs[firstPart][secondPart]
+                ? inputs[firstPart][secondPart] === "none"
+                    ? undefined
+                    : inputs[firstPart][secondPart]
+                : undefined
+            : undefined;
+    } else
+        return inputs[name]
+            ? inputs[name][name] === "none"
+                ? undefined
+                : inputs[name][name]
+            : undefined;
+};
 export default function getContent(selectedNode: any) {
     const rightSideData = selectedNode.data.rightSideData;
     const inputs = rightSideData.json;
@@ -25,7 +44,7 @@ export default function getContent(selectedNode: any) {
                 ...jsonToSend,
                 properties: {
                     email: inputs.create_contact_email,
-                    lifecyclestage: getAccvalue(
+                    lifecyclestage: checkValueIfNone(
                         inputs,
                         "create_contact_lifecyclestage.option"
                     ),
@@ -66,7 +85,7 @@ export default function getContent(selectedNode: any) {
                         inputs,
                         "create_contact_phone_number.option"
                     ),
-                    numemployees: getAccvalue(
+                    numemployees: checkValueIfNone(
                         inputs,
                         "create_contact_number_of_employees.option"
                     ),
@@ -84,11 +103,11 @@ export default function getContent(selectedNode: any) {
                         inputs,
                         "create_contact_two_fields.date_of_birth"
                     ),
-                    gender: getAccvalue(
+                    gender: checkValueIfNone(
                         inputs,
                         "create_contact_two_fields.gender"
                     ),
-                    hs_lead_status: getAccvalue(
+                    hs_lead_status: checkValueIfNone(
                         inputs,
                         "create_contact_lead_status_name.option"
                     ),
@@ -119,8 +138,8 @@ export default function getContent(selectedNode: any) {
                         "create_deal_description.option"
                     ),
                     amount: getAccvalue(inputs, "create_deal_amount.option"),
-                    dealtype: getAccvalue(inputs, "create_deal_type.option"),
-                    dealstage: getAccvalue(inputs, "create_deal_stage.option"),
+                    dealtype: checkValueIfNone(inputs, "create_deal_type.option"),
+                    dealstage: checkValueIfNone(inputs, "create_deal_stage.option"),
                 },
                 dealCreateTime: getAccvalue(
                     inputs,
@@ -160,15 +179,15 @@ export default function getContent(selectedNode: any) {
                 properties: {
                     hs_pipeline_stage: inputs.create_ticket_pipeline_stage,
                     subject: inputs.create_ticket_subject,
-                    hs_ticket_priority: getAccvalue(
+                    hs_ticket_priority: checkValueIfNone(
                         inputs,
                         "create_ticket_priority.option"
                     ),
-                    hs_ticket_category: getAccvalue(
+                    hs_ticket_category: checkValueIfNone(
                         inputs,
                         "create_ticket_category.option"
                     ),
-                    hs_pipeline: getAccvalue(
+                    hs_pipeline: checkValueIfNone(
                         inputs,
                         "create_ticket_pipeline.option"
                     ),
@@ -200,10 +219,10 @@ export default function getContent(selectedNode: any) {
                     ),
                     fromNumber: getAccvalue(inputs, "create_call_fromNumber"),
                     recordingUrl: getAccvalue(inputs, "create_call_recordingUrl"),
-                    status: getAccvalue(inputs, "create_call_status"),
+                    status: checkValueIfNone(inputs, "create_call_status"),
                     toNumber: getAccvalue(inputs, "create_call_to_number"),
                     title: getAccvalue(inputs, "create_call_title"),
-                    direction: getAccvalue(inputs, "create_call_direction"),
+                    direction: checkValueIfNone(inputs, "create_call_direction"),
                     disposition: getAccvalue(inputs, "create_call_disposition"),
                 },
                 associations: {

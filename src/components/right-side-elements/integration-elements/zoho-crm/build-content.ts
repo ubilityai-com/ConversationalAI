@@ -1,6 +1,24 @@
 import { getAccvalue } from "../../../../lib/automation-utils";
 import { getOutputVariablesByNodeId } from "../../../../lib/variable-utils";
-
+const checkValueIfNone = (inputs: Record<string, any>, name: string) => {
+    if (name.includes(".")) {
+        const properties = name.split(".");
+        const firstPart = properties[0];
+        const secondPart = properties[1];
+        return inputs[firstPart]
+            ? inputs[firstPart][secondPart]
+                ? inputs[firstPart][secondPart] === "none"
+                    ? undefined
+                    : inputs[firstPart][secondPart]
+                : undefined
+            : undefined;
+    } else
+        return inputs[name]
+            ? inputs[name][name] === "none"
+                ? undefined
+                : inputs[name][name]
+            : undefined;
+};
 export default function getContent(selectedNode: any) {
     const rightSideData = selectedNode.data.rightSideData;
     const inputs = rightSideData.json;
@@ -105,7 +123,7 @@ export default function getContent(selectedNode: any) {
             } else {
                 jsonToSend = {
                     ...jsonToSend,
-                    Account_Type: getAccvalue(
+                    Account_Type: checkValueIfNone(
                         inputs,
                         "Account_Type_create_account.Account_Type"
                     ),
@@ -365,7 +383,7 @@ export default function getContent(selectedNode: any) {
                 Subject: getAccvalue(inputs, "Subject_create_call"),
                 Call_Duration: getAccvalue(inputs, "Call_Duration_create_call"),
                 Description: getAccvalue(inputs, "Description_create_call"),
-                Outbound_Call_Status: getAccvalue(
+                Outbound_Call_Status: checkValueIfNone(
                     inputs,
                     "Outbound_Call_Status_create_call"
                 ),
