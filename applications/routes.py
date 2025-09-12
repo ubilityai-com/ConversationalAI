@@ -2561,6 +2561,68 @@ async def salesforce_list_custom_objects(payload: SalesForceWithCustomObjectAppI
             return JSONResponse(status_code=500, content={"Error": str(e)})
 
 
+
+############################# Whatsapp API's  ###############################
+
+class whatsappAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/whatsapp/getPhoneNumbers")
+async def whatsapp_get_phoneNumbers(payload: whatsappAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred or "whatsappAccountId" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        accessToken = json_cred["accessToken"]
+        whatsappAccountId = json_cred["whatsappAccountId"]
+        url = f"https://graph.facebook.com/v21.0/{whatsappAccountId}/phone_numbers"
+        headers = {"Authorization": f"Bearer {accessToken}"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                results = await response.json()
+                if results.get("data"):
+                    list_info = [
+                        {"id": result["id"], "display_phone_number": result["display_phone_number"]} for result in results["data"]]
+                    return {"PhoneNumbers": list_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+    
+@http_app.post("/bot/whatsapp/getTemplates")
+async def whatsapp_get_message_templates(payload: whatsappAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "accessToken" not in json_cred or "whatsappAccountId" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credential data."})
+
+        accessToken = json_cred["accessToken"]
+        whatsappAccountId = json_cred["whatsappAccountId"]
+        url = f"https://graph.facebook.com/v21.0/{whatsappAccountId}/message_templates"
+        headers = {"Authorization": f"Bearer {accessToken}"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                results = await response.json()
+                if results.get("data"):
+                    list_info = [
+                    {
+                        "label": f"{template['name']} ({template['language']})",
+                        "value": f"{template['name']}::{template['language']}"
+                    } for template in results['data']]
+                    return {"Templates": list_info}
+                raise Exception(
+                    f"Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
 ############################# Hubspot API's  ###############################
 class HubspotGetTokenAppIntegration(BaseModel):
     client_id: str
