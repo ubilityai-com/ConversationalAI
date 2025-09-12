@@ -1,5 +1,6 @@
 //add import
 import { TwilioJson } from "./TwilioJson";
+import { WhatsappJson } from "./WhatsappJson";
 import { HubSpotJson } from "./HubSpotJson";
 import { SalesforceJson } from "./SalesforceJson";
 import { GoogleContactsJson } from "./GoogleContactsJson";
@@ -31,6 +32,7 @@ import { SlackJson } from "./SlackJson";
 export const IntegrationElements = [
     //add Component
     TwilioJson,
+    WhatsappJson,
     HubSpotJson,
     SalesforceJson,
     GoogleContactsJson,
