@@ -27,6 +27,7 @@ const FlowZone = () => {
     ConditionAgent: ConditionAgentNode,
     QuestionAndAnswer: LlmNode,
     // integration nodes
+    Shopify: IntegrationNode,
     Twilio: IntegrationNode,
     Whatsapp: IntegrationNode,
     HubSpot: IntegrationNode,
