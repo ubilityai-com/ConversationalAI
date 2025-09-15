@@ -2856,6 +2856,586 @@ async def hubspot_get_dispositions(payload: HubspotAppIntegration):
     except Exception as error:
             return JSONResponse(status_code=500, content={"Error": str(error)})
 
+
+########################################## Service Now Routes ##################################################
+
+class ServicenowGetTokenAppIntegration(BaseModel):
+    clientID: str
+    clientSecret: str
+    redirectUri: str
+    code: str
+    state: str
+    instanceDomain: str
+
+@http_app.post("/bot/serviceNow/getToken")
+async def service_now_get_token(payload: ServicenowGetTokenAppIntegration):
+    try:
+        status=[200, 201, 202, 204, 206, 207, 208]
+        clientId= payload.clientID
+        clientSecret= payload.clientSecret
+        redirectUri= payload.redirectUri
+        code= payload.code
+        state = payload.state
+        instance_domain = payload.instanceDomain
+        token_endpoint = f"https://{instance_domain}.service-now.com/oauth_token.do"
+        data = {
+            "client_id": clientId,
+            "client_secret": clientSecret,
+            "code": code,
+            "grant_type": "authorization_code",
+            "redirect_uri": redirectUri,
+            "response_type": "token",
+            "state": state,
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.post(token_endpoint,data=data) as response:
+                if response.status in status:
+                    return await response.json()
+                raise Exception(
+                    f"Token request failed. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+async def service_now_refresh_access_token(cred):
+    try:
+        my_instance_domain = cred["instanceDomain"]
+        client_id = cred['clientID']
+        client_secret = cred['clientSecret']
+        refresh_token = cred['refreshToken']
+        
+        
+        token_endpoint = f"https://{my_instance_domain}.service-now.com/oauth_token.do"
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        data = {
+            'grant_type': "refresh_token",
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'refresh_token': refresh_token
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url=token_endpoint, headers=headers, data=data) as response:
+                response_json = await response.json()
+                if "access_token" in response_json and response.status == 200:
+                    return response_json["access_token"]
+                raise Exception(
+                    f"Failed refreshing access token. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        raise Exception(error)
+
+class ServicenowAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/serviceNow/getTables")
+async def service_now_get_tables(payload: ServicenowAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_params=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(param in json_cred for param in required_params):
+            instance_domain = json_cred["instanceDomain"]
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/sys_db_object"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "name,label",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    tables = json_response.get("result", [])
+                    if tables:
+                        tables_info = [
+                            {"id": table["name"], "name": table["label"]}
+                            for table in tables
+                        ]
+                        return {"tables": tables_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class ServicenowWithTableAppIntegration(BaseModel):
+    credential_name: str
+    tableName: str
+
+@http_app.post("/bot/serviceNow/getTableFields")
+async def service_now_get_table_fields(payload: ServicenowWithTableAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_creds=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(cred in json_cred for cred in required_creds):
+            instance_domain = json_cred["instanceDomain"]
+            table_name = payload.tableName
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/sys_dictionary"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "element,column_label",
+                "sysparm_query": f"name={table_name}",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    fields = json_response.get("result", [])
+                    if fields:
+                        fields_info = [
+                            {"id": field["element"], "name": field.get("column_label", field["element"])}
+                            for field in fields
+                            if field.get("element", "")
+                        ]
+                        return {"fields": fields_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/serviceNow/getUserRoles")
+async def service_now_get_user_roles(payload: ServicenowAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_params=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(param in json_cred for param in required_params):
+            instance_domain = json_cred["instanceDomain"]
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/sys_user_role"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "name,sys_name",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    roles = json_response.get("result", [])
+                    if roles:
+                        roles_info = [
+                            {"id": role["name"], "name": role["sys_name"]}
+                            for role in roles
+                        ]
+                        return {"roles": roles_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/serviceNow/getUserGroups")
+async def service_now_get_user_groups(payload: ServicenowAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_params=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(param in json_cred for param in required_params):
+            instance_domain = json_cred["instanceDomain"]
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/sys_user_group"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "name,sys_id",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    groups = json_response.get("result", [])
+                    if groups:
+                        groups_info = [
+                            {"id": group["sys_id"], "name": group["name"]}
+                            for group in groups
+                        ]
+                        return {"groups": groups_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/serviceNow/getBusinessServices")
+async def service_now_get_business_services(payload: ServicenowAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_params=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(param in json_cred for param in required_params):
+            instance_domain = json_cred["instanceDomain"]
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/cmdb_ci_service"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "name,sys_id",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    services = json_response.get("result", [])
+                    if services:
+                        services_info = [
+                            {"id": service["sys_id"], "name": service["name"]}
+                            for service in services
+                        ]
+                        return {"services": services_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/serviceNow/getConfigurationItems")
+async def service_now_get_configuration_items(payload: ServicenowAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_params=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(param in json_cred for param in required_params):
+            instance_domain = json_cred["instanceDomain"]
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/cmdb_ci"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "name,sys_id",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    items = json_response.get("result", [])
+                    if items:
+                        items_info = [
+                            {"id": item["sys_id"], "name": item["name"]}
+                            for item in items
+                        ]
+                        return {"items": items_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/serviceNow/getCategories")
+async def service_now_get_categories(payload: ServicenowAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_creds=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(cred in json_cred for cred in required_creds):
+            instance_domain = json_cred["instanceDomain"]
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/sys_choice"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "label,value",
+                "sysparm_query": "GOTOname=incident^element=category",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    categories = json_response.get("result", [])
+                    if categories:
+                        categories_info = [
+                            {"id": category["value"], "name": category["label"]}
+                            for category in categories
+                        ]
+                        return {"categories": categories_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/serviceNow/getContactTypes")
+async def service_now_get_contact_type(payload: ServicenowAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_creds=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(cred in json_cred for cred in required_creds):
+            instance_domain = json_cred["instanceDomain"]
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/sys_choice"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "label,value",
+                "sysparm_query": "GOTOname=incident^element=contact_type",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    types = json_response.get("result", [])
+                    if types:
+                        types_info = [
+                            {"id": type["value"], "name": type["label"]}
+                            for type in types
+                        ]
+                        return {"types": types_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/serviceNow/getResolutionCodes")
+async def service_now_get_resolution_codes(payload: ServicenowAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_creds=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(cred in json_cred for cred in required_creds):
+            instance_domain = json_cred["instanceDomain"]
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/sys_choice"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "label,value",
+                "sysparm_query": "GOTOname=incident^element=close_code",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    codes = json_response.get("result", [])
+                    if codes:
+                        codes_info = [
+                            {"id": code["value"], "name": code["label"]}
+                            for code in codes
+                        ]
+                        return {"codes": codes_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/serviceNow/getStates")
+async def service_now_get_states(payload: ServicenowAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_creds=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(cred in json_cred for cred in required_creds):
+            instance_domain = json_cred["instanceDomain"]
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/sys_choice"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "label,value",
+                "sysparm_query": "GOTOname=incident^element=state",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    states = json_response.get("result", [])
+                    if states:
+                        states_info = [
+                            {"id": state["value"], "name": state["label"]}
+                            for state in states
+                        ]
+                        return {"states": states_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class ServicenowWithCategoryAppIntegration(BaseModel):
+    credential_name: str
+    categoryValue: str
+
+@http_app.post("/bot/serviceNow/getSubCategories")
+async def service_now_get_subcategories(payload: ServicenowWithCategoryAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_creds=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(cred in json_cred for cred in required_creds):
+            instance_domain = json_cred["instanceDomain"]
+            category_value = payload.categoryValue
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/sys_choice"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "label,value",
+                "sysparm_query": f"GOTOname=incident^element=subcategory^dependent_value={category_value}",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    subcategories = json_response.get("result", [])
+                    if subcategories:
+                        subcategories_info = [
+                            {"id": subcategory["value"], "name": subcategory["label"]}
+                            for subcategory in subcategories
+                        ]
+                        return {"subcategories": subcategories_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class ServicenowWithGroupAppIntegration(BaseModel):
+    credential_name: str
+    groupID: str
+
+@http_app.post("/bot/serviceNow/getAssignees")
+async def service_now_get_assignees(payload: ServicenowWithGroupAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_creds=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(cred in json_cred for cred in required_creds):
+            instance_domain = json_cred["instanceDomain"]
+            group_id = payload.groupID
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/sys_user_grmember"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "sys_id,user",
+                "sysparm_query": f"group={group_id}^sysparm_fields=user",
+                "sysparm_display_value": "all",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    assignees = json_response.get("result", [])
+                    if assignees:
+                        assignees_info = [
+                            {"id": assignee["sys_id"]["value"], "name": assignee["user"]["display_value"]}
+                            for assignee in assignees
+                        ]
+                        return {"assignees": assignees_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/serviceNow/getHoldReason")
+async def service_now_get_hold_reason(payload: ServicenowAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        
+        required_creds=["instanceDomain", "clientID", "clientSecret", "refreshToken"]
+        if all(cred in json_cred for cred in required_creds):
+            instance_domain = json_cred["instanceDomain"]
+            token = await service_now_refresh_access_token(json_cred)
+            url = f"https://{instance_domain}.service-now.com/api/now/table/sys_choice"
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/json"
+            }
+            data = {
+                "sysparm_fields": "label,value",
+                "sysparm_query": "name=incident^element=hold_reason",
+                "sysparm_limit": 10000000
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=headers, params=data) as response:
+                    json_response = await response.json()
+                    reasons = json_response.get("result", [])
+                    if reasons:
+                        reasons_info = [
+                            {"id": reason["value"], "name": reason["label"]}
+                            for reason in reasons
+                        ]
+                        return {"reasons": reasons_info}
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing required credentials data."})
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
 ################################ AI Providers List Models BaseModel ################################
 
 class AiProvidersListModelsAppIntegration(BaseModel):
