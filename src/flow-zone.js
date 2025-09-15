@@ -12,6 +12,7 @@ import { MessageNode } from './components/nodes/message-node';
 import { RouterNode } from './components/nodes/router-node';
 import { useFlowStore } from './store/flow-store';
 import StickyNoteNode from './components/nodes/stickyNote-node';
+import StickyNote from './components/custom/sticky-note';
 
 const FlowZone = () => {
   const nodeTypes = {
@@ -140,40 +141,41 @@ const FlowZone = () => {
     handleRightDrawerClose()
   };
   return (
-
-    <ReactFlow
-      className='h-full flex-1 w-full'
-      onNodesChange={applyNodeChangesFunc}
-      onEdgesChange={applyEdgeChangesFunc}
-      onInit={setReactFlowInstance}
-      nodes={nodes}
-      edges={edges}
-      onNodeClick={onElementClick}
-      onPaneClick={onPaneClick}
-      onConnect={onConnect}
-      minZoom={0.1}
-      colorMode={theme ? "dark" : "light"}
-      nodeTypes={nodeTypes}
-      edgeTypes={edgeTypes}
-      connectionLineComponent={connectionLine}
-    >
-      <MiniMap
-        className='bg-background'
-        nodeStrokeColor={(n) => {
-          return '#fff';
-        }}
-        nodeColor={(n) => {
-          return n.data.color;
-        }}
-        nodeBorderRadius={2}
-      />
-      <Controls />
-      <Background
-        className='bg-canvas'
-        size={1}
-      />
-    </ReactFlow>
-
+    <div className="relative h-full w-full">
+      <ReactFlow
+        className='h-full flex-1 w-full'
+        onNodesChange={applyNodeChangesFunc}
+        onEdgesChange={applyEdgeChangesFunc}
+        onInit={setReactFlowInstance}
+        nodes={nodes}
+        edges={edges}
+        onNodeClick={onElementClick}
+        onPaneClick={onPaneClick}
+        onConnect={onConnect}
+        minZoom={0.1}
+        colorMode={theme ? "dark" : "light"}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        connectionLineComponent={connectionLine}
+      >
+        <MiniMap
+          className='bg-background'
+          nodeStrokeColor={(n) => {
+            return '#fff';
+          }}
+          nodeColor={(n) => {
+            return n.data.color;
+          }}
+          nodeBorderRadius={2}
+        />
+        <Controls />
+        <Background
+          className='bg-canvas'
+          size={1}
+        />
+      </ReactFlow>
+      <StickyNote />
+    </div>
   );
 };
 

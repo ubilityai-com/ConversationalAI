@@ -1,9 +1,9 @@
-import axios from "axios";
 import { enableMapSet } from "immer";
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
-import { useRightDrawerStore } from "./right-drawer-store";
+import fileApis from "../api/fileApis";
 import { useFlowStore } from "./flow-store";
+import { useRightDrawerStore } from "./right-drawer-store";
 enableMapSet();
 
 type FileStatus = "uploading" | "success" | "error";
@@ -249,23 +249,11 @@ export const useFilesStore = create<FilesStore>()(
         setIsUploading(true);
 
         const { selectedBot } = useFlowStore.getState()
-        const response = await axios.post(
-          process.env.REACT_APP_DNS_URL + `upload_file?dialogue=${selectedBot?.id}`,
-          file,
-          {
-            onUploadProgress: (progressEvent) => {
-              if (progressEvent.total) {
-                const percentCompleted = Math.round(
-                  (progressEvent.loaded * 100) / progressEvent.total
-                );
-                setFileProgress(tempId, percentCompleted);
-              }
-            },
-          }
+        const response = await fileApis.uploadFile(file,
+          { dialogue: selectedBot?.id.toString()! },
+          (percent) => setFileProgress(tempId, percent)
+
         );
-
-        console.log({ response });
-
         // Get the server-returned filename from response
         const serverFileName =
           response.data.filename || response.data.file_name || file.name;
@@ -405,12 +393,10 @@ export const useFilesStore = create<FilesStore>()(
 
       try {
         const { selectedBot } = useFlowStore.getState()
-        // Make API call to delete file
-        await axios.delete(
-          process.env.REACT_APP_DNS_URL + `delete_file?dialogue=${selectedBot?.id}&filename=${encodeURIComponent(
-            fileId
-          )}`,
-        );
+        await fileApis.deleteFile({
+          dialogue: selectedBot?.id.toString()!,
+          filename: fileId
+        })
 
         // Remove from local state after successful API call
         removeFileFromList(fileId);
@@ -448,9 +434,7 @@ export const useFilesStore = create<FilesStore>()(
       const { selectedBot } = useFlowStore.getState()
       try {
         get().setIsLoadingFiles(true);
-        const result = await axios.get(
-          process.env.REACT_APP_DNS_URL + `list_uploaded_files?dialogue=${botID ? botID : selectedBot?.id}`
-        );
+        const result = await fileApis.listFiles(botID || selectedBot?.id!)
         const sortedFiles = result.data.files.sort(
           (a: FileItem, b: FileItem) => {
             const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
@@ -501,12 +485,7 @@ export const useFilesStore = create<FilesStore>()(
           addPreviewingFileId(fileName);
         }
 
-        // Make request to get file
-        const response = await axios.get(
-          process.env.REACT_APP_DNS_URL + `get_file?dialogue=${selectedBot?.id}&filename=${encodeURIComponent(
-            fileName
-          )}`
-        );
+        const response = await fileApis.getFile(selectedBot?.id!, fileName);
 
         return response.data;
       } catch (error: any) {

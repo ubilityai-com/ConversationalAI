@@ -252,7 +252,7 @@ export const automateOAuth2 = async ({
                     }
                 } else if (field.toLowerCase() === "redirecturi") {
                     credentialName = field;
-                    credentialValue = (process.env.NEXT_PUBLIC_DOMAIN || "") + "/dashboard/credentials";
+                    credentialValue = window.location.origin + window.location.pathname;
                 } else {
                     credentialName = reformatName(field);
                     credentialValue = Cookies.get(field) || "";

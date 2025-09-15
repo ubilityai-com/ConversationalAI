@@ -17,6 +17,7 @@ import {
 import { ChatbotSlice, createChatbotSlice } from "./chatbot-store";
 import { useFilesStore } from "./files-store";
 import { createVariablesSlice, VariablesSlice } from "./variables-store";
+import chatbotApis from "../api/chatbotApis";
 
 type SubNodesValidation = {
   [parentId: string]: {
@@ -101,32 +102,32 @@ export interface FlowState extends SlicesStates {
   setFormDialogStatus: (status: any) => void;
 
   showSnackBarMessage:
-    | {
-        open: true;
-        message: string | null;
-        color:
-          | "default"
-          | "destructive"
-          | "success"
-          | "warning"
-          | "info"
-          | null;
-        duration: number;
-      }
-    | {
-        open: false;
-      };
+  | {
+    open: true;
+    message: string | null;
+    color:
+    | "default"
+    | "destructive"
+    | "success"
+    | "warning"
+    | "info"
+    | null;
+    duration: number;
+  }
+  | {
+    open: false;
+  };
   setShowSnackBarMessage: (
     message:
       | {
-          open: true;
-          message: string;
-          color: "default" | "destructive" | "success" | "warning" | "info";
-          duration: number;
-        }
+        open: true;
+        message: string;
+        color: "default" | "destructive" | "success" | "warning" | "info";
+        duration: number;
+      }
       | {
-          open: false;
-        }
+        open: false;
+      }
   ) => void;
 
   handleFlowZoneCheckIfAllHandlesAreConnected: () => boolean;
@@ -308,10 +309,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
         };
       }
 
-      const res = await axios.post(
-        process.env.REACT_APP_DNS_URL + `test_node`,
-        payload
-      );
+      const res = await chatbotApis.testNode(payload)
       setNodeResult(id, "success", res.data?.output);
       console.log("Run node response:", res.data);
       return res.data;

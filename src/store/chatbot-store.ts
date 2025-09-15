@@ -1,6 +1,6 @@
 import { Edge, Node } from "@xyflow/react";
-import axios from "axios";
 import { StateCreator } from "zustand";
+import chatbotApis from "../api/chatbotApis";
 import { createFlowObject } from "../lib/build-json";
 import { FlowState, useFlowStore } from "./flow-store";
 import { ConstantVariable, DialogueVariables, OutputVariables } from "./variables-store";
@@ -101,7 +101,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
 
     setIsLoadingBotList(true)
     try {
-      const res = await axios.get(process.env.REACT_APP_DNS_URL + "chatbots");
+      const res = await chatbotApis.listChatbots()
       console.log("Fetched bots:", res.data);
 
       set({
@@ -128,12 +128,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
     try {
       setIsLoadingBotByID(true)
       setFailedLoadingBot(false)
-      const res = await axios.get(
-        process.env.REACT_APP_DNS_URL + "chatbot/" + id,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const res = await chatbotApis.getChatbot(id)
       get().loadBot(res.data)
       get().setSelectedBot(res.data)
       const reactFlowInstance = useFlowStore.getState().reactFlowInstance
@@ -158,14 +153,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
     set({ isLoadingBot: true, error: null });
     try {
       const { setSelectedBot, setShowSnackBarMessage } = get()
-      const res = await axios.post(
-        process.env.REACT_APP_DNS_URL + "chatbots",
-        data,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
+      const res = await chatbotApis.createChatbot(data)
       set({ isLoadingBot: false });
 
       // Show success message
@@ -211,13 +199,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
 
     set({ isLoadingBot: true, error: null });
     try {
-      const res = await axios.put(
-        process.env.REACT_APP_DNS_URL + "chatbots/" + selectedBot.id,
-        data,
-        {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      const res = await chatbotApis.updateChatbot(selectedBot.id, data)
       set({ isLoadingBot: false });
 
       // Show success message if setShowSnackBarMessage is available
@@ -330,9 +312,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
 
     set({ isLoadingBot: true, error: null });
     try {
-      const res = await axios.delete(
-        process.env.REACT_APP_DNS_URL + "chatbots/" + selectedBot.id
-      );
+      const res = await chatbotApis.deleteChatbot(selectedBot.id)
       // Show success message if setShowSnackBarMessage is available
       const showSnackBar = setShowSnackBarMessage;
       if (showSnackBar) {
@@ -374,25 +354,20 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
     set({ isLoadingActivate: true, error: null });
     const { selectedBot, nodes, edges, nodesValidation, constantVariables, dialogueVariables, outputVariables, updateSelectedBot, setShowSnackBarMessage, nodeStates } = get()
     try {
-      const res = await axios.post(
-        process.env.REACT_APP_DNS_URL + "activate/" + selectedBot?.id,
-        {
-          name: selectedBot?.name,
-          dialogue: createFlowObject(),
-          ui_json: {
-            nodes,
-            edges,
-            nodesValidation,
-            constantVariables,
-            outputVariables,
-            dialogueVariables,
-            nodeStates
-          }
-        },
-        {
-          headers: { "Content-Type": "application/json" },
+      const body = {
+        name: selectedBot?.name,
+        dialogue: createFlowObject(),
+        ui_json: {
+          nodes,
+          edges,
+          nodesValidation,
+          constantVariables,
+          outputVariables,
+          dialogueVariables,
+          nodeStates
         }
-      );
+      }
+      const res = await chatbotApis.activateChatbot(selectedBot?.id!, body)
       set({ isLoadingActivate: false });
       updateSelectedBot({ status: "Active" })
 
@@ -428,9 +403,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
 
     try {
 
-      await axios.get(
-        process.env.REACT_APP_DNS_URL + "deactivate/" + selectedBot?.id,
-      );
+      await chatbotApis.deactivateChatbot(selectedBot?.id!)
       set({ isLoadingActivate: false });
       updateSelectedBot({ status: "Inactive" })
       fetchBots();

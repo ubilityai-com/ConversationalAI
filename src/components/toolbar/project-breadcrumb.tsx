@@ -83,6 +83,7 @@ export function ProjectBreadcrumb() {
                   <Input
                     placeholder="Search projects..."
                     value={searchQuery}
+                    onKeyDown={(e) => e.stopPropagation()}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-8 h-8 text-sm"
                   />
