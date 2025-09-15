@@ -2717,9 +2717,9 @@ async def hubspot_get_contacts(payload: HubspotAppIntegration):
                         for contact in data.get('results', [])]
                         return {"contacts": contacts_info}
                     else:
-                        return JSONResponse(status_code=500, content={"Error":data}), 500
+                        return JSONResponse(status_code=500, content={"Error":data})
         else:
-            return JSONResponse(status_code=500, content={"Error":"missing required fields"}), 400
+            return JSONResponse(status_code=400, content={"Error": "Missing required fields."})
     except Exception as error:
             return JSONResponse(status_code=500, content={"Error": str(error)})
     
@@ -2744,9 +2744,9 @@ async def hubspot_get_companies(payload: HubspotAppIntegration):
                         for company in data.get('results', [])]
                         return {"companies": companies_info}
                     else:
-                        return JSONResponse(status_code=500, content={"Error":data}), 500
+                        return JSONResponse(status_code=500, content={"Error":data})
         else:
-            return JSONResponse(status_code=500, content={"Error":"missing required fields"}), 400
+            return JSONResponse(status_code=400, content={"Error": "Missing required fields."})
     except Exception as error:
             return JSONResponse(status_code=500, content={"Error": str(error)})
     
@@ -2771,9 +2771,9 @@ async def hubspot_get_deals(payload: HubspotAppIntegration):
                         for deal in data.get('results', [])]
                         return {"deals": deals_info}
                     else:
-                        return JSONResponse(status_code=500, content={"Error":data}), 500
+                        return JSONResponse(status_code=500, content={"Error":data})
         else:
-            return JSONResponse(status_code=500, content={"Error":"missing required fields"}), 400
+            return JSONResponse(status_code=400, content={"Error": "Missing required fields."})
     except Exception as error:
             return JSONResponse(status_code=500, content={"Error": str(error)})
 
@@ -2798,9 +2798,9 @@ async def hubspot_get_tickets(payload: HubspotAppIntegration):
                         for ticket in data.get('results', [])]
                         return {"tickets": tickets_info}
                     else:
-                        return JSONResponse(status_code=500, content={"Error":data}), 500
+                        return JSONResponse(status_code=500, content={"Error":data})
         else:
-            return JSONResponse(status_code=500, content={"Error":"missing required fields"}), 400
+            return JSONResponse(status_code=400, content={"Error": "Missing required fields."})
     except Exception as error:
             return JSONResponse(status_code=500, content={"Error": str(error)})
     
@@ -2825,9 +2825,9 @@ async def hubspot_get_calls(payload: HubspotAppIntegration):
                         for call in data.get('results', [])]
                         return {"calls": calls_info}
                     else:
-                        return JSONResponse(status_code=500, content={"Error":data}), 500
+                        return JSONResponse(status_code=500, content={"Error":data})
         else:
-            return JSONResponse(status_code=500, content={"Error":"missing required fields"}), 400
+            return JSONResponse(status_code=400, content={"Error": "Missing required fields."})
     except Exception as error:
             return JSONResponse(status_code=500, content={"Error": str(error)})
     
@@ -2850,9 +2850,194 @@ async def hubspot_get_dispositions(payload: HubspotAppIntegration):
                     if response.status==200:
                         return {"Dispositions": data}
                     else:
-                        return JSONResponse(status_code=500, content={"Error":data}), 500
+                        return JSONResponse(status_code=500, content={"Error":data})
         else:
-            return JSONResponse(status_code=500, content={"Error":"missing required fields"}), 400
+            return JSONResponse(status_code=400, content={"Error": "Missing required fields."})
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
+############################# Shopify API's  ###############################
+
+shopify_api_version = "2023-10"
+class ShopifyAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/shopify/getLocations")
+async def shopify_get_locations(payload: ShopifyAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "subdomain" in json_cred and "apiKey" in json_cred and "apiPassword" in json_cred:
+            subdomain = json_cred['subdomain']
+            apiKey = json_cred['apiKey']
+            apiPassword = json_cred['apiPassword']
+            base_url = f"https://{subdomain}.myshopify.com/admin/api/{shopify_api_version}/locations.json"
+            headers = {
+                'Content-Type': 'application/json',
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(base_url, auth=aiohttp.BasicAuth(apiKey, apiPassword), headers=headers) as response:
+                    response.raise_for_status()
+                    if response:
+                        data = await response.json() 
+                        locations = data.get("locations", [])
+                        location_info = [
+                            {"id": location["id"], "name": location["name"]} for location in locations]
+                        return {"locations": location_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error": f"Failed to retrieve locations. Status code: {response.status}"})
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing input data."})
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/shopify/getBlogs")
+async def shopify_get_blogs(payload: ShopifyAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "subdomain" in json_cred and "apiKey" in json_cred and "apiPassword" in json_cred:
+            subdomain = json_cred['subdomain']
+            apiKey = json_cred['apiKey']
+            apiPassword = json_cred['apiPassword']
+            base_url = f"https://{subdomain}.myshopify.com/admin/api/{shopify_api_version}/blogs.json"
+            headers = {
+                'Content-Type': 'application/json',
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(base_url, auth=aiohttp.BasicAuth(apiKey, apiPassword), headers=headers) as response:
+                    response.raise_for_status()
+                    if response:
+                        data = await response.json() 
+                        blogs = data.get("blogs", [])
+                        blog_info = [{"id": blog["id"], "title": blog["title"]}
+                                    for blog in blogs]
+                        return {"blogs": blog_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error": f"Failed to retrieve blogs. Status code: {response.status}"})
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing input data."})
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/shopify/getOrders")
+async def shopify_get_orders(payload: ShopifyAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "subdomain" in json_cred and "apiKey" in json_cred and "apiPassword" in json_cred:
+            subdomain = json_cred['subdomain']
+            apiKey = json_cred['apiKey']
+            apiPassword = json_cred['apiPassword']
+            base_url = f"https://{subdomain}.myshopify.com/admin/api/{shopify_api_version}/orders.json"
+            headers = {
+                'Content-Type': 'application/json',
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(base_url, auth=aiohttp.BasicAuth(apiKey, apiPassword), headers=headers) as response:
+                    response.raise_for_status()
+                    if response:
+                        data = await response.json()
+                        orders = data.get("orders", [])
+                        order_info = [{"id": order["id"], "name": order["name"]}
+                                    for order in orders]
+                        return {"orders": order_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error": f"Failed to retrieve orders. Status code: {response.status}"})
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing input data."})
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/shopify/getProducts")
+async def shopify_get_products(payload: ShopifyAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "subdomain" in json_cred and "apiKey" in json_cred and "apiPassword" in json_cred:
+            subdomain = json_cred['subdomain']
+            apiKey = json_cred['apiKey']
+            apiPassword = json_cred['apiPassword']
+            base_url = f"https://{subdomain}.myshopify.com/admin/api/{shopify_api_version}/products.json"
+            headers = {
+                'Content-Type': 'application/json',
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(base_url, auth=aiohttp.BasicAuth(apiKey, apiPassword), headers=headers) as response:
+                    response.raise_for_status()
+                    if response:
+                        data = await response.json()
+                        products = data.get("products", [])
+                        product_info = [
+                            {"id": product["id"], "title": product["title"]} for product in products]
+                        return {"products": product_info}
+                    else:
+                        return JSONResponse(status_code=500, content={"Error": f"Failed to retrieve products. Status code: {response.status}"})
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing input data."})
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class ShopifyProductsAppIntegration(BaseModel):
+    credential_name: str
+    product_id: str
+
+@http_app.post("/bot/shopify/getVariantsProducts")
+async def shopify_get_variants_products(payload: ShopifyProductsAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "subdomain" in json_cred and "apiKey" in json_cred and "apiPassword" in json_cred:
+            subdomain = json_cred['subdomain']
+            apiKey = json_cred['apiKey']
+            apiPassword = json_cred['apiPassword']
+            product_id = payload.product_id
+            base_url = f"https://{subdomain}.myshopify.com/admin/api/{shopify_api_version}/products/{product_id}/variants.json"
+            headers = {
+                'Content-Type': 'application/json',
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(base_url, auth=aiohttp.BasicAuth(apiKey, apiPassword), headers=headers) as response:
+                    response.raise_for_status()
+                    if response:
+                        data = await response.json()
+                        variants = data.get("variants", [])
+                        variant_info = [
+                            {"id": variant["id"], "title": variant["title"]} for variant in variants]
+                        return {"variants": variant_info}
+                    return JSONResponse(status_code=500, content={"Error": f"Failed to retrieve variants of products. Status code: {response.status}"})
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing input data."})
+    except Exception as error:
+            return JSONResponse(status_code=500, content={"Error": str(error)})
+
+@http_app.post("/bot/shopify/getInventoryItemIdVariantsProducts")
+async def shopify_get_inventory_item_id_variants_products(payload: ShopifyProductsAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+        if "subdomain" in json_cred and "apiKey" in json_cred and "apiPassword" in json_cred :
+            subdomain = json_cred['subdomain']
+            apiKey = json_cred['apiKey']
+            apiPassword = json_cred['apiPassword']
+            product_id = payload.product_id
+            base_url = f"https://{subdomain}.myshopify.com/admin/api/{shopify_api_version}/products/{product_id}/variants.json"
+            headers = {
+                'Content-Type': 'application/json',
+            }
+            async with aiohttp.ClientSession() as session:
+                async with session.get(base_url, auth=aiohttp.BasicAuth(apiKey, apiPassword), headers=headers) as response:
+                    response.raise_for_status()
+                    if response:
+                        data = await response.json()
+                        variants = data.get("variants", [])
+                        variant_info = [
+                            {"id": variant["id"], "title": variant["title"],"inventory_item_id": variant["inventory_item_id"]} for variant in variants]
+                        return {"variants": variant_info}
+                    return JSONResponse(status_code=500, content={"Error": f"Failed to retrieve variants of products. Status code: {response.status}"})
+        else:
+            return JSONResponse(status_code=400, content={"Error": "Missing input data."})
     except Exception as error:
             return JSONResponse(status_code=500, content={"Error": str(error)})
 
