@@ -3194,12 +3194,12 @@ export const OdooJson = {
                         {
                           type: "dropdown",
                           required: false,
-                          value: "None",
+                          value: "",
                           variableName: "priority_CreateOpportunity",
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "",
                             },
                             {
                               option: "Meduim",
@@ -3438,12 +3438,12 @@ export const OdooJson = {
                         {
                           type: "dropdown",
                           required: false,
-                          value: "None",
+                          value: "",
                           variableName: "priority_UpdateOpportunity",
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "",
                             },
                             {
                               option: "Meduim",
@@ -4509,12 +4509,12 @@ export const OdooJson = {
                         {
                           type: "dropdown",
                           required: false,
-                          value: "None",
+                          value: "",
                           variableName: "alias_contact_UpdateSalesTeam",
                           list: [
                             {
                               option: "None",
-                              value: "None",
+                              value: "",
                             },
                             {
                               option: "Everyone",
