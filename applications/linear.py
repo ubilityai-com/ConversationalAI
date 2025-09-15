@@ -74,7 +74,12 @@ async def linear_get_all_issues(json_cred, params, **kwargs):
             async with session.post(LINEAR_GRAPHQL_URL, json=json_data, headers=headers) as response:
                 try:
                     response.raise_for_status()
-                    return await response.json()
+                    result = await response.json()
+                    if not "errors" in result:
+                        return result
+                    raise Exception(
+                        f"Status Code: {response.status}. Response: {await response.text()}"
+                    )
                 except aiohttp.ClientResponseError as e:
                     error_text = await response.text()
                     raise Exception({
@@ -147,7 +152,12 @@ async def linear_get_issue(json_cred, params, **kwargs):
                 async with session.post(LINEAR_GRAPHQL_URL, json=json_data, headers=headers) as response:
                     try:
                         response.raise_for_status()
-                        return await response.json()
+                        result = await response.json()
+                        if not "errors" in result:
+                            return result
+                        raise Exception(
+                            f"Status Code: {response.status}. Response: {await response.text()}"
+                        )
                     except aiohttp.ClientResponseError as e:
                         error_text = await response.text()
                         raise Exception({
@@ -200,7 +210,12 @@ async def linear_delete_issue(json_cred, params, **kwargs):
                 async with session.post(LINEAR_GRAPHQL_URL, json=json_data, headers=headers) as response:
                     try:
                         response.raise_for_status()
-                        return await response.json()
+                        result = await response.json()
+                        if not "errors" in result:
+                            return result
+                        raise Exception(
+                            f"Status Code: {response.status}. Response: {await response.text()}"
+                        )
                     except aiohttp.ClientResponseError as e:
                         error_text = await response.text()
                         raise Exception({
@@ -281,7 +296,12 @@ async def linear_create_issue(json_cred, params, **kwargs):
                 async with session.post(LINEAR_GRAPHQL_URL, json=json_data, headers=headers) as response:
                     try:
                         response.raise_for_status()
-                        return await response.json()
+                        result = await response.json()
+                        if not "errors" in result:
+                            return result
+                        raise Exception(
+                            f"Status Code: {response.status}. Response: {await response.text()}"
+                        )
                     except aiohttp.ClientResponseError as e:
                         error_text = await response.text()
                         raise Exception({
@@ -368,7 +388,12 @@ async def linear_update_issue(json_cred, params, **kwargs):
                 async with session.post(LINEAR_GRAPHQL_URL, json=json_data, headers=headers) as response:
                     try:
                         response.raise_for_status()
-                        return await response.json()
+                        result = await response.json()
+                        if not "errors" in result:
+                            return result
+                        raise Exception(
+                            f"Status Code: {response.status}. Response: {await response.text()}"
+                        )
                     except aiohttp.ClientResponseError as e:
                         error_text = await response.text()
                         raise Exception({
@@ -434,7 +459,12 @@ async def linear_add_comment(json_cred, params, **kwargs):
                 async with session.post(LINEAR_GRAPHQL_URL, json=json_data, headers=headers) as response:
                     try:
                         response.raise_for_status()
-                        return await response.json()
+                        result = await response.json()
+                        if not "errors" in result:
+                            return result
+                        raise Exception(
+                            f"Status Code: {response.status}. Response: {await response.text()}"
+                        )
                     except aiohttp.ClientResponseError as e:
                         error_text = await response.text()
                         raise Exception({
@@ -495,7 +525,12 @@ async def linear_add_link_issue(json_cred, params, **kwargs):
                 async with session.post(LINEAR_GRAPHQL_URL, json=json_data, headers=headers) as response:
                     try:
                         response.raise_for_status()
-                        return await response.json()
+                        result = await response.json()
+                        if not "errors" in result:
+                            return result
+                        raise Exception(
+                            f"Status Code: {response.status}. Response: {await response.text()}"
+                        )
                     except aiohttp.ClientResponseError as e:
                         error_text = await response.text()
                         raise Exception({
