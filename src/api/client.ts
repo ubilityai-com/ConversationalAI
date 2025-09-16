@@ -1,8 +1,7 @@
 import axios from "axios";
 
 const client = axios.create({
-    baseURL: "http://23.88.122.180/bot",
-    // baseURL: window.location.origin + "/bot",
+    baseURL: window.location.origin + "/bot",
     headers: {
         "Content-Type": "application/json",
     },

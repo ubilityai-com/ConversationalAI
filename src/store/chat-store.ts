@@ -233,7 +233,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         if (socket) return
         set({ isLoadingConnect: true })
         const conversationId = `conv-${v4()}`
-        const newSocket = io("http://23.88.122.180", {
+        const newSocket = io(window.location.origin, {
             path: '/socket.io',
             transports: ["websocket", "polling"],
             query: {
