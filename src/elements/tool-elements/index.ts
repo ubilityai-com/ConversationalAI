@@ -14,6 +14,6 @@ export const ToolElements = [
     // CustomCodeToolJson,
     SerpApiToolJson,
     WikipediaToolJson,
-    CustomToolJson,
+    // CustomToolJson,
     McpToolJson
 ];
