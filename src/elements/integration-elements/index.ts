@@ -1,4 +1,5 @@
 //add import
+import { StripeJson } from "./StripeJson";
 import { PostgresJson } from "./PostgresJson";
 import { ShopifyJson } from "./ShopifyJson";
 import { ServiceNowJson } from "./ServiceNowJson";
@@ -34,6 +35,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    StripeJson,
     PostgresJson,
     ShopifyJson,
     ServiceNowJson,

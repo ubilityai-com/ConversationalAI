@@ -25,6 +25,7 @@ const FlowZone = () => {
     ConditionAgent: ConditionAgentNode,
     QuestionAndAnswer: LlmNode,
     // integration nodes
+    Stripe: IntegrationNode,
     Postgres: IntegrationNode,
     Shopify: IntegrationNode,
     ServiceNow: IntegrationNode,
