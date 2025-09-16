@@ -2135,10 +2135,6 @@ const serviceFields: CredentialInfo[] = [
                 optional: true,
                 list: [
                     {
-                        label: "",
-                        value: "",
-                    },
-                    {
                         label: "Disable",
                         value: "disable",
                     },
