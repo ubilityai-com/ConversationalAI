@@ -3621,6 +3621,82 @@ async def service_now_get_hold_reason(payload: ServicenowAppIntegration):
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
 
+####################################### Microsoft teams api ############################################
+
+class MicrosoftTeamsAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/teams/getTeams")
+async def teams_get_many_teams(payload: MicrosoftTeamsAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "refreshToken" not in json_cred or "clientId" not in json_cred or "clientSecret" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        refresh_token = json_cred['refreshToken']
+        client_id=json_cred['clientId']
+        client_secret=json_cred['clientSecret']
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        team_api = f"https://graph.microsoft.com/v1.0/me/joinedTeams"
+        headers = {
+            'Content-Type': 'application/json',
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(team_api, headers=headers) as response:
+                data = await response.json()
+                if response.status in status and data:
+                    teams = data.get("value", [])
+                    team_info = [{"id": team["id"], "name": team['displayName']}
+                                for team in teams]
+                    return {"teams": team_info}
+                raise Exception(
+                    f"Failed to retrieve teams. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class MicrosoftTeamsWithTeamAppIntegration(BaseModel):
+    credential_name: str
+    teamId: str
+
+@http_app.post("/bot/teams/getChannels")
+async def teams_get_many_channels(payload: MicrosoftTeamsWithTeamAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "refreshToken" not in json_cred or "clientId" not in json_cred or "clientSecret" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+        
+        refresh_token = json_cred['refreshToken']
+        client_id=json_cred['clientId']
+        client_secret=json_cred['clientSecret']
+        team_id = payload.teamId
+        token = await microsoft_refresh_token(refresh_token,client_id,client_secret)
+        team_api = f"https://graph.microsoft.com/v1.0/teams/{team_id}/channels"
+        headers = {
+            'Content-Type': 'application/json',
+            "Authorization": f"Bearer {token['access_token']}",
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(team_api, headers=headers) as response:
+                data = await response.json()
+                if response.status in status and data:
+                    channels = data.get("value", [])
+                    channel_info = [{"id": channel["id"], "name": channel['displayName']}
+                                for channel in channels]
+                    return {"channels": channel_info}
+                raise Exception(
+                    f"Failed to retrieve channels. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
 ################################ AI Providers List Models BaseModel ################################
 
 class AiProvidersListModelsAppIntegration(BaseModel):

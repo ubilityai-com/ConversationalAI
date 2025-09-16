@@ -94,7 +94,7 @@ def postgres_execute_custom_query(json_cred, params, **kwargs):
         else:
             result = fetch_data_as_dict(cursor)
             result = [format_data(record) for record in result]
-            return result
+            return {"result": result}
         
     except Exception as e:
         return {"Error": str(e)}
