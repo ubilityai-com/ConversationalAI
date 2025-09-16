@@ -3,6 +3,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useFlowStore } from "../store/flow-store";
 import { AutomationItem } from "../types/automation-types";
+import { v4 as uuidv4 } from "uuid";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -510,7 +511,7 @@ interface FormItem {
   required?: boolean;
   multiselect?: boolean;
   options?: OptionMap;
-  structure?: AutomationItem[]
+  structure?: AutomationItem[];
   json?: {
     required?: boolean;
     fieldsArray: FormItem[];
@@ -525,20 +526,15 @@ export const validateArray = (
   values: FormValues
 ): boolean => {
   for (const item of items) {
-    const {
-      type,
-      variableName,
-      required,
-    } = item;
+    const { type, variableName, required } = item;
     const value = values[variableName];
     console.log({ item, value, values });
 
     switch (type) {
       case "dropdown":
       case "api":
-        const options = item.options
-        if
-          (required && (value === "" || !value)) {
+        const options = item.options;
+        if (required && (value === "" || !value)) {
           return false;
         }
         if (options && typeof value === "string" && options[value]) {
@@ -575,19 +571,21 @@ export const validateArray = (
         break;
 
       case "dynamic":
-        const json = item.json
-        const structure = item.structure
+        const json = item.json;
+        const structure = item.structure;
 
         if (json) {
           if (json.required && values[variableName]?.length < 1) return false;
-          const valid = values[variableName].every((fieldList: FormValues) => validateArray(structure, fieldList));
-          if (!valid) return false
+          const valid = values[variableName].every((fieldList: FormValues) =>
+            validateArray(structure, fieldList)
+          );
+          if (!valid) return false;
         } else {
-          if (required && (values[variableName]?.length < 1))
-            return false;
-          const valid = values[variableName].every((fieldList: FormValues) => validateArray(structure, fieldList))
-          if (!valid) return false
-
+          if (required && values[variableName]?.length < 1) return false;
+          const valid = values[variableName].every((fieldList: FormValues) =>
+            validateArray(structure, fieldList)
+          );
+          if (!valid) return false;
         }
         break;
 
@@ -713,31 +711,31 @@ export function omitKeys<T extends Record<string, any>, K extends keyof T>(
   return Object.fromEntries(entries) as Omit<T, K>;
 }
 export function formatTimestamp(timestamp: string | number): string {
-  const date = new Date(Number(timestamp) * 1000) // Convert Unix timestamp to milliseconds
-  const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+  const date = new Date(Number(timestamp) * 1000); // Convert Unix timestamp to milliseconds
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
   // Less than a minute
   if (diffInSeconds < 60) {
-    return "just now"
+    return "just now";
   }
 
   // Less than an hour
   if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60)
-    return `${minutes} minute${minutes === 1 ? "" : "s"} ago`
+    const minutes = Math.floor(diffInSeconds / 60);
+    return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
   }
 
   // Less than a day
   if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600)
-    return `${hours} hour${hours === 1 ? "" : "s"} ago`
+    const hours = Math.floor(diffInSeconds / 3600);
+    return `${hours} hour${hours === 1 ? "" : "s"} ago`;
   }
 
   // Less than a week
   if (diffInSeconds < 604800) {
-    const days = Math.floor(diffInSeconds / 86400)
-    return `${days} day${days === 1 ? "" : "s"} ago`
+    const days = Math.floor(diffInSeconds / 86400);
+    return `${days} day${days === 1 ? "" : "s"} ago`;
   }
 
   // More than a week, show formatted date
@@ -745,13 +743,14 @@ export function formatTimestamp(timestamp: string | number): string {
     month: "short",
     day: "numeric",
     year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
-  })
+  });
 }
 export function generateUniqueName(type: string, label?: string): string {
-  const nodes = useFlowStore.getState().nodes
-  const namesOfType = nodes.filter(n => n.type === type).map(n => n.data.label);
+  const nodes = useFlowStore.getState().nodes;
+  const namesOfType = nodes
+    .filter((n) => n.type === type)
+    .map((n) => n.data.label);
   const baseName = label ?? type;
-
 
   if (!namesOfType.includes(baseName)) return baseName;
 
@@ -765,10 +764,37 @@ export function generateUniqueName(type: string, label?: string): string {
 
   return candidate;
 }
-export function reverseObject<T extends Record<string, string | number | symbol>>(
-  obj: T
-): Record<string, string> {
+export function reverseObject<
+  T extends Record<string, string | number | symbol>
+>(obj: T): Record<string, string> {
   return Object.fromEntries(
     Object.entries(obj).map(([key, value]) => [String(value), key])
   ) as Record<string, string>;
 }
+export const initializeBot = () => {
+  const id = uuidv4();
+  return {
+    nodes: [
+      {
+        id: id,
+        type: "Handler",
+        data: {
+          category: "basic",
+          color: "#68b04b",
+          label: "Start Dialog",
+          description: "Begin your Chatbot journey",
+          icon: "PlayArrow",
+          rightSideData: {
+            greet: "",
+            cancel: "",
+            start: false,
+            save: false,
+            variableName: "",
+          },
+        },
+        position: { x: 400, y: 40 },
+      },
+    ],
+    nodesValidation: { [id]: false },
+  };
+};

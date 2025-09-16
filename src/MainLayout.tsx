@@ -12,81 +12,58 @@ import { Toaster } from "./components/ui/toaster";
 import FlowZone from "./flow-zone";
 import { useFilesStore } from "./store/files-store";
 import { useFlowStore } from "./store/flow-store";
+import { initializeBot } from "./lib/utils";
 
 export default function MainLayout() {
-    // Get state and actions from Zustand stores
-    const setNodes = useFlowStore(state => state.setNodes)
-    const addNodesValidation = useFlowStore(state => state.addNodesValidation)
-    const fetchBots = useFlowStore(state => state.fetchBots)
-    const getBotById = useFlowStore(state => state.getBotById)
-    const reactFlowInstance = useFlowStore(state => state.reactFlowInstance)
-    const failedLoadingBot = useFlowStore(state => state.failedLoadingBot)
-    const getFiles = useFilesStore(state => state.getFiles)
-    const { botID } = useParams();
-    useEffect(() => {
-        if (botID)
-            getFiles(botID)
-    }, [botID, getFiles])
-    useEffect(() => {
-        initializeAllDroppedElementsByHandler()
-        fetchBots()
-        OAuth2AuthenticationFlow()
-    }, [])
-    useEffect(() => {
-        const fetchBot = async () => {
-            try {
-                if (botID && reactFlowInstance) {
-                    await getBotById(botID)
-                }
-            } catch (error) {
-                console.log({ error });
-            }
+  // Get state and actions from Zustand stores
+  const setNodes = useFlowStore((state) => state.setNodes);
+  const setNodesValidation = useFlowStore((state) => state.setNodesValidation);
+  const fetchBots = useFlowStore((state) => state.fetchBots);
+  const getBotById = useFlowStore((state) => state.getBotById);
+  const reactFlowInstance = useFlowStore((state) => state.reactFlowInstance);
+  const failedLoadingBot = useFlowStore((state) => state.failedLoadingBot);
+  const getFiles = useFilesStore((state) => state.getFiles);
+  const { botID } = useParams();
+  useEffect(() => {
+    if (botID) getFiles(botID);
+  }, [botID, getFiles]);
+  useEffect(() => {
+    initializeAllDroppedElementsByHandler();
+    fetchBots();
+    OAuth2AuthenticationFlow();
+  }, []);
+  useEffect(() => {
+    const fetchBot = async () => {
+      try {
+        if (botID && reactFlowInstance) {
+          await getBotById(botID);
         }
-        fetchBot()
-    }, [botID, reactFlowInstance, getBotById])
+      } catch (error) {
+        console.log({ error });
+      }
+    };
+    fetchBot();
+  }, [botID, reactFlowInstance, getBotById]);
 
+  const initializeAllDroppedElementsByHandler = () => {
+    const { nodes, nodesValidation } = initializeBot();
+    setNodes(nodes);
+    setNodesValidation(nodesValidation);
+  };
 
-    const initializeAllDroppedElementsByHandler = () => {
-        const id = uuidv4()
-        setNodes([
-            {
-                id: id,
-                type: "Handler",
-                data: {
-                    category: "basic",
-                    color: "#68b04b",
-                    label: "Start Dialog",
-                    description: "Begin your Chatbot journey",
-                    icon: "PlayArrow",
-                    rightSideData: {
-                        greet: "",
-                        cancel: "",
-                        start: false,
-                        save: false,
-                        variableName: ""
-                    },
-                },
-                position: { x: 400, y: 40 },
-            },
-        ])
-        addNodesValidation(id, false)
-    }
-
-
-    return (
-        <div className='min-h-screen flex flex-col' >
-            <DialogManager />
-            <Toolbar />
-            <LiveUrlDisplay />
-            <LoadingOverlay />
-            <div className="flex-1 flex overflow-hidden">
-                <div className="flex-1 relative overflow-hidden bg-gray-50">
-                    {!failedLoadingBot ? <FlowZone /> :
-                        <ChatbotNotFoundNotice />}
-                </div>
-                <RightSideDrawer />
-            </div>
-            <Toaster />
+  return (
+    <div className="min-h-screen flex flex-col">
+      <DialogManager />
+      <Toolbar />
+      <LiveUrlDisplay />
+      <LoadingOverlay />
+      <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 relative overflow-hidden bg-gray-50">
+          {!failedLoadingBot ? <FlowZone /> : <ChatbotNotFoundNotice />}
         </div>
-    )
+        <RightSideDrawer />
+      </div>
+      <Toaster />
+    </div>
+  );
 }

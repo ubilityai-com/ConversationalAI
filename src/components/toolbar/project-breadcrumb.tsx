@@ -1,64 +1,99 @@
-"use client"
+"use client";
 
-import { useState } from "react"
+import { useState } from "react";
 
-import { ChevronDown, Home, Loader2, Plus, Search } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-import { formatTimestamp } from "../../lib/utils"
-import { useFlowStore } from "../../store/flow-store"
-import { Badge } from "../ui/badge"
+import { ChevronDown, Home, Loader2, Plus, Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { formatTimestamp, initializeBot } from "../../lib/utils";
+import { useFlowStore } from "../../store/flow-store";
+import { Badge } from "../ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from "../ui/breadcrumb"
+} from "../ui/breadcrumb";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu"
-import { Input } from "../ui/input"
-import { ProjectNameDropdown } from "./project-name-dropdown"
+} from "../ui/dropdown-menu";
+import { Input } from "../ui/input";
+import { ProjectNameDropdown } from "./project-name-dropdown";
+const getRandomNumber = () => Math.round(Math.random() * 1000000);
 
 export function ProjectBreadcrumb() {
-  const { selectedBot, botsList, isLoadingBotList, isLoadingBot, getBotById, resetData } = useFlowStore()
-  const [searchQuery, setSearchQuery] = useState("")
-  const [showProjectsDropdown, setShowProjectsDropdown] = useState(false)
-  const filteredProjects = botsList.filter((bot) => bot.name.toLowerCase().includes(searchQuery.toLowerCase()))
-  const navigate = useNavigate()
+  const {
+    selectedBot,
+    botsList,
+    isLoadingBotList,
+    isLoadingBot,
+    getBotById,
+    resetData,
+    saveBot,
+    setIsLoadingBotByID,
+  } = useFlowStore();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showProjectsDropdown, setShowProjectsDropdown] = useState(false);
+  const filteredProjects = botsList.filter((bot) =>
+    bot.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const navigate = useNavigate();
   const handleProjectSelect = async (botId: number) => {
-    if (selectedBot?.id === botId) return
+    if (selectedBot?.id === botId) return;
 
     try {
-      const bot = await getBotById(botId.toString())
-      if (bot)
-        navigate(`/${botId}`)
-      setSearchQuery("")
-      setShowProjectsDropdown(false)
+      const bot = await getBotById(botId.toString());
+      if (bot) navigate(`/${botId}`);
+      setSearchQuery("");
+      setShowProjectsDropdown(false);
     } catch (error) {
-      console.error("Failed to switch project:", error)
+      console.error("Failed to switch project:", error);
     }
-  }
-  const handleCreateNewProject = () => {
-    navigate("/")
-    resetData()
-  }
+  };
+  const handleCreateNewProject = async () => {
+    try {
+      setIsLoadingBotByID(true);
+      resetData();
+      const { nodes, nodesValidation } = initializeBot();
+      const newBot = await saveBot({
+        dialogue: {},
+        status: "Inactive",
+        name: `bot ${getRandomNumber()}`,
+        ui_json: {
+          constantVariables: {},
+          dialogueVariables: {},
+          edges: [],
+          nodes: nodes,
+          nodeStates: {},
+          nodesValidation: nodesValidation,
+          outputVariables: {},
+        },
+      });
+      navigate(`/${newBot.id}`);
+    } catch (err) {
+      setIsLoadingBotByID(false);
+      console.log({ err });
+    }
+  };
   return (
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <DropdownMenu open={showProjectsDropdown} onOpenChange={setShowProjectsDropdown}>
+          <DropdownMenu
+            open={showProjectsDropdown}
+            onOpenChange={setShowProjectsDropdown}
+          >
             <DropdownMenuTrigger asChild>
               <BreadcrumbLink
                 href="#"
                 className="text-muted-foreground hover:text-foreground flex items-center gap-1"
                 onClick={(e) => {
-                  e.preventDefault()
-                  setShowProjectsDropdown(!showProjectsDropdown)
+                  e.preventDefault();
+                  setShowProjectsDropdown(!showProjectsDropdown);
                 }}
               >
                 <Home className="w-4 h-4" />
@@ -94,26 +129,34 @@ export function ProjectBreadcrumb() {
                 {isLoadingBotList && botsList.length === 0 ? (
                   <div className="px-2 py-8 text-center">
                     <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-muted-foreground" />
-                    <div className="text-sm text-muted-foreground">Loading projects...</div>
+                    <div className="text-sm text-muted-foreground">
+                      Loading projects...
+                    </div>
                   </div>
                 ) : filteredProjects.length === 0 ? (
                   <div className="px-2 py-4 text-center text-sm text-muted-foreground">
-                    {searchQuery ? "No projects found" : "No projects available"}
+                    {searchQuery
+                      ? "No projects found"
+                      : "No projects available"}
                   </div>
                 ) : (
                   filteredProjects.map((bot) => (
                     <DropdownMenuItem
                       key={bot.id}
                       onClick={() => handleProjectSelect(bot.id)}
-                      className={`flex items-center justify-between p-3 cursor-pointer ${bot.id === selectedBot?.id ? "bg-accent" : ""
-                        }`}
+                      className={`flex items-center justify-between p-3 cursor-pointer ${
+                        bot.id === selectedBot?.id ? "bg-accent" : ""
+                      }`}
                       disabled={isLoadingBot}
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{bot.name}</span>
                           {bot.status === "Active" && (
-                            <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                            <Badge
+                              variant="outline"
+                              className="text-xs bg-green-50 text-green-700 border-green-200"
+                            >
                               Live
                             </Badge>
                           )}
@@ -123,9 +166,13 @@ export function ProjectBreadcrumb() {
                             </Badge>
                           )}
                         </div>
-                        <div className="text-xs text-muted-foreground mt-1">Modified {formatTimestamp(bot.updated_date)}</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Modified {formatTimestamp(bot.updated_date)}
+                        </div>
                       </div>
-                      {isLoadingBot && bot.id !== selectedBot?.id && <Loader2 className="w-3 h-3 animate-spin" />}
+                      {isLoadingBot && bot.id !== selectedBot?.id && (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      )}
                     </DropdownMenuItem>
                   ))
                 )}
@@ -139,5 +186,5 @@ export function ProjectBreadcrumb() {
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
-  )
+  );
 }

@@ -3,7 +3,11 @@ import { StateCreator } from "zustand";
 import chatbotApis from "../api/chatbotApis";
 import { createFlowObject } from "../lib/build-json";
 import { FlowState, useFlowStore } from "./flow-store";
-import { ConstantVariable, DialogueVariables, OutputVariables } from "./variables-store";
+import {
+  ConstantVariable,
+  DialogueVariables,
+  OutputVariables,
+} from "./variables-store";
 
 export interface BotItem {
   id: number;
@@ -12,17 +16,17 @@ export interface BotItem {
   status: "Active" | "Inactive";
 }
 export interface BotSchema extends BotItem {
-  dialogue: Record<string, any>,
+  dialogue: Record<string, any>;
   ui_json: {
-    nodes: Node[],
-    edges: Edge[],
-    nodesValidation: { [key: string]: boolean },
-    constantVariables: ConstantVariable,
-    outputVariables: OutputVariables,
-    dialogueVariables: DialogueVariables
-    nodeStates: Record<string, string>
-  }
-  token: string
+    nodes: Node[];
+    edges: Edge[];
+    nodesValidation: { [key: string]: boolean };
+    constantVariables: ConstantVariable;
+    outputVariables: OutputVariables;
+    dialogueVariables: DialogueVariables;
+    nodeStates: Record<string, string>;
+  };
+  token: string;
 }
 
 export interface ChatbotSlice {
@@ -30,7 +34,6 @@ export interface ChatbotSlice {
   selectedBot: BotSchema | null;
   setSelectedBot: (bot: BotSchema | null) => void;
   updateSelectedBot: (partial: Partial<BotSchema>) => void;
-
 
   botsList: BotItem[];
   setBotsList: (bots: BotItem[]) => void;
@@ -55,8 +58,10 @@ export interface ChatbotSlice {
 
   // Chatbot operations
   fetchBots: () => Promise<void>;
-  getBotById: (id: string) => Promise<BotSchema>
-  saveBot: (data: any) => Promise<BotSchema>;
+  getBotById: (id: string) => Promise<BotSchema>;
+  saveBot: (
+    data: Omit<BotSchema, "token" | "id" | "updated_date">
+  ) => Promise<BotSchema>;
   updateBot: (data: Partial<BotSchema>) => Promise<void>;
   updateBotUiJson: () => Promise<boolean>;
   loadBot: (data: BotSchema) => Promise<void>;
@@ -65,7 +70,12 @@ export interface ChatbotSlice {
   deactivateBot: () => Promise<void>;
 }
 
-export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> = (set, get) => ({
+export const createChatbotSlice: StateCreator<
+  FlowState,
+  [],
+  [],
+  ChatbotSlice
+> = (set, get) => ({
   // Initial state
   selectedBot: null,
   botsList: [],
@@ -75,7 +85,6 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
   isLoadingActivate: false,
   error: null,
   failedLoadingBot: false,
-
 
   // Setters
   setSelectedBot: (bot) => set({ selectedBot: bot }),
@@ -94,22 +103,22 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
   setError: (error) => set({ error }),
   setFailedLoadingBot: (error) => set({ failedLoadingBot: error }),
 
-
   // API operations
   fetchBots: async () => {
-    const { setIsLoadingBotList } = get()
+    const { setIsLoadingBotList } = get();
 
-    setIsLoadingBotList(true)
+    setIsLoadingBotList(true);
     try {
-      const res = await chatbotApis.listChatbots()
+      const res = await chatbotApis.listChatbots();
       console.log("Fetched bots:", res.data);
 
       set({
-        isLoadingBotList: false, botsList: res.data.sort((a: BotItem, b: BotItem) => {
-          const dateA = Number.parseInt(a.updated_date) || 0
-          const dateB = Number.parseInt(b.updated_date) || 0
-          return dateB - dateA // Latest first
-        })
+        isLoadingBotList: false,
+        botsList: res.data.sort((a: BotItem, b: BotItem) => {
+          const dateA = Number.parseInt(a.updated_date) || 0;
+          const dateB = Number.parseInt(b.updated_date) || 0;
+          return dateB - dateA; // Latest first
+        }),
       });
     } catch (error: any) {
       console.error("Error fetching bots:", error);
@@ -123,37 +132,37 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
     }
   },
   getBotById: async (id) => {
-    const { setIsLoadingBotByID, setFailedLoadingBot } = get()
+    const { setIsLoadingBotByID, setFailedLoadingBot } = get();
 
     try {
-      setIsLoadingBotByID(true)
-      setFailedLoadingBot(false)
-      const res = await chatbotApis.getChatbot(id)
-      get().loadBot(res.data)
-      get().setSelectedBot(res.data)
-      const reactFlowInstance = useFlowStore.getState().reactFlowInstance
-      reactFlowInstance?.fitView()
-      setIsLoadingBotByID(false)
-      return res.data
+      setIsLoadingBotByID(true);
+      setFailedLoadingBot(false);
+      const res = await chatbotApis.getChatbot(id);
+      get().loadBot(res.data);
+      get().setSelectedBot(res.data);
+      const reactFlowInstance = useFlowStore.getState().reactFlowInstance;
+      reactFlowInstance?.fitView();
+      setIsLoadingBotByID(false);
+      return res.data;
     } catch (error: any) {
       console.log({ error });
-      const showSnackBar = useFlowStore.getState().setShowSnackBarMessage
-      setIsLoadingBotByID(false)
-      setFailedLoadingBot(true)
+      const showSnackBar = useFlowStore.getState().setShowSnackBarMessage;
+      setIsLoadingBotByID(false);
+      setFailedLoadingBot(true);
       showSnackBar({
         open: true,
         message: error.message || "Failed to load Bot",
         color: "destructive",
         duration: 3000,
       });
-      throw error
+      throw error;
     }
   },
   saveBot: async (data) => {
     set({ isLoadingBot: true, error: null });
     try {
-      const { setSelectedBot, setShowSnackBarMessage } = get()
-      const res = await chatbotApis.createChatbot(data)
+      const { setSelectedBot, setShowSnackBarMessage } = get();
+      const res = await chatbotApis.createChatbot(data);
       set({ isLoadingBot: false });
 
       // Show success message
@@ -161,19 +170,21 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
       if (showSnackBar) {
         showSnackBar({
           open: true,
-          message: res.data.message || "Bot saved successfully",
+          message: res.data.message || "Bot Created successfully",
           color: "success",
           duration: 3000,
         });
       }
 
       // Refresh bots list after saving
-      await get().fetchBots();
-      setSelectedBot(res.data)
+      get().fetchBots();
+      setSelectedBot(res.data);
       return res.data;
     } catch (error: any) {
       const errorMessage =
-        error.response?.data?.message || error.message || "Failed to save bot";
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to Create bot";
       set({
         error: errorMessage,
         isLoadingBot: false,
@@ -199,7 +210,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
 
     set({ isLoadingBot: true, error: null });
     try {
-      const res = await chatbotApis.updateChatbot(selectedBot.id, data)
+      const res = await chatbotApis.updateChatbot(selectedBot.id, data);
       set({ isLoadingBot: false });
 
       // Show success message if setShowSnackBarMessage is available
@@ -214,7 +225,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
       }
 
       await fetchBots();
-      updateSelectedBot(data)
+      updateSelectedBot(data);
       return res.data;
     } catch (error: any) {
       const errorMessage =
@@ -242,11 +253,31 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
   },
   updateBotUiJson: async () => {
     try {
-      const { nodesValidation, nodes, edges, constantVariables, outputVariables, dialogueVariables, updateBot, setShowSnackBarMessage, nodeStates } = get()
-      await updateBot({ ui_json: { constantVariables, dialogueVariables, edges, nodes, nodesValidation, outputVariables, nodeStates: nodeStates } })
-      return true
+      const {
+        nodesValidation,
+        nodes,
+        edges,
+        constantVariables,
+        outputVariables,
+        dialogueVariables,
+        updateBot,
+        setShowSnackBarMessage,
+        nodeStates,
+      } = get();
+      await updateBot({
+        ui_json: {
+          constantVariables,
+          dialogueVariables,
+          edges,
+          nodes,
+          nodesValidation,
+          outputVariables,
+          nodeStates: nodeStates,
+        },
+      });
+      return true;
     } catch (error) {
-      const { setShowSnackBarMessage } = get()
+      const { setShowSnackBarMessage } = get();
       console.log({ error });
       setShowSnackBarMessage({
         open: true,
@@ -254,7 +285,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
         color: "destructive",
         duration: 3000,
       });
-      return false
+      return false;
     }
   },
   loadBot: async (data) => {
@@ -266,7 +297,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
       constantVariables,
       outputVariables,
       dialogueVariables,
-      nodeStates
+      nodeStates,
     } = ui_json;
     set({ isLoadingBot: true, error: null });
 
@@ -279,7 +310,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
       store.setAllConstantVariables(constantVariables ?? {});
       store.setAllOutputVariables(outputVariables ?? {});
       store.setAllDialogueVariables(dialogueVariables ?? {});
-      store.setNodeStates(nodeStates || {})
+      store.setNodeStates(nodeStates || {});
       set({ isLoadingBot: false });
     } catch (error: any) {
       const errorMessage =
@@ -312,7 +343,7 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
 
     set({ isLoadingBot: true, error: null });
     try {
-      const res = await chatbotApis.deleteChatbot(selectedBot.id)
+      const res = await chatbotApis.deleteChatbot(selectedBot.id);
       // Show success message if setShowSnackBarMessage is available
       const showSnackBar = setShowSnackBarMessage;
       if (showSnackBar) {
@@ -352,7 +383,18 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
 
   activateBot: async () => {
     set({ isLoadingActivate: true, error: null });
-    const { selectedBot, nodes, edges, nodesValidation, constantVariables, dialogueVariables, outputVariables, updateSelectedBot, setShowSnackBarMessage, nodeStates } = get()
+    const {
+      selectedBot,
+      nodes,
+      edges,
+      nodesValidation,
+      constantVariables,
+      dialogueVariables,
+      outputVariables,
+      updateSelectedBot,
+      setShowSnackBarMessage,
+      nodeStates,
+    } = get();
     try {
       const body = {
         name: selectedBot?.name,
@@ -364,12 +406,12 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
           constantVariables,
           outputVariables,
           dialogueVariables,
-          nodeStates
-        }
-      }
-      const res = await chatbotApis.activateChatbot(selectedBot?.id!, body)
+          nodeStates,
+        },
+      };
+      const res = await chatbotApis.activateChatbot(selectedBot?.id!, body);
       set({ isLoadingActivate: false });
-      updateSelectedBot({ status: "Active" })
+      updateSelectedBot({ status: "Active" });
 
       // Refresh bots list to update status
       get().fetchBots();
@@ -398,14 +440,18 @@ export const createChatbotSlice: StateCreator<FlowState, [], [], ChatbotSlice> =
   },
 
   deactivateBot: async () => {
-    const { fetchBots, setShowSnackBarMessage, selectedBot, updateSelectedBot } = get();
+    const {
+      fetchBots,
+      setShowSnackBarMessage,
+      selectedBot,
+      updateSelectedBot,
+    } = get();
     set({ isLoadingActivate: true, error: null });
 
     try {
-
-      await chatbotApis.deactivateChatbot(selectedBot?.id!)
+      await chatbotApis.deactivateChatbot(selectedBot?.id!);
       set({ isLoadingActivate: false });
-      updateSelectedBot({ status: "Inactive" })
+      updateSelectedBot({ status: "Inactive" });
       fetchBots();
     } catch (error: any) {
       set({
