@@ -1,18 +1,17 @@
 import { addEdge, Background, Controls, MarkerType, MiniMap, ReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import StickyNote from './components/custom/sticky-note';
 import ButtonEdge from './components/edgeTypes/button-edge';
 import connectionLine from './components/edgeTypes/connection-line';
 import { ChoiceNode } from './components/nodes/choice-node';
 import { ConditionAgentNode } from './components/nodes/condition-agent-node';
-import { EndNode } from './components/nodes/end-node';
 import { InputNode } from './components/nodes/input-node';
 import { IntegrationNode } from './components/nodes/integration-node';
 import { LlmNode } from './components/nodes/llm-node';
 import { MessageNode } from './components/nodes/message-node';
 import { RouterNode } from './components/nodes/router-node';
-import { useFlowStore } from './store/flow-store';
 import StickyNoteNode from './components/nodes/stickyNote-node';
-import StickyNote from './components/custom/sticky-note';
+import { useFlowStore } from './store/flow-store';
 
 const FlowZone = () => {
   const nodeTypes = {
@@ -20,7 +19,6 @@ const FlowZone = () => {
     Message: MessageNode,
     ChoicePrompt: ChoiceNode,
     Router: RouterNode,
-    End: EndNode,
     ReactAgent: LlmNode,
     DataCollector: IntegrationNode,
     BasicLLM: LlmNode,

@@ -152,20 +152,7 @@ const agentTypes = [
       color: "#bfdbfe",
       content: ""
     },
-  },
-  {
-    type: "End",
-    label: "End",
-    description: "Terminates the chat with a custom message",
-    icon: Square,
-    category: "basic",
-    color: "bg-red-500",
-    defaults: {
-      botSays: "",
-      loopFromSwitch: false,
-      loopFromName: "",
-    },
-  },
+  }
 ];
 
 const categories = [

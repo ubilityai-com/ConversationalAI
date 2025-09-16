@@ -557,32 +557,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
         defaultHandle?: string;
       }
     > = {
-      Handler: { requireIncoming: false, requireOutgoing: true },
-      End: { requireIncoming: true, requireOutgoing: false },
-      ChoicePrompt: {
-        requireIncoming: true,
-        requireOutgoing: true,
-        getRequiredHandles: (node) => [
-          ...(node.data?.rightSideData?.choices ?? []).map((c: any) => c.id),
-          "choice-default",
-        ],
-      },
-      Router: {
-        requireIncoming: true,
-        requireOutgoing: true,
-        getRequiredHandles: (node) => [
-          ...(node.data?.rightSideData?.branches ?? []).map((b: any) => b.id),
-          "branch-default",
-        ],
-      },
-      ConditionAgent: {
-        requireIncoming: true,
-        requireOutgoing: true,
-        getRequiredHandles: (node) => [
-          ...(node.data?.rightSideData?.scenarios ?? []).map((s: any) => s.id),
-          "condition-agent-default",
-        ],
-      },
+      Handler: { requireIncoming: false, requireOutgoing: false },
       StickyNote: {
         requireIncoming: false,
         requireOutgoing: false,
@@ -594,7 +569,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
       const outgoing = outgoingEdgesMap.get(node.id) ?? [];
       const config = nodeTypeRules[node.type] ?? {
         requireIncoming: true,
-        requireOutgoing: true,
+        requireOutgoing: false,
       };
 
       if (config.requireIncoming && incoming.length === 0) {
@@ -609,24 +584,6 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
           `Node ${node.id} (${node.type}) is missing outgoing connection.`
         );
         return false;
-      }
-
-      if (config.getRequiredHandles) {
-        const required = new Set(config.getRequiredHandles(node));
-        const connected = new Set(
-          outgoing.map(
-            (e) => e.sourceHandle ?? config.defaultHandle ?? "default"
-          )
-        );
-
-        for (const handle of required) {
-          if (!connected.has(handle)) {
-            console.warn(
-              `Node ${node.id} (${node.type}) is missing outgoing connection for handle: ${handle}`
-            );
-            return false;
-          }
-        }
       }
     }
 
