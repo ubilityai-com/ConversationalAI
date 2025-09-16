@@ -1,4 +1,5 @@
 //add import
+import { StripeJson } from "./StripeJson";
 import { ShopifyJson } from "./ShopifyJson";
 import { TwilioJson } from "./TwilioJson";
 import { WhatsappJson } from "./WhatsappJson";
@@ -32,6 +33,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    StripeJson,
     ShopifyJson,
     TwilioJson,
     WhatsappJson,
