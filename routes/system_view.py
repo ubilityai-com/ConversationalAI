@@ -51,6 +51,8 @@ async def test_node(payload: Union[TestNodeRequest, TestAINodeRequest,TestNodeTo
             if payload.tool_type == "HttpRequest":
                 result = await HttpRequest(payload.data).make_request(payload.chatbot_id,"testNode")
 
+        if not isinstance(result,dict) or 'error'in result or 'Error' in result:
+            return JSONResponse(status_code=500, content=result)
         return {"output": result}
     except Exception as e:
         return JSONResponse(status_code=500, content={"Error": str(e)})

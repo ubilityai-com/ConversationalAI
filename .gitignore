@@ -3,8 +3,9 @@ __pycache__/
 /routes/__pycache__/
 /models/__pycache__/
 /applications/__pycache__/
-/dialogues/__pycache__/
+/dialogues/
 /elements/__pycache__/
 /botenv/
 /temp/
 database.db
+/langchain_history/

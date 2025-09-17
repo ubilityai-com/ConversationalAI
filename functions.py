@@ -10,7 +10,7 @@ Includes:
 - Dynamic routing and formatting
 """
 from logger_config import logger
-import json,base64
+import json,base64,openai
 from typing import Union
 from elements.message import Message
 from elements.multiple_choice import MultipleChoice
@@ -25,7 +25,7 @@ from dialogues.dialogues import active_dialogues
 import gzip, os, gzip,magic,uuid
 import os.path, io
 
-
+CHUNK_SIZE = 1024 * 1024  # 1 MB
 
 async def execute_process(sio, sid, conversation, conversation_id, dialogue, condition=True):
     """
@@ -45,7 +45,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         return
 
     current_dialogue = dialogue.get(current_step, {})
-    wait_for_user = current_dialogue.get('saveUserInputAs')
+    wait_for_user = None if current_step == 'firstElementId' else current_dialogue.get('saveUserInputAs')
     element_type = 'Greet' if current_step == 'firstElementId' else current_dialogue.get('type')
     credentials = active_dialogues[conversation['dialogue_id']]["credentials"]
     state = active_dialogues[conversation['dialogue_id']].get('state', None)
@@ -312,8 +312,21 @@ async def handle_attachement(sio, sid,conversation,conversation_id,content):
 
     elif 'file' in content["data"]: # send file to user
         file = get_file_data(conversation,conversation_id,content["data"]['file'])
-        await sio.emit("message", {'type': 'file','data': file}, room=sid)
+        file_bytes = base64.b64decode(file['data_base64'])
+        await send_file_in_chunks(sio,sid, file_bytes, file['file_name'],file['content_type'])
 
+async def send_file_in_chunks(sio,sid, file_bytes, filename,mimetype):
+    total_size = len(file_bytes)
+    for i in range(0, total_size, CHUNK_SIZE):
+        chunk = file_bytes[i:i+CHUNK_SIZE]
+        await sio.emit("message", {
+            "type": "file",
+            "data": chunk,
+            "filename": filename,
+            "mimetype": mimetype,
+            "chunk_index": i // CHUNK_SIZE,
+            "total_chunks": (total_size + CHUNK_SIZE - 1) // CHUNK_SIZE
+        },room=sid)
     
 
 async def handle_flow_invoker(conversation,content):
@@ -373,7 +386,7 @@ async def handle_app_integration(sio, sid, conversation, conversation_id, dialog
     content_json = app_content_json['content_json']
 
     logger.info(f"Executing {app_type} operation ({operation})")
-    result = AppIntegration(app_type,credential,operation,content_json).run_process(conversation['dialogue_id'],conversation_id)
+    result = await AppIntegration(app_type,credential,operation,content_json).run_process(conversation['dialogue_id'],conversation_id)
 
     # save result in a variable if user want to 
     logger.info(f"Save {app_type} output in variables")
@@ -455,7 +468,7 @@ def save_file_input(conversation,conversation_id,user_input):
             except Exception:
                 logger.warning("fail svg")
                 
-        random_suffix = str(uuid.uuid4())[:6]
+        random_suffix = str(uuid.uuid4())[:3]
         current_dir = os.getcwd()
         STORAGE_DIR = os.path.join(
             current_dir,
@@ -466,7 +479,8 @@ def save_file_input(conversation,conversation_id,user_input):
 
         os.makedirs(STORAGE_DIR, exist_ok=True)  # Create dirs if they don't exist
 
-        file_name = f"{random_suffix}.{matched_extension}"
+        original_name = os.path.splitext(user_input["filename"])[0]
+        file_name = f"{original_name}_{random_suffix}.{matched_extension}"
         file_path = os.path.join(STORAGE_DIR, file_name)
 
         # Save file
@@ -597,3 +611,22 @@ async def restore_active_chatbots():
         return True
     except Exception as e:
         return False
+    
+
+def speech_to_text_openai(api_key,audio_binary: bytes, filename: str ):
+    """
+    Converts audio binary data to text using OpenAI Whisper API.
+    
+    :param audio_binary: Binary data of the audio file
+    :param filename: Name of the file (extension required, e.g., .wav, .mp3, .m4a)
+    :return: Transcribed text
+    """
+    openai.api_key = api_key
+    audio_file = io.BytesIO(audio_binary)
+    audio_file.name = filename  # OpenAI needs filename to detect format
+
+    transcript = openai.audio.transcriptions.create(
+        model="whisper-1",
+        file=audio_file
+    )
+    return transcript.text

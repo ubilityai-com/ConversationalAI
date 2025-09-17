@@ -109,7 +109,7 @@ def gmail_addLabel(creds,request,**kwargs):
             )
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_deleteMessage(creds, request,**kwargs):
@@ -149,7 +149,7 @@ def gmail_deleteMessage(creds, request,**kwargs):
         ).execute()
         return {"Result": f"Deleted Message ID: {message_id}"}
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_getMessage(creds, request,**kwargs):
@@ -217,7 +217,7 @@ def gmail_getMessage(creds, request,**kwargs):
             raise Exception("Invalid scope specified")
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_markAsRead(creds, request, **kwargs):
@@ -261,7 +261,7 @@ def gmail_markAsRead(creds, request, **kwargs):
             .execute()
         )
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_markAsUnread(creds,request, **kwargs):
@@ -305,7 +305,7 @@ def gmail_markAsUnread(creds,request, **kwargs):
             .execute()
         )
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_removeLabel(creds, request, **kwargs):
@@ -364,7 +364,7 @@ def gmail_removeLabel(creds, request, **kwargs):
             )
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_replyToMessage(creds, request, **kwargs):
@@ -485,7 +485,7 @@ def gmail_replyToMessage(creds, request, **kwargs):
             .execute()
         )
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_sendMessage(creds, request, **kwargs):
@@ -597,7 +597,7 @@ def gmail_sendMessage(creds, request, **kwargs):
         )
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 # def gmail_check_and_download_attachments(creds, , request):
@@ -663,8 +663,8 @@ def gmail_sendMessage(creds, request, **kwargs):
 #                 response.raise_for_status()
 #                 return response.json()
 
-#     except Exception as e:
-#         raise Exception(e)
+    # except Exception as e:
+    #     return {"Error": str(e)}
 
 
 def gmail_list_message_attachments(creds, request, **kwargs):
@@ -701,7 +701,7 @@ def gmail_list_message_attachments(creds, request, **kwargs):
         return {"attachments": attachments_list}
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_download_attachment(creds, request, **kwargs):
@@ -744,7 +744,7 @@ def gmail_download_attachment(creds, request, **kwargs):
         return response
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 ################################################# Threads #########################################
@@ -794,7 +794,7 @@ def gmail_addLabelToThread(creds, request, **kwargs):
         )
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_deleteThread(creds, request, **kwargs):
@@ -835,7 +835,7 @@ def gmail_deleteThread(creds, request, **kwargs):
         return {"Result": f"Deleted Thread ID: {thread_id}"}
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_getThreads(creds, request, **kwargs):
@@ -940,7 +940,7 @@ def gmail_getThreads(creds, request, **kwargs):
         raise Exception("Missing input data")
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_removeLabelFromThread(creds, request, **kwargs):
@@ -1005,7 +1005,7 @@ def gmail_removeLabelFromThread(creds, request, **kwargs):
         )
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def get_message_subject(id, service):
@@ -1173,7 +1173,7 @@ def gmail_replyToThread(creds, request, **kwargs):
             )
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_trashThread(creds, request, **kwargs):
@@ -1214,7 +1214,7 @@ def gmail_trashThread(creds, request, **kwargs):
         return service.users().threads().trash(userId="me", id=thread_id).execute()
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_untrashThread(creds, request, **kwargs):
@@ -1255,7 +1255,7 @@ def gmail_untrashThread(creds, request, **kwargs):
         return service.users().threads().untrash(userId="me", id=thread_id).execute()
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 ################################################# Label@@@ #########################################
@@ -1309,7 +1309,7 @@ def gmail_createLabel(creds, request, **kwargs):
         return created_label
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 def gmail_deleteLabel(creds, request, **kwargs):
     """
@@ -1348,7 +1348,7 @@ def gmail_deleteLabel(creds, request, **kwargs):
         service.users().labels().delete(userId="me", id=label_id).execute()
         return {"Result": f"Deleted Label ID: {label_id}"}
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_getLabels(creds, request, **kwargs):
@@ -1404,7 +1404,7 @@ def gmail_getLabels(creds, request, **kwargs):
         raise Exception("Missing input data")
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 ################################################# Drafts## #########################################
@@ -1518,7 +1518,7 @@ def gmail_createDraft(creds, request, **kwargs):
         return service.users().drafts().create(userId="me", body=draft).execute()
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_deleteDraft(creds, request, **kwargs):
@@ -1557,7 +1557,7 @@ def gmail_deleteDraft(creds, request, **kwargs):
         return {"Result": f"Deleted Draft ID: {draft_id}"}
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 def gmail_getDraft(creds, request, **kwargs):
@@ -1614,7 +1614,7 @@ def gmail_getDraft(creds, request, **kwargs):
         raise Exception("Missing input data")
 
     except Exception as e:
-        raise Exception(e)
+        return {"Error": str(e)}
 
 
 operations = {

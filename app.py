@@ -9,7 +9,7 @@ import json,socketio,shutil,os,asyncio
 from datetime import datetime,timedelta
 from fastapi import FastAPI
 from elements.message import Message
-from functions import execute_process, save_user_input,save_file_input,restore_active_chatbots, save_data_to_global_history, create_global_history
+from functions import execute_process, save_user_input,save_file_input,restore_active_chatbots, save_data_to_global_history, create_global_history,speech_to_text_openai
 from logger_config import logger, setup_logger
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
@@ -32,6 +32,8 @@ session = defaultdict(dict)
 
 # Keep a global dictionary to map sid -> dialogue_id , conv_id
 connected_clients = {}
+# Temporary buffer for incoming file chunks
+file_chunks_buffer = {}
 
 # All active dialogues
 from dialogues.dialogues import active_dialogues
@@ -57,7 +59,7 @@ from applications.routes import *
 from routes.files_view import *
 
 # Socket.IO ASGI server
-sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi')
+sio = socketio.AsyncServer(cors_allowed_origins='*', async_mode='asgi',max_http_buffer_size=15*1024*1024)
 app = socketio.ASGIApp(sio, other_asgi_app=http_app)
 
 # ---------------------------
@@ -110,12 +112,18 @@ async def connect(sid, environ, auth=None):
         'variables': active_dialogues[dialogue_id]['constant_variables'],
         'current_step': 'firstElementId',
         'wait_for_user_input': None,
-        'dialogue_id':dialogue_id
+        'dialogue_id':dialogue_id,
+        'audio_configuration':None
     }
 
     conversation = session[dialogue_id][conversation_id]
     current_step = conversation['current_step']
     dialogue = active_dialogues[dialogue_id]['bot']
+
+    # add audio configuration
+    if 'audio_configuration' in  active_dialogues[dialogue_id]:
+        audio_configuration = active_dialogues[dialogue_id]['audio_configuration']
+        session[dialogue_id][conversation_id]['audio_configuration'] = audio_configuration
 
     # used for the recursive functionality in react agent
     conversation['variables']['react_fail'] = False
@@ -123,12 +131,23 @@ async def connect(sid, environ, auth=None):
 
     # Greet the user if the current step is configured to do so
     if dialogue[current_step].get('start'):
-        logger.info("Ubility bot will send greet message on connection")
-        greet_message = Message(dialogue[current_step]['greet'])
-        await greet_message.send(sio, sid)
-        save_data_to_global_history(conversation_id=conversation_id, input="", output=dialogue[current_step]['greet'])
-        conversation['current_step'] = dialogue[current_step]['next']
-        await execute_process(sio, sid, conversation, conversation_id, dialogue)
+        async def greet_and_execute():
+            logger.info("Ubility bot will send greet message on connection")
+            greet_message = Message(dialogue[current_step]['greet'])
+            await greet_message.send(sio, sid)
+            save_data_to_global_history(
+                conversation_id=conversation_id,
+                input="",
+                output=dialogue[current_step]['greet']
+            )
+            conversation['current_step'] = dialogue[current_step]['next']
+            await execute_process(sio, sid, conversation, conversation_id, dialogue)
+
+        asyncio.create_task(greet_and_execute())
+        
+    # save user message if user start the conversation
+    if dialogue[current_step]['saveUserInputAs']:
+        conversation['wait_for_user_input'] = dialogue[current_step]['saveUserInputAs']
 
 
 @sio.event
@@ -171,24 +190,58 @@ async def message(sid, data):
         conversation['variables'] = {}
         conversation['wait_for_user_input'] = None
         return
+    
+    # check if user send audio
+    if data_type == 'voice_audio':
+        if not conversation['audio_configuration']: # user didn't support voice conversation
+            return
+        api_key = conversation['variables'][conversation['audio_configuration']]
+        user_input['data'] = bytes(user_input["data"])
+        user_message = speech_to_text_openai(api_key,user_input,user_input['filename'])
+        user_input['data'] = user_message
+
 
     # Save input and continue process
     if conversation.get('wait_for_user_input') and data_type != "binary":
         save_user_input(conversation, user_input)
 
+
     # Save input file and continue process
     if conversation.get('wait_for_user_input') and data_type == "binary":
-        user_input['data'] = bytes(user_input["data"]) #should be removed
-        save_file_input(conversation,conversation_id, user_input)
+        filename = user_input["filename"]
+        mimetype = user_input["mimetype"]
+        chunk_index = user_input["chunk_index"]
+        total_chunks = user_input["total_chunks"]
+        chunk_data = user_input["data"]
+
+        # Ensure we have a buffer for this file
+        key = f"{sid}:{filename}"
+        if key not in file_chunks_buffer:
+            file_chunks_buffer[key] = [None] * total_chunks
+
+        file_chunks_buffer[key][chunk_index] = bytes(chunk_data)
+
+        logger.info(f"Received chunk {chunk_index+1}/{total_chunks} for {filename}")
+
+        # If all chunks are received, assemble the file
+        if all(chunk is not None for chunk in file_chunks_buffer[key]):
+            full_file = b"".join(file_chunks_buffer[key])
+            logger.info(f"All chunks received for {filename}, total size={len(full_file)} bytes")
+
+            # Clean up buffer
+            del file_chunks_buffer[key]
+
+            # Save file into conversation
+            file_input = {
+                "data": full_file,
+                "filename": filename,
+                "mimetype": mimetype
+            }
+            save_file_input(conversation, conversation_id, file_input)
 
     await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
-# def get_conversation_id_from_sid(dialogue_id, sid):
-#     dialogue_sessions = session.get(dialogue_id, {})
-#     for conv_id, conv in dialogue_sessions.items():
-#         if conv.get('sid') == sid:
-#             return conv_id
-#     return None
+
 
 def get_dialogue_id_from_sid(sid):
     for d_id, conversations in session.items():
@@ -277,7 +330,7 @@ def decrypt_dialogue_id(encrypted_str: str) -> str:
 async def main():
     asyncio.create_task(check_idle_sessions())
     asyncio.create_task(restore_active_chatbots())
-    config = Config(app, host="0.0.0.0", port=8031)
+    config = Config(app, host="0.0.0.0", port=8031,ws_max_size=15*1024*1024)
     server = Server(config)
     await server.serve()
 
