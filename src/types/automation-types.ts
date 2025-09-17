@@ -207,6 +207,7 @@ export interface DynamicItem extends BaseAutomationItem {
   innerButton?: boolean;
   json?: {
     variableName: string;
+    structure: AutomationItem[];
     title: string;
     fieldsArray: AutomationItem[][];
     required?: boolean;

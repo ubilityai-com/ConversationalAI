@@ -1,9 +1,9 @@
 import { Edge, Node } from "@xyflow/react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { v4 as uuidv4 } from "uuid";
 import { useFlowStore } from "../store/flow-store";
 import { AutomationItem } from "../types/automation-types";
-import { v4 as uuidv4 } from "uuid";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -572,16 +572,18 @@ export const validateArray = (
 
       case "dynamic":
         const json = item.json;
-        const structure = item.structure;
+
 
         if (json) {
-          if (json.required && values[variableName]?.length < 1) return false;
-          const valid = values[variableName].every((fieldList: FormValues) =>
+          if (json.required && values[json.variableName]?.length < 1) return false;
+          const structure = json.structure;
+          const valid = values[json.variableName].every((fieldList: FormValues) =>
             validateArray(structure, fieldList)
           );
           if (!valid) return false;
         } else {
           if (required && values[variableName]?.length < 1) return false;
+          const structure = item.structure
           const valid = values[variableName].every((fieldList: FormValues) =>
             validateArray(structure, fieldList)
           );
