@@ -1,4 +1,5 @@
 //add import
+import { MySQLJson } from "./MySQLJson";
 import { TeamsJson } from "./TeamsJson";
 import { StripeJson } from "./StripeJson";
 import { PostgresJson } from "./PostgresJson";
@@ -36,6 +37,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    MySQLJson,
     TeamsJson,
     StripeJson,
     PostgresJson,

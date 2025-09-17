@@ -1822,76 +1822,76 @@ const serviceFields: CredentialInfo[] = [
                     ],
                 },
             },
-            {
-                label: "SSH Tunnel",
-                Credential_name: "sshEnabled",
-                Credential_value: false,
-                switch: true,
-                typeOfValue: "string",
-                options: {
-                    true: [
-                        {
-                            label: "SSH Authenticate with",
-                            Credential_name: "sshAuthenticateWith",
-                            Credential_value: "Private Key",
-                            dropdown: true,
-                            list: [
-                                {
-                                    label: "Private Key",
-                                    value: "Private Key",
-                                },
-                                {
-                                    label: "Password",
-                                    value: "Password",
-                                },
-                            ],
-                            options: {
-                                "Private Key": [
-                                    {
-                                        label: "Private Key",
-                                        Credential_name: "sshPrivateKey",
-                                        Credential_value: "",
-                                        hashed: true,
-                                    },
-                                    {
-                                        label: "Passphrase",
-                                        Credential_name: "sshPassphrase",
-                                        Credential_value: "",
-                                    },
-                                ],
-                                Password: [
-                                    {
-                                        label: "SSH Password",
-                                        Credential_name: "sshPassword",
-                                        Credential_value: "",
-                                        hashed: true,
-                                    },
-                                ],
-                            },
-                        },
-                        {
-                            label: "SSH Host",
-                            Credential_name: "sshHost",
-                            Credential_value: "",
-                        },
-                        {
-                            label: "SSH Port",
-                            Credential_name: "sshPort",
-                            Credential_value: "",
-                        },
-                        {
-                            label: "SSH MySQL Port",
-                            Credential_name: "sshMysqlPort",
-                            Credential_value: "",
-                        },
-                        {
-                            label: "SSH User",
-                            Credential_name: "sshUser",
-                            Credential_value: "",
-                        },
-                    ],
-                },
-            },
+            // {
+            //     label: "SSH Tunnel",
+            //     Credential_name: "sshEnabled",
+            //     Credential_value: false,
+            //     switch: true,
+            //     typeOfValue: "string",
+            //     options: {
+            //         true: [
+            //             {
+            //                 label: "SSH Authenticate with",
+            //                 Credential_name: "sshAuthenticateWith",
+            //                 Credential_value: "Private Key",
+            //                 dropdown: true,
+            //                 list: [
+            //                     {
+            //                         label: "Private Key",
+            //                         value: "Private Key",
+            //                     },
+            //                     {
+            //                         label: "Password",
+            //                         value: "Password",
+            //                     },
+            //                 ],
+            //                 options: {
+            //                     "Private Key": [
+            //                         {
+            //                             label: "Private Key",
+            //                             Credential_name: "sshPrivateKey",
+            //                             Credential_value: "",
+            //                             hashed: true,
+            //                         },
+            //                         {
+            //                             label: "Passphrase",
+            //                             Credential_name: "sshPassphrase",
+            //                             Credential_value: "",
+            //                         },
+            //                     ],
+            //                     Password: [
+            //                         {
+            //                             label: "SSH Password",
+            //                             Credential_name: "sshPassword",
+            //                             Credential_value: "",
+            //                             hashed: true,
+            //                         },
+            //                     ],
+            //                 },
+            //             },
+            //             {
+            //                 label: "SSH Host",
+            //                 Credential_name: "sshHost",
+            //                 Credential_value: "",
+            //             },
+            //             {
+            //                 label: "SSH Port",
+            //                 Credential_name: "sshPort",
+            //                 Credential_value: "",
+            //             },
+            //             {
+            //                 label: "SSH MySQL Port",
+            //                 Credential_name: "sshMysqlPort",
+            //                 Credential_value: "",
+            //             },
+            //             {
+            //                 label: "SSH User",
+            //                 Credential_name: "sshUser",
+            //                 Credential_value: "",
+            //             },
+            //         ],
+            //     },
+            // },
         ],
     },
     {
