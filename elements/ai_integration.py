@@ -42,9 +42,9 @@ class AIIntegration:
         
         return result
     
-    async def _execute_condition_agent(self, sio, sid):
+    async def _execute_condition_agent(self, sio, sid, conversation_id):
         print(f"Executing Conditional Agent")
-        return await CONDITION_AGENT(self.data, self.credentials).execute(sio, sid)
+        return await CONDITION_AGENT(self.data, self.credentials).execute(sio, sid, conversation_id)
     
     async def _execute_rag_chain(self, sio, sid, conversation):
         print(f"Executing RAG chain")
@@ -61,7 +61,9 @@ class AIIntegration:
 
         else:
             print(f"Executing REACT agent with first input value")
-            result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id)
+            last_input_value = conversation['variables']['last_input_value']
+            result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id, last_input_value)
+            # result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id)
             if conversation:
                 self._handle_status(result["status"], conversation)
                 if 'required_inputs' in result:
@@ -84,7 +86,7 @@ class AIIntegration:
         elif self.chain_type == "LC_BASIC_LLM" or self.chain_type == "LC_RAG":
             return await executor(sio, sid, conversation)
         elif self.chain_type == "LC_CONDITION_AGENT":
-            return await executor(sio, sid)
+            return await executor(sio, sid, conversation_id)
         else:
             raise ValueError(f"Unknown chain type: {self.chain_type}")
 

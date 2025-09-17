@@ -137,7 +137,7 @@ async def connect(sid, environ, auth=None):
             await greet_message.send(sio, sid)
             save_data_to_global_history(
                 conversation_id=conversation_id,
-                input=conversation['variables']['last_input_value'],
+                input="",
                 output=dialogue[current_step]['greet']
             )
             conversation['current_step'] = dialogue[current_step]['next']
@@ -177,7 +177,8 @@ async def message(sid, data):
     # used for the recursive functionality in react agent
     if data_type != "binary":
         conversation['variables']['last_input_value'] = user_message
-
+        save_data_to_global_history(conversation_id, user_message, "")
+    
     # Handle cancellation
     if isinstance(user_message,str) and user_message.lower().strip() in CANCELLATION_PHRASES:
         logger.warning("The conversation was canceled by the user")

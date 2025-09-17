@@ -11,24 +11,29 @@ from dotenv import load_dotenv
 load_dotenv(override=True)
 
 DEFAULT_REACT_AGENT_STATUS_PROMPT = """
-User Prompt: {user_prompt}
-Last User Input: {user_input}
-Last Agent Output: {agent_output}
+You are a conversation evaluator.
+Your task is to decide if the conversation between a user and an assistant has been completed
 
-You are a strict evaluator AI that determines whether a given response represents a completed task or not.
+You will be given:
 
-You will be given a response from a previous agent.
+Agent Prompt: the instruction/role of the first agent.
 
-Your job is to analyze the content and return the following key: status.
+User Input: the last input from the user to the first agent.
 
-If the response asks for more input, provides general greetings, or indicates it is waiting for more information or clarification, then status must be "fail".
-If the response represents a complete and meaningful answer to a user request or clearly finishes a task, then status must be "pass"
+Agent Output: the last response from the first agent.
 
-Only "pass" or "fail" are allowed as status values. Do not use any other status or format.
+Agent Prompt:{user_prompt}
 
-REMEMBER you job is not to provide a new answer, it is only to determine the status of a previous agent’s response.
+User Input:{user_input}
 
-Output should be like this: {{"status": ""}}. No explanation is needed.
+Agent Output:{agent_output}
+
+Your output must always be a JSON object in this exact format: {{"status": "pass"}} or {{"status": "fail"}}.
+No other words, explanations, or characters are allowed. Your role is only to evaluate the conversation and return the JSON.
+
+status = "pass": Assign this status only If the agent output fully answers or resolves the user input according to the agent prompt."
+
+status = "fail": Assign this status if the agent's last output indicates that the task is still incomplete Or the agent still waiting for the user confirmation. This includes situations where the agent is still waiting for a response, asking for clarifications.
 """
 
 
@@ -240,6 +245,7 @@ class REACT_AGENT:
     
     async def stream(self, sio, sid, conversation_id, input=None): # input used for the recursive functionality
         try:
+            memory = None
             tools = []
             if 'tools' in self.data:
                 client = MultiServerMCPClient(self._setup_mcp_servers())
@@ -277,7 +283,7 @@ class REACT_AGENT:
             user_prompt = None
             if "prompt" in self.data['inputs'] and self.data['inputs']["prompt"] and "requiredInputs" not in self.data:
                 logging.info("initialize the react agent with custom prompt")
-                user_prompt = self.data['inputs']["prompt"]
+                user_prompt = self.data['inputs']["prompt"]+ "\nWhen you have fully completed all required tasks, Dont ask if the user needs any further assistance"
                 raw_agent = create_react_agent(model=llm_model, tools=tools, prompt=user_prompt) # If the user provides a custom prompt, initialize the react agent with it
             elif "requiredInputs" in self.data:
                 logging.info("initialize the data collector agent with custom prompt")
