@@ -95,17 +95,16 @@ class Memory:
  
         if self.streaming:
             for context in self.params["context"]:
-                conv = []
                 for key, value in context.items():
-                    if key == "HumanMessage":
-                        conv.append(HumanMessage(content=str(value)))
-                    if key == "AIMessage":
-                        conv.append(AIMessage(content=str(value)))
+                    if key == "HumanMessage" and value:
+                        msg = HumanMessage(content=str(value))
+                    if key == "AIMessage" and value:
+                        msg = AIMessage(content=str(value))
                 if conv_id in store:
-                    store[conv_id].add_messages(conv)
+                    store[conv_id].add_message(msg)
                 else:
                     store[conv_id] = ChatMessageHistory()
-                    store[conv_id].add_messages(conv)
+                    store[conv_id].add_message(msg)
         else:
             for context in self.params["context"]:
                 self.memory.save_context({"input": str(context["HumanMessage"])},{"output": str(context["AIMessage"])})
@@ -139,18 +138,17 @@ class Memory:
             if self.streaming:
                 str_messages = []  # ROLE: MESSAGE
                 for context in data["context"]:
-                    obj_conv = []  # HumanMessage & AIMessage
                     for key, value in context.items():
                         str_messages.append(f"{key}: {str(value)}")
-                        if key == "HumanMessage":
-                            obj_conv.append(HumanMessage(content=str(value)))
-                        if key == "AIMessage":
-                            obj_conv.append(AIMessage(content=str(value)))
+                        if key == "HumanMessage" and value:
+                            msg = HumanMessage(content=str(value))
+                        if key == "AIMessage" and value:
+                            msg = AIMessage(content=str(value))
                     if convId in store:
-                        store[convId].add_messages(obj_conv)
+                        store[convId].add_message(msg)
                     else:
                         store[convId] = ChatMessageHistory()
-                        store[convId].add_messages(obj_conv)
+                        store[convId].add_message(msg)
                 if self.type == 'ConversationSummaryBufferMemory':
                     summarize_memory(store[convId].messages, str_messages, self.llm, self.max_token_limit)
             else:
