@@ -2157,7 +2157,7 @@ def odoo_get_many_CustomResource(json_cred, params, **kwargs):
                 data = models.execute_kw(
                     db, uid, apiPassword, model, "read", [ids], {"fields": fields}
                 )
-                return data[:limit]
+                return {"Custom_Resources": data[:limit]}
             else:
                 raise Exception("Authentication failed. Please check your credentials.")
         else:
@@ -2251,7 +2251,7 @@ def odoo_get_CustomResource_by_id(json_cred, params, **kwargs):
                     db, uid, apiPassword, model, "read", [int(id)], {"fields": fields}
                 )
                 if data:
-                    return data
+                    return {"Custom_Resource":data}
                 else:
                     raise Exception("Not found")
             else:
