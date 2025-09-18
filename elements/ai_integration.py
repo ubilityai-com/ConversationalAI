@@ -42,9 +42,9 @@ class AIIntegration:
         
         return result
     
-    async def _execute_condition_agent(self, sio, sid, conversation_id):
+    async def _execute_condition_agent(self, sio, sid, conversation, conversation_id):
         print(f"Executing Conditional Agent")
-        return await CONDITION_AGENT(self.data, self.credentials).execute(sio, sid, conversation_id)
+        return await CONDITION_AGENT(self.data, self.credentials).execute(sio, sid, conversation, conversation_id)
     
     async def _execute_rag_chain(self, sio, sid, conversation):
         print(f"Executing RAG chain")
@@ -81,12 +81,10 @@ class AIIntegration:
         executor = ai_mapping.get(self.chain_type, None)
 
         # Call the selected executor with its parameters
-        if self.chain_type == "LC_REACT_AGENT":
+        if self.chain_type == "LC_REACT_AGENT" or self.chain_type == "LC_CONDITION_AGENT":
             return await executor(sio, sid, conversation, conversation_id)
         elif self.chain_type == "LC_BASIC_LLM" or self.chain_type == "LC_RAG":
             return await executor(sio, sid, conversation)
-        elif self.chain_type == "LC_CONDITION_AGENT":
-            return await executor(sio, sid, conversation_id)
         else:
             raise ValueError(f"Unknown chain type: {self.chain_type}")
 

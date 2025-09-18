@@ -186,9 +186,6 @@ class REACT_AGENT:
                 prompt = self._build_data_collector_status_prompt()
             else:
                 prompt = self._build_react_agent_status_prompt(user_prompt, input, response)
-                logging.info("================== REACT AGENT STATUS PROMTP ==================")
-                logging.info(prompt)
-                logging.info("===============================================================")
 
             agent = RunnableWithMessageHistory(
                 create_react_agent(model=llm, prompt=prompt, tools=[]),
@@ -245,7 +242,6 @@ class REACT_AGENT:
     
     async def stream(self, sio, sid, conversation_id, input=None): # input used for the recursive functionality
         try:
-            memory = None
             tools = []
             if 'tools' in self.data:
                 client = MultiServerMCPClient(self._setup_mcp_servers())
@@ -277,7 +273,7 @@ class REACT_AGENT:
                 if 'context' in self.data['chainMemory']:
                     memory.load_external_context(conversation_id)
 
-                # if "historyId" in self.data['chainMemory']:
+                # load ubility memory
                 memory.load_streaming_memory(conversation_id)
 
             user_prompt = None
@@ -313,6 +309,9 @@ class REACT_AGENT:
                                 }, room=sid)
                         result += chunk['data']['chunk'].content
 
+                # reset react memory after each run (ubility memory is loaded instead)
+                memory.reset_memory(conversation_id)
+
                 await sio.emit('end', {
                     'type': 'end of chunks'
                     }, room=sid)
@@ -325,8 +324,6 @@ class REACT_AGENT:
 
                 return {"answer": result}
             
-            # # Update history with new messages
-            # memory.add_new_message(self.data['inputs']["query"], result)
 
             status = self._status(user_prompt, self.data['inputs']["query"], llm_model, result, conversation_id)
             status = status.replace("'", '"')
@@ -338,15 +335,10 @@ class REACT_AGENT:
 
             result = {"answer":result, **status}
 
-            if result['status'] == 'pass':
-                memory.reset_memory(conversation_id)
-
             return result
         except Exception as exc:
             if sio and sid:
                 logging.error(f"an error occurred while running this ai node: {str(exc)}")
-                if memory:
-                    memory.reset_memory(conversation_id)
                 await sio.emit('error_message', {
                     'type': 'error_message',
                     'error': 'an error occurred while running this ai node'

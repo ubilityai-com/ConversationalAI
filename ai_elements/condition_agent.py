@@ -24,6 +24,7 @@ Steps:
 Output Format:
 
     Output should be the value of the selected scenario under the key 'output', like this: {{"output": ""}}. No explanation is needed.
+    Return the exact sentence containing the selected value, without making any modifications to it, even if it contains mistakes.
 
 Note
 
@@ -45,7 +46,7 @@ class CONDITION_AGENT:
             scenarios=self.data["inputs"]["scenarios"],
         )
 
-    async def execute(self, sio, sid, conversation_id):
+    async def execute(self, sio, sid, conversation, conversation_id):
         try:
             llm_model = Model(provider=self.data['model']["provider"], model=self.data['model']["model"] if "model" in self.data['model'] else "", credentials= self.credentials[self.data['model']['credential']], params=self.data['model']["params"]).chat()
 
@@ -54,7 +55,10 @@ class CONDITION_AGENT:
             result = ''
             if sio and sid and conversation_id and self.data['params']['stream']:
                 memory = Memory(type='ConversationBufferMemory', historyId=conversation_id, params={})
-                memory.load_streaming_memory(conversation_id)
+                
+                # if react status = fail --> use ubility history
+                if conversation['variables']['react_fail']:
+                    memory.load_streaming_memory(conversation_id)
 
                 agent = RunnableWithMessageHistory(
                     raw_agent,
@@ -69,6 +73,10 @@ class CONDITION_AGENT:
                                     'chunk': chunk['data']['chunk'].content
                                 }, room=sid)
                         result += chunk['data']['chunk'].content
+
+                # if react status = pass --> clear history
+                if not conversation['variables']['react_fail']:
+                    memory.reset_memory(conversation_id)
 
                 await sio.emit('message', {
                     'type': 'end of chunks'

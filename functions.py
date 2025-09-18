@@ -74,7 +74,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
             condition_agent_data = {
                 "data": {
                     "inputs": {
-                        "instruction": "",
+                        "instruction": "Determine which of the provided scenarios is the best fit for the input.",
                         "query": conversation["variables"]["last_input_value"],
                         "scenarios": state["scenarios"],
                     },
