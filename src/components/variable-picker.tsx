@@ -269,7 +269,7 @@ export function VariablesPanel({
               </div>
             </CardHeader>
 
-            <CardContent className="flex-1 p-4">
+            <CardContent className="flex-1 p-4 flex flex-col overflow-y-scroll">
               {Object.keys(filteredVariables).length === 0 ? (
                 <div className="text-center text-gray-500 py-8">
                   {allVariables.length === 0 ? (
@@ -288,8 +288,8 @@ export function VariablesPanel({
                   )}
                 </div>
               ) : (
-                <div className="space-y-2">
-                  <ScrollArea className="h-[calc(100vh-200px)]">
+                <div className="space-y-2 flex-1 flex flex-col">
+                  <ScrollArea className="flex-1 overflow-hidden">
                     <div className="space-y-6">
                       {Object.entries(filteredVariables).map(
                         ([type, variables]) => {
