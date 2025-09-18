@@ -257,7 +257,7 @@ export const StripeJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "none",
                           variableName: "option",
                           hasDynamicVariable: false,
                           list: [
@@ -271,7 +271,7 @@ export const StripeJson = {
                             },
                             {
                               option: "None",
-                              value: "None",
+                              value: "none",
                             },
                           ],
                         },
@@ -286,7 +286,7 @@ export const StripeJson = {
                       [
                         {
                           type: "dropdown",
-                          value: "None",
+                          value: "none",
                           variableName: "option",
                           hasDynamicVariable: false,
                           list: [
@@ -300,7 +300,7 @@ export const StripeJson = {
                             },
                             {
                               option: "None",
-                              value: "None",
+                              value: "none",
                             },
                           ],
                         },

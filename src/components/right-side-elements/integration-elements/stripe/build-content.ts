@@ -1,6 +1,24 @@
 import { getAccvalue } from "../../../../lib/automation-utils";
 import { getOutputVariablesByNodeId } from "../../../../lib/variable-utils";
-
+const checkValueIfNone = (inputs:Record<string,any>, name:string) => {
+      if (name.includes(".")) {
+          const properties = name.split(".");
+          const firstPart = properties[0];
+          const secondPart = properties[1];
+          return inputs[firstPart]
+              ? inputs[firstPart][secondPart]
+                  ? inputs[firstPart][secondPart] === "none"
+                      ? undefined
+                      : inputs[firstPart][secondPart]
+                  : undefined
+              : undefined;
+      } else
+          return inputs[name]
+              ? inputs[name][name] === "none"
+                  ? undefined
+                  : inputs[name][name]
+              : undefined;
+  };
 export default function getContent(selectedNode: any) {
     const rightSideData = selectedNode.data.rightSideData;
     const inputs = rightSideData.json;
@@ -44,13 +62,13 @@ export default function getContent(selectedNode: any) {
             ),
             customer: getAccvalue(inputs, "create_payment_customer.option"),
             automatic_payment_methods: {
-              enabled: getAccvalue(
+              enabled: checkValueIfNone(
                 inputs,
                 "create_payment_automatic_payment_methods.option"
               ),
             },
 
-            confirm: getAccvalue(inputs, "create_payment_confirm.option"),
+            confirm: checkValueIfNone(inputs, "create_payment_confirm.option"),
 
             shipping: {
               address: {
@@ -106,7 +124,7 @@ export default function getContent(selectedNode: any) {
             ),
             customer: getAccvalue(inputs, "update_payment_customer.option"),
 
-            confirm: getAccvalue(inputs, "update_payment_confirm.option"),
+            confirm: checkValueIfNone(inputs, "update_payment_confirm.option"),
             shipping: {
               address: {
                 city: getAccvalue(
