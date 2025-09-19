@@ -159,7 +159,7 @@ export const TeamsJson = {
                     type: "api",
                     label: "Team",
                     variableName: "teamGetManyChannels",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -228,7 +228,7 @@ export const TeamsJson = {
                     type: "api",
                     label: "Team",
                     variableName: "teamGetChannel",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -295,7 +295,7 @@ export const TeamsJson = {
                     type: "api",
                     label: "Channel",
                     variableName: "channelGetChannel",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -374,7 +374,7 @@ export const TeamsJson = {
                     type: "api",
                     label: "Team",
                     variableName: "team_id_CreateChannel",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -522,7 +522,7 @@ export const TeamsJson = {
                     type: "api",
                     label: "Team",
                     variableName: "teamSendMessage",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -589,7 +589,7 @@ export const TeamsJson = {
                     type: "api",
                     label: "Channel",
                     variableName: "channelSendMessage",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -695,7 +695,7 @@ export const TeamsJson = {
                     type: "api",
                     label: "Team",
                     variableName: "team_id_GetChatMessages",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -762,7 +762,7 @@ export const TeamsJson = {
                     type: "api",
                     label: "Channel",
                     variableName: "channel_id_GetChatMessages",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -850,7 +850,7 @@ export const TeamsJson = {
                     type: "api",
                     label: "Team",
                     variableName: "team_id_GetManyChatMessages",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -917,7 +917,7 @@ export const TeamsJson = {
                     type: "api",
                     label: "Channel",
                     variableName: "channel_id_GetManyChatMessages",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [

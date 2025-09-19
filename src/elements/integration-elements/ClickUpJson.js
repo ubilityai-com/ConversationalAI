@@ -411,7 +411,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDGetManyFolders",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -483,7 +483,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDGetManyFolders",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -583,7 +583,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDGetFolder",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -655,7 +655,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDGetFolder",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -737,7 +737,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Folder ID",
                     "variableName": "folderIDGetFolder",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -821,7 +821,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDCreateFolder",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -893,7 +893,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDCreateFolder",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -986,7 +986,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDUpdateFolder",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1058,7 +1058,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDUpdateFolder",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1140,7 +1140,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Folder ID",
                     "variableName": "folderIDUpdateFolder",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1233,7 +1233,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDDeleteFolder",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1305,7 +1305,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDDeleteFolder",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1387,7 +1387,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Folder ID",
                     "variableName": "folderIDDeleteFolder",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1510,7 +1510,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDGetManyLists",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1582,7 +1582,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDGetManyLists",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1664,7 +1664,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Folder ID",
                     "variableName": "folderIDGetManyLists",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1764,7 +1764,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDGetList",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1836,7 +1836,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDGetList",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1937,7 +1937,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "Folder ID",
                           "variableName": "folderIDGetList",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -2019,7 +2019,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "List ID",
                           "variableName": "folderedListIDGetList",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -2103,7 +2103,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "List ID",
                           "variableName": "folderlessListIDGetList",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -2190,7 +2190,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDGetListMembers",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2262,7 +2262,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDGetListMembers",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2363,7 +2363,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "Folder ID",
                           "variableName": "folderIDGetListMembers",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -2445,7 +2445,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "List ID",
                           "variableName": "folderedListIDGetListMembers",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -2529,7 +2529,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "List ID",
                           "variableName": "folderlessListIDGetListMembers",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -2616,7 +2616,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDCreateList",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2688,7 +2688,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDCreateList",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2770,7 +2770,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Folder ID",
                     "variableName": "folderIDCreateList",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2972,7 +2972,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDUpdateList",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -3044,7 +3044,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDUpdateList",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -3145,7 +3145,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "Folder ID",
                           "variableName": "folderIDUpdateList",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -3227,7 +3227,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "List ID",
                           "variableName": "listIDUpdateList",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -3311,7 +3311,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "List ID",
                           "variableName": "listIDUpdateList",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -3403,7 +3403,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "Assignee ID",
                           "variableName": "assigneeOptionUpdateList",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -3611,7 +3611,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDDeleteList",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -3683,7 +3683,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDDeleteList",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -3784,7 +3784,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "Folder ID",
                           "variableName": "folderIDDeleteList",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -3866,7 +3866,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "List ID",
                           "variableName": "folderedListIDDeleteList",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -3950,7 +3950,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "List ID",
                           "variableName": "folderlessListIDDeleteList",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -4076,7 +4076,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDGetManyTasks",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -4148,7 +4148,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDGetManyTasks",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -4249,7 +4249,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "Folder ID",
                           "variableName": "folderIDGetManyTasks",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -4331,7 +4331,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "List ID",
                           "variableName": "listIDGetManyTasks",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -4415,7 +4415,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "List ID",
                           "variableName": "listIDGetManyTasks",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -4513,7 +4513,7 @@ export const ClickUpJson = {
                   //       "hasDynamicVariable": true,
                   //       "label": "Field ID",
                   //       "variableName": "fieldIDGetManyTasks",
-                  //       "value": "None",
+                  //       "value": "",
                   //       "required": true,
                   //       "list": [],
                   //       "config": [
@@ -4697,14 +4697,14 @@ export const ClickUpJson = {
                         {
                           "type": "dropdown",
                           "label": "Order By",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "variableName": "orderByOptionGetManyTasks",
                           "hasDynamicVariable": true,
                           "list": [
                             {
                               "option": "None",
-                              "value": "None",
+                              "value": "",
                             },
                             {
                               "option": "ID",
@@ -5158,7 +5158,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDCreateTask",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -5230,7 +5230,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Space ID",
                     "variableName": "spaceIDCreateTask",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -5331,7 +5331,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "Folder ID",
                           "variableName": "folderIDCreateTask",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -5413,7 +5413,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "List ID",
                           "variableName": "listIDCreateTask",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -5497,7 +5497,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "List ID",
                           "variableName": "listIDCreateTask",
-                          "value": "None",
+                          "value": "",
                           "required": true,
                           "list": [],
                           "config": [
@@ -5604,7 +5604,7 @@ export const ClickUpJson = {
                         "hasDynamicVariable": true,
                         "label": "Field ID",
                         "variableName": "fieldIDCreateTask",
-                        "value": "None",
+                        "value": "",
                         "required": true,
                         "list": [],
                         "config": [
@@ -5991,7 +5991,7 @@ export const ClickUpJson = {
                           "hasDynamicVariable": true,
                           "label": "Status",
                           "variableName": "statusOptionCreateTask",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -6602,7 +6602,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDGetManyTimeEntries",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -6717,7 +6717,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDGetTimeEntry",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -6800,7 +6800,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDDeleteTimeEntry",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -6883,7 +6883,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDStartTimeEntry",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -6999,7 +6999,7 @@ export const ClickUpJson = {
                     "hasDynamicVariable": true,
                     "label": "Team ID",
                     "variableName": "teamIDStopTimeEntry",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
