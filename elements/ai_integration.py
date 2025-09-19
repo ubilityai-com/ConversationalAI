@@ -61,13 +61,14 @@ class AIIntegration:
 
         else:
             print(f"Executing REACT agent with first input value")
-            last_input_value = conversation['variables']['last_input_value']
-            result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id, last_input_value)
-            # result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id)
-            if conversation:
+            if conversation and conversation_id:
+                last_input_value = conversation['variables']['last_input_value']
+                result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id, last_input_value)
                 self._handle_status(result["status"], conversation)
                 if 'required_inputs' in result:
                     conversation = self._update_conversation_vars("LC_REACT_AGENT", conversation, result)
+            else:
+                result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid)
         
         return result
 

@@ -240,7 +240,7 @@ class REACT_AGENT:
             required_inputs_dict=required_inputs_dict
         )
     
-    async def stream(self, sio, sid, conversation_id, input=None): # input used for the recursive functionality
+    async def stream(self, sio, sid, conversation_id=None, input=None): # input used for the recursive functionality
         try:
             tools = []
             if 'tools' in self.data:
@@ -289,7 +289,7 @@ class REACT_AGENT:
                 raw_agent = create_react_agent(model=llm_model, tools=tools) # react agent without prompt
 
 
-            if sio and sid:
+            if sio and sid and conversation_id:
                 agent = RunnableWithMessageHistory(
                     raw_agent,
                     get_session_history,
