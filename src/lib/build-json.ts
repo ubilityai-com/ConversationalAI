@@ -3,6 +3,7 @@ import { useFilesStore } from "../store/files-store";
 import { useFlowStore } from "../store/flow-store";
 import { ConstantVariable } from "../store/variables-store";
 import { camelToDashCase, getNextNodeId, reverseObject, stringifyAndExtractVariables } from "./utils";
+import { getOutputVariablesByNodeId } from "./variable-utils";
 type State = {
     scenarios: [...string[], "Other"];
 } & { [key: Exclude<string, "scenarios">]: string };
@@ -74,13 +75,18 @@ export function createFlowObject(): Flow {
                     }
                     delete result.cred;
                 }
-                if (result.type === "AppIntegration" || element.data.category === "automationTools") {
+                if (element.data.category !== "basic") {
                     flow.bot[element.id] = {
                         ...result,
                         saveUserInputAs: null,
                         next: getNextNodeId(element.id, edges, nodes, null),
                         usedVariables: stringifyAndExtractVariables(result.content),
                     }
+                    if (element.data.category === "ai")
+                        flow.bot[element.id] = {
+                            ...flow.bot[element.id],
+                            saveOutputAs: getOutputVariablesByNodeId(element.id)
+                        }
                 } else
                     flow.bot[element.id] = result;
             }

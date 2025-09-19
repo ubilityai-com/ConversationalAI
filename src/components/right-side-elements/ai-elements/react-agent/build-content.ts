@@ -1,12 +1,11 @@
 import { getAccvalue } from "../../../../lib/automation-utils";
-import { extractCreds, getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils";
+import { extractCreds } from "../../../../lib/utils";
 
 
-export default function getContent(selectedNode: any, params: any) {
+export default function getContent(selectedNode: any) {
     const rightSideData = selectedNode.data.rightSideData
     const model = rightSideData.extras.model
     const tool = rightSideData.extras.tool
-    const { edges, nodes } = params
     const toolConfigs = tool.list.length !== 0
         ? tool.list.map((el: any) => {
             return require("../../../properties/contents/tool")[el.type](el.content);
@@ -38,8 +37,5 @@ export default function getContent(selectedNode: any, params: any) {
         cred: extractCreds(selectedNode?.data.rightSideData.extras),
         type: "LC_REACT_AGENT",
         content: content,
-        saveUserInputAs: rightSideData.save ? rightSideData.variableName : null,
-        next: getNextNodeId(selectedNode.id, edges, nodes, null),
-        usedVariables: stringifyAndExtractVariables(content)
     };
 }

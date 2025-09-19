@@ -1,10 +1,9 @@
-import { extractCreds, getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils";
+import { extractCreds } from "../../../../lib/utils";
 
 
-export default function getContent(selectedNode: any, params: any) {
+export default function getContent(selectedNode: any) {
     const rightSideData = selectedNode.data.rightSideData
     const model = rightSideData.extras.model
-    const { edges, nodes } = params
     const arr = rightSideData.json.requiredInputs || []
 
     const content = {
@@ -24,8 +23,5 @@ export default function getContent(selectedNode: any, params: any) {
         cred: extractCreds(selectedNode?.data.rightSideData.extras),
         type: "LC_REACT_AGENT",
         content: content,
-        saveUserInputAs: rightSideData.save ? rightSideData.variableName : null,
-        next: getNextNodeId(selectedNode.id, edges, nodes, null),
-        usedVariables: stringifyAndExtractVariables(content)
     };
 }
