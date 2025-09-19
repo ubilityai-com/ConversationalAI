@@ -17,7 +17,7 @@ export const TelegramJson = {
         "required": true,
         "credential": true,
         "credType": "Telegram",
-        "value": "None",
+        "value": "",
         "list": [],
         "config": [
           {

@@ -635,13 +635,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "customerPriority",
@@ -691,7 +691,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Account",
                     variableName: "accountId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -1328,13 +1328,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "customerPriority",
@@ -1383,7 +1383,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Account",
                     variableName: "accountId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -1981,13 +1981,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "customerPriority",
@@ -2036,7 +2036,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Account",
                     variableName: "accountId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -2129,7 +2129,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Account",
                     variableName: "parentId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -2415,7 +2415,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Attachment",
                     variableName: "attachmentId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -2652,7 +2652,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Attachment",
                     variableName: "attachmentId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -2794,7 +2794,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Attachment",
                     variableName: "attachmentId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -3288,13 +3288,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "engineeringReqNumber",
@@ -3331,7 +3331,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Case",
                     variableName: "caseId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -3837,13 +3837,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "engineeringReqNumber",
@@ -3880,7 +3880,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Case",
                     variableName: "caseId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -4351,13 +4351,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "engineeringReqNumber",
@@ -4394,7 +4394,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Case",
                     variableName: "caseId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -4487,7 +4487,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Case",
                     variableName: "caseId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -5226,13 +5226,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "level",
@@ -5261,7 +5261,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Contact",
                     variableName: "contactId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -5998,13 +5998,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "level",
@@ -6033,7 +6033,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Contact",
                     variableName: "contactId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -6735,13 +6735,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "level",
@@ -6770,7 +6770,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Contact",
                     variableName: "contactId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -6863,7 +6863,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Contact",
                     variableName: "contactId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -6954,7 +6954,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Campaign",
                     variableName: "campaignId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -7092,7 +7092,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Contact",
                     variableName: "parentId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -7321,13 +7321,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "answered_Calls_before_SLA_Threshold",
@@ -7426,7 +7426,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Record Id",
                     variableName: "recordId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -7628,13 +7628,13 @@ export const SalesforceJson = {
                       // {
                       //   type: "dropdown",
                       //   label: "Field Name",
-                      //   value: "None",
+                      //   value: "",
                       //   required: true,
                       //   variableName: "fieldName",
                       //   list: [
                       //     {
                       //       option: "None",
-                      //       value: "None",
+                      //       value: "",
                       //     },
                       //     {
                       //       option: "answered_Calls_before_SLA_Threshold",
@@ -7742,7 +7742,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Record Id",
                     variableName: "recordId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -7885,13 +7885,13 @@ export const SalesforceJson = {
                       // {
                       //   type: "dropdown",
                       //   label: "Field Name",
-                      //   value: "None",
+                      //   value: "",
                       //   required: true,
                       //   variableName: "fieldName",
                       //   list: [
                       //     {
                       //       option: "None",
-                      //       value: "None",
+                      //       value: "",
                       //     },
                       //     {
                       //       option: "answered_Calls_before_SLA_Threshold",
@@ -7999,7 +7999,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Record Id",
                     variableName: "recordId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -8760,13 +8760,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "siccode",
@@ -8807,7 +8807,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Lead",
                     variableName: "leadId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -9435,13 +9435,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "siccode",
@@ -9482,7 +9482,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Lead",
                     variableName: "leadId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -10082,13 +10082,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "siccode",
@@ -10129,7 +10129,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Lead",
                     variableName: "leadId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -10222,7 +10222,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Lead",
                     variableName: "leadId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -10313,7 +10313,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Campaign",
                     variableName: "campaignId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -10451,7 +10451,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Lead",
                     variableName: "parentId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -10650,14 +10650,14 @@ export const SalesforceJson = {
                   {
                     type: "dropdown",
                     label: "Stage Name",
-                    value: "None",
+                    value: "",
                     variableName: "stageName",
                     required: true,
                     hasDynamicVariable: true,
                     list: [
                       {
                         option: "None",
-                        value: "None",
+                        value: "",
                       },
                       {
                         option: "Closed Lost",
@@ -10956,13 +10956,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "deliveryInstallationStatus",
@@ -11003,7 +11003,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Opportunity",
                     variableName: "opportunityId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -11148,14 +11148,14 @@ export const SalesforceJson = {
                   {
                     type: "dropdown",
                     label: "Stage Name",
-                    value: "None",
+                    value: "",
                     variableName: "stageName",
                     required: true,
                     hasDynamicVariable: true,
                     list: [
                       {
                         option: "None",
-                        value: "None",
+                        value: "",
                       },
                       {
                         option: "Closed Lost",
@@ -11463,13 +11463,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "deliveryInstallationStatus",
@@ -11510,7 +11510,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Opportunity",
                     variableName: "opportunityId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -11945,13 +11945,13 @@ export const SalesforceJson = {
                       {
                         type: "dropdown",
                         label: "Field Name",
-                        value: "None",
+                        value: "",
                         required: true,
                         variableName: "fieldName",
                         list: [
                           {
                             option: "None",
-                            value: "None",
+                            value: "",
                           },
                           {
                             option: "deliveryInstallationStatus",
@@ -11992,7 +11992,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Opportunity",
                     variableName: "opportunityId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -12085,7 +12085,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Opportunity",
                     variableName: "parentId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -12923,7 +12923,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Task",
                     variableName: "taskId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -13700,7 +13700,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Task",
                     variableName: "taskId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -14399,7 +14399,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "Task",
                     variableName: "taskId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -14514,7 +14514,7 @@ export const SalesforceJson = {
                     type: "api",
                     label: "User",
                     variableName: "userId",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [

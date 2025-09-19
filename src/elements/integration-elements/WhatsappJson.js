@@ -98,7 +98,7 @@ export const WhatsappJson = {
                     type: "api",
                     label: "Sender Phone Number",
                     variableName: "phone_number_id_SendMessage",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -927,7 +927,7 @@ export const WhatsappJson = {
                     type: "api",
                     label: "Sender Phone Number",
                     variableName: "phone_number_id_SendMessageTemplate",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -1028,7 +1028,7 @@ export const WhatsappJson = {
                     type: "api",
                     label: "Template",
                     variableName: "template_SendMessageTemplate",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [
@@ -1539,7 +1539,7 @@ export const WhatsappJson = {
                     type: "api",
                     label: "Sender Phone Number",
                     variableName: "phone_number_id_UploadMedia",
-                    value: "None",
+                    value: "",
                     required: true,
                     list: [],
                     config: [

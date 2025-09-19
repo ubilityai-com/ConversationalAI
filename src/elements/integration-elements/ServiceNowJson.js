@@ -189,7 +189,7 @@ export const ServiceNowJson = {
                     "type": "api",
                     "label": "Table Name",
                     "variableName": "tableName_UploadAttachment",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -615,7 +615,7 @@ export const ServiceNowJson = {
                     "type": "api",
                     "label": "Table Name",
                     "variableName": "tableName_GetManyTableRecords",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -903,7 +903,7 @@ export const ServiceNowJson = {
                     "type": "api",
                     "label": "Table Name",
                     "variableName": "tableName_GetTableRecord",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1171,7 +1171,7 @@ export const ServiceNowJson = {
                     "type": "api",
                     "label": "Table Name",
                     "variableName": "tableName_CreateTableRecord",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1277,7 +1277,7 @@ export const ServiceNowJson = {
                         "type": "api",
                         "label": "Field ID",
                         "variableName": "fieldId_CreateTableRecord",
-                        "value": "None",
+                        "value": "",
                         "required": true,
                         "list": [],
                         "config": [
@@ -1487,7 +1487,7 @@ export const ServiceNowJson = {
                     "type": "api",
                     "label": "Table Name",
                     "variableName": "tableName_UpdateTableRecord",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -1603,7 +1603,7 @@ export const ServiceNowJson = {
                         "type": "api",
                         "label": "Field ID",
                         "variableName": "fieldId_UpdateTableRecord",
-                        "value": "None",
+                        "value": "",
                         "required": true,
                         "list": [],
                         "config": [
@@ -1813,7 +1813,7 @@ export const ServiceNowJson = {
                     "type": "api",
                     "label": "Table Name",
                     "variableName": "tableName_DeleteTableRecord",
-                    "value": "None",
+                    "value": "",
                     "required": true,
                     "list": [],
                     "config": [
@@ -2328,7 +2328,7 @@ export const ServiceNowJson = {
                           "type": "api",
                           "variableName": "groupID_Option_CreateIncident",
                           "label": "Assignment Group ID",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -2407,7 +2407,7 @@ export const ServiceNowJson = {
                           "type": "api",
                           "variableName": "assigneeID_Option_CreateIncident",
                           "label": "Assignee ID",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -2518,7 +2518,7 @@ export const ServiceNowJson = {
                         {
                           "type": "api",
                           "variableName": "businessServiceID_Option_CreateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -2639,7 +2639,7 @@ export const ServiceNowJson = {
                           "type": "api",
                           "label": "Category ID",
                           "variableName": "categoryID_Option_CreateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -2732,7 +2732,7 @@ export const ServiceNowJson = {
                           "type": "api",
                           "label": "Subcategory ID",
                           "variableName": "subcategoryID_Option_CreateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -2968,7 +2968,7 @@ export const ServiceNowJson = {
                         {
                           "type": "api",
                           "variableName": "contactType_Option_CreateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -3149,7 +3149,7 @@ export const ServiceNowJson = {
                         {
                           "type": "api",
                           "variableName": "resolutionCodeID_Option_CreateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -3250,7 +3250,7 @@ export const ServiceNowJson = {
                         {
                           "type": "api",
                           "variableName": "stateID_Option_CreateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -3366,7 +3366,7 @@ export const ServiceNowJson = {
                           "type": "api",
                           "variableName": "groupID_Option_UpdateIncident",
                           "label": "Assignment Group ID",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -3459,7 +3459,7 @@ export const ServiceNowJson = {
                           "type": "api",
                           "variableName": "assigneeID_Option_UpdateIncident",
                           "label": "Assignee ID",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -3570,7 +3570,7 @@ export const ServiceNowJson = {
                         {
                           "type": "api",
                           "variableName": "businessServiceID_Option_UpdateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -3691,7 +3691,7 @@ export const ServiceNowJson = {
                           "type": "api",
                           "label": "Category ID",
                           "variableName": "categoryID_Option_UpdateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -3784,7 +3784,7 @@ export const ServiceNowJson = {
                           "type": "api",
                           "label": "Subcategory ID",
                           "variableName": "subcategoryID_Option_UpdateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -4020,7 +4020,7 @@ export const ServiceNowJson = {
                         {
                           "type": "api",
                           "variableName": "contactType_Option_UpdateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -4221,7 +4221,7 @@ export const ServiceNowJson = {
                         {
                           "type": "api",
                           "variableName": "resolutionCodeID_Option_UpdateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -4322,7 +4322,7 @@ export const ServiceNowJson = {
                         {
                           "type": "api",
                           "variableName": "holdReasonID_Option_UpdateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
@@ -4423,7 +4423,7 @@ export const ServiceNowJson = {
                         {
                           "type": "api",
                           "variableName": "stateID_Option_UpdateIncident",
-                          "value": "None",
+                          "value": "",
                           "required": false,
                           "list": [],
                           "config": [
