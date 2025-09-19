@@ -201,32 +201,6 @@ export const SlackJson = {
                               "isAutomation": true
                             }
                           ],
-                          "conditionOnFirstTime": [
-                            {
-                              "type": "dropdown",
-                              "name": "cred",
-                              "isAutomation": true
-                            },
-                            {
-                              "type": "dropdown",
-                              "name": "receiverType",
-                              "value": "Channel",
-                              "isAutomation": true
-                            }
-                          ],
-                          "conditionOnRefresh": [
-                            {
-                              "type": "dropdown",
-                              "name": "cred",
-                              "isAutomation": true
-                            },
-                            {
-                              "type": "dropdown",
-                              "name": "receiverType",
-                              "value": "Channel",
-                              "isAutomation": true
-                            }
-                          ]
                         }
                       ],
                       "User": [
@@ -297,32 +271,6 @@ export const SlackJson = {
                               "isAutomation": true
                             }
                           ],
-                          "conditionOnFirstTime": [
-                            {
-                              "type": "dropdown",
-                              "name": "cred",
-                              "isAutomation": true
-                            },
-                            {
-                              "type": "dropdown",
-                              "name": "receiverType",
-                              "value": "User",
-                              "isAutomation": true
-                            }
-                          ],
-                          "conditionOnRefresh": [
-                            {
-                              "type": "dropdown",
-                              "name": "cred",
-                              "isAutomation": true
-                            },
-                            {
-                              "type": "dropdown",
-                              "name": "receiverType",
-                              "value": "User",
-                              "isAutomation": true
-                            }
-                          ]
                         }
                       ]
                     }
@@ -681,21 +629,6 @@ export const SlackJson = {
                       ]
                     ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "channel": "",
-                        "ts": "",
-                        "message": {
-                          "app_id": "",
-                          "team": "",
-                          "bot_id": "",
-                          "user": ""
-                        }
-                      }
-                    }
-                  }
                 ],
                 "Delete": [
                   {
@@ -786,32 +719,6 @@ export const SlackJson = {
                               "isAutomation": true
                             }
                           ],
-                          "conditionOnFirstTime": [
-                            {
-                              "type": "dropdown",
-                              "name": "cred",
-                              "isAutomation": true
-                            },
-                            {
-                              "type": "dropdown",
-                              "name": "receiverType",
-                              "value": "Channel",
-                              "isAutomation": true
-                            }
-                          ],
-                          "conditionOnRefresh": [
-                            {
-                              "type": "dropdown",
-                              "name": "cred",
-                              "isAutomation": true
-                            },
-                            {
-                              "type": "dropdown",
-                              "name": "receiverType",
-                              "value": "Channel",
-                              "isAutomation": true
-                            }
-                          ]
                         }
                       ],
                       "User": [
@@ -882,32 +789,6 @@ export const SlackJson = {
                               "isAutomation": true
                             }
                           ],
-                          "conditionOnFirstTime": [
-                            {
-                              "type": "dropdown",
-                              "name": "cred",
-                              "isAutomation": true
-                            },
-                            {
-                              "type": "dropdown",
-                              "name": "receiverType",
-                              "value": "User",
-                              "isAutomation": true
-                            }
-                          ],
-                          "conditionOnRefresh": [
-                            {
-                              "type": "dropdown",
-                              "name": "cred",
-                              "isAutomation": true
-                            },
-                            {
-                              "type": "dropdown",
-                              "name": "receiverType",
-                              "value": "User",
-                              "isAutomation": true
-                            }
-                          ]
                         }
                       ]
                     }
@@ -923,12 +804,6 @@ export const SlackJson = {
                     "hasDynamicVariable": true,
                     "rightSideInput": true
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": { "Result": "The message has been deleted from this channel ID: ''" }
-                    }
-                  }
                 ],
                 "Get Permalink": [
                   {
@@ -1018,32 +893,6 @@ export const SlackJson = {
                               "isAutomation": true
                             }
                           ],
-                          "conditionOnFirstTime": [
-                            {
-                              "type": "dropdown",
-                              "name": "cred",
-                              "isAutomation": true
-                            },
-                            {
-                              "type": "dropdown",
-                              "name": "getFrom",
-                              "value": "User",
-                              "isAutomation": true
-                            }
-                          ],
-                          "conditionOnRefresh": [
-                            {
-                              "type": "dropdown",
-                              "name": "cred",
-                              "isAutomation": true
-                            },
-                            {
-                              "type": "dropdown",
-                              "name": "getFrom",
-                              "value": "User",
-                              "isAutomation": true
-                            }
-                          ]
                         }
                       ],
                       "User": [
@@ -1071,15 +920,6 @@ export const SlackJson = {
                     "placeholder": "Message Timestamp",
                     "variableName": "messageTimestamp"
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "channel": "",
-                        "permalink": ""
-                      }
-                    }
-                  }
                 ],
                 "Update": [
                   {
@@ -1169,32 +1009,6 @@ export const SlackJson = {
                               "isAutomation": true
                             }
                           ],
-                          "conditionOnFirstTime": [
-                            {
-                              "type": "dropdown",
-                              "name": "cred",
-                              "isAutomation": true
-                            },
-                            {
-                              "type": "dropdown",
-                              "name": "receiverType",
-                              "value": "Channel",
-                              "isAutomation": true
-                            }
-                          ],
-                          "conditionOnRefresh": [
-                            {
-                              "type": "dropdown",
-                              "name": "cred",
-                              "isAutomation": true
-                            },
-                            {
-                              "type": "dropdown",
-                              "name": "receiverType",
-                              "value": "Channel",
-                              "isAutomation": true
-                            }
-                          ]
                         }
                       ],
                       "User": [
@@ -1329,21 +1143,6 @@ export const SlackJson = {
                       ]
                     ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "channel": "",
-                        "ts": "",
-                        "message": {
-                          "app_id": "",
-                          "team": "",
-                          "bot_id": "",
-                          "user": ""
-                        }
-                      }
-                    }
-                  }
                 ]
               }
             }
@@ -1463,20 +1262,6 @@ export const SlackJson = {
                         "isAutomation": true
                       }
                     ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
                   },
                   {
                     "type": "accordion",
@@ -1493,19 +1278,6 @@ export const SlackJson = {
                       ]
                     ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "channel": {
-                          "id": "",
-                          "name": "",
-                          "is_member": "",
-                          "is_archived": ""
-                        }
-                      }
-                    }
-                  }
                 ],
                 "Get Many": [
                   {
@@ -1561,92 +1333,6 @@ export const SlackJson = {
                       ]
                     ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "channels": [
-                          {
-                            "id": "",
-                            "name": "",
-                            "is_channel": false,
-                            "is_group": false,
-                            "is_im": false,
-                            "created": 0,
-                            "creator": "",
-                            "is_archived": false,
-                            "is_general": false,
-                            "unlinked": 0,
-                            "name_normalized": "",
-                            "is_shared": false,
-                            "is_ext_shared": false,
-                            "is_org_shared": false,
-                            "pending_shared": [],
-                            "is_pending_ext_shared": false,
-                            "is_member": false,
-                            "is_private": false,
-                            "is_mpim": false,
-                            "updated": 0,
-                            "topic": {
-                              "value": "",
-                              "creator": "",
-                              "last_set": 0
-                            },
-                            "purpose": {
-                              "value": "",
-                              "creator": "",
-                              "last_set": 0
-                            },
-                            "previous_names": [],
-                            "num_members": 0
-                          },
-                        ],
-                        "response_json": {
-                          "ok": false,
-                          "channels": [
-                            {
-                              "id": "",
-                              "name": "",
-                              "is_channel": false,
-                              "is_group": false,
-                              "is_im": false,
-                              "created": 0,
-                              "creator": "",
-                              "is_archived": false,
-                              "is_general": false,
-                              "unlinked": 0,
-                              "name_normalized": "",
-                              "is_shared": false,
-                              "is_ext_shared": false,
-                              "is_org_shared": false,
-                              "pending_shared": [],
-                              "is_pending_ext_shared": false,
-                              "is_member": false,
-                              "is_private": false,
-                              "is_mpim": false,
-                              "updated": 0,
-                              "topic": {
-                                "value": "",
-                                "creator": "",
-                                "last_set": 0
-                              },
-                              "purpose": {
-                                "value": "",
-                                "creator": "",
-                                "last_set": 0
-                              },
-                              "previous_names": [],
-                              "num_members": 0
-                            },
-                          ],
-                          "response_metadata": {
-                            "next_cursor": ""
-                          }
-                        }
-                      }
-
-                    }
-                  }
                 ],
                 "Create": [
                   {
@@ -1664,18 +1350,6 @@ export const SlackJson = {
                     "value": false,
                     "variableName": "privateChannel"
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "channel": {
-                          "id": "",
-                          "name": "",
-                          "is_private": ""
-                        }
-                      }
-                    }
-                  }
                 ],
                 "Archive": [
                   {
@@ -1740,27 +1414,7 @@ export const SlackJson = {
                         "isAutomation": true
                       }
                     ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": { "Result": "The channel has been archived successfully, channel ID: ''" }
-                    }
-                  }
                 ],
                 "UnArchive": [
                   {
@@ -1825,27 +1479,7 @@ export const SlackJson = {
                         "isAutomation": true
                       }
                     ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": { "Result": "The channel has been unarchived successfully, channel ID: ''" }
-                    }
-                  }
                 ],
                 "Rename": [
                   {
@@ -1910,20 +1544,6 @@ export const SlackJson = {
                         "isAutomation": true
                       }
                     ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
                   },
                   {
                     "type": "textfield",
@@ -1934,17 +1554,6 @@ export const SlackJson = {
                     "variableName": "name",
                     "hasDynamicVariable": true
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "channel": {
-                          "id": "",
-                          "name": ""
-                        }
-                      }
-                    }
-                  }
                 ],
                 "Get Members": [
                   {
@@ -2009,29 +1618,7 @@ export const SlackJson = {
                         "isAutomation": true
                       }
                     ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "members": []
-                      }
-                    }
-                  }
                 ],
                 "Join Conversation": [
                   {
@@ -2096,33 +1683,7 @@ export const SlackJson = {
                         "isAutomation": true
                       }
                     ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "channel": {
-                          "id": "",
-                          "name": "",
-                          "is_member": ""
-                        }
-                      }
-                    }
-                  }
                 ],
                 "Leave Conversation": [
                   {
@@ -2187,27 +1748,7 @@ export const SlackJson = {
                         "isAutomation": true
                       }
                     ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": { "Result": "You are leaved this channel: ''" }
-                    }
-                  }
                 ],
                 "Invite Users": [
                   {
@@ -2272,20 +1813,6 @@ export const SlackJson = {
                         "isAutomation": true
                       }
                     ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
                   },
                   {
                     "type": "api",
@@ -2349,29 +1876,7 @@ export const SlackJson = {
                         "isAutomation": true
                       }
                     ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "channels": {}
-                      }
-                    }
-                  }
                 ]
               }
             }
@@ -2462,127 +1967,9 @@ export const SlackJson = {
                         "isAutomation": true
                       }
                     ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "user": {
-                          "id": "",
-                          "name": "",
-                          "team_id": ""
-                        }
-                      }
-                    }
-                  }
                 ],
                 "Get Many": [
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "members": [
-                          {
-                            "id": "",
-                            "team_id": "",
-                            "name": "",
-                            "deleted": false,
-                            "color": "",
-                            "real_name": "",
-                            "tz": "",
-                            "tz_label": "",
-                            "tz_offset": 0,
-                            "profile": {
-                              "avatar_hash": "",
-                              "status_text": "",
-                              "status_emoji": "",
-                              "real_name": "",
-                              "display_name": "",
-                              "real_name_normalized": "",
-                              "display_name_normalized": "",
-                              "email": "",
-                              "image_24": "",
-                              "image_32": "",
-                              "image_48": "",
-                              "image_72": "",
-                              "image_192": "",
-                              "image_512": "",
-                              "team": ""
-                            },
-                            "is_admin": false,
-                            "is_owner": false,
-                            "is_primary_owner": false,
-                            "is_restricted": false,
-                            "is_ultra_restricted": false,
-                            "is_bot": false,
-                            "updated": 0,
-                            "is_app_user": false,
-                            "has_2fa": false
-                          },
-                        ],
-                        "response_json": {
-                          "ok": false,
-                          "members": [
-                            {
-                              "id": "",
-                              "team_id": "",
-                              "name": "",
-                              "deleted": false,
-                              "color": "",
-                              "real_name": "",
-                              "tz": "",
-                              "tz_label": "",
-                              "tz_offset": 0,
-                              "profile": {
-                                "avatar_hash": "",
-                                "status_text": "",
-                                "status_emoji": "",
-                                "real_name": "",
-                                "display_name": "",
-                                "real_name_normalized": "",
-                                "display_name_normalized": "",
-                                "email": "",
-                                "image_24": "",
-                                "image_32": "",
-                                "image_48": "",
-                                "image_72": "",
-                                "image_192": "",
-                                "image_512": "",
-                                "team": ""
-                              },
-                              "is_admin": false,
-                              "is_owner": false,
-                              "is_primary_owner": false,
-                              "is_restricted": false,
-                              "is_ultra_restricted": false,
-                              "is_bot": false,
-                              "updated": 0,
-                              "is_app_user": false,
-                              "has_2fa": false
-                            },
-                          ],
-                          "cache_ts": 0,
-                          "response_metadata": {
-                            "next_cursor": ""
-                          }
-                        }
-                      }
-                    }
-                  }
                 ],
                 "Get User Status": [
                   {
@@ -2646,29 +2033,7 @@ export const SlackJson = {
                         "isAutomation": true
                       }
                     ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "presence": ""
-                      }
-                    }
-                  }
                 ]
               }
             }
@@ -2724,15 +2089,6 @@ export const SlackJson = {
                       ]
                     ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "content": null,
-                        "file": {}
-                      }
-                    }
-                  }
                 ],
                 "Get Many": [
                   {
@@ -2887,110 +2243,6 @@ export const SlackJson = {
                       ]
                     ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "files": [
-                          {
-                            "id": "",
-                            "created": 0,
-                            "timestamp": 0,
-                            "name": "",
-                            "title": "",
-                            "mimetype": "",
-                            "filetype": "",
-                            "pretty_type": "",
-                            "user": "",
-                            "editable": false,
-                            "size": 0,
-                            "mode": "",
-                            "is_external": false,
-                            "external_type": "",
-                            "is_public": false,
-                            "public_url_shared": false,
-                            "display_as_bot": false,
-                            "username": "",
-                            "url_private": "",
-                            "url_private_download": "",
-                            "thumb_64": "",
-                            "thumb_80": "",
-                            "thumb_360": "",
-                            "thumb_360_w": 0,
-                            "thumb_360_h": 0,
-                            "thumb_160": "",
-                            "thumb_360_gif": "",
-                            "image_exif_rotation": 0,
-                            "original_w": 0,
-                            "original_h": 0,
-                            "deanimate_gif": "",
-                            "pjpeg": "",
-                            "permalink": "",
-                            "permalink_public": "",
-                            "channels": [
-                              ""
-                            ],
-                            "groups": [],
-                            "ims": [],
-                            "comments_count": 0
-                          },
-                        ],
-                        "response_json": {
-                          "ok": false,
-                          "files": [
-                            {
-                              "id": "",
-                              "created": 0,
-                              "timestamp": 0,
-                              "name": "",
-                              "title": "",
-                              "mimetype": "",
-                              "filetype": "",
-                              "pretty_type": "",
-                              "user": "",
-                              "editable": false,
-                              "size": 0,
-                              "mode": "",
-                              "is_external": false,
-                              "external_type": "",
-                              "is_public": false,
-                              "public_url_shared": false,
-                              "display_as_bot": false,
-                              "username": "",
-                              "url_private": "",
-                              "url_private_download": "",
-                              "thumb_64": "",
-                              "thumb_80": "",
-                              "thumb_360": "",
-                              "thumb_360_w": 0,
-                              "thumb_360_h": 0,
-                              "thumb_160": "",
-                              "thumb_360_gif": "",
-                              "image_exif_rotation": 0,
-                              "original_w": 0,
-                              "original_h": 0,
-                              "deanimate_gif": "",
-                              "pjpeg": "",
-                              "permalink": "",
-                              "permalink_public": "",
-                              "channels": [
-                                ""
-                              ],
-                              "groups": [],
-                              "ims": [],
-                              "comments_count": 0
-                            },
-                          ],
-                          "paging": {
-                            "count": 0,
-                            "total": 0,
-                            "page": 0,
-                            "pages": 0
-                          }
-                        }
-                      }
-                    }
-                  }
                 ],
                 "Upload": [
                   {
@@ -3120,20 +2372,6 @@ export const SlackJson = {
                         "isAutomation": true
                       }
                     ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
                   },
                   {
                     "type": "accordion",
@@ -3188,15 +2426,6 @@ export const SlackJson = {
                       ]
                     ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "content": null,
-                        "file": {}
-                      }
-                    }
-                  }
                 ]
               }
             }
@@ -3277,14 +2506,6 @@ export const SlackJson = {
                       ]
                     ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "usergroups": []
-                      }
-                    }
-                  }
                 ],
                 "Create": [
                   {
@@ -3361,14 +2582,6 @@ export const SlackJson = {
                       ]
                     ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "usergroup": {}
-                      }
-                    }
-                  }
                 ],
                 "Update": [
                   {
@@ -3461,14 +2674,6 @@ export const SlackJson = {
                       ]
                     ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "usergroup": {}
-                      }
-                    }
-                  }
                 ],
                 "Enable": [
                   {
@@ -3496,14 +2701,6 @@ export const SlackJson = {
                       ]
                     ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "usergroup": {}
-                      }
-                    }
-                  }
                 ],
                 "Disable": [
                   {
@@ -3531,14 +2728,6 @@ export const SlackJson = {
                       ]
                     ]
                   },
-                  {
-                    "type": "outputJson",
-                    "value": {
-                      "Output": {
-                        "usergroup": {}
-                      }
-                    }
-                  }
                 ]
               }
             }

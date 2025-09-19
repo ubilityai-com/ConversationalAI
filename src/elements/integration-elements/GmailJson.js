@@ -153,16 +153,6 @@ export const GmailJson = {
                     hasDynamicVariable: true,
                     rightSideInput: true,
                   },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        threadId: "",
-                        labelIds: [],
-                      },
-                    },
-                  },
                 ],
                 listAttachments: [
                   {
@@ -174,40 +164,6 @@ export const GmailJson = {
                     variableName: "messageID",
                     hasDynamicVariable: true,
                     rightSideInput: true,
-                  },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        "attachments": [
-                          {
-                            "body": {
-                              "attachmentId": "",
-                              "size": 0
-                            },
-                            "filename": "",
-                            "headers": [
-                              {
-                                "name": "",
-                                "value": ""
-                              },
-                              {
-                                "name": "",
-                                "value": ""
-                              },
-                              {
-                                "name": "",
-                                "value": ""
-                              }
-                            ],
-                            "mimeType": "",
-                            "partId": ""
-                          }
-                        ]
-                      },
-                      Error: "",
-                      Status: "",
-                    },
                   },
                 ],
                 downloadAttachment: [
@@ -230,14 +186,6 @@ export const GmailJson = {
                     variableName: "attachmentID",
                     hasDynamicVariable: true,
                     rightSideInput: true,
-                  },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {},
-                      Error: "",
-                      Status: "",
-                    },
                   },
                 ],
                 deleteMessage: [
@@ -281,17 +229,6 @@ export const GmailJson = {
                           variableName: "messageID",
                           hasDynamicVariable: true,
                           rightSideInput: true,
-                        },
-                        {
-                          type: "outputJson",
-                          value: {
-                            Output: {
-                              id: "",
-                              threadId: "",
-                              labelIds: [],
-                              attachmentId: "",
-                            },
-                          },
                         },
                       ],
                       all: [
@@ -345,21 +282,6 @@ export const GmailJson = {
                             ],
                           ],
                         },
-                        {
-                          type: "outputJson",
-                          value: {
-                            Output: {
-                              messages: [
-                                {
-                                  id: "",
-                                  threadId: "",
-                                  labelIds: [],
-                                  snippet: "",
-                                },
-                              ],
-                            },
-                          },
-                        },
                       ],
                     },
                   },
@@ -375,17 +297,6 @@ export const GmailJson = {
                     hasDynamicVariable: true,
                     rightSideInput: true,
                   },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        threadId: "",
-                        labelIds: [],
-                        snippet: "",
-                      },
-                    },
-                  },
                 ],
                 markAsUnread: [
                   {
@@ -397,17 +308,6 @@ export const GmailJson = {
                     variableName: "messageID",
                     hasDynamicVariable: true,
                     rightSideInput: true,
-                  },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        threadId: "",
-                        labelIds: [],
-                        snippet: "",
-                      },
-                    },
                   },
                 ],
                 removeLabel: [
@@ -430,17 +330,6 @@ export const GmailJson = {
                     variableName: "labelNamesOrIDs",
                     hasDynamicVariable: true,
                     rightSideInput: true,
-                  },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        threadId: "",
-                        labelIds: [],
-                        snippet: "",
-                      },
-                    },
                   },
                 ],
                 replyToMessage: [
@@ -696,17 +585,6 @@ export const GmailJson = {
                       },
                     ],
                   },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        threadId: "",
-                        labelIds: [],
-                        snippet: "",
-                      },
-                    },
-                  },
                 ],
                 sendMessage: [
                   {
@@ -877,17 +755,6 @@ export const GmailJson = {
                       },
                     ],
                   },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        threadId: "",
-                        labelIds: [],
-                        snippet: "",
-                      },
-                    },
-                  },
                 ],
               },
             },
@@ -952,15 +819,6 @@ export const GmailJson = {
                     hasDynamicVariable: true,
                     rightSideInput: true,
                   },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        labelIds: [],
-                      },
-                    },
-                  },
                 ],
                 deleteThread: [
                   {
@@ -1003,15 +861,6 @@ export const GmailJson = {
                           variableName: "threadID",
                           hasDynamicVariable: true,
                           rightSideInput: true,
-                        },
-                        {
-                          type: "outputJson",
-                          value: {
-                            Output: {
-                              id: "",
-                              snippet: "",
-                            },
-                          },
                         },
                       ],
                       all: [
@@ -1147,19 +996,6 @@ export const GmailJson = {
                             ],
                           ],
                         },
-                        {
-                          type: "outputJson",
-                          value: {
-                            Output: {
-                              all_threads: [
-                                {
-                                  id: "",
-                                  snippet: "",
-                                },
-                              ],
-                            },
-                          },
-                        },
                       ],
                     },
                   },
@@ -1184,15 +1020,6 @@ export const GmailJson = {
                     placeholder: "Label Names or IDs",
                     required: true,
                     variableName: "labelNamesOrIDs",
-                  },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        labelsRemoved: [],
-                      },
-                    },
                   },
                 ],
                 replyToThread: [
@@ -1377,17 +1204,6 @@ export const GmailJson = {
                       },
                     ],
                   },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        threadId: "",
-                        labelIds: [],
-                        snippet: "",
-                      },
-                    },
-                  },
                 ],
                 trashThread: [
                   {
@@ -1400,15 +1216,6 @@ export const GmailJson = {
                     hasDynamicVariable: true,
                     rightSideInput: true,
                   },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        labelIds: [],
-                      },
-                    },
-                  },
                 ],
                 untrashThread: [
                   {
@@ -1420,15 +1227,6 @@ export const GmailJson = {
                     variableName: "threadID",
                     hasDynamicVariable: true,
                     rightSideInput: true,
-                  },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        labelIds: [],
-                      },
-                    },
                   },
                 ],
               },
@@ -1521,16 +1319,6 @@ export const GmailJson = {
                       ],
                     ],
                   },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        name: "",
-                        labelListVisbility: "",
-                      },
-                    },
-                  },
                 ],
                 deleteLabel: [
                   {
@@ -1574,17 +1362,6 @@ export const GmailJson = {
                           hasDynamicVariable: true,
                           rightSideInput: true,
                         },
-                        {
-                          type: "outputJson",
-                          value: {
-                            Output: {
-                              id: "",
-                              name: "",
-                              labelListVisbility: "",
-                              type: "",
-                            },
-                          },
-                        },
                       ],
                       all: [
                         {
@@ -1605,22 +1382,6 @@ export const GmailJson = {
                               },
                             ],
                           ],
-                        },
-                        {
-                          type: "outputJson",
-                          value: {
-                            Output: {
-                              labels: [
-                                {
-                                  id: "",
-                                  name: "",
-                                  messageListVisibility: "",
-                                  labelListVisibility: "",
-                                  type: "",
-                                },
-                              ],
-                            },
-                          },
                         },
                       ],
                     },
@@ -1833,20 +1594,6 @@ export const GmailJson = {
                       },
                     ],
                   },
-                  {
-                    type: "outputJson",
-                    value: {
-                      Output: {
-                        id: "",
-                        message: {
-                          ID: "",
-                          threadId: "",
-                          labelIds: [],
-                          snippet: "",
-                        },
-                      },
-                    },
-                  },
                 ],
                 deleteDraft: [
                   {
@@ -1889,20 +1636,6 @@ export const GmailJson = {
                           variableName: "draftID",
                           hasDynamicVariable: true,
                           rightSideInput: true,
-                        },
-                        {
-                          type: "outputJson",
-                          value: {
-                            Output: {
-                              id: "",
-                              message: {
-                                ID: "",
-                                threadId: "",
-                                labelIds: [],
-                                snippet: "",
-                              },
-                            },
-                          },
                         },
                       ],
                       all: [
