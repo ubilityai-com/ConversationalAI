@@ -29,16 +29,19 @@ export const ReactAgentJson = {
     },
     "json": [
       {
-        type: "textfield",
-        label: "Query",
-        required: true,
-        multiline: true,
-        minRows: 4,
+        type: "accordion",
+        accTitle: "Query",
         variableName: "query",
-        chatbotQuestion: true,
-        value: "",
-        placeholder: "e.g Whats going on your mind ?",
-        hasDynamicVariable: true,
+        fieldsArray: [
+          [{
+            type: "textfield",
+            multiline: true,
+            minRows: 4,
+            variableName: "query",
+            value: "",
+            placeholder: "By default will take the last user input",
+            hasDynamicVariable: true,
+          },]]
       },
       {
         type: "accordion",

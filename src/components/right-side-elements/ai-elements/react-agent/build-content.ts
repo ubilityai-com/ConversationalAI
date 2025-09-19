@@ -22,7 +22,7 @@ export default function getContent(selectedNode: any) {
     const content = {
         type: "data",
         data: {
-            inputs: { query: rightSideData.json.query, prompt: getAccvalue(rightSideData.json, "prompt") },
+            inputs: { query: getAccvalue(rightSideData.json, "query") ?? "", prompt: getAccvalue(rightSideData.json, "prompt") },
             model: require("../../../properties/contents/model")[model.type](selectedNode),
             cred: extractCreds(selectedNode?.data.rightSideData.extras),
             tools: toolConfigs.length > 0 || selectedTools.length > 0 ?
