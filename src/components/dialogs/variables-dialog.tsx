@@ -33,6 +33,7 @@ import {
 } from "../ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { WorkflowVariable } from "../variable-picker";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface VariablesDialogProps {
   open: boolean;
@@ -545,7 +546,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
           </DialogTitle>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden flex flex-col">
           {/* Add/Edit Form */}
           {showAddForm && (
             <Card className="border-2 border-dashed border-gray-300 mb-4">
@@ -627,7 +628,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
           <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as VariableCategory)}
-            className="h-full"
+            className="flex-1 flex flex-col overflow-hidden"
           >
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger
@@ -653,7 +654,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
               </TabsTrigger>
             </TabsList>
 
-            <div className="mt-4 h-full overflow-auto">
+              <ScrollArea className="overflow-y-scroll flex-1 mt-4 px-2 pb-1">
               <TabsContent value="global" className="mt-0">
                 {renderConstantVariables()}
               </TabsContent>
@@ -663,7 +664,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
               <TabsContent value="dialogue" className="mt-0">
                 {renderDialogueVariables()}
               </TabsContent>
-            </div>
+              </ScrollArea>
           </Tabs>
         </div>
       </DialogContent>
