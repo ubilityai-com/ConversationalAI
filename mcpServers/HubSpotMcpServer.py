@@ -8,7 +8,7 @@ sys.path.append(apps)
 
 from mcpLibraries import hubspot_software
 
-mcp = FastMCP("HubspotMcpServer")
+mcp = FastMCP("HubSpotMcpServer")
 
 
 class HubspotGetContactsInput(BaseModel): 

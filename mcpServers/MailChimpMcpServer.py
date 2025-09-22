@@ -8,7 +8,7 @@ sys.path.append(apps)
 
 from mcpLibraries import mailChimp
 
-mcp = FastMCP("MailchimpMcpServer")
+mcp = FastMCP("MailChimpMcpServer")
 
 
 class CreateMailChimpMemberBodyMarketingPermissions(BaseModel):

@@ -8,7 +8,7 @@ sys.path.append(apps)
 
 from mcpLibraries import airtable
 
-mcp = FastMCP("AirtableMcpServer")
+mcp = FastMCP("AirTableMcpServer")
 
 class AirTableGetAllRecordsInput(BaseModel): 
     base_id: str = Field(description="The Airtable base ID containing the target table.")

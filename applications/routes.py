@@ -4279,7 +4279,7 @@ async def list_all_tool_names(tools: McpTools):
                 envVars = {'NOTION_BOT_TOKEN': json_cred[mcp['credential']]['accessToken']}
             elif mcpname == 'WhatsappMcpServer':
                 envVars = {'WHATSAPP_TOKEN': json_cred[mcp['credential']]['accessToken'], 'WHATSAPP_ACCOUNT_ID': json_cred[mcp['credential']]['whatsappAccountId']}
-            elif mcpname == 'AirtableMcpServer':
+            elif mcpname == 'AirTableMcpServer':
                 envVars = {'AIRTABLE_BOT_TOKEN': json_cred[mcp['credential']]['accesstoken']}
             elif mcpname == 'GoogleSheetsMcpServer':
                 envVars = {
@@ -4295,14 +4295,14 @@ async def list_all_tool_names(tools: McpTools):
                     'FRESHDESK_API_KEY': json_cred[mcp['credential']]['apiKey'],
                     'FRESHDESK_DOMAIN': json_cred[mcp['credential']]['domain']
                     }
-            elif mcpname == 'HubspotMcpServer':
+            elif mcpname == 'HubSpotMcpServer':
                 envVars = {
                     'HUBSPOT_REDIRECT_URI': json_cred[mcp['credential']]['redirectUri'],
                     'HUBSPOT_REFRESH_TOKEN': json_cred[mcp['credential']]['refreshToken'],
                     'HUBSPOT_CLIENT_ID': json_cred[mcp['credential']]['clientID'],
                     'HUBSPOT_CLIENT_SECRET': json_cred[mcp['credential']]['clientSecret']
                     }
-            elif mcpname == 'MailchimpMcpServer':
+            elif mcpname == 'MailChimpMcpServer':
                 envVars = {
                     'MAILCHIMP_API_KEY': json_cred[mcp['credential']]['apiKey'],
                     'MAILCHIMP_SERVER_PREFIX': json_cred[mcp['credential']]['serverPrefix']
