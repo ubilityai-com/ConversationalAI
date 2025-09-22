@@ -58,7 +58,7 @@ class CONDITION_AGENT:
                 
                 # if react status = fail --> use ubility history
                 if conversation['variables']['react_fail']:
-                    memory.load_streaming_memory(conversation_id)
+                    memory.load_streaming_memory(conversation_id, True)
 
                 agent = RunnableWithMessageHistory(
                     raw_agent,
@@ -74,9 +74,7 @@ class CONDITION_AGENT:
                                 }, room=sid)
                         result += chunk['data']['chunk'].content
 
-                # if react status = pass --> clear history
-                if not conversation['variables']['react_fail']:
-                    memory.reset_memory(conversation_id)
+                memory.reset_memory(f"{conversation_id}-condition")
 
                 await sio.emit('message', {
                     'type': 'end of chunks'

@@ -109,7 +109,7 @@ class Memory:
             for context in self.params["context"]:
                 self.memory.save_context({"input": str(context["HumanMessage"])},{"output": str(context["AIMessage"])})
 
-    def load_streaming_memory(self, convId: dict):
+    def load_streaming_memory(self, convId: dict, condition: bool = False):
         logging.info(f"Loading streaming memory")
 
         convDir = f"/{convId}" # Subdirectory for specific conversation
@@ -136,6 +136,8 @@ class Memory:
                 data["context"] = data["context"][-self.size:]
 
             if self.streaming:
+                if condition:
+                    convId = f"{convId}-condition"
                 str_messages = []  # ROLE: MESSAGE
                 for context in data["context"]:
                     for key, value in context.items():
