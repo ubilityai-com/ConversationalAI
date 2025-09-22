@@ -116,7 +116,7 @@ class REACT_AGENT:
                     envVars = {'NOTION_BOT_TOKEN': self.credentials[mcp['credential']]['accessToken']}
                 elif mcp['name'] == 'WhatsappMcpServer':
                     envVars = {'WHATSAPP_TOKEN': self.credentials[mcp['credential']]['accessToken'], 'WHATSAPP_ACCOUNT_ID': self.credentials[mcp['credential']]['whatsappAccountId']}
-                elif mcp['name'] == 'AirtableMcpServer':
+                elif mcp['name'] == 'AirTableMcpServer':
                     envVars = {'AIRTABLE_BOT_TOKEN': self.credentials[mcp['credential']]['accesstoken']}
                 elif mcp['name'] == 'GoogleSheetsMcpServer':
                     envVars = {
@@ -132,14 +132,14 @@ class REACT_AGENT:
                         'FRESHDESK_API_KEY': self.credentials[mcp['credential']]['apiKey'],
                         'FRESHDESK_DOMAIN': self.credentials[mcp['credential']]['domain']
                         }
-                elif mcp['name'] == 'HubspotMcpServer':
+                elif mcp['name'] == 'HubSpotMcpServer':
                     envVars = {
                         'HUBSPOT_REDIRECT_URI': self.credentials[mcp['credential']]['redirectUri'],
                         'HUBSPOT_REFRESH_TOKEN': self.credentials[mcp['credential']]['refreshToken'],
                         'HUBSPOT_CLIENT_ID': self.credentials[mcp['credential']]['clientID'],
                         'HUBSPOT_CLIENT_SECRET': self.credentials[mcp['credential']]['clientSecret']
                         }
-                elif mcp['name'] == 'MailchimpMcpServer':
+                elif mcp['name'] == 'MailChimpMcpServer':
                     envVars = {
                         'MAILCHIMP_API_KEY': self.credentials[mcp['credential']]['apiKey'],
                         'MAILCHIMP_SERVER_PREFIX': self.credentials[mcp['credential']]['serverPrefix']
