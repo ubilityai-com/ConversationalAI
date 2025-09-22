@@ -3,6 +3,7 @@ import '@xyflow/react/dist/style.css';
 import StickyNote from './components/custom/sticky-note';
 import ButtonEdge from './components/edgeTypes/button-edge';
 import connectionLine from './components/edgeTypes/connection-line';
+import StepLoopBackEdge from './components/edgeTypes/loop-back-edge';
 import { ChoiceNode } from './components/nodes/choice-node';
 import { ConditionAgentNode } from './components/nodes/condition-agent-node';
 import { InputNode } from './components/nodes/input-node';
@@ -11,6 +12,7 @@ import { LlmNode } from './components/nodes/llm-node';
 import { MessageNode } from './components/nodes/message-node';
 import { RouterNode } from './components/nodes/router-node';
 import StickyNoteNode from './components/nodes/stickyNote-node';
+import { getAllPreviousNodes } from './lib/utils';
 import { useFlowStore } from './store/flow-store';
 
 const FlowZone = () => {
@@ -65,7 +67,8 @@ const FlowZone = () => {
     StickyNote: StickyNoteNode
   };
   const edgeTypes = {
-    buttonEdge: ButtonEdge
+    buttonEdge: ButtonEdge,
+    loopBackEdge: StepLoopBackEdge
   }
   const nodes = useFlowStore(state => state.nodes)
   const edges = useFlowStore(state => state.edges)
@@ -127,11 +130,12 @@ const FlowZone = () => {
       handleSnackBarMessageOpen("This source is already connected!", "destructive", 3000);
       return;
     }
-
+    const litsOfNodes = getAllPreviousNodes(source)
+    const isCycle = litsOfNodes.find(id => id === target)
     const newEdge = {
       ...params,
       arrowHeadType: "arrowclosed",
-      type: "buttonEdge",
+      type: isCycle ? "loopBackEdge" : "buttonEdge",
       markerEnd: { type: MarkerType.ArrowClosed },
       style: { stroke: "#afafb5", strokeWidth: 2 },
     };
