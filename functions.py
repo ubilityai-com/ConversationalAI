@@ -406,7 +406,8 @@ async def handle_app_integration(sio, sid, conversation, conversation_id, dialog
 async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, current_dialogue, content, save_to_history=True):
     result = await AIIntegration(chain_type, credentials, content['data']).execute_ai_element(sio, sid, conversation, conversation_id)
     if save_to_history:
-        save_data_to_global_history(conversation_id=conversation_id, input="", output=str(result))
+        if "answer" in result:
+            save_data_to_global_history(conversation_id=conversation_id, input="", output=str(result["answer"]))
     
     # save result in a variable if user want to
     if result and 'saveOutputAs' in current_dialogue:
