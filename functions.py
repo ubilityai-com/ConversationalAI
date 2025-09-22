@@ -82,7 +82,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
                     "params": {"stream": True},
                 }
             }
-            current_dialogue["saveOutputAs"]={"name": "LC_CONDITION_AGENT_OUTPUT-var", "path": ".output"},
+            current_dialogue["saveOutputAs"].append({"name": "LC_CONDITION_AGENT_OUTPUT-var", "path": ".output"})
             
             await handle_ai_integration(sio, sid, "LC_CONDITION_AGENT", credentials, conversation, conversation_id, current_dialogue, condition_agent_data, save_to_history=False)
 
