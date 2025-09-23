@@ -3697,6 +3697,91 @@ async def teams_get_many_channels(payload: MicrosoftTeamsWithTeamAppIntegration)
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
 
+########################################### Jira API ########################################
+
+async def jira_authenticate(creds):
+    if 'email' in creds and 'apiToken' in creds and 'domain' in creds:
+        domain = creds["domain"]
+        apiToken = creds["apiToken"]
+        email = creds["email"]
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(domain) as response:
+                if response.status == 200:
+                    auth = aiohttp.BasicAuth(email, apiToken)
+                    return (domain, auth)
+                raise Exception(
+                    f"Incorrect domain. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    else:
+        return JSONResponse(status_code=400, content={"Error": "Missing required Credential data."})
+
+class JiraAppIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/jira/listProjects")
+async def jira_list_projects(payload: JiraAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        
+        domain,auth = await jira_authenticate(json_cred)
+        url = f"{domain}/rest/api/3/project/search"
+        headers = {
+            "Accept":"application/json"
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url,headers=headers,auth=auth) as response:
+                if response.status == 200:
+                    result = await response.json()
+                    projects = result["values"]
+                    if projects:
+                        projects_info = [
+                            {"id": project.get("key", ""), "name": project.get("name", "")}
+                            for project in projects
+                        ]
+                    return {"projects": projects_info}
+                raise Exception(
+                    f"Failed to list projects. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+class JiraWithProjectAppIntegration(BaseModel):
+    credential_name: str
+    projectKey: str
+
+@http_app.post("/bot/jira/listIssueTypes")
+async def jira_list_issue_types(payload: JiraWithProjectAppIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        domain,auth = await jira_authenticate(json_cred)
+        projectKey = payload.projectKey
+        url = f"{domain}/rest/api/3/issue/createmeta/{projectKey}/issuetypes"
+        headers = {
+            "Accept":"application/json"
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=url,headers=headers,auth=auth) as response:
+                if response.status == 200:
+                    result = await response.json()
+                    issueTypes = result["issueTypes"]
+                    if issueTypes:
+                        issueTypes_info = [
+                            {"id": issueType.get("id", ""), "name": issueType.get("name", "")}
+                            for issueType in issueTypes
+                        ]
+                    return {"issueTypes": issueTypes_info}
+                raise Exception(
+                    f"Failed to list issueTypes. Status Code: {response.status}. Response: {await response.text()}"
+                )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
 ################################ AI Providers List Models BaseModel ################################
 
 class AiProvidersListModelsAppIntegration(BaseModel):
