@@ -62,8 +62,9 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
     logger.info(f"Element type : {element_type}")
     # Element processing
     if element_type == 'Greet':
-        await Message(current_dialogue['greet']).send(sio, sid)
-        save_data_to_global_history(conversation_id=conversation_id, input="", output=current_dialogue['greet'])
+        if current_dialogue['greet']:
+            await Message(current_dialogue['greet']).send(sio, sid)
+            save_data_to_global_history(conversation_id=conversation_id, input="", output=current_dialogue['greet'])
 
     elif element_type == 'Message':
         await Message(content["data"]['text']).send(sio, sid)

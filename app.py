@@ -132,14 +132,15 @@ async def connect(sid, environ, auth=None):
     # Greet the user if the current step is configured to do so
     if dialogue[current_step].get('start'):
         async def greet_and_execute():
-            logger.info("Ubility bot will send greet message on connection")
-            greet_message = Message(dialogue[current_step]['greet'])
-            await greet_message.send(sio, sid)
-            save_data_to_global_history(
-                conversation_id=conversation_id,
-                input="",
-                output=dialogue[current_step]['greet']
-            )
+            if dialogue[current_step]['greet']:
+                logger.info("Ubility bot will send greet message on connection")
+                greet_message = Message(dialogue[current_step]['greet'])
+                await greet_message.send(sio, sid)
+                save_data_to_global_history(
+                    conversation_id=conversation_id,
+                    input="",
+                    output=dialogue[current_step]['greet']
+                )
             conversation['current_step'] = dialogue[current_step]['next']
             await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
@@ -180,16 +181,17 @@ async def message(sid, data):
         save_data_to_global_history(conversation_id, user_message, "")
     
     # Handle cancellation
-    if isinstance(user_message,str) and user_message.lower().strip() in CANCELLATION_PHRASES:
-        logger.warning("The conversation was canceled by the user")
-        cancel_message = Message(dialogue['firstElementId']['cancel'])
-        await cancel_message.send(sio, sid)
+    if dialogue['firstElementId']['cancel']:
+        if isinstance(user_message,str) and user_message.lower().strip() in CANCELLATION_PHRASES:
+            logger.warning("The conversation was canceled by the user")
+            cancel_message = Message(dialogue['firstElementId']['cancel'])
+            await cancel_message.send(sio, sid)
 
-        # Reset session state
-        conversation['current_step'] = dialogue['firstElementId']['next']
-        conversation['variables'] = {}
-        conversation['wait_for_user_input'] = None
-        return
+            # Reset session state
+            conversation['current_step'] = dialogue['firstElementId']['next']
+            conversation['variables'] = {}
+            conversation['wait_for_user_input'] = None
+            return
     
     # check if user send audio
     if data_type == 'voice_audio':
