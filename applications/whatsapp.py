@@ -320,11 +320,11 @@ async def whatsapp_download_trigger_media(json_cred, params, **kwargs):
         if all(param in params for param in required_params):
             media_id = params["media_id"]
             if media_id:
-                media_metadata = whatsapp_get_media(json_cred, {"media_id": media_id}, **kwargs)
+                media_metadata = await whatsapp_get_media(json_cred, {"media_id": media_id}, **kwargs)
                 media_url = media_metadata.get("url", None)
                 if media_url:
                     # Download the media
-                    download_response = whatsapp_download_media(json_cred, {"media_url": media_url}, **kwargs)
+                    download_response = await whatsapp_download_media(json_cred, {"media_url": media_url}, **kwargs)
                     return download_response
                 elif "Error" in media_metadata:
                     return media_metadata
