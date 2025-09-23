@@ -1,4 +1,5 @@
 //add import
+import { JiraSoftwareJson } from "./JiraSoftwareJson";
 import { MySQLJson } from "./MySQLJson";
 import { TeamsJson } from "./TeamsJson";
 import { StripeJson } from "./StripeJson";
@@ -37,6 +38,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    JiraSoftwareJson,
     MySQLJson,
     TeamsJson,
     StripeJson,
