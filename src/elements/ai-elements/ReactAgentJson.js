@@ -35,13 +35,15 @@ export const ReactAgentJson = {
         fieldsArray: [
           [{
             type: "textfield",
+            isExpanded: true,
+            label: "Query",
             multiline: true,
             minRows: 4,
             variableName: "query",
             value: "",
             placeholder: "By default will take the last user input",
             hasDynamicVariable: true,
-          },]]
+          }]]
       },
       {
         type: "accordion",
@@ -51,13 +53,15 @@ export const ReactAgentJson = {
           [{
             type: "textfield",
             multiline: true,
+            isExpanded: true,
+            label: "prompt",
             minRows: 4,
             variableName: "prompt",
             value: "",
             placeholder: "prompt",
             hasDynamicVariable: true,
-          },]]
-      },
+          }]]
+      }
     ]
   }
 }

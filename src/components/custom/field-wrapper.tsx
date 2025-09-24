@@ -1,5 +1,5 @@
 import { useReactFlow } from "@xyflow/react";
-import { Variable } from "lucide-react";
+import { Expand, Variable } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn, getAllPreviousNodes } from "../../lib/utils";
 import { useFlowStore } from "../../store/flow-store";
@@ -61,6 +61,9 @@ export function FieldWrapper({
     blurTimeoutRef,
     setBlurTimeoutRef,
     focusedField,
+    setFormDialogStatus,
+    setIsFormDialogOpen,
+    setDialogProps
   } = useFlowStore();
 
   const isPopoverInteracting = useFlowStore(
@@ -117,6 +120,13 @@ export function FieldWrapper({
     setInputNameOnContextMenu(variableName);
     setFocusedField(variableName);
   };
+  const handleExpandIconClick = () => {
+    setIsFormDialogOpen(true);
+    setFormDialogStatus("ExpandedFieldDialog");
+    setInputNameOnContextMenu(variableName);
+    setFocusedField(variableName)
+    setDialogProps({ label: field.label, value })
+  }
 
   useEffect(() => {
     return () => {
@@ -152,9 +162,20 @@ export function FieldWrapper({
       <Variable className="h-4 w-4" />
     </Button>
   );
+  const expandButton = (
+    <Button
+      size="sm"
+      variant="ghost"
+      className={`h-8 w-8 p-0 text-cyan-700 hover:text-cyan-900 absolute -top-8 right-0`}
+      aria-label="Set dynamic value"
+      onClick={handleExpandIconClick}
+    >
+      <Expand className="h-4 w-4" />
+    </Button>
+  );
 
   const inputWithVariables = () => (
-    <div className={`flex items-start gap-2 ${className}`}>
+    <div className={` relative flex items-start gap-2 ${className}`}>
       <div className="flex-1">
         {field.multiline ? (
           <Textarea
@@ -191,6 +212,7 @@ export function FieldWrapper({
         )}
       </div>
       {/* Show variable button next to input when no label */}
+      {field.isExpanded && expandButton}
       {!field.label && field.type !== "textfield" && variableButton}
     </div>
   );
@@ -218,6 +240,7 @@ export function FieldWrapper({
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </Label>
           {field.type !== "textfield" && variableButton}
+          {/* {field.isExpanded && expandButton} */}
         </div>
       )}
       <div className="flex-1">

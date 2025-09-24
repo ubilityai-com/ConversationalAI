@@ -5,6 +5,7 @@ import { ChangeNameDialog } from "./change-name-dialog";
 import { CreateOutputVariableDialog } from "./create-output-variable";
 import { CreateCredentialDialog } from "./credential-dialog/create-credential-dialog";
 import { ManageCredentialsDialog } from "./credential-dialog/manage-credential-dialog";
+import { ExpandedFieldDialog } from "./expanded-field-dialog";
 import { FilesDialog } from "./files-dialog";
 import { ItemsListDialog } from "./langchain-dialog";
 import { NodeStatesDialog } from "./node-states-dialog";
@@ -26,6 +27,7 @@ export const dialogRegistry: Record<string, React.FC<any>> = {
   createOutputVariable: CreateOutputVariableDialog,
   files: FilesDialog,
   nodeStates: NodeStatesDialog,
+  ExpandedFieldDialog: ExpandedFieldDialog
 };
 export default function DialogManager() {
   const isFormDialogOpen = useFlowStore(state => state.isFormDialogOpen)
