@@ -1,6 +1,5 @@
 import aiohttp,sys,os,json
-import  requests, base64
-from models.credentials import get_credentials_by_names
+import base64
 from applications.functions import get_file_data,upload_file
 
 status = [200, 201, 202, 204, 206, 207, 208]
@@ -66,7 +65,7 @@ async def outlook_get_many_contacts(json_cred, params, **kwargs):
                 response.raise_for_status()
                 result = await response.json()
                 if response.status in status:
-                  return result['value']
+                  return result
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
@@ -245,7 +244,7 @@ async def outlook_get_many_calendars(json_cred, params, **kwargs):
                 response.raise_for_status()
                 result = await response.json()
             if response.status in status:
-              return result['value']
+              return result
             return {"Error": result} 
 
     except aiohttp.ClientError as e:
@@ -435,7 +434,7 @@ async def outlook_get_many_folders(json_cred, params, **kwargs):
                 response.raise_for_status()
                 result = await response.json()
             if response.status in status:
-              return result['value']
+              return result
             return {"Error": result} 
 
     except aiohttp.ClientError as e:
@@ -616,7 +615,7 @@ async def outlook_get_many_folder_messages(json_cred, params, **kwargs):
                 response.raise_for_status()
                 result = await response.json()
                 if response.status in status:
-                    return result['value']
+                    return result
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
@@ -663,7 +662,7 @@ async def outlook_get_many_message(json_cred, params, **kwargs):
                 response.raise_for_status()
                 result = await response.json()
                 if response.status in status:
-                    return result['value']
+                    return result
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
@@ -839,23 +838,24 @@ async def outlook_reply_message(json_cred, params, **kwargs):
                         "contentBytes": attachment_bytes
                     })
                 elif attachment["type"] == "url":
-                    response = requests.get(attachment["url_attachment"])
-                    if response.status_code == 200:
-                        file_content = response.content
-                        if file_content:
-                            encoded_content = base64.b64encode(
-                                file_content).decode('utf-8')
-                            data["message"]["attachments"].append(
-                                {
-                                    "@odata.type": "#microsoft.graph.fileAttachment",
-                                    "name": attachment["fileName"],
-                                    "contentBytes": encoded_content
-                                })
-                        else:
-                            raise Exception("File content is empty.")
-                    else:
-                        raise Exception(
-                            f"Failed to download file from URL. Status code: {response.status_code}")
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(attachment["url_attachment"]) as response:
+                            if response.status == 200:
+                                file_content = response.content
+                                if file_content:
+                                    encoded_content = base64.b64encode(
+                                        file_content).decode('utf-8')
+                                    data["message"]["attachments"].append(
+                                        {
+                                            "@odata.type": "#microsoft.graph.fileAttachment",
+                                            "name": attachment["fileName"],
+                                            "contentBytes": encoded_content
+                                        })
+                                else:
+                                    raise Exception("File content is empty.")
+                            else:
+                                raise Exception(
+                                    f"Failed to download file from URL. Status code: {response.status}")
                 else:
                     raise Exception(
                         f"Invalid attachment type: {attachment['type']}")
@@ -960,23 +960,24 @@ async def outlook_send_message(json_cred, params, **kwargs):
                         "contentBytes": attachment_bytes
                     })
                 elif attachment["type"] == "url":
-                    response = requests.get(attachment["url_attachment"])
-                    if response.status_code == 200:
-                        file_content = response.content
-                        if file_content:
-                            encoded_content = base64.b64encode(
-                                file_content).decode('utf-8')
-                            email_data["message"]["attachments"].append(
-                                {
-                                    "@odata.type": "#microsoft.graph.fileAttachment",
-                                    "name": attachment["fileName"],
-                                    "contentBytes": encoded_content
-                                })
-                        else:
-                            raise Exception("File content is empty.")
-                    else:
-                        raise Exception(
-                            f"Failed to download file from URL. Status code: {response.status_code}")
+                    async with aiohttp.ClientSession() as session:
+                        async with session.get(attachment["url_attachment"]) as response:
+                            if response.status == 200:
+                                file_content = response.content
+                                if file_content:
+                                    encoded_content = base64.b64encode(
+                                        file_content).decode('utf-8')
+                                    email_data["message"]["attachments"].append(
+                                        {
+                                            "@odata.type": "#microsoft.graph.fileAttachment",
+                                            "name": attachment["fileName"],
+                                            "contentBytes": encoded_content
+                                        })
+                                else:
+                                    raise Exception("File content is empty.")
+                            else:
+                                raise Exception(
+                                    f"Failed to download file from URL. Status code: {response.status}")
                 else:
                     raise Exception(
                         f"Invalid attachment type: {attachment['type']}")
@@ -1090,7 +1091,7 @@ async def outlook_get_many_event(json_cred, params, **kwargs):
                 response.raise_for_status()
                 result = await response.json()
                 if response.status in status:
-                    return result['value']
+                    return result
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
@@ -1240,7 +1241,7 @@ async def outlook_get_many_message_attachment(json_cred, params, **kwargs):
                 response.raise_for_status()
                 result = await response.json()
                 if response.status in status:
-                    return result['value']
+                    return result
                 return {"Error": result} 
 
     except aiohttp.ClientError as e:
