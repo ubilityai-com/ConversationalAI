@@ -1,4 +1,5 @@
 //add import
+import { OutlookJson } from "./OutlookJson";
 import { JiraSoftwareJson } from "./JiraSoftwareJson";
 import { MySQLJson } from "./MySQLJson";
 import { TeamsJson } from "./TeamsJson";
@@ -38,6 +39,7 @@ import { SlackJson } from "./SlackJson";
 
 export const IntegrationElements = [
     //add Component
+    OutlookJson,
     JiraSoftwareJson,
     MySQLJson,
     TeamsJson,
