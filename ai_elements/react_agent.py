@@ -180,7 +180,7 @@ class REACT_AGENT:
                 }
         return mcps
 
-    def _status(self, user_prompt, input, llm, response, conv_id):
+    def _status(self, user_prompt, input, llm, response, conv_id, memory):
         try:
             if "requiredInputs" in self.data:
                 prompt = self._build_data_collector_status_prompt()
@@ -198,6 +198,7 @@ class REACT_AGENT:
                 for msg in status['messages']:
                     if isinstance(msg, AIMessage):
                         status = msg.content
+            memory.reset_memory(conv_id)
             logging.info("status")
             logging.info(status)
             return status
@@ -325,7 +326,7 @@ class REACT_AGENT:
                 return {"answer": result}
             
 
-            status = self._status(user_prompt, self.data['inputs']["query"], llm_model, result, conversation_id)
+            status = self._status(user_prompt, self.data['inputs']["query"], llm_model, result, conversation_id, memory)
             status = status.replace("'", '"')
             try:
                 status = json.loads(status)

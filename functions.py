@@ -52,14 +52,14 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
 
     if 'usedVariables' in current_dialogue:
         used_vars = current_dialogue.get('usedVariables') or []
-        logger.info("Starting the replace_variables function")
+        # logger.info("Starting the replace_variables function")
         content = replace_variables(
             current_dialogue["content"],
             conversation['variables'],
             used_vars
         )
 
-    logger.info(f"Element type : {element_type}")
+    # logger.info(f"Element type : {element_type}")
     # Element processing
     if element_type == 'Greet':
         if current_dialogue['greet']:
@@ -71,7 +71,8 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         save_data_to_global_history(conversation_id=conversation_id, input="", output=content["data"]['text'])
 
     elif "LC" in element_type:
-        if state and condition :
+        if state and condition:
+            logger.info("*************** STATE CONDITION AGENT ***************")
             condition_agent_data = {
                 "data": {
                     "inputs": {
@@ -83,17 +84,24 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
                     "params": {"stream": True},
                 }
             }
-            current_dialogue["saveOutputAs"].append({"name": "LC_CONDITION_AGENT_OUTPUT-var", "path": ".output"})
+            if "saveOutputAs" in current_dialogue:
+                current_dialogue["saveOutputAs"].append({"name": "LC_CONDITION_AGENT_OUTPUT-var", "path": ".output"})
+            else:
+                current_dialogue["saveOutputAs"] = []
+                current_dialogue["saveOutputAs"].append({"name": "LC_CONDITION_AGENT_OUTPUT-var", "path": ".output"})
             
-            await handle_ai_integration(sio, sid, "LC_CONDITION_AGENT", credentials, conversation, conversation_id, current_dialogue, condition_agent_data, save_to_history=False)
+            # await handle_ai_integration(sio, sid, "LC_CONDITION_AGENT", credentials, conversation, conversation_id, current_dialogue, condition_agent_data, save_to_history=False)
+            await handle_ai_integration(sio, sid, "LC_CONDITION_AGENT", credentials, conversation, conversation_id, current_dialogue, condition_agent_data)
 
             cdt_resp = conversation['variables'].get("LC_CONDITION_AGENT_OUTPUT-var", '')
-        
+            logger.info("*************** STATE CONDITION AGENT RESULT ***************")
+            logger.info(cdt_resp)
             if cdt_resp != 'Other' and state[cdt_resp] != conversation['current_step']:
                 conversation['current_step'] = state[cdt_resp]
+                logger.info('*************** JUMP TO ANOTHER AGENT ***************')
                 await execute_process(sio, sid, conversation, conversation_id, dialogue, condition=False)
                 return
-
+        
         await handle_ai_integration(sio, sid, element_type, credentials, conversation, conversation_id, current_dialogue, content)
         if conversation['variables']['react_fail']:
             return
@@ -228,7 +236,7 @@ def create_global_history(conversation_id):
 
 
 def save_data_to_global_history(conversation_id, input, output):
-    logger.info("====== save data to history ==========")
+    # logger.info("====== save data to history ==========")
     current_dir = os.getcwd()
     filePath = f"{current_dir}/langchain_history/{conversation_id}/{conversation_id}.json"
     if os.path.exists(filePath):
@@ -404,11 +412,13 @@ async def handle_app_integration(sio, sid, conversation, conversation_id, dialog
     await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
 
-async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, current_dialogue, content, save_to_history=True):
+# async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, current_dialogue, content, save_to_history=True):
+#     result = await AIIntegration(chain_type, credentials, content['data']).execute_ai_element(sio, sid, conversation, conversation_id)
+async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, current_dialogue, content):
     result = await AIIntegration(chain_type, credentials, content['data']).execute_ai_element(sio, sid, conversation, conversation_id)
-    if save_to_history:
-        if "answer" in result:
-            save_data_to_global_history(conversation_id=conversation_id, input="", output=str(result["answer"]))
+    # if save_to_history:
+    if "answer" in result:
+        save_data_to_global_history(conversation_id=conversation_id, input="", output=str(result["answer"]))
     
     # save result in a variable if user want to
     if result and 'saveOutputAs' in current_dialogue:
