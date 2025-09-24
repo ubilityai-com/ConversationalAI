@@ -126,8 +126,9 @@ async def connect(sid, environ, auth=None):
         session[dialogue_id][conversation_id]['audio_configuration'] = audio_configuration
 
     # used for the recursive functionality in react agent
-    conversation['variables']['react_fail'] = False
-    conversation['variables']['last_input_value'] = ''
+    conversation['react_fail'] = False
+    conversation['last_input_value'] = ''
+    conversation['last_executed_node'] = ''
 
     # Greet the user if the current step is configured to do so
     if dialogue[current_step].get('start'):
@@ -168,7 +169,7 @@ async def message(sid, data):
         return 
 
     dialogue_id = connected_clients[sid]["dialogue_id"]       
-    conversation_id = connected_clients[sid]["conversation_id"]       
+    conversation_id = connected_clients[sid]["conversation_id"]
 
     conversation = session[dialogue_id][conversation_id]
     conversation['last_reply_at'] = datetime.now().isoformat()
@@ -177,7 +178,7 @@ async def message(sid, data):
     
     # used for the recursive functionality in react agent
     if data_type != "binary":
-        conversation['variables']['last_input_value'] = user_message
+        conversation['last_input_value'] = user_message
         save_data_to_global_history(conversation_id, user_message, "")
     
     # Handle cancellation
