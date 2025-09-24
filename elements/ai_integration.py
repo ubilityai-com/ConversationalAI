@@ -2,7 +2,7 @@ from ai_elements.basic_llm import BasicLLM
 from ai_elements.condition_agent import CONDITION_AGENT
 from ai_elements.rag import RAG
 from ai_elements.react_agent import REACT_AGENT
-
+from logger_config import logger
 
 class AIIntegration:
     def __init__(self, chain_type, credentials, data):
@@ -42,9 +42,9 @@ class AIIntegration:
         
         return result
     
-    async def _execute_condition_agent(self, sio, sid, conversation, conversation_id):
+    async def _execute_condition_agent(self, sio, sid):
         print(f"Executing Conditional Agent")
-        return await CONDITION_AGENT(self.data, self.credentials).execute(sio, sid, conversation, conversation_id)
+        return await CONDITION_AGENT(self.data, self.credentials).execute(sio, sid)
     
     async def _execute_rag_chain(self, sio, sid, conversation):
         print(f"Executing RAG chain")
@@ -76,6 +76,7 @@ class AIIntegration:
         
         return result
 
+    # async def _get_ai_execution(self, sio, sid, conversation, conversation_id) -> dict:
     async def _get_ai_execution(self, sio, sid, conversation, conversation_id) -> dict:
         ai_mapping = {
             "LC_BASIC_LLM": self._execute_basic_llm_chain,
@@ -86,13 +87,21 @@ class AIIntegration:
         executor = ai_mapping.get(self.chain_type, None)
 
         # Call the selected executor with its parameters
-        if self.chain_type == "LC_REACT_AGENT" or self.chain_type == "LC_CONDITION_AGENT":
+        if self.chain_type == "LC_REACT_AGENT":
+            logger.info("*************** REACT AGENT ***************")
             return await executor(sio, sid, conversation, conversation_id)
         elif self.chain_type == "LC_BASIC_LLM" or self.chain_type == "LC_RAG":
             return await executor(sio, sid, conversation)
+        elif self.chain_type == "LC_CONDITION_AGENT":
+            logger.info("*************** CONDITION AGENT ***************")
+            # return await executor(sio, sid, conversation, conversation_id)
+            return await executor(sio, sid)
         else:
             raise ValueError(f"Unknown chain type: {self.chain_type}")
 
+    # async def execute_ai_element(self, sio=None, sid=None, conversation=None, conversation_id=None):
+    #     try:
+    #         return await self._get_ai_execution(sio, sid, conversation, conversation_id)
     async def execute_ai_element(self, sio=None, sid=None, conversation=None, conversation_id=None):
         try:
             return await self._get_ai_execution(sio, sid, conversation, conversation_id)
