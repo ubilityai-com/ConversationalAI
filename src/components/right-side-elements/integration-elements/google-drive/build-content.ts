@@ -140,8 +140,6 @@ export default function getContent(selectedNode: any) {
         //         ...jsonToSend,
         //         fileId: inputs.fileIdUpdate,
         //         data: inputs.dataUpdate,
-        //         user_id: "${u1s2e3r4i5d6}",
-        //         flow_id: "${f1l2o3w4i5d6}",
         //         body: {
         //             name: getAccvalue(inputs, "newFileNameUpdte"),
         //             properties: dictProp1Update,
@@ -165,8 +163,6 @@ export default function getContent(selectedNode: any) {
                     jsonToSend = {
                         ...jsonToSend,
                         data: inputs.binaryUpload,
-                        user_id: "${u1s2e3r4i5d6}",
-                        flow_id: "${f1l2o3w4i5d6}",
                         body: {
                             ocrLanguage: getAccvalue(inputs, "ocrFileUpload"),
                             useContentAsIndexableText: getAccvalue(inputs, "checkboxUploadFile"),
@@ -267,8 +263,6 @@ export default function getContent(selectedNode: any) {
         else if (inputs.operation === "Get File") {
             jsonToSend = {
                 fileId: inputs.fileIdGetFile,
-                user_id: "${u1s2e3r4i5d6}",
-                flow_id: "${f1l2o3w4i5d6}"
             }
         }
 

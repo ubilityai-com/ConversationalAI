@@ -214,8 +214,6 @@ export default function getContent(selectedNode: any) {
         if (json.operation === "Get") {
             jsonToSend = {
                 file: json.fileID,
-                user_id: "${u1s2e3r4i5d6}",
-                flow_id: "${f1l2o3w4i5d6}",
                 download_file: getAccvalue(
                     json,
                     "downloadFile_GetFile.downloadFile_Optional_GetFile"
@@ -270,8 +268,6 @@ export default function getContent(selectedNode: any) {
             jsonToSend = {
                 ...jsonToSend,
                 channel: json["channelNameOrIDFileUpload"],
-                user_id: "${u1s2e3r4i5d6}",
-                flow_id: "${f1l2o3w4i5d6}",
             };
             if (
                 getAccvalue(json, "titleFileUpload") &&
