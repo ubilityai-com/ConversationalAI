@@ -47,6 +47,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
     current_dialogue = dialogue.get(current_step, {})
     wait_for_user = None if current_step == 'firstElementId' else current_dialogue.get('saveUserInputAs')
     element_type = 'Greet' if current_step == 'firstElementId' else current_dialogue.get('type')
+    conversation['last_executed_node'] = element_type
     credentials = active_dialogues[conversation['dialogue_id']]["credentials"]
     state = active_dialogues[conversation['dialogue_id']].get('state', None)
 
@@ -71,13 +72,13 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         save_data_to_global_history(conversation_id=conversation_id, input="", output=content["data"]['text'])
 
     elif "LC" in element_type:
-        if state and condition:
+        if state and condition and element_type != "LC_CONDITION_AGENT" and conversation['last_executed_node'] != "LC_CONDITION_AGENT" and conversation['react_fail']:
             logger.info("*************** STATE CONDITION AGENT ***************")
             condition_agent_data = {
                 "data": {
                     "inputs": {
                         "instruction": "Determine which of the provided scenarios is the best fit for the input.",
-                        "query": conversation["variables"]["last_input_value"],
+                        "query": conversation["last_input_value"],
                         "scenarios": state["scenarios"],
                     },
                     "model": content['data']["model"],
@@ -103,7 +104,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
                 return
         
         await handle_ai_integration(sio, sid, element_type, credentials, conversation, conversation_id, current_dialogue, content)
-        if conversation['variables']['react_fail']:
+        if conversation['react_fail']:
             return
 
     elif element_type == 'MultipleChoice':
@@ -145,7 +146,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
     else:
         print(f'[Warning] Invalid element type: {element_type}')
 
-    # conversation['variables']['last_input_value'] = ''
+    # conversation['last_input_value'] = ''
     
     # Post-processing: move to next step if not waiting for user input
     if not wait_for_user:

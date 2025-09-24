@@ -29,10 +29,10 @@ class AIIntegration:
         """Update react_fail based on execution status."""
         if status == 'fail':
             print(f"Status=fail --> Setting react_fail=True for REACT agent re-execution")
-            conversation['variables']['react_fail'] = True
+            conversation['react_fail'] = True
         else:
             print(f"Status=pass --> Setting react_fail=False to stop REACT agent execution")
-            conversation['variables']['react_fail'] = False
+            conversation['react_fail'] = False
 
     async def _execute_basic_llm_chain(self, sio, sid, conversation):
         print(f"Executing Basic LLM chain")
@@ -51,8 +51,8 @@ class AIIntegration:
         return await RAG(self.data, self.credentials).stream(sio, sid, conversation)
 
     async def _execute_react_agent(self, sio, sid, conversation, conversation_id):
-        if conversation and conversation['variables']['react_fail']:
-            last_input_value = conversation['variables']['last_input_value']
+        if conversation and conversation['react_fail']:
+            last_input_value = conversation['last_input_value']
             print(f"Executing REACT agent with last input value")
             result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id, last_input_value)
             self._handle_status(result["status"], conversation)
@@ -65,7 +65,7 @@ class AIIntegration:
                 if self.data['inputs']["query"]:
                     last_input_value = self.data['inputs']["query"]
                 else:
-                    last_input_value = conversation['variables']['last_input_value']
+                    last_input_value = conversation['last_input_value']
 
                 result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id, last_input_value)
                 self._handle_status(result["status"], conversation)
