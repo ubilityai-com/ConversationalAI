@@ -284,9 +284,9 @@ def googledrive_upload_file(json_cred, params, **kwargs):
             if value:
                 data[key] = value
 
-        filename = data["data"]
         service = create_service(access_token,'drive', 'v3')
         if 'data' in data:
+            filename = data["data"]
             if kwargs:
                 # Extra conv_id & dialogue_id
                 dialogue_id = kwargs.get("dialogue_id")
@@ -323,42 +323,42 @@ def googledrive_upload_file(json_cred, params, **kwargs):
         return {"Error": str(e)}
     
 
-def googledrive_update_file(json_cred, params, **kwargs):
-    """
-    Update a file on Google Drive with new content and metadata.
+# def googledrive_update_file(json_cred, params, **kwargs):
+#     """
+#     Update a file on Google Drive with new content and metadata.
 
-    :param str access_token:
-        The access token for authenticating with Google Drive. (required)
+#     :param str access_token:
+#         The access token for authenticating with Google Drive. (required)
 
-    :param dict params:
-        - fileId (str): The ID of the file to be updated.(required)
-        - data (bytes): The binary data of the file for updating its content.(required)
-        - body (dict):
-            - name (str): The new name of the file.(optional)
-            - properties (list): A list of custom properties with keys and values.(optional)
-            - appProperties (list): A list of custom app properties with keys and values.(optional)
-            - ocrLanguage (str): The new OCR language for the file.(optional)
-            - useContentAsIndexableText (bool): Whether to use content as indexable text.(optional)
+#     :param dict params:
+#         - fileId (str): The ID of the file to be updated.(required)
+#         - data (bytes): The binary data of the file for updating its content.(required)
+#         - body (dict):
+#             - name (str): The new name of the file.(optional)
+#             - properties (list): A list of custom properties with keys and values.(optional)
+#             - appProperties (list): A list of custom app properties with keys and values.(optional)
+#             - ocrLanguage (str): The new OCR language for the file.(optional)
+#             - useContentAsIndexableText (bool): Whether to use content as indexable text.(optional)
 
-    :return: The API response after updating the file.
-    :rtype: dict
-    """
-    try:
-            cred=json.loads(json_cred)
-            access_token=create_token(cred)
-            data = {}
-            for key, value in params.items():
-                if value:
-                    data[key] = value
-            service = create_service(access_token,'drive', 'v3')
-            file_metadata = service.files().get(fileId=data['fileId']).execute()
-            new_file_name = data['body']['name'] if 'name' in data['body'] and data['body']['name']!='' else file_metadata['name']
-            data['body']['name']= new_file_name
-            media = MediaIoBaseUpload(BytesIO(data['data']), mimetype='application/octet-stream', resumable=True)
-            response = service.files().update(fileId=data['fileId'],body=data['body'],media_body=media).execute()
-            return response
-    except Exception as e:
-        return {"Error": str(e)}
+#     :return: The API response after updating the file.
+#     :rtype: dict
+#     """
+#     try:
+#             cred=json.loads(json_cred)
+#             access_token=create_token(cred)
+#             data = {}
+#             for key, value in params.items():
+#                 if value:
+#                     data[key] = value
+#             service = create_service(access_token,'drive', 'v3')
+#             file_metadata = service.files().get(fileId=data['fileId']).execute()
+#             new_file_name = data['body']['name'] if 'name' in data['body'] and data['body']['name']!='' else file_metadata['name']
+#             data['body']['name']= new_file_name
+#             media = MediaIoBaseUpload(BytesIO(data['data']), mimetype='application/octet-stream', resumable=True)
+#             response = service.files().update(fileId=data['fileId'],body=data['body'],media_body=media).execute()
+#             return response
+#     except Exception as e:
+#         return {"Error": str(e)}
        
 def googledrive_get_many_files(json_cred, params, **kwargs):
     """
@@ -563,7 +563,7 @@ operations = {
     'Move File':googledrive_move_file,
     'Create File':googledrive_create_file_text,
     'Upload File':googledrive_upload_file,
-    'Update File':googledrive_update_file,
+    # 'Update File':googledrive_update_file,
     'Delete Folder':googledrive_delete_file,
     'Move Folder':googledrive_move_file,
     'Share Folder':googledrive_share_file,
