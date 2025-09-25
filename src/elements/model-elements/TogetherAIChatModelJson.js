@@ -51,7 +51,6 @@ export const TogetherAIChatModelJson = {
       },
       {
         type: "api",
-        type: "api",
         label: "Model",
         variableName: "model",
         value: "",
