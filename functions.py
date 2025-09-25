@@ -60,6 +60,20 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
             used_vars
         )
 
+    if state and conversation['execute_state_after_restart'] and condition:
+        logger.info("^^^^^^^^^^^^^^^^^^^^^^^^^ execute state ^^^^^^^^^^^^^^^^^^^")
+        cdt_resp = await execute_state(sio, sid, state, conversation, conversation_id, current_dialogue, credentials)
+        if cdt_resp != 'Other' and state[cdt_resp] != conversation['current_step']:
+            conversation['current_step'] = state[cdt_resp]
+            logger.info('*************** JUMP TO ANOTHER AGENT ***************')
+
+        # execute_state = False
+        conversation['execute_state_after_restart'] = False
+        logger.info("exec")
+        logger.info(conversation['execute_state_after_restart'])
+        await execute_process(sio, sid, conversation, conversation_id, dialogue, condition=False)
+        return
+
     # logger.info(f"Element type : {element_type}")
     # Element processing
     if element_type == 'Greet':
@@ -73,30 +87,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
 
     elif "LC" in element_type:
         if state and condition and element_type != "LC_CONDITION_AGENT" and conversation['last_executed_node'] != "LC_CONDITION_AGENT" and conversation['react_fail']:
-            logger.info("*************** STATE CONDITION AGENT ***************")
-            condition_agent_data = {
-                "data": {
-                    "inputs": {
-                        "instruction": "Determine which of the provided scenarios is the best fit for the input.",
-                        "query": conversation["last_input_value"],
-                        "scenarios": state["scenarios"],
-                    },
-                    "model": content['data']["model"],
-                    "params": {"stream": True},
-                }
-            }
-            if "saveOutputAs" in current_dialogue:
-                current_dialogue["saveOutputAs"].append({"name": "LC_CONDITION_AGENT_OUTPUT-var", "path": ".output"})
-            else:
-                current_dialogue["saveOutputAs"] = []
-                current_dialogue["saveOutputAs"].append({"name": "LC_CONDITION_AGENT_OUTPUT-var", "path": ".output"})
-            
-            # await handle_ai_integration(sio, sid, "LC_CONDITION_AGENT", credentials, conversation, conversation_id, current_dialogue, condition_agent_data, save_to_history=False)
-            await handle_ai_integration(sio, sid, "LC_CONDITION_AGENT", credentials, conversation, conversation_id, current_dialogue, condition_agent_data)
-
-            cdt_resp = conversation['variables'].get("LC_CONDITION_AGENT_OUTPUT-var", '')
-            logger.info("*************** STATE CONDITION AGENT RESULT ***************")
-            logger.info(cdt_resp)
+            cdt_resp = await execute_state(sio, sid, state, conversation, conversation_id, current_dialogue, credentials)
             if cdt_resp != 'Other' and state[cdt_resp] != conversation['current_step']:
                 conversation['current_step'] = state[cdt_resp]
                 logger.info('*************** JUMP TO ANOTHER AGENT ***************')
@@ -153,6 +144,8 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         next_step = current_dialogue.get('next')
 
         if not next_step:
+            if state:
+                conversation['execute_state_after_restart'] = True
             # Restart or end conversation
             start_from = current_dialogue.get('startFrom')
             conversation['current_step'] = start_from or dialogue['firstElementId']['next']
@@ -165,6 +158,33 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         logger.info("Waiting for user input ...")
         conversation['wait_for_user_input'] = wait_for_user
         conversation['current_step'] = current_dialogue.get('next')
+
+
+async def execute_state(sio, sid, state, conversation, conversation_id, current_dialogue, credentials):
+    logger.info("*************** STATE CONDITION AGENT ***************")
+    condition_agent_data = {
+        "data": {
+            "inputs": {
+                "instruction": "Determine which of the provided scenarios is the best fit for the input.",
+                "query": conversation["last_input_value"],
+                "scenarios": state["scenarios"],
+            },
+            "model": state["model"],
+            "params": {"stream": True},
+        }
+    }
+    if "saveOutputAs" in current_dialogue:
+        current_dialogue["saveOutputAs"].append({"name": "LC_CONDITION_AGENT_OUTPUT-var", "path": ".output"})
+    else:
+        current_dialogue["saveOutputAs"] = []
+        current_dialogue["saveOutputAs"].append({"name": "LC_CONDITION_AGENT_OUTPUT-var", "path": ".output"})
+    
+    await handle_ai_integration(sio, sid, "LC_CONDITION_AGENT", credentials, conversation, conversation_id, current_dialogue, condition_agent_data)
+
+    cdt_resp = conversation['variables'].get("LC_CONDITION_AGENT_OUTPUT-var", '')
+    logger.info("*************** STATE CONDITION AGENT RESULT ***************")
+    logger.info(cdt_resp)
+    return cdt_resp
 
 
 def save_user_input(conversation: dict, input_object: dict):

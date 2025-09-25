@@ -129,6 +129,7 @@ async def connect(sid, environ, auth=None):
     conversation['react_fail'] = False
     conversation['last_input_value'] = ''
     conversation['last_executed_node'] = ''
+    conversation['execute_state_after_restart'] = False
 
     # Greet the user if the current step is configured to do so
     if dialogue[current_step].get('start'):
@@ -175,7 +176,8 @@ async def message(sid, data):
     conversation['last_reply_at'] = datetime.now().isoformat()
 
     dialogue = active_dialogues[dialogue_id]['bot']
-    
+    state = active_dialogues[dialogue_id].get('state', None)
+
     # used for the recursive functionality in react agent
     if data_type != "binary":
         conversation['last_input_value'] = user_message
@@ -192,6 +194,8 @@ async def message(sid, data):
             conversation['current_step'] = dialogue['firstElementId']['next']
             conversation['variables'] = {}
             conversation['wait_for_user_input'] = None
+            if state:
+                conversation['execute_state_after_restart'] = True
             return
     
     # check if user send audio
