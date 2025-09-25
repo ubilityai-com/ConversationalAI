@@ -42,9 +42,9 @@ class AIIntegration:
         
         return result
     
-    async def _execute_condition_agent(self, sio, sid):
+    async def _execute_condition_agent(self, sio, sid, conversation, conversation_id, state):
         print(f"Executing Conditional Agent")
-        return await CONDITION_AGENT(self.data, self.credentials).execute(sio, sid)
+        return await CONDITION_AGENT(self.data, self.credentials).execute(sio, sid, conversation, conversation_id, state)
     
     async def _execute_rag_chain(self, sio, sid, conversation):
         print(f"Executing RAG chain")
@@ -77,7 +77,7 @@ class AIIntegration:
         return result
 
     # async def _get_ai_execution(self, sio, sid, conversation, conversation_id) -> dict:
-    async def _get_ai_execution(self, sio, sid, conversation, conversation_id) -> dict:
+    async def _get_ai_execution(self, sio, sid, conversation, conversation_id, state) -> dict:
         ai_mapping = {
             "LC_BASIC_LLM": self._execute_basic_llm_chain,
             "LC_CONDITION_AGENT": self._execute_condition_agent,
@@ -95,16 +95,16 @@ class AIIntegration:
         elif self.chain_type == "LC_CONDITION_AGENT":
             logger.info("*************** CONDITION AGENT ***************")
             # return await executor(sio, sid, conversation, conversation_id)
-            return await executor(sio, sid)
+            return await executor(sio, sid, conversation, conversation_id, state)
         else:
             raise ValueError(f"Unknown chain type: {self.chain_type}")
 
     # async def execute_ai_element(self, sio=None, sid=None, conversation=None, conversation_id=None):
     #     try:
     #         return await self._get_ai_execution(sio, sid, conversation, conversation_id)
-    async def execute_ai_element(self, sio=None, sid=None, conversation=None, conversation_id=None):
+    async def execute_ai_element(self, sio=None, sid=None, conversation=None, conversation_id=None, state=None):
         try:
-            return await self._get_ai_execution(sio, sid, conversation, conversation_id)
+            return await self._get_ai_execution(sio, sid, conversation, conversation_id, state)
 
         except Exception as error:
             print(f"AI execution failed for {self.chain_type}: {str(error)}")

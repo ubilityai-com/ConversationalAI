@@ -179,7 +179,7 @@ async def execute_state(sio, sid, state, conversation, conversation_id, current_
         current_dialogue["saveOutputAs"] = []
         current_dialogue["saveOutputAs"].append({"name": "LC_CONDITION_AGENT_OUTPUT-var", "path": ".output"})
     
-    await handle_ai_integration(sio, sid, "LC_CONDITION_AGENT", credentials, conversation, conversation_id, current_dialogue, condition_agent_data)
+    await handle_ai_integration(sio, sid, "LC_CONDITION_AGENT", credentials, conversation, conversation_id, current_dialogue, condition_agent_data, state)
 
     cdt_resp = conversation['variables'].get("LC_CONDITION_AGENT_OUTPUT-var", '')
     logger.info("*************** STATE CONDITION AGENT RESULT ***************")
@@ -435,8 +435,8 @@ async def handle_app_integration(sio, sid, conversation, conversation_id, dialog
 
 # async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, current_dialogue, content, save_to_history=True):
 #     result = await AIIntegration(chain_type, credentials, content['data']).execute_ai_element(sio, sid, conversation, conversation_id)
-async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, current_dialogue, content):
-    result = await AIIntegration(chain_type, credentials, content['data']).execute_ai_element(sio, sid, conversation, conversation_id)
+async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, current_dialogue, content, state=None):
+    result = await AIIntegration(chain_type, credentials, content['data']).execute_ai_element(sio, sid, conversation, conversation_id, state)
     # if save_to_history:
     if "answer" in result:
         save_data_to_global_history(conversation_id=conversation_id, input="", output=str(result["answer"]))
