@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Textarea } from "../ui/textarea";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 
 interface NodeStatesDialogProps {
   open: boolean;
@@ -67,7 +68,8 @@ export function NodeStatesDialog({
 
   // Apply search and filter
   const filteredNodes = availableNodes.filter((node) => {
-    const hasState = nodeStates.hasOwnProperty(node.id);
+    const hasState = nodeStates.hasOwnProperty(node.id) && nodeStates[node.id].trim()
+
     const matchesSearch =
       getNodeLabel(node).toLowerCase().includes(searchTerm.toLowerCase()) ||
       node.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -154,8 +156,9 @@ export function NodeStatesDialog({
     return text.substring(0, maxLength) + "...";
   };
 
-  const nodesWithState = Object.keys(nodeStates).length;
+  const nodesWithState = Object.values(nodeStates).filter((value) => value.trim() !== "").length;
   const totalNodes = availableNodes.length;
+  console.log({ nodeStates });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -223,12 +226,8 @@ export function NodeStatesDialog({
                   <Database className="w-8 h-8 mx-auto mb-2 text-gray-300" />
                   {searchTerm || filterType !== "all" ? (
                     <div>
-                      <p className="font-medium">
-                        No nodes match your criteria
-                      </p>
-                      <p className="text-sm">
-                        Try adjusting your search or filter
-                      </p>
+                      <p className="font-medium">No nodes match your criteria</p>
+                      <p className="text-sm">Try adjusting your search or filter</p>
                     </div>
                   ) : (
                     <p>No nodes available in the workflow</p>
@@ -236,30 +235,19 @@ export function NodeStatesDialog({
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-3">
+              <Accordion type="multiple" className="space-y-3">
                 {filteredNodes.map((node) => {
-                  const hasState = nodeStates.hasOwnProperty(node.id);
+                  const hasState = nodeStates.hasOwnProperty(node.id) && nodeStates[node.id].trim();
                   const currentDescription = nodeStates[node.id] || "";
                   const isEditing = editingNodeId === node.id;
                   const nodeCategory = node.data?.category || "basic";
-                  const isExpanded = expandedDescriptions.has(node.id);
-                  const shouldTruncate = currentDescription.length > 150;
 
                   return (
-                    <Card
-                      key={node.id}
-                      className="hover:shadow-md transition-shadow"
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-3 mb-3">
-                              <Checkbox
-                                checked={hasState}
-                                onCheckedChange={(checked) =>
-                                  handleToggleNodeState(node.id, !!checked)
-                                }
-                              />
+                    <AccordionItem key={node.id} value={node.id}>
+                      <Card className="hover:shadow-md transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 flex-1 min-w-0">
                                 <h3
                                   className="font-medium text-lg truncate"
@@ -267,159 +255,99 @@ export function NodeStatesDialog({
                                 >
                                   {truncateText(getNodeLabel(node))}
                                 </h3>
-                                <Badge
-                                  variant="outline"
-                                  className="text-xs shrink-0"
-                                >
+                                {/* <Badge variant="outline" className="text-xs shrink-0">
                                   {node.type}
-                                </Badge>
+                                </Badge> */}
                                 <Badge
-                                  className={`text-xs shrink-0 ${getCategoryColor(
-                                    nodeCategory
-                                  )}`}
-                                >
+                                  className={`text-xs shrink-0 ${getCategoryColor(nodeCategory)} hover:${getCategoryColor(nodeCategory)}`}>
                                   {nodeCategory}
                                 </Badge>
                                 {hasState && (
-                                  <Badge className="bg-green-100 text-green-800 text-xs shrink-0">
+                                  <Badge className="bg-green-100 text-green-800 text-xs shrink-0 hover:bg-green-100">
                                     Has State
                                   </Badge>
                                 )}
                               </div>
                             </div>
 
-                            {hasState && (
-                              <div className="ml-6 space-y-2">
-                                <Label className="text-sm font-medium">
-                                  State Description
-                                </Label>
-                                {isEditing ? (
-                                  <div className="space-y-2">
-                                    <Textarea
-                                      value={editDescription}
-                                      onChange={(e) =>
-                                        setEditDescription(e.target.value)
-                                      }
-                                      placeholder="Describe what this node's state represents..."
-                                      className="min-h-[80px]"
-                                      autoFocus
-                                    />
-                                    <div className="flex gap-2">
-                                      <Button
-                                        size="sm"
-                                        onClick={() => handleEditSave(node.id)}
-                                      >
-                                        <Save className="w-3 h-3 mr-1" />
-                                        Save
-                                      </Button>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={handleEditCancel}
-                                      >
-                                        <X className="w-3 h-3 mr-1" />
-                                        Cancel
-                                      </Button>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="bg-gray-50 rounded p-3">
-                                    {currentDescription ? (
-                                      <div>
-                                        <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                                          {shouldTruncate && !isExpanded
-                                            ? truncateDescription(
-                                              currentDescription
-                                            )
-                                            : currentDescription}
-                                        </p>
-                                        {shouldTruncate && (
-                                          <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() =>
-                                              toggleDescriptionExpansion(
-                                                node.id
-                                              )
-                                            }
-                                            className="h-6 px-2 text-xs mt-2 text-blue-600 hover:text-blue-700"
-                                          >
-                                            {isExpanded ? (
-                                              <>
-                                                <ChevronUp className="w-3 h-3 mr-1" />
-                                                Show less
-                                              </>
-                                            ) : (
-                                              <>
-                                                <ChevronDown className="w-3 h-3 mr-1" />
-                                                Show more
-                                              </>
-                                            )}
-                                          </Button>
-                                        )}
-                                      </div>
-                                    ) : (
-                                      <p className="text-sm text-gray-400 italic">
-                                        No description provided
-                                      </p>
-                                    )}
-                                    <div className="flex gap-2 mt-2">
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() =>
-                                          handleEditStart(
-                                            node.id,
-                                            currentDescription
-                                          )
-                                        }
-                                        className="h-6 px-2 text-xs"
-                                      >
-                                        <Edit2 className="w-3 h-3 mr-1" />
-                                        Edit
-                                      </Button>
-                                      <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => handleViewNode(node.id)}
-                                        className="h-6 px-2 text-xs"
-                                      >
-                                        <Eye className="w-3 h-3 mr-1" />
-                                        View
-                                      </Button>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="flex items-center gap-2 shrink-0">
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => handleViewNode(node.id)}
-                              className="h-8 px-2"
-                            >
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                            {hasState && (
+                            {/* Right: actions + accordion toggle */}
+                            <div className="flex items-center gap-1 shrink-0">
                               <Button
                                 size="sm"
                                 variant="ghost"
-                                onClick={() => removeNodeState(node.id)}
-                                className="h-8 px-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => handleViewNode(node.id)}
+                                className="h-8 px-2"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Eye className="w-4 h-4" />
                               </Button>
-                            )}
+                              {hasState && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => removeNodeState(node.id)}
+                                  className="h-8 px-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
+                              {/* Accordion toggle */}
+                              <AccordionTrigger />
+                            </div>
                           </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+
+                          {/* Accordion content (description area) */}
+                          <AccordionContent>
+                            {isEditing ? (
+                              <div className="mt-4">
+                                <Textarea
+                                  value={editDescription}
+                                  onChange={(e) => setEditDescription(e.target.value)}
+                                  onBlur={() => handleEditSave(node.id)} // auto-save on blur
+                                  placeholder="Describe what this node's state represents..."
+                                  className="min-h-[80px]"
+                                  autoFocus
+                                />
+                              </div>
+                            ) : (
+                              <div
+                                className="bg-gray-50 rounded p-3 mt-4 cursor-text"
+                                onClick={() => handleEditStart(node.id, currentDescription)}
+                              >
+                                {currentDescription ? (
+                                  <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                                    {expandedDescriptions.has(node.id)
+                                      ? currentDescription
+                                      : truncateDescription(currentDescription)}
+                                  </p>
+                                ) : (
+                                  <p className="text-sm text-gray-400 italic">
+                                    No description provided (click to edit)
+                                  </p>
+                                )}
+
+                                {currentDescription && currentDescription.length > 150 && (
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleDescriptionExpansion(node.id);
+                                    }}
+                                    className="h-6 px-2 text-xs mt-2 text-blue-600 hover:text-blue-700"                                  >
+                                    {expandedDescriptions.has(node.id) ? "View less" : "View more"}
+                                  </Button>
+                                )}
+                              </div>
+                            )}
+                          </AccordionContent>
+
+                        </CardContent>
+                      </Card>
+                    </AccordionItem>
                   );
                 })}
-              </div>
+              </Accordion>
+
             )}
           </div>
         </div>

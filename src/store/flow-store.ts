@@ -9,7 +9,7 @@ import {
 import axios from "axios";
 import { v4 } from "uuid";
 import { create } from "zustand";
-import { camelToDashCase } from "../lib/utils";
+import { camelToDashCase, generateUniqueName } from "../lib/utils";
 import {
   replaceVariablesInObject,
   VariableReplacementError,
@@ -488,22 +488,30 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
     }),
   duplicateNode: (id) => {
     set((state) => {
+      const idToDuplicate = v4()
       let nodeToDuplicate = state.nodes.find((node) => node.id === id);
-      console.log({ nodeToDuplicate });
       nodeToDuplicate = {
         ...nodeToDuplicate,
-        id: v4(),
+        id: idToDuplicate,
         position: {
           x: nodeToDuplicate.position.x + 150,
           y: nodeToDuplicate.position.y + 150,
         },
+        selected: false,
+        data: {
+          ...nodeToDuplicate.data,
+          label: generateUniqueName(nodeToDuplicate.type)
+        }
       };
-      console.log({ nodeToDuplicate });
+      const cloned = nodeToDuplicate;
 
-      const cloned = JSON.parse(JSON.stringify(nodeToDuplicate));
-      console.log({ nodeToDuplicate });
-
-      return { nodes: [...state.nodes, cloned] };
+      return {
+        nodes: [...state.nodes, cloned],
+        nodesValidation: {
+          ...state.nodesValidation,
+          [idToDuplicate]: state.nodesValidation[id]
+        },
+      };
     });
   },
 
