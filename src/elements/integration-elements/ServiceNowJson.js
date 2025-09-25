@@ -186,97 +186,14 @@ export const ServiceNowJson = {
                 ],
                 "Upload Attachment": [
                   {
-                    "type": "api",
-                    "label": "Table Name",
-                    "variableName": "tableName_UploadAttachment",
+                    "type": "textfield",
                     "value": "",
+                    "label": "Table Name",
+                    "placeholder": "eg: incident, task, change_request etc.",
+                    "variableName": "tableName_UploadAttachment",
                     "required": true,
-                    "list": [],
-                    "config": [
-                      {
-                        "key": "method",
-                        "value": "post"
-                      },
-                      {
-                        "key": "url",
-                        "dependOn": [
-                          {
-                            "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "serviceNow/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "data",
-                        "obj": [
-                          {
-                            "key": "credential_name",
-                            "dependOn": "cred",
-                            "isAutomation": true
-                          },
-                        ]
-                      }
-                    ],
-                    "res": {
-                      "path": "data.tables",
-                      "keys": {
-                        "option": {
-                          "fields": [
-                            "name"
-                          ]
-                        },
-                        "value": {
-                          "fields": [
-                            "id"
-                          ]
-                        }
-                      },
-                      "type": [],
-                      "key": true
-                    },
-                    "apiDependsOn": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
+                    "hasDynamicVariable": true,
+                    "helperSpan": "The name of the table, not it's label.",
                   },
                   {
                     "type": "textfield",
@@ -612,97 +529,14 @@ export const ServiceNowJson = {
               "options": {
                 "Get Many Table Records": [
                   {
-                    "type": "api",
-                    "label": "Table Name",
-                    "variableName": "tableName_GetManyTableRecords",
+                    "type": "textfield",
                     "value": "",
+                    "label": "Table Name",
+                    "placeholder": "eg: incident, task, change_request etc.",
+                    "variableName": "tableName_GetManyTableRecords",
                     "required": true,
-                    "list": [],
-                    "config": [
-                      {
-                        "key": "method",
-                        "value": "post"
-                      },
-                      {
-                        "key": "url",
-                        "dependOn": [
-                          {
-                            "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "serviceNow/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "data",
-                        "obj": [
-                          {
-                            "key": "credential_name",
-                            "dependOn": "cred",
-                            "isAutomation": true
-                          },
-                        ]
-                      }
-                    ],
-                    "res": {
-                      "path": "data.tables",
-                      "keys": {
-                        "option": {
-                          "fields": [
-                            "name"
-                          ]
-                        },
-                        "value": {
-                          "fields": [
-                            "id"
-                          ]
-                        }
-                      },
-                      "type": [],
-                      "key": true
-                    },
-                    "apiDependsOn": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
+                    "hasDynamicVariable": true,
+                    "helperSpan": "The name of the table, not it's label.",
                   },
                   {
                     "type": "textfield",
@@ -900,97 +734,14 @@ export const ServiceNowJson = {
                 ],
                 "Get Table Record": [
                   {
-                    "type": "api",
-                    "label": "Table Name",
-                    "variableName": "tableName_GetTableRecord",
+                    "type": "textfield",
                     "value": "",
+                    "label": "Table Name",
+                    "placeholder": "eg: incident, task, change_request etc.",
+                    "variableName": "tableName_GetTableRecord",
                     "required": true,
-                    "list": [],
-                    "config": [
-                      {
-                        "key": "method",
-                        "value": "post"
-                      },
-                      {
-                        "key": "url",
-                        "dependOn": [
-                          {
-                            "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "serviceNow/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "data",
-                        "obj": [
-                          {
-                            "key": "credential_name",
-                            "dependOn": "cred",
-                            "isAutomation": true
-                          },
-                        ]
-                      }
-                    ],
-                    "res": {
-                      "path": "data.tables",
-                      "keys": {
-                        "option": {
-                          "fields": [
-                            "name"
-                          ]
-                        },
-                        "value": {
-                          "fields": [
-                            "id"
-                          ]
-                        }
-                      },
-                      "type": [],
-                      "key": true
-                    },
-                    "apiDependsOn": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
+                    "hasDynamicVariable": true,
+                    "helperSpan": "The name of the table, not it's label.",
                   },
                   {
                     "type": "textfield",
@@ -1168,97 +919,14 @@ export const ServiceNowJson = {
                 ],
                 "Create Table Record": [
                   {
-                    "type": "api",
-                    "label": "Table Name",
-                    "variableName": "tableName_CreateTableRecord",
+                    "type": "textfield",
                     "value": "",
+                    "label": "Table Name",
+                    "placeholder": "eg: incident, task, change_request etc.",
+                    "variableName": "tableName_CreateTableRecord",
                     "required": true,
-                    "list": [],
-                    "config": [
-                      {
-                        "key": "method",
-                        "value": "post"
-                      },
-                      {
-                        "key": "url",
-                        "dependOn": [
-                          {
-                            "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "serviceNow/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "data",
-                        "obj": [
-                          {
-                            "key": "credential_name",
-                            "dependOn": "cred",
-                            "isAutomation": true
-                          },
-                        ]
-                      }
-                    ],
-                    "res": {
-                      "path": "data.tables",
-                      "keys": {
-                        "option": {
-                          "fields": [
-                            "name"
-                          ]
-                        },
-                        "value": {
-                          "fields": [
-                            "id"
-                          ]
-                        }
-                      },
-                      "type": [],
-                      "key": true
-                    },
-                    "apiDependsOn": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
+                    "hasDynamicVariable": true,
+                    "helperSpan": "The name of the table, not it's label.",
                   },
                   {
                     "type": "dynamic",
@@ -1484,97 +1152,14 @@ export const ServiceNowJson = {
                 ],
                 "Update Table Record": [
                   {
-                    "type": "api",
-                    "label": "Table Name",
-                    "variableName": "tableName_UpdateTableRecord",
+                    "type": "textfield",
                     "value": "",
+                    "label": "Table Name",
+                    "placeholder": "eg: incident, task, change_request etc.",
+                    "variableName": "tableName_UpdateTableRecord",
                     "required": true,
-                    "list": [],
-                    "config": [
-                      {
-                        "key": "method",
-                        "value": "post"
-                      },
-                      {
-                        "key": "url",
-                        "dependOn": [
-                          {
-                            "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "serviceNow/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "data",
-                        "obj": [
-                          {
-                            "key": "credential_name",
-                            "dependOn": "cred",
-                            "isAutomation": true
-                          },
-                        ]
-                      }
-                    ],
-                    "res": {
-                      "path": "data.tables",
-                      "keys": {
-                        "option": {
-                          "fields": [
-                            "name"
-                          ]
-                        },
-                        "value": {
-                          "fields": [
-                            "id"
-                          ]
-                        }
-                      },
-                      "type": [],
-                      "key": true
-                    },
-                    "apiDependsOn": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
+                    "hasDynamicVariable": true,
+                    "helperSpan": "The name of the table, not it's label.",
                   },
                   {
                     "type": "textfield",
@@ -1810,97 +1395,14 @@ export const ServiceNowJson = {
                 ],
                 "Delete Table Record": [
                   {
-                    "type": "api",
-                    "label": "Table Name",
-                    "variableName": "tableName_DeleteTableRecord",
+                    "type": "textfield",
                     "value": "",
+                    "label": "Table Name",
+                    "placeholder": "eg: incident, task, change_request etc.",
+                    "variableName": "tableName_DeleteTableRecord",
                     "required": true,
-                    "list": [],
-                    "config": [
-                      {
-                        "key": "method",
-                        "value": "post"
-                      },
-                      {
-                        "key": "url",
-                        "dependOn": [
-                          {
-                            "type": "static",
-                            "value": process.env.REACT_APP_DNS_URL + "serviceNow/getTables"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "headers",
-                        "obj": [
-                          {
-                            "key": "Authorization",
-                            "dependOn": [
-                              {
-                                "type": "static",
-                                "value": "Bearer "
-                              },
-                              {
-                                "type": "redux",
-                                "value": "authentication.authToken"
-                              }
-                            ]
-                          },
-                          {
-                            "key": "content-type",
-                            "value": "application/json"
-                          }
-                        ]
-                      },
-                      {
-                        "key": "data",
-                        "obj": [
-                          {
-                            "key": "credential_name",
-                            "dependOn": "cred",
-                            "isAutomation": true
-                          },
-                        ]
-                      }
-                    ],
-                    "res": {
-                      "path": "data.tables",
-                      "keys": {
-                        "option": {
-                          "fields": [
-                            "name"
-                          ]
-                        },
-                        "value": {
-                          "fields": [
-                            "id"
-                          ]
-                        }
-                      },
-                      "type": [],
-                      "key": true
-                    },
-                    "apiDependsOn": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnFirstTime": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ],
-                    "conditionOnRefresh": [
-                      {
-                        "type": "dropdown",
-                        "name": "cred",
-                        "isAutomation": true
-                      }
-                    ]
+                    "hasDynamicVariable": true,
+                    "helperSpan": "The name of the table, not it's label.",
                   },
                   {
                     "type": "textfield",
