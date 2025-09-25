@@ -48,7 +48,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
           >
             <div className="flex items-center">
               <div
-                className="prose prose-sm sm:prose-base leading-relaxed break-words max-w-none"
+                className="prose prose-sm sm:prose-base leading-relaxed break-all max-w-none whitespace-pre-wrap"
                 dangerouslySetInnerHTML={{ __html: message.content }}
               />
             </div>
