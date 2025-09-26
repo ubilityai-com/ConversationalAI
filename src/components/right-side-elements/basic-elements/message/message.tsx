@@ -1,12 +1,9 @@
-import { useRef } from "react"
-import ReactQuill from "react-quill"
-import "react-quill/dist/quill.snow.css"
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
 import { removeHTMLTags } from "../../../../lib/utils"
-import { useFlowStore } from "../../../../store/flow-store"
 import { NodeConfigProps } from "../../../../types/automation-types"
 import { LoopFromForm } from "../../../common/loop-from-end"
-import { Input } from "../../../ui/input"
+import { Editor } from "../../../custom/quill-editor-with-variables"
+import { VariableNameField } from "../../../custom/variable-name-field"
 import { Label } from "../../../ui/label"
 import { Switch } from "../../../ui/switch"
 
@@ -68,9 +65,6 @@ const modules = {
 export default function MessageForm({
   selectedNodeId, content, onContentUpdate, validate
 }: NodeConfigProps<RightSideData>) {
-  const updateDialogueVariable = useFlowStore(
-    (state) => state.updateDialogueVariable
-  );
   const { localConfig, updateNestedConfig } = useDebounceConfig<
     RightSideData
   >(content, {
@@ -81,24 +75,15 @@ export default function MessageForm({
       onContentUpdate(savedConfig, valid);
     },
   });
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const debounceMessageVariable = (value: string) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    // Set new timeout
-    timeoutRef.current = setTimeout(() => {
-      updateDialogueVariable(selectedNodeId, value);
-    }, 1000);
-  }
+
   return (
     <div className="space-y-4">
       <div>
         <Label className="block text-sm mb-1 font-normal">Bot says</Label>
         <div className="custom-editor w-[93%] mb-2">
-          <ReactQuill
-            theme="snow"
+          <Editor
+            variableName="botSays"
             value={localConfig.botSays || ""}
             onChange={(value) => updateNestedConfig("botSays", value)}
             formats={formats}
@@ -122,21 +107,11 @@ export default function MessageForm({
       </div>
 
       {localConfig.save && (
-        <div>
-          <Label className="block text-sm mb-1 font-normal">
-            Variable Name
-          </Label>
-          <Input
-            name="variableName"
-            placeholder="Variable Name"
-            value={localConfig.variableName || ""}
-            onChange={(event) => {
-              // Clear previous timeout (if any)
-              debounceMessageVariable(event.target.value)
-              updateNestedConfig("variableName", event.target.value);
-            }}
-          />
-        </div>
+        <VariableNameField
+          variableName={localConfig.variableName || ""}
+          onChange={(value) => updateNestedConfig("variableName", value)}
+          label="Variable Name"
+        />
       )}
 
       <Label className="block text-sm mb-1 font-normal">

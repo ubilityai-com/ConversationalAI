@@ -8,6 +8,7 @@ import { useFlowStore } from "../../../../store/flow-store"
 import { NodeConfigProps } from "../../../../types/automation-types"
 import { LoopFromForm } from "../../../common/loop-from-end"
 import { FieldWrapper } from "../../../custom/field-wrapper"
+import { VariableNameField } from "../../../custom/variable-name-field"
 import { Button } from "../../../ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../../ui/card"
 import { Input } from "../../../ui/input"
@@ -202,19 +203,11 @@ export default function ChoicePromptForm({ content, onContentUpdate, selectedNod
             </div>
 
             {save && (
-                <>
-                    <Label className="block text-sm p-1 mb-1 font-normal">Variable Name</Label>
-                    <Input
-                        name="variableName"
-                        placeholder="Variable Name"
-                        value={variableName || ""}
-                        onChange={(event) => {
-                            debounceMessageVariable(event.target.value)
-                            updateNestedConfig("variableName", event.target.value)
-                        }
-                        }
-                    />
-                </>
+                <VariableNameField
+                    variableName={localConfig.variableName || ""}
+                    onChange={(value) => updateNestedConfig("variableName", value)}
+                    label="Variable Name"
+                />
             )}
 
             <Label className="block text-sm p-1 mb-1 font-normal">Enable the bot to handle user messages.</Label>

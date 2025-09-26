@@ -1,8 +1,3 @@
-"use client";
-
-import type React from "react";
-import { useRef, useState } from "react";
-
 import {
   Braces,
   ChevronDown,
@@ -14,6 +9,8 @@ import {
   Variable,
   X
 } from "lucide-react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFilesStore } from "../store/files-store";
 import { useFlowStore, VariableCategory } from "../store/flow-store";
 import { Badge } from "./ui/badge";
@@ -91,9 +88,6 @@ export function VariablesPanel({
   right,
 }: VariablesPanelProps) {
   const varPickerProps = useFlowStore((state) => state.varPickerProps);
-  const isPopoverInteracting = useFlowStore(
-    (state) => state.isPopoverInteracting
-  );
   const setIsPopoverInteracting = useFlowStore(
     (state) => state.setIsPopoverInteracting
   );
@@ -101,15 +95,23 @@ export function VariablesPanel({
   const {
     fieldRefs,
     focusedField,
-    setSelectedOutputOrVariable,
     constantVariables,
     outputVariables,
     dialogueVariables,
+    clickedElement
   } = useFlowStore();
+  const isRightSideOpen = !!clickedElement
+  //when right side close to close the variable panel with it 
+  useEffect(() => {
+    if (!isRightSideOpen) {
+      setVarPicker(false)
+    }
+  }, [isRightSideOpen, setVarPicker])
+
   const files = useFilesStore(state => state.files)
   const onVariableSelect = (varName: string) => {
-    console.log({ varPickerProps, varName });
-    setSelectedOutputOrVariable(varName);
+    varPickerProps?.insertVariable(varName)
+    fieldRefs[focusedField || ""]?.focus()
   };
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
@@ -188,6 +190,7 @@ export function VariablesPanel({
     clearTimeout(timeout);
     if (!interacting) {
       timeout = setTimeout(() => {
+        const focusedField = useFlowStore.getState().focusedField
         if (
           !document.activeElement ||
           !fieldRefs[focusedField || ""]?.contains(document.activeElement)

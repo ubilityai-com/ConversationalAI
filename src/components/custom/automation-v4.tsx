@@ -2,13 +2,11 @@
 
 import { AlertCircle, Upload } from "lucide-react";
 import { type Dispatch, Fragment, type SetStateAction } from "react";
-import "react-quill/dist/quill.snow.css";
 import {
   objToReturnDynamicv2,
   selectedOptionKeys,
 } from "../../lib/automation-utils";
 import { cn, omitKeys } from "../../lib/utils";
-import { useRightDrawerStore } from "../../store/right-drawer-store";
 import {
   Accordion,
   AccordionContent,
@@ -27,8 +25,8 @@ import ApiCaller from "./async-dropdown";
 import DynamicFields from "./dynamic-fields-v4";
 import { FieldWrapper } from "./field-wrapper";
 import { JsonEditor } from "./json-editor";
+import { Editor } from "./quill-editor-with-variables";
 import { SearchableSelect } from "./searchable-select";
-import ReactQuillEditor from "./textFormatter";
 
 // Validation functions
 const validateNumberGreaterThanZero = (value: string) => {
@@ -542,6 +540,15 @@ export default function AutomationSimple({
                 })
               }
               {...commonProps} />
+            {item.helperSpan && (
+              <p className="text-xs text-muted-foreground">{item.helperSpan}</p>
+            )}
+            {item.errorSpan && (
+              <p className="text-xs text-red-500 flex items-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                {item.errorSpan}
+              </p>
+            )}
           </div>
         );
 
@@ -551,8 +558,10 @@ export default function AutomationSimple({
         return (
           <div className="space-y-2">
             <div className="custom-editor w-full mb-2">
-              <ReactQuillEditor
-                item={item}
+              <Editor
+                variableName={item.variableName}
+                modules={item.modules}
+                formats={item.formats.map((elt: any) => elt.type)}
                 value={getFieldValue(item) || ""}
                 onChange={(value: any) => {
                   onChangeAutomationSimple({

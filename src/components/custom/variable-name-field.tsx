@@ -1,0 +1,76 @@
+import { AlertTriangle } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { doesVariableExist } from "../../lib/variable-utils"
+import { useFlowStore } from "../../store/flow-store"
+import { Alert, AlertDescription } from "../ui/alert"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
+
+interface VariableNameFieldProps {
+    variableName: string
+    label?: string
+    onChange: (value: string) => void
+}
+export function VariableNameField({
+    variableName,
+    label = "Variable Name",
+    onChange,
+}: VariableNameFieldProps) {
+    const [variableDup, setVariableDup] = useState("")
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const updateDialogueVariable = useFlowStore(
+        (state) => state.updateDialogueVariable
+    )
+    const selectedNodeId = useFlowStore(
+        (state) => state.clickedElement.id
+    )
+
+    const varExist = (varName: string) => {
+        const { constantVariables, outputVariables, dialogueVariables } =
+            useFlowStore.getState()
+        return doesVariableExist(varName, constantVariables, outputVariables, dialogueVariables) ? varName : ""
+    }
+
+    const checkIfVariableExist = (varName: string) => {
+        if (!varExist(varName)) {
+            updateDialogueVariable(selectedNodeId, varName)
+            setVariableDup("")
+        } else {
+            setVariableDup(varName)
+        }
+    }
+
+    const debounceMessageVariable = (value: string) => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+        }
+        timeoutRef.current = setTimeout(() => checkIfVariableExist(value), 1000)
+    }
+
+    useEffect(() => {
+        setVariableDup(varExist(variableName))
+    }, [])
+
+    return (
+        <div>
+            <Label className="block text-sm mb-1 font-normal">{label}</Label>
+            <Input
+                name="variableName"
+                placeholder={label}
+                value={variableName || ""}
+                onChange={(event) => {
+                    debounceMessageVariable(event.target.value)
+                    onChange(event.target.value)
+                }}
+            />
+            {variableDup && (
+                <Alert variant="destructive" className="mt-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>
+                        {`The variable "$\{${variableDup}}" already exists and will be overridden in subsequent nodes.`}
+                    </AlertDescription>
+                </Alert>
+            )}
+        </div>
+    )
+}

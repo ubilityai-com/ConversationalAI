@@ -25,8 +25,7 @@ export function ExpandedFieldDialog({
     const [inputValue, setInputValue] = useState(dialogProps?.value || "");
 
     const handleSaveFormDialog = () => {
-        setDialogProps({ ...dialogProps, value: inputValue })
-        setSelectedOutputOrVariable(inputValue)
+        dialogProps.onChange(inputValue)
         onOpenChange(false);
     };
 

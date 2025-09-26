@@ -1,4 +1,3 @@
-import { useReactFlow } from "@xyflow/react";
 import { Expand, Variable } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn, getAllPreviousNodes } from "../../lib/utils";
@@ -35,27 +34,16 @@ export function FieldWrapper({
 }: EditableFieldWrapperProps) {
   const setVarPicker = useFlowStore((state) => state.setVarPicker);
   const setVarPickerProps = useFlowStore((state) => state.setVarPickerProps);
-  const SelectedOutputOrVariable = useFlowStore(
-    (state) => state.selectedOutputOrVariable
-  );
-  const setSelectedOutputOrVariable = useFlowStore(
-    (state) => state.setSelectedOutputOrVariable
-  );
   const clickedElement = useFlowStore((state) => state.clickedElement);
-  const updateNodeData = useReactFlow().updateNodeData;
-
   const getInitialEditingState = () => {
     return (
       typeof value === "string" && value.trim() && hasTemplateVariable(value)
     );
   };
-
   const [isEditing, setIsEditing] = useState(getInitialEditingState);
-  const [editValue, setEditValue] = useState(String(value));
 
   const {
     setIsPopoverInteracting,
-    fieldRefs,
     setFieldRef,
     setFocusedField,
     blurTimeoutRef,
@@ -69,14 +57,10 @@ export function FieldWrapper({
   const isPopoverInteracting = useFlowStore(
     (state) => state.isPopoverInteracting
   );
-  const [inputNameOnContextMenu, setInputNameOnContextMenu] = useState<
-    string | null
-  >(null);
 
   const handleSave = () => { };
 
   const handleCancel = () => {
-    setEditValue(String(value));
     setIsEditing(false);
   };
 
@@ -97,6 +81,7 @@ export function FieldWrapper({
     if (clickedElement)
       setVarPickerProps({
         allowedNodeIds: getAllPreviousNodes(clickedElement?.id),
+        insertVariable: (text) => appendText(text, event.target)
       });
     setFieldRef(variableName, event.target);
     setFocusedField(variableName);
@@ -117,15 +102,13 @@ export function FieldWrapper({
     if (!newIsEditing) {
       onChange(field?.value || undefined);
     }
-    setInputNameOnContextMenu(variableName);
     setFocusedField(variableName);
   };
   const handleExpandIconClick = () => {
     setIsFormDialogOpen(true);
     setFormDialogStatus("ExpandedFieldDialog");
-    setInputNameOnContextMenu(variableName);
     setFocusedField(variableName)
-    setDialogProps({ label: field.label, value })
+    setDialogProps({ label: field.label, value, onChange: onChange })
   }
 
   useEffect(() => {
@@ -134,22 +117,10 @@ export function FieldWrapper({
       setIsPopoverInteracting(false);
     };
   }, []);
-  useEffect(() => {
-    if (SelectedOutputOrVariable) {
-      if (focusedField === variableName) {
-        // variableName is unique
-        let newValue = SelectedOutputOrVariable.startsWith("$")
-          ? value + SelectedOutputOrVariable
-          : SelectedOutputOrVariable;
 
-        onChange(newValue);
-
-        setInputNameOnContextMenu(null);
-      }
-      setSelectedOutputOrVariable(null);
-    }
-  }, [SelectedOutputOrVariable]); //eslint-disable-line
-
+  const appendText = (text: string, ref: HTMLElement) => {
+    onChange(`${ref?.getAttribute("value")}${text}`)
+  }
   const variableButton = (
     <Button
       size="sm"

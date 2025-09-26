@@ -5,6 +5,7 @@ import {
   Bot,
   Code,
   Edit2,
+  Eye,
   Globe,
   MessageSquare,
   Plus,
@@ -49,6 +50,8 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
     updateConstantVariable,
     deleteConstantVariable,
     deleteOutputVariable,
+    setIsRightOpen,
+    setClickedElement
   } = useFlowStore();
 
   const [editingVariable, setEditingVariable] = useState<any | null>(null);
@@ -485,8 +488,17 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
   };
 
   const renderDialogueVariables = () => {
-    const handleEyeClick = (nodeName: string, varName: string) => { };
-    console.log({ dialogueVariables });
+    
+    const handleEyeClick = (nodeId: string) => {
+      const nodes =useFlowStore.getState().nodes 
+      const node = nodes.find((n) => n.id === nodeId);
+      if (node) {
+        setClickedElement(null)
+        setTimeout(() => setClickedElement(node), 300)
+        setIsRightOpen(true);
+        onOpenChange(false);
+      }
+    };
 
     return (
       <div className="space-y-3">
@@ -514,9 +526,9 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
                         {typeof varName}
                       </Badge>
                     </div>
-                    {/* <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" onClick={()=>handleEyeClick(nodeId)}>
                       <Eye className="w-4 h-4" />
-                    </Button> */}
+                    </Button>
                   </div>
                 </div>
               </CardContent>

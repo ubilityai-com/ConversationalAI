@@ -54,8 +54,8 @@ export interface FlowState extends SlicesStates {
   isPopoverInteracting: boolean;
   setIsPopoverInteracting: (open: boolean) => void;
   setVarPicker: (value: boolean) => void;
-  varPickerProps: { allowedNodeIds: string[] } | null;
-  setVarPickerProps: (props: { allowedNodeIds: string[] } | null) => void;
+  varPickerProps: { allowedNodeIds: string[],insertVariable: (variable: any) => void  } | null;
+  setVarPickerProps: (props: { allowedNodeIds: string[], insertVariable: (variable: any) => void } | null) => void;
 
   // Flow instance
   reactFlowInstance: ReactFlowInstance | null;
