@@ -1,5 +1,8 @@
 import json
 import aiohttp
+import os,sys
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from applications.functions import normalize_params
 ############################################## Authentication ###################################################
 
@@ -164,7 +167,6 @@ async def airtable_list_records(json_cred, params, **kwargs):
                 if value
                 if key not in ignore_keys
             }
-            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.post(url=url, headers=headers, json=data) as response:
                     response.raise_for_status()
@@ -223,7 +225,6 @@ async def airtable_create_record(json_cred, params, **kwargs):
                 if value
                 if key not in ignore_keys
             }
-            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.post(url=url, headers=headers, json=data) as response:
                     response.raise_for_status()
@@ -286,7 +287,6 @@ async def airtable_update_record(json_cred, params, **kwargs):
                 if value
                 if key not in ignore_keys
             }
-            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 if replace:
                     async with session.put(url=url, headers=headers, json=data) as response:
@@ -374,7 +374,6 @@ async def airtable_batch_update_or_create_records(json_cred, params, **kwargs):
                 if value
                 if key not in ignore_keys
             }
-            data = normalize_params(data)
             data["performUpsert"] = {"fieldsToMergeOn": fieldsToMergeOn}
             async with aiohttp.ClientSession() as session:
                 if replace:
@@ -426,7 +425,6 @@ async def airtable_delete_record(json_cred, params, **kwargs):
             headers = {
                 "Authorization": f"Bearer {accessToken}"
             }
-            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.delete(url=url, headers=headers) as response:
                     response.raise_for_status()
