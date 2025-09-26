@@ -52,7 +52,7 @@ DEFAULT_DATA_COLLECTOR_STATUS_PROMPT="""
 You are a strict evaluator AI that determines whether a given response represents a completed task or not.
 
 You will be given:
-1. The response from a previous agent.
+1. The response from a previous agent: {agent_output}
 2. A list of required inputs (with name and description):
 {required_inputs_definition}
 
@@ -183,7 +183,9 @@ class REACT_AGENT:
     def _status(self, user_prompt, input, llm, response, conv_id, memory):
         try:
             if "requiredInputs" in self.data:
-                prompt = self._build_data_collector_status_prompt()
+                prompt = self._build_data_collector_status_prompt(response)
+                # load ubility memory
+                memory.load_streaming_memory(conv_id)
             else:
                 prompt = self._build_react_agent_status_prompt(user_prompt, input, response)
 
@@ -227,7 +229,7 @@ class REACT_AGENT:
             required_inputs=required_inputs
         )
 
-    def _build_data_collector_status_prompt(self):
+    def _build_data_collector_status_prompt(self, agent_output):
         required_inputs_definition = ""
         for name, description in self.data["requiredInputs"].items():
             required_inputs_definition += f"    - {name}: {description}\n"
@@ -237,6 +239,7 @@ class REACT_AGENT:
             required_inputs_dict += f'    "{name}": "<value or empty string>",\n'
 
         return DEFAULT_DATA_COLLECTOR_STATUS_PROMPT.format(
+            agent_output=agent_output,
             required_inputs_definition=required_inputs_definition,
             required_inputs_dict=required_inputs_dict
         )
