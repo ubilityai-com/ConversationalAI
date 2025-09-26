@@ -732,7 +732,8 @@ async def jira_get_users(json_cred, params, **kwargs):
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, auth=auth, params=data) as response:
                     if response.status == 200:
-                        return await response.json()
+                        users = await response.json()
+                        return {"Users": users}
                     raise Exception(
                         f"Status Code: {response.status}. Response: {await response.text()}"
                     )
