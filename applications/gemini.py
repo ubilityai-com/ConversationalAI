@@ -1,8 +1,10 @@
 import aiohttp,sys,os,json,mimetypes
 import  requests, base64
-from applications.functions import get_file_data,upload_file
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from applications.functions import get_file_data,upload_file,normalize_params
+
+
 
 
 async def gemini_text_generation(json_cred, params, **kwargs):
@@ -233,6 +235,7 @@ async def gemini_get_many_file(json_cred, params, **kwargs):
                     query_params = {"pageSize": 100}
                     if page_token:
                         query_params["pageToken"] = page_token
+                    query_params = normalize_params(query_params)
                     async with session.get(url, headers=headers, params=query_params) as response:
                         response.raise_for_status()
                         data = await response.json()

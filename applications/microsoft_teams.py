@@ -1,5 +1,10 @@
 import json
 import aiohttp
+import os,sys
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from applications.functions import normalize_params
+
 status = [200, 201, 202, 204, 206, 207, 208]
 
 async def ref_token(creds):
@@ -107,6 +112,7 @@ async def microsoft_teams_get_channels_for_team(json_cred, params, **kwargs):
             headers = {
                 "Authorization": f"Bearer {accessToken}",
             }
+            params = normalize_params(params)
             async with aiohttp.ClientSession() as session:
                 async with session.get(graph_endpoint, headers=headers, params=params) as response:
                     if response.status in status:

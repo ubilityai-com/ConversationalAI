@@ -2,7 +2,7 @@ import aiohttp, json, os, sys
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from applications.functions import get_file_data, upload_file
+from applications.functions import get_file_data, upload_file, normalize_params
 
 
 
@@ -80,7 +80,7 @@ async def service_now_get_many_attachments(json_cred, params, **kwargs):
             if value
             if key not in ignore_keys
         }
-        
+        data = normalize_params(data)
         async with aiohttp.ClientSession() as session:
             async with session.get(url=url, headers=headers, params=data) as response:
                 if response.status == 200:
@@ -218,6 +218,7 @@ async def service_now_upload_attachment(json_cred, params, **kwargs):
                         raise Exception("File content is empty.")
                 else:
                     raise Exception("missing input data")
+                data = normalize_params(data)
                 async with session.post(url=main_url, headers=headers, params=data, data=body) as response:
                     if response.status == 201:
                         result = await response.json()
@@ -315,6 +316,7 @@ async def service_now_get_many_table_records(json_cred, params, **kwargs):
                 if key not in ignore_keys
             }
             
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, params=data) as response:
                     if response.status == 200:
@@ -372,6 +374,7 @@ async def service_now_get_table_record(json_cred, params, **kwargs):
                 if key not in ignore_keys
             }
             
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, params=data) as response:
                     if response.status == 200:
@@ -554,7 +557,7 @@ async def service_now_get_many_incidents(json_cred, params, **kwargs):
             if value
             if key not in ignore_keys
         }
-        
+        data = normalize_params(data)
         async with aiohttp.ClientSession() as session:
             async with session.get(url=url, headers=headers, params=data) as response:
                 if response.status == 200:
@@ -607,6 +610,7 @@ async def service_now_get_incident(json_cred, params, **kwargs):
                 if value
                 if key not in ignore_keys
             }
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, params=data) as response:
                     if response.status == 200:
@@ -778,6 +782,7 @@ async def service_now_get_many_users(json_cred, params, **kwargs):
             if value
             if key not in ignore_keys
         }
+        data = normalize_params(data)
         async with aiohttp.ClientSession() as session:
             async with session.get(url=url, headers=headers, params=data) as response:
                 if response.status == 200:
@@ -830,6 +835,7 @@ async def service_now_get_user(json_cred, params, **kwargs):
                 if value
                 if key not in ignore_keys
             }
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, params=data) as response:
                     if response.status == 200:
@@ -1000,6 +1006,7 @@ async def service_now_get_many_user_groups(json_cred, params, **kwargs):
             if value
             if key not in ignore_keys
         }
+        data = normalize_params(data)
         async with aiohttp.ClientSession() as session:
             async with session.get(url=url, headers=headers, params=data) as response:
                 if response.status == 200:
@@ -1053,6 +1060,7 @@ async def service_now_get_many_user_roles(json_cred, params, **kwargs):
             if value
             if key not in ignore_keys
         }
+        data = normalize_params(data)
         async with aiohttp.ClientSession() as session:
             async with session.get(url=url, headers=headers, params=data) as response:
                 if response.status == 200:
@@ -1106,6 +1114,7 @@ async def service_now_get_many_business_services(json_cred, params, **kwargs):
             if value
             if key not in ignore_keys
         }
+        data = normalize_params(data)
         async with aiohttp.ClientSession() as session:
             async with session.get(url=url, headers=headers, params=data) as response:
                 if response.status == 200:
@@ -1159,6 +1168,7 @@ async def service_now_get_many_configuration_items(json_cred, params, **kwargs):
             if value
             if key not in ignore_keys
         }
+        data = normalize_params(data)
         async with aiohttp.ClientSession() as session:
             async with session.get(url=url, headers=headers, params=data) as response:
                 if response.status == 200:
@@ -1212,6 +1222,7 @@ async def service_now_get_many_deprtments(json_cred, params, **kwargs):
             if value
             if key not in ignore_keys
         }
+        data = normalize_params(data)
         async with aiohttp.ClientSession() as session:
             async with session.get(url=url, headers=headers, params=data) as response:
                 if response.status == 200:
@@ -1265,6 +1276,7 @@ async def service_now_get_many_dictionaries(json_cred, params, **kwargs):
             if value
             if key not in ignore_keys
         }
+        data = normalize_params(data)
         async with aiohttp.ClientSession() as session:
             async with session.get(url=url, headers=headers, params=data) as response:
                 if response.status == 200:

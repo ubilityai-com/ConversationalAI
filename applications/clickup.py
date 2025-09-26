@@ -1,6 +1,9 @@
 import aiohttp
 import json
+import os,sys
 
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from applications.functions import normalize_params
 
 async def extract_credentials(creds):
     """
@@ -53,7 +56,7 @@ async def clickup_create_checklist(json_cred, params, **kwargs):
             }
             url =f"https://api.clickup.com/api/v2/task/{params['task_id']}/checklist" 
             headers = {'Authorization': token, 'Content-Type': 'application/json'}
-            
+            query = normalize_params(query)
             async with aiohttp.ClientSession() as session:
                 async with session.post(url=url, json=payload, headers=headers, params=query) as response:
                     if response.status == 200:
@@ -398,7 +401,7 @@ async def clickup_get_many_folders(json_cred, params, **kwargs):
                 if 'archived' in params.items():
                     query={}
                     query['archived']=params['archived']
-                    
+                    query = normalize_params(query)
                     async with session.get(url=url, headers=headers,params=query) as response:
                         if response.status == 200:
                             return await response.json()
@@ -597,6 +600,7 @@ async def clickup_get_many_lists(json_cred, params, **kwargs):
                 if 'archived' in params:
                     query={}
                     query['archived']=params['archived']
+                    query = normalize_params(query)
                     async with session.get(url=url, headers=headers,params=query) as response:
                         if response.status == 200:
                             return await response.json()
@@ -732,7 +736,7 @@ async def clickup_create_task(json_cred, params, **kwargs):
                 query["team_id"] = params["team_id"]
             url =f"https://api.clickup.com/api/v2/list/{params['list_id']}/task" 
             headers = {'Authorization': token, 'Content-Type': 'application/json'}
-            
+            query = normalize_params(query)
             async with aiohttp.ClientSession() as session:
                 async with session.post(url=url, json=task, headers=headers, params=query) as response:
                     if response.status == 200:
@@ -796,7 +800,7 @@ async def clickup_update_task(json_cred, params, **kwargs):
                 query["team_id"] = params["team_id"]
             url = f"https://api.clickup.com/api/v2/task/{params['task_id']}" 
             headers = {'Authorization': token, 'Content-Type': 'application/json'}
-            
+            query = normalize_params(query)
             async with aiohttp.ClientSession() as session:
                 async with session.put(url=url, json=task, headers=headers, params=query) as response:
                     if response.status == 200:
@@ -840,7 +844,7 @@ async def clickup_get_task(json_cred, params, **kwargs):
                 query[key]=value 
             url =f"https://api.clickup.com/api/v2/task/{params['task_id']}" 
             headers = {'Authorization': token, 'Content-Type': 'application/json'}
-            
+            query = normalize_params(query)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url,headers=headers,params=query) as response:
                     if response.status == 200:
@@ -899,7 +903,7 @@ async def clickup_get_many_tasks(json_cred, params, **kwargs):
                 query[key]=value 
             url =f"https://api.clickup.com/api/v2/list/{params['list_id']}/task" 
             headers = {'Authorization': token, 'Content-Type': 'application/json'}
-            
+            query = normalize_params(query)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url,headers=headers,params=query) as response:
                     if response.status == 200:
@@ -1009,7 +1013,7 @@ async def clickup_create_task_dependency(json_cred, params, **kwargs):
                 query["team_id"] = params["team_id"]
             url =f"https://api.clickup.com/api/v2/task/{params['task_id']}/dependency" 
             headers = {'Authorization': token, 'Content-Type': 'application/json'}
-            
+            query = normalize_params(query)
             async with aiohttp.ClientSession() as session:
                 async with session.post(url, json=dependency, headers=headers, params=query) as response:
                     if response.status == 200:
@@ -1050,7 +1054,7 @@ async def clickup_delete_task_dependency(json_cred, params, **kwargs):
                     query[key]=value
             url =f"https://api.clickup.com/api/v2/task/{params['task_id']}/dependency"
             headers = {'Authorization': token, 'Content-Type': 'application/json'}
-            
+            query = normalize_params(query)
             async with aiohttp.ClientSession() as session:
                 async with session.delete(url, headers=headers, params=query) as response:
                     if response.status == 200:
@@ -1169,7 +1173,7 @@ async def clickup_start_timeentry(json_cred, params, **kwargs):
                 query["team_id"] = params["team_id"]
             url =f"https://api.clickup.com/api/v2/team/{params['team_ID']}/time_entries/start" 
             headers = {'Authorization': token, 'Content-Type': 'application/json'}
-            
+            query = normalize_params(query)
             async with aiohttp.ClientSession() as session:
                 async with session.post(url=url, json=entry, headers=headers, params=query) as response:
                     if response.status == 200:
@@ -1242,7 +1246,7 @@ async def clickup_get_many_timeentries(json_cred, params, **kwargs):
                 query[key]=value 
             url =f"https://api.clickup.com/api/v2/team/{params['team_id']}/time_entries" 
             headers = {'Authorization': token, 'Content-Type': 'application/json'}
-            
+            query = normalize_params(query)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, params=query) as response:
                     if response.status == 200:
