@@ -1,5 +1,9 @@
 import json
 import aiohttp
+import os,sys
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from applications.functions import normalize_params
 status=[200, 201, 202, 204, 206, 207, 208]
 
 async def refresh_access_token(cred):
@@ -102,6 +106,7 @@ async def zoom_get_meeting(json_cred, params, **kwargs):
                 'Content-Type': 'application/json',
             }
             
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url, headers=headers, params=data) as response:
                     if response.status in status:
@@ -139,6 +144,7 @@ async def zoom_list_meetings(json_cred, params, **kwargs):
             'Content-Type': 'application/json',
         }
         
+        data = normalize_params(data)
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers, params=data) as response:
                 if response.status in status:
@@ -229,6 +235,7 @@ async def zoom_delete_meeting(json_cred, params, **kwargs):
                 'Content-Type': 'application/json',
             }
             
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.delete(url, headers=headers, params=data) as response:
                     if response.status in status:

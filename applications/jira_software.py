@@ -4,7 +4,7 @@ import json
 
 import sys,os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-from applications.functions import get_file_data, upload_file
+from applications.functions import get_file_data, upload_file, normalize_params
 
 
 async def jira_authenticate(cred):
@@ -62,6 +62,7 @@ async def jira_get_issues(json_cred, params, **kwargs):
             jql_query = ' AND '.join(jql_parts)
             data["jql"] = jql_query
             
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, auth=auth, params=data) as response:
                     if response.status == 200:
@@ -106,6 +107,7 @@ async def jira_get_issue(json_cred, params, **kwargs):
                 if value
                 if key not in ignore_keys
             }
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, auth=auth, params=data) as response:
                     if response.status == 200:
@@ -305,6 +307,7 @@ async def jira_get_comments(json_cred, params, **kwargs):
                 if value
                 if key not in ignore_keys
             }
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, auth=auth, params=data) as response:
                     if response.status == 200:
@@ -348,6 +351,7 @@ async def jira_get_comment(json_cred, params, **kwargs):
                 if value
                 if key not in ignore_keys
             }
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, auth=auth, params=data) as response:
                     if response.status == 200:
@@ -729,6 +733,7 @@ async def jira_get_users(json_cred, params, **kwargs):
                 if value
                 if key not in ignore_keys
             }
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, auth=auth, params=data) as response:
                     if response.status == 200:
@@ -773,6 +778,7 @@ async def jira_get_user(json_cred, params, **kwargs):
             }
             data["accountId"] = params["id"]
             
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, auth=auth, params=data) as response:
                     if response.status == 200:

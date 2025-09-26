@@ -1,5 +1,8 @@
 import aiohttp,json,datetime
+import os,sys
 
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from applications.functions import normalize_params
 ################## AUTHENTICATION ######################################################################################
 
 async def hubspot_refresh_access_token(credentials):
@@ -62,6 +65,7 @@ async def hubspot_get_contact(cred, params, **kwargs):
                 'Content-Type': 'application/json',
                 'Authorization': f'Bearer {access_token}'
             }
+            query_params = normalize_params(query_params)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, params=query_params) as response:
                     response.raise_for_status()
@@ -261,6 +265,7 @@ async def hubspot_get_deal(cred, params, **kwargs):
                 'Content-Type': 'application/json',
                 'Authorization': f'Bearer {access_token}'
             }
+            query_params = normalize_params(query_params)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, params=query_params) as response:
                     response.raise_for_status()
@@ -399,6 +404,7 @@ async def hubspot_get_ticket(cred, params, **kwargs):
                 'Content-Type': 'application/json',
                 'Authorization': f'Bearer {access_token}'
             }
+            query_params = normalize_params(query_params)
             async with aiohttp.ClientSession() as session:
                 async with session.get(url=url, headers=headers, params=query_params) as response:
                     response.raise_for_status()

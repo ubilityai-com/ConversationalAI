@@ -466,8 +466,9 @@ async def airtable_batch_delete_records(json_cred, params, **kwargs):
             headers = {
                 "Authorization": f"Bearer {accessToken}"
             }
-            data = normalize_params(data)
+            
             data = {"records": record_ids}
+            data = normalize_params(data)
             async with aiohttp.ClientSession() as session:
                 async with session.delete(url=url, headers=headers, params=data) as response:
                     response.raise_for_status()

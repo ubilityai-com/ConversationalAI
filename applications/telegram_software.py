@@ -1,6 +1,7 @@
 import aiohttp,sys,os,json
-from applications.functions import get_file_data,upload_file
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from applications.functions import get_file_data,upload_file,normalize_params
 
 async def telegram_send_message(json_cred, params, **kwargs):
     """
@@ -173,6 +174,7 @@ async def telegram_get_file(json_cred, params, **kwargs):
             if 'file_id' in params:
                 file_id = params['file_id']
                 param = {"file_id": file_id}
+                param = normalize_params(param)
                 async with aiohttp.ClientSession() as session:
                     async with session.get(get_url, params=param) as response:
                         response.raise_for_status()
@@ -228,6 +230,7 @@ async def telegram_get_chat(json_cred, params, **kwargs):
             token = creds['accessToken']
             url = f"https://api.telegram.org/bot{token}/getChat"
             if 'chat_id' in params:
+                params = normalize_params(params)
                 async with aiohttp.ClientSession() as session:
                     async with session.get(url, params=params) as response:
                         response.raise_for_status()
