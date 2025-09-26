@@ -137,7 +137,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
     else:
         print(f'[Warning] Invalid element type: {element_type}')
 
-    # conversation['last_input_value'] = ''
+    # conversation['variables']['last_input_value'] = ''
     
     # Post-processing: move to next step if not waiting for user input
     if not wait_for_user:
@@ -166,10 +166,24 @@ async def execute_state(sio, sid, state, conversation, conversation_id, current_
         "data": {
             "inputs": {
                 "instruction": "Determine which of the provided scenarios is the best fit for the input.",
-                "query": conversation["last_input_value"],
+                "query": conversation['variables']["last_input_value"],
                 "scenarios": state["scenarios"],
             },
-            "model": state["model"],
+            # "model": state["model"],
+            "model": {
+                "provider": "openAi",
+                "model": "gpt-4o",
+                "credential": "talaopenaicred",
+                "params": {
+                    "optionals": {
+                        "base_url": "https://api.openai.com/v1",
+                        "max_tokens": 4096,
+                        "temperature": 0.8,
+                        "timeout": 60000,
+                        "max_retries": 2
+                    }
+                }
+            },
             "params": {"stream": True},
         }
     }

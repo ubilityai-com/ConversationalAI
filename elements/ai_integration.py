@@ -52,7 +52,7 @@ class AIIntegration:
 
     async def _execute_react_agent(self, sio, sid, conversation, conversation_id):
         if conversation and conversation['react_fail']:
-            last_input_value = conversation['last_input_value']
+            last_input_value = conversation['variables']['last_input_value']
             print(f"Executing REACT agent with last input value")
             result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id, last_input_value)
             self._handle_status(result["status"], conversation)
@@ -65,7 +65,7 @@ class AIIntegration:
                 if self.data['inputs']["query"]:
                     last_input_value = self.data['inputs']["query"]
                 else:
-                    last_input_value = conversation['last_input_value']
+                    last_input_value = conversation['variables']['last_input_value']
 
                 result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id, last_input_value)
                 self._handle_status(result["status"], conversation)
