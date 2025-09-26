@@ -148,3 +148,13 @@ def get_file_data(dialogue_id,conv_id,file_name):
 
     except Exception as error:
         return {"Error": str(error)}
+
+
+def normalize_params(params: dict):
+    new_params = {}
+    for k, v in params.items():
+        if isinstance(v, bool):
+            new_params[k] = str(v).lower()   # "true" / "false"
+        else:
+            new_params[k] = v
+    return new_params
