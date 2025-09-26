@@ -841,7 +841,7 @@ async def outlook_reply_message(json_cred, params, **kwargs):
                     async with aiohttp.ClientSession() as session:
                         async with session.get(attachment["url_attachment"]) as response:
                             if response.status == 200:
-                                file_content = response.content
+                                file_content = await response.read() 
                                 if file_content:
                                     encoded_content = base64.b64encode(
                                         file_content).decode('utf-8')
@@ -871,7 +871,8 @@ async def outlook_reply_message(json_cred, params, **kwargs):
                 result = await response.json()
                 if response.status in status:
                     return {"Message": "Reply creation request accepted."}
-                return {"Error": result} 
+                else:
+                    raise Exception(f"Status code: {response.status}. Response: {response.text}")
 
     except aiohttp.ClientError as e:
         return {"Error": str(e)}
@@ -963,7 +964,7 @@ async def outlook_send_message(json_cred, params, **kwargs):
                     async with aiohttp.ClientSession() as session:
                         async with session.get(attachment["url_attachment"]) as response:
                             if response.status == 200:
-                                file_content = response.content
+                                file_content = await response.read() 
                                 if file_content:
                                     encoded_content = base64.b64encode(
                                         file_content).decode('utf-8')
@@ -979,14 +980,13 @@ async def outlook_send_message(json_cred, params, **kwargs):
                                 raise Exception(
                                     f"Failed to download file from URL. Status code: {response.status}")
                 else:
-                    raise Exception(
-                        f"Invalid attachment type: {attachment['type']}")
+                    raise Exception(f"Invalid attachment type: {attachment['type']}")
         async with aiohttp.ClientSession() as session:
             async with session.post(url, headers=headers, json=email_data) as response:
-                result = await response.json()
                 if response.status in status:
-                    return result
-                return {"Error": result} 
+                    return {"message": "Email sent successfully!"}
+                else:
+                    raise Exception(f"Failed to send email. Status code: {response.status}. Response: {response.text}")
 
     except aiohttp.ClientError as e:
         return {"Error": str(e)}
