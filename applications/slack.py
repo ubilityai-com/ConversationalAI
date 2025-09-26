@@ -3,8 +3,9 @@ import logging
 import json
 import requests
 import base64
-import os
-
+import os,sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from applications.functions import get_file_data, upload_file
 
 # Message Actions
 
@@ -627,7 +628,6 @@ def slack_get_file(creds,params,**kwargs):
       dict: A dictionary containing information about the specified file.
 
     """
-    from applications.functions import upload_file
     try:
         cred=json.loads(creds)
         if "accessToken" in cred and "file" in params:
@@ -730,7 +730,6 @@ def slack_upload_file(creds,params,**kwargs):
       dict: A dictionary containing information about the uploaded file.
 
     """
-    from applications.functions import get_file_data
     try:
         cred=json.loads(creds)
         if "accessToken" in cred and "channel" in params and "filename" in params and ("url" in params or "content" in params): # here filename key is for slack , content key is the file name on ubility server

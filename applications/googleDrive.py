@@ -14,25 +14,6 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from applications.functions import get_file_data,upload_file
 
 
-    # """
-    # Create a new folder in Google Drive.
-
-    # :param str access_token:
-    #     The access token for authenticating with Google Drive. (required)
-
-    # :param dict params:
-    #     - content (str): The content to be added to the file.(required)
-    #     - body (dict):
-    #         - name (str): The name of the new folder. (required)
-    #         - parents (list): A list of parent folder IDs where the new folder should be created. (optional)
-    #     - ocrLanguage (str): The language to use for OCR (Optical Character Recognition).
-    #     - useContentAsIndexableText (bool): Whether to use the content as indexable text.
-    #     - properties (list): A list of custom properties with keys and values.
-    #     - appProperties (list): A list of custom app properties with keys and values.
-
-    # :return: The response from the Google Drive API after creating the folder.
-    # :rtype: dict
-    # """
 def create_service(access_token, API_SERVICE_NAME="drive", API_VERSION="v3"):
     try:
         creds_data = json.loads(access_token)

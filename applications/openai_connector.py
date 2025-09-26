@@ -1,5 +1,5 @@
 import aiohttp, sys, os, json
-import requests, base64
+import base64
 from applications.functions import get_file_data, upload_file
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))

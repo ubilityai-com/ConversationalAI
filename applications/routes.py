@@ -1413,7 +1413,7 @@ async def clickup_get_spaces(payload: ClickupWithteamAppIntegration):
         headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
         
         async with aiohttp.ClientSession() as session:
-            async with session.get(api_url,headers=headers, params={"archived":"True"}) as response:
+            async with session.get(api_url,headers=headers) as response:
                 if response.status == 200:
                     data = await response.json()
                     spaces_info = [{"id": int(space['id']), "name": space['name']}
@@ -1440,7 +1440,7 @@ async def clickup_get_forderless_lists(payload: ClickupWithSpaceAppIntegration):
         headers = {'Authorization': accessToken, 'Content-Type': 'application/json'}
         
         async with aiohttp.ClientSession() as session:
-            async with session.get(api_url,headers=headers, params={"archived":"True"}) as response:
+            async with session.get(api_url,headers=headers) as response:
                 if response.status == 200:
                     data = await response.json()
                     lists_info = [{"id": int(list['id']), "name": list['name']}
