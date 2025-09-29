@@ -8,7 +8,6 @@ import requests
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 import json,mimetypes,os,sys
-import logging
 import sys,os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from applications.functions import get_file_data,upload_file
@@ -27,10 +26,8 @@ def create_service(access_token):
             API_SERVICE_NAME,API_VERSION, credentials=creds, static_discovery=False
         )
 
-        logging.warning(API_SERVICE_NAME,API_VERSION, 'service created successfully')
         return service
     except Exception as e:
-        logging.warning(f'Failed to create service instance for {e}')
         raise Exception(f'Failed to create service instance {e}')
 
 

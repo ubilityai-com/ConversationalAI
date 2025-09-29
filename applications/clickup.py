@@ -398,11 +398,11 @@ async def clickup_get_many_folders(json_cred, params, **kwargs):
             url = f"https://api.clickup.com/api/v2/space/{params['space_id']}/folder"
             headers = {'Authorization': token, 'Content-Type': 'application/json'}
             async with aiohttp.ClientSession() as session:
-                if 'archived' in params.items():
+                if 'archived' in params:
                     query={}
                     query['archived']=params['archived']
                     query = normalize_params(query)
-                    async with session.get(url=url, headers=headers,params=query) as response:
+                    async with session.get(url=url, headers=headers, params=query) as response:
                         if response.status == 200:
                             return await response.json()
                         raise Exception(
@@ -601,7 +601,7 @@ async def clickup_get_many_lists(json_cred, params, **kwargs):
                     query={}
                     query['archived']=params['archived']
                     query = normalize_params(query)
-                    async with session.get(url=url, headers=headers,params=query) as response:
+                    async with session.get(url=url, headers=headers, params=query) as response:
                         if response.status == 200:
                             return await response.json()
                         raise Exception(
@@ -846,7 +846,7 @@ async def clickup_get_task(json_cred, params, **kwargs):
             headers = {'Authorization': token, 'Content-Type': 'application/json'}
             query = normalize_params(query)
             async with aiohttp.ClientSession() as session:
-                async with session.get(url=url,headers=headers,params=query) as response:
+                async with session.get(url=url,headers=headers, params=query) as response:
                     if response.status == 200:
                         return await response.json()
                     raise Exception(
@@ -905,7 +905,7 @@ async def clickup_get_many_tasks(json_cred, params, **kwargs):
             headers = {'Authorization': token, 'Content-Type': 'application/json'}
             query = normalize_params(query)
             async with aiohttp.ClientSession() as session:
-                async with session.get(url=url,headers=headers,params=query) as response:
+                async with session.get(url=url,headers=headers, params=query) as response:
                     if response.status == 200:
                         return await response.json()
                     raise Exception(

@@ -122,9 +122,9 @@ async def telegram_send_file(json_cred, params, **kwargs):
                         data.add_field(key, str(value))
 
                 if kwargs:
-                        # Extra conv_id & dialogue_id
-                        dialogue_id = kwargs.get("dialogue_id")
-                        conv_id = kwargs.get("conv_id")
+                    # Extra conv_id & dialogue_id
+                    dialogue_id = kwargs.get("dialogue_id")
+                    conv_id = kwargs.get("conv_id")
 
                 content_data = get_file_data(dialogue_id,conv_id,file_name)
                 if "Error" in content_data:
