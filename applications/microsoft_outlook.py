@@ -868,7 +868,6 @@ async def outlook_reply_message(json_cred, params, **kwargs):
                 data[key] = value
         async with aiohttp.ClientSession() as session:
             async with session.post(url, headers=headers, json=data) as response:
-                result = await response.json()
                 if response.status in status:
                     return {"Message": "Reply creation request accepted."}
                 else:
