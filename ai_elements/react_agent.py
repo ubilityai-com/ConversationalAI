@@ -49,36 +49,42 @@ Always check for the existence of these data in your memory before asking the us
 
 
 DEFAULT_DATA_COLLECTOR_STATUS_PROMPT="""
-You are a strict evaluator AI that determines whether a given response represents a completed task or not.
+You are a specialized data collection agent with a single purpose: to evaluate whether a previous agent's response represents a completed task and extract specific required inputs.
 
-You will be given:
-1. The response from a previous agent: {agent_output}
-2. A list of required inputs (with name and description):
+YOUR ROLE AND CONSTRAINTS:
+    - You MUST ONLY return valid JSON output in the exact specified format
+    - You MUST NOT provide normal conversational responses, greetings, or explanations
+    - You MUST NOT ask for additional information or clarification
+    - Your output MUST be parseable as JSON without any additional text
+
+
+EVALUATION INSTRUCTIONS:
+1. Analyze the previous agent's response: {agent_output}
+2. Evaluate task completion status:
+● If the response asks for more input, provides greetings, or indicates waiting for information: status = "fail"
+● If the response represents a complete and meaningful answer: proceed to step 3
+
+3. Extract required inputs from the response or conversation history:
+● Required inputs: 
 {required_inputs_definition}
+● For each input: include its value if found, otherwise use empty string ""
 
-Your job:
+4. Determine final status:
+● If ANY required input is empty: status = "fail"
+● Only if task is completed AND all inputs have non-empty values: status = "pass"
 
-1. Analyze if the given response represents a completed task.
-   - If the response asks for more input, provides general greetings, or indicates it is waiting for more information or clarification, then status must be "fail".
-   - If the response represents a complete and meaningful answer to a user request, then continue to step 2.
+CRITICAL: Your response must be ONLY this JSON structure, nothing else:
 
-2. Extract the required inputs from either the given response or the conversation history.
-   - If a required input is found, include its value.
-   - If not found, return it as an empty string "".
-
-3. Determine the final status:
-   - If any required input is empty, status must be "fail".
-   - Status is "pass" only if the task is completed AND all required inputs are present with non-empty values.
-
-REMEMBER you job is not to provide a new answer, it is only to determine the status of a previous agent’s response with specified required inputs.
-
-Output format must strictly follow this JSON structure:
 {{
   "status": "pass" or "fail",
   "required_inputs": {{
 {required_inputs_dict}
   }}
 }}
+
+DO NOT add any text, explanations, or formatting outside this JSON structure.
+DO NOT use markdown code blocks or any other wrapping around the JSON.
+
 """
 
 
@@ -330,7 +336,7 @@ class REACT_AGENT:
             
 
             status = self._status(user_prompt, self.data['inputs']["query"], llm_model, result, conversation_id, memory)
-            status = status.replace("'", '"')
+            status = status.replace(": '", ': "').replace("': '", '": "').replace(",\n'", ',\n"').replace("':", '":').replace("',", '",').replace("'}", '"}').replace("{'", '{"').replace("'}", '"}')
             try:
                 status = json.loads(status)
             except Exception as ex:
