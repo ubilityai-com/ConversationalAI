@@ -169,21 +169,7 @@ async def execute_state(sio, sid, state, conversation, conversation_id, current_
                 "query": conversation['variables']["last_input_value"],
                 "scenarios": state["scenarios"],
             },
-            # "model": state["model"],
-            "model": {
-                "provider": "openAi",
-                "model": "gpt-4o",
-                "credential": "talaopenaicred",
-                "params": {
-                    "optionals": {
-                        "base_url": "https://api.openai.com/v1",
-                        "max_tokens": 4096,
-                        "temperature": 0.8,
-                        "timeout": 60000,
-                        "max_retries": 2
-                    }
-                }
-            },
+            "model": state["model"],
             "params": {"stream": True},
         }
     }
