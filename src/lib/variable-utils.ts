@@ -10,18 +10,32 @@ export function doesVariableExist(
   outputVariables: OutputVariables,
   dialogueVariables: DialogueVariables
 ): boolean {
-  // Check constant variables
-  if (name in constantVariables) return true;
+  return doesVariableExistInConstants(name, constantVariables) ||
+    doesVariableExistInOutputs(name, outputVariables) ||
+    doesVariableExistInDialogues(name, dialogueVariables);
+}
+export function doesVariableExistInConstants(
+  name: string,
+  constantVariables: ConstantVariable
+): boolean {
+  return name in constantVariables;
+}
 
-  // Check output variables across all node IDs
+export function doesVariableExistInOutputs(
+  name: string,
+  outputVariables: OutputVariables
+): boolean {
   for (const variables of Object.values(outputVariables)) {
     if (name in variables) return true;
   }
-
-  // Check dialogue variables
-  if (Object.values(dialogueVariables).includes(name)) return true;
-
   return false;
+}
+
+export function doesVariableExistInDialogues(
+  name: string,
+  dialogueVariables: DialogueVariables
+): boolean {
+  return Object.values(dialogueVariables).includes(name);
 }
 export function isPickedPathAlreadyExistsInCreatedVariables(aPath: string, flowZoneSelectedID: string, createdVariables: OutputVariables) {
   let toReturn: boolean | string = false;
@@ -78,4 +92,62 @@ export function getOutputVariablesByNodeId(
     name,
     path
   }));
+}
+export function hasDialogueVariableInOtherNodes(
+  varname: string,
+  currentNodeId: string
+): boolean {
+  const dialogueVariables = useFlowStore.getState().dialogueVariables
+  for (const [nodeId, variableName] of Object.entries(dialogueVariables)) {
+    if (variableName === varname && nodeId !== currentNodeId) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export type VariableOrigin = {
+  type: 'constants' | 'outputs' | 'dialogues';
+  nodeIds?: string[]; // only for outputs and dialogues
+  count: number;
+};
+
+export function findDetailedVariableOrigins(
+  name: string,
+): VariableOrigin[] {
+  const outputVariables = useFlowStore.getState().outputVariables
+  const constantVariables = useFlowStore.getState().constantVariables
+  const dialogueVariables = useFlowStore.getState().dialogueVariables
+
+  const origins: VariableOrigin[] = [];
+
+  // Check constant variables
+  // Check constant variables
+  if (name in constantVariables) {
+    origins.push({ type: 'constants', count: 1 });
+  }
+
+  // Check output variables
+  const outputNodeIds: string[] = [];
+  for (const [nodeId, variables] of Object.entries(outputVariables)) {
+    if (name in variables) {
+      outputNodeIds.push(nodeId);
+    }
+  }
+  if (outputNodeIds.length > 0) {
+    origins.push({ type: 'outputs', nodeIds: outputNodeIds, count: outputNodeIds.length });
+  }
+
+  // Check dialogue variables
+  const dialogueNodeIds: string[] = [];
+  for (const [nodeId, variableName] of Object.entries(dialogueVariables)) {
+    if (variableName === name) {
+      dialogueNodeIds.push(nodeId);
+    }
+  }
+  if (dialogueNodeIds.length > 0) {
+    origins.push({ type: 'dialogues', nodeIds: dialogueNodeIds, count: dialogueNodeIds.length });
+  }
+
+  return origins;
 }

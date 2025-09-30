@@ -81,7 +81,7 @@ export function FieldWrapper({
     if (clickedElement)
       setVarPickerProps({
         allowedNodeIds: getAllPreviousNodes(clickedElement?.id),
-        insertVariable: (text) => appendText(text, event.target)
+        insertVariable: (text) => appendText(text, event.target as HTMLInputElement | HTMLTextAreaElement)
       });
     setFieldRef(variableName, event.target);
     setFocusedField(variableName);
@@ -118,8 +118,8 @@ export function FieldWrapper({
     };
   }, []);
 
-  const appendText = (text: string, ref: HTMLElement) => {
-    onChange(`${ref?.getAttribute("value")}${text}`)
+  const appendText = (text: string, ref: HTMLInputElement | HTMLTextAreaElement) => {
+    onChange(`${ref?.value ?? ""}${text}`)
   }
   const variableButton = (
     <Button

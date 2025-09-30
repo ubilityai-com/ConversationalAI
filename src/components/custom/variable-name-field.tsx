@@ -1,6 +1,6 @@
 import { AlertTriangle } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
-import { doesVariableExist } from "../../lib/variable-utils"
+import { doesVariableExist, findDetailedVariableOrigins } from "../../lib/variable-utils"
 import { useFlowStore } from "../../store/flow-store"
 import { Alert, AlertDescription } from "../ui/alert"
 import { Input } from "../ui/input"
@@ -33,11 +33,11 @@ export function VariableNameField({
 
     const checkIfVariableExist = (varName: string) => {
         if (!varExist(varName)) {
-            updateDialogueVariable(selectedNodeId, varName)
             setVariableDup("")
         } else {
             setVariableDup(varName)
         }
+        updateDialogueVariable(selectedNodeId, varName)
     }
 
     const debounceMessageVariable = (value: string) => {
@@ -48,7 +48,9 @@ export function VariableNameField({
     }
 
     useEffect(() => {
-        setVariableDup(varExist(variableName))
+        const variableOriginsList = findDetailedVariableOrigins(variableName)
+        if (variableOriginsList.length > 1 || (variableOriginsList.length === 1 && variableOriginsList[0].count > 1))
+            setVariableDup(varExist(variableName))
     }, [])
 
     return (
