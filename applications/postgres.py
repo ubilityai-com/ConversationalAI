@@ -90,7 +90,7 @@ def postgres_execute_custom_query(json_cred, params, **kwargs):
         cursor.execute(query)
         if query.strip().upper().startswith(("INSERT", "UPDATE", "DELETE")):
             con.commit()
-            return "Query executed successfully"
+            return {"result": "Query executed successfully"}
         else:
             result = fetch_data_as_dict(cursor)
             result = [format_data(record) for record in result]
