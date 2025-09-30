@@ -25,6 +25,7 @@ export function ToolbarActions() {
     setFormDialogStatus,
     setDialogProps,
     handleFlowZoneCheckIfAllHandlesAreConnected,
+    nodeStates, modelData
   } = useFlowStore();
   const [isUpdatingBot, setIsUpdatingBot] = useState(false);
   const handleVariablesClick = async () => {
@@ -73,6 +74,20 @@ export function ToolbarActions() {
         severity: "high",
       });
     }
+    if (Object.keys(nodeStates).length > 0) {
+      const { credential, model, provider } = modelData;
+
+      if ([credential, model, provider].some(field => !field.trim())) {
+        warnings.push({
+          id: "missing-data",
+          title: "Missing Configuration data",
+          description:
+            "Please fill all the fields in Model AI Configuration in Node States.",
+          severity: "high",
+        });
+      }
+    }
+
     if (warnings.length > 0) {
       setIsFormDialogOpen(true);
       setDialogProps({ warnings });

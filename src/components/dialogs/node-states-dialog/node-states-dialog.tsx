@@ -7,27 +7,29 @@ import {
   Filter,
   Save,
   Search,
+  SlidersHorizontal,
   Trash2,
   X
 } from "lucide-react";
 import { useState } from "react";
-import { useFlowStore } from "../../store/flow-store";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Card, CardContent } from "../ui/card";
-import { Checkbox } from "../ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+import { useFlowStore } from "../../../store/flow-store";
+import { Badge } from "../../ui/badge";
+import { Button } from "../../ui/button";
+import { Card, CardContent } from "../../ui/card";
+import { Checkbox } from "../../ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../ui/dialog";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
-import { Textarea } from "../ui/textarea";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+} from "../../ui/select";
+import { Textarea } from "../../ui/textarea";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../ui/accordion";
+import CredentialsFields from "./credentials-fields";
 
 interface NodeStatesDialogProps {
   open: boolean;
@@ -57,7 +59,7 @@ export function NodeStatesDialog({
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(
     new Set()
   );
-
+  const [showCredentials, setShowCredentials] = useState(false);
   // Filter out excluded nodes and get available nodes
   const excludedTypes = new Set(["Handler", "End", "Router", "StickyNote"]);
   const availableNodes = nodes.filter((node) =>
@@ -158,7 +160,6 @@ export function NodeStatesDialog({
 
   const nodesWithState = Object.values(nodeStates).filter((value) => value.trim() !== "").length;
   const totalNodes = availableNodes.length;
-  console.log({ nodeStates });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -217,6 +218,32 @@ export function NodeStatesDialog({
               throughout the workflow execution.
             </p>
           </div>
+          {/* <CredentialsFields /> */}
+          <div className="flex items-center gap-2 justify-end mr-2 ">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowCredentials(!showCredentials)}
+              className="mb-2 rounded-lg border-gray-300 hover:bg-gray-100 transition-colors"
+            >
+              <SlidersHorizontal
+                className={`h-4 w-4 transition-transform ${showCredentials ? "rotate-90 text-blue-600" : "text-gray-500"
+                  }`}
+              />
+              <span className="text-sm font-medium">
+                {/* {showCredentials ? "AI Configuration" : "AI Configuration"} */}
+                AI Model Configuration
+              </span>
+            </Button>
+          </div>
+          {showCredentials && <Card className="mb-4">
+            <CardContent className="p-4 bg-gray-50 rounded-lg">
+              <h3 className="text-md font-medium  mb-3">
+                AI Model Configuration
+              </h3>
+              <CredentialsFields />
+            </CardContent>
+          </Card>}
 
           {/* Nodes List */}
           <div className="flex-1 overflow-auto">

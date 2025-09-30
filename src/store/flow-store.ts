@@ -25,6 +25,14 @@ type SubNodesValidation = {
     subs: { [subId: string]: boolean };
   };
 };
+interface ModelData {
+  provider: string
+  credential: string
+  model: string
+  credType: string
+  url: string
+  models: []
+}
 export interface WorkflowVariable {
   id: string;
   origin: string;
@@ -158,10 +166,24 @@ export interface FlowState extends SlicesStates {
   updateNodeState: (nodeId: string, description: string) => void;
   removeNodeState: (nodeId: string) => void;
   clearNodeStates: () => void;
+  modelData: ModelData,
+  setModelData: (data: Partial<ModelData>) => void
 }
 export const useFlowStore = create<FlowState>()((set, get, store) => ({
   ...createVariablesSlice(set, get, store),
   ...createChatbotSlice(set, get, store),
+  modelData: {
+    provider: "",
+    credential: "",
+    model: "",
+    credType: "",
+    url: "",
+    models: []
+  },
+  setModelData: (data) =>
+    set((state) => ({
+      modelData: { ...state.modelData, ...data },
+    })),
   runningNodeIds: new Set(),
   nodeResults: {},
   error: null,
@@ -176,6 +198,7 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
       setSelectedBot,
       clearAllVariables,
       clearNodeStates,
+      setModelData
     } = get();
     const { resetFilesState } = useFilesStore.getState();
     clearAllVariables();
@@ -205,8 +228,16 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
     ]);
     setEdges([]);
     setNodesValidation({});
-    addNodesValidation(id, false);
+    addNodesValidation(id, true);
     setSelectedBot(null);
+    setModelData({
+      provider: "",
+      credential: "",
+      model: "",
+      credType: "",
+      url: "",
+      models: []
+    })
   },
   setNodeResult: (id, status, output) =>
     set((state) => ({

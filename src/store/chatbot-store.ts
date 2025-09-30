@@ -25,6 +25,7 @@ export interface BotSchema extends BotItem {
     outputVariables: OutputVariables;
     dialogueVariables: DialogueVariables;
     nodeStates: Record<string, string>;
+    modelData: Record<string, any>;
   };
   token: string;
 }
@@ -263,6 +264,7 @@ export const createChatbotSlice: StateCreator<
         updateBot,
         setShowSnackBarMessage,
         nodeStates,
+        modelData
       } = get();
       await updateBot({
         ui_json: {
@@ -273,6 +275,7 @@ export const createChatbotSlice: StateCreator<
           nodesValidation,
           outputVariables,
           nodeStates: nodeStates,
+          modelData
         },
       });
       return true;
@@ -298,6 +301,7 @@ export const createChatbotSlice: StateCreator<
       outputVariables,
       dialogueVariables,
       nodeStates,
+      modelData
     } = ui_json;
     set({ isLoadingBot: true, error: null });
 
@@ -311,6 +315,7 @@ export const createChatbotSlice: StateCreator<
       store.setAllOutputVariables(outputVariables ?? {});
       store.setAllDialogueVariables(dialogueVariables ?? {});
       store.setNodeStates(nodeStates || {});
+      store.setModelData(modelData || {});
       set({ isLoadingBot: false });
     } catch (error: any) {
       const errorMessage =
@@ -394,6 +399,7 @@ export const createChatbotSlice: StateCreator<
       updateSelectedBot,
       setShowSnackBarMessage,
       nodeStates,
+      modelData
     } = get();
     try {
       const body = {
@@ -407,6 +413,7 @@ export const createChatbotSlice: StateCreator<
           outputVariables,
           dialogueVariables,
           nodeStates,
+          modelData
         },
       };
       const res = await chatbotApis.activateChatbot(selectedBot?.id!, body);

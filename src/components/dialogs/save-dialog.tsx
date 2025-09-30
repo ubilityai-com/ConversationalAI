@@ -30,6 +30,7 @@ export function SaveDialog({ open, onOpenChange }: ConfigurationDialogProps) {
     saveBot,
     selectedBot,
     nodeStates,
+    modelData
   } = useFlowStore();
   const [botName, setBotName] = useState(
     selectedBot?.name ?? `Bot ${getRandomNumber()}`
@@ -57,6 +58,7 @@ export function SaveDialog({ open, onOpenChange }: ConfigurationDialogProps) {
           constantVariables,
           outputVariables,
           dialogueVariables,
+          modelData
         },
       });
       navigate(`/${savedBot.id}`);

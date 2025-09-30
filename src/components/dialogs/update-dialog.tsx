@@ -14,7 +14,7 @@ export function UpdateDialog({
     onOpenChange,
 }: ConfigurationDialogProps) {
 
-    const { nodes, edges, nodesValidation, dialogueVariables, outputVariables, constantVariables, updateBot, selectedBot, nodeStates } = useFlowStore();
+    const { nodes, edges, modelData, nodesValidation, dialogueVariables, outputVariables, constantVariables, updateBot, selectedBot, nodeStates } = useFlowStore();
 
     const handleUpdate = () => {
         const data = createFlowObject()
@@ -28,7 +28,8 @@ export function UpdateDialog({
                 constantVariables,
                 outputVariables,
                 dialogueVariables,
-                nodeStates
+                nodeStates,
+                modelData
             }
         })
     }

@@ -4,8 +4,17 @@ import { useFlowStore } from "../store/flow-store";
 import { ConstantVariable } from "../store/variables-store";
 import { camelToDashCase, getNextNodeId, reverseObject, stringifyAndExtractVariables } from "./utils";
 import { getOutputVariablesByNodeId } from "./variable-utils";
+interface Model {
+    provider: string;
+    model: string;
+    credential: string;
+    params: {
+        optionals: Record<string, any>;
+    };
+}
 type State = {
     scenarios: [...string[], "Other"];
+    model: Model
 } & { [key: Exclude<string, "scenarios">]: string };
 interface Flow {
     credentials: any[];
@@ -15,7 +24,7 @@ interface Flow {
 }
 
 export function createFlowObject(): Flow {
-    const { nodes, edges, constantVariables, nodeStates } = useFlowStore.getState()
+    const { nodes, edges, constantVariables, nodeStates, modelData } = useFlowStore.getState()
     const { files: filesList } = useFilesStore.getState()
     const files = filesList.reduce((acc: ConstantVariable, file) => {
         acc[file.file_name] = file.file_name;
@@ -23,7 +32,18 @@ export function createFlowObject(): Flow {
     }, {});
     const state = Object.keys(nodeStates).length === 0 ?
         null
-        : { scenarios: [...Object.values(nodeStates), "Other"], ...reverseObject(nodeStates) } as State
+        : {
+            scenarios: [...Object.values(nodeStates), "Other"], ...reverseObject(nodeStates),
+            model: {
+                provider: modelData.provider,
+                model: modelData.model,
+                credential: modelData.credential,
+                params: {
+                    optionals: {}
+                }
+            }
+
+        } as State
     const flow: Flow = {
         credentials: [],
         constant_variables: Object.assign({}, constantVariables, files),
@@ -38,8 +58,8 @@ export function createFlowObject(): Flow {
             flow.bot.firstElementId = {
                 next: getNextNodeId(element.id, edges, nodes, null),
                 start: !start,
-                greet,
-                cancel,
+                greet: greet.trim() ? greet : null,
+                cancel: cancel.trim() ? cancel : null,
                 saveUserInputAs: start && save ? variableName : null,
             };
         }

@@ -2,7 +2,7 @@ import { Bot } from "lucide-react";
 
 export const ReactAgentJson = {
   type: "ReactAgent",
-  label: "React Agent",
+  label: "AI Agent",
   description: "Large Language Model for text processing",
   icon: Bot,
   color: "bg-purple-500",

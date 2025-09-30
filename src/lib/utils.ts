@@ -797,6 +797,6 @@ export const initializeBot = () => {
         position: { x: 400, y: 40 },
       },
     ],
-    nodesValidation: { [id]: false },
+    nodesValidation: { [id]: true },
   };
 };

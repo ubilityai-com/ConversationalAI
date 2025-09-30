@@ -35,6 +35,7 @@ export function ProjectBreadcrumb() {
     resetData,
     saveBot,
     setIsLoadingBotByID,
+    modelData
   } = useFlowStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [showProjectsDropdown, setShowProjectsDropdown] = useState(false);
@@ -71,6 +72,7 @@ export function ProjectBreadcrumb() {
           nodeStates: {},
           nodesValidation: nodesValidation,
           outputVariables: {},
+          modelData
         },
       });
       navigate(`/${newBot.id}`);
@@ -144,9 +146,8 @@ export function ProjectBreadcrumb() {
                     <DropdownMenuItem
                       key={bot.id}
                       onClick={() => handleProjectSelect(bot.id)}
-                      className={`flex items-center justify-between p-3 cursor-pointer ${
-                        bot.id === selectedBot?.id ? "bg-accent" : ""
-                      }`}
+                      className={`flex items-center justify-between p-3 cursor-pointer ${bot.id === selectedBot?.id ? "bg-accent" : ""
+                        }`}
                       disabled={isLoadingBot}
                     >
                       <div className="flex-1">

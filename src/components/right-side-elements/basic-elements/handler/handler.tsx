@@ -19,9 +19,6 @@ interface Config {
 function checkIfAllRequiredDataIsFilled(data: Config): boolean {
   if (!data) return false;
 
-  if (!data.greet || !data.cancel) {
-    return false;
-  }
   if (data.start && data.save && !data.variableName) {
     return false;
   }
@@ -31,7 +28,6 @@ function checkIfAllRequiredDataIsFilled(data: Config): boolean {
 
 export default function HandlerForm({ selectedNodeId, content, onContentUpdate }: NodeConfigProps<Config>) {
 
-  const updateNodesValidationById = useFlowStore(state => state.updateNodesValidationById)
   const updateDialogueVariable = useFlowStore((state) => state.updateDialogueVariable);
 
   const { localConfig, updateNestedConfig } = useDebounceConfig<Config>(

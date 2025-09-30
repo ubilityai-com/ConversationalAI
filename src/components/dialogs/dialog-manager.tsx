@@ -8,7 +8,7 @@ import { ManageCredentialsDialog } from "./credential-dialog/manage-credential-d
 import { ExpandedFieldDialog } from "./expanded-field-dialog";
 import { FilesDialog } from "./files-dialog";
 import { ItemsListDialog } from "./langchain-dialog";
-import { NodeStatesDialog } from "./node-states-dialog";
+import { NodeStatesDialog } from "./node-states-dialog/node-states-dialog";
 import { SaveDialog } from "./save-dialog";
 import { UpdateDialog } from "./update-dialog";
 import { ValidationDialog } from "./validation-dialog";

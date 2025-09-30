@@ -233,7 +233,7 @@ export function AgentPaletteDialog({
           y: sourceNode?.position.y || 0,
         },
         data: {
-          label: generateUniqueName(clonedElement.type),
+          label: generateUniqueName(clonedElement.type, clonedElement.label),
           description: clonedElement.description,
           category: clonedElement.category,
           automationConfig: clonedElement.automationConfig,

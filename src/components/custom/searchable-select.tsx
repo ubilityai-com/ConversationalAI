@@ -102,7 +102,7 @@ export const SearchableSelect = <T extends React.Key>({
     <Popover modal={true} open={open} onOpenChange={setOpen}>
       <PopoverTrigger
         asChild
-        className={cn("", {
+        className={cn(className, {
           "cursor-not-allowed opacity-80 ": disabled || loading,
         })}
         onClick={(e) => {

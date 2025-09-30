@@ -31,6 +31,8 @@ const createCred = (body: Record<string, any>) =>
     client.post(`credentials`, body);
 const deleteCred = (id: string | number) =>
     client.delete(`/credentials/${id}`);
+const getModels = (url: string, body: Record<string, any>) =>
+    client.post(url, body)
 
 export default {
     createChatbot,
@@ -43,5 +45,6 @@ export default {
     testNode,
     fetchCreds,
     createCred,
-    deleteCred
+    deleteCred,
+    getModels
 };
