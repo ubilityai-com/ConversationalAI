@@ -9,7 +9,7 @@ export default function getContent(selectedNode: any, params: any) {
         type: "data",
         data: {
             inputs: {
-                scenarios: rightSideData.scenarios.map((el: any) => el.label),
+                scenarios: [...rightSideData.scenarios.map((el: any) => el.label), "Other"],
                 query: rightSideData.input,
                 instruction: rightSideData.instruction,
             },
