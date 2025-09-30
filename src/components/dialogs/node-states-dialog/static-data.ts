@@ -5,7 +5,7 @@ export const modelOptions = [
     { credType: "Cerebras", value: "cerebras", label: "Cerebras", url: "cerebras/listModels" },
     { credType: "Anthropic", value: "anthropic", label: "Anthropic", url: "anthropic/listModels" },
     { credType: "AzureOpenAi", value: "azureOpenAi", label: "Azure" },
-    { credType: "OpenAIOpenAI", value: "openAi", label: "OpenAI", url: "openai/listModels" },
+    { credType: "OpenAI", value: "openAi", label: "OpenAI", url: "openai/listModels" },
     { credType: "Ollama", value: "ollama", label: "Ollama", url: "ollama/listModels" },
     { credType: "HuggingFace", value: "huggingFace", label: "HuggingFace" },
     { credType: "TogetherAi", value: "togetherAi", label: "TogetherAI", url: "togetherAi/listModels" },
