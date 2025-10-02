@@ -941,6 +941,80 @@ async def zendesk_get_tags(payload: ZendeskAppIntegration):
 
 ############################# Asana API's  ###############################
 
+async def asana_refresh_token(creds):
+    """
+    Refresh the Asana access token using the provided refresh token if present or else return the existing access token.
+
+    :param str clientId: The client ID for the Asana application.
+    :param str clientSecret: The client secret for the Asana application.
+    :param str refreshToken: The refresh token to be used for obtaining a new access token.
+    :param str redirectUri: The redirect URI registered with the Asana application.
+
+    Returns:
+        str: The new access token if the refresh token is provided and valid, otherwise the existing access token.
+    """
+    try:
+        if "clientId" in creds and "clientSecret" in creds and "refreshToken" in creds and "redirectUri" in creds:
+            clientId = creds["clientId"]
+            clientSecret = creds["clientSecret"]
+            refreshToken = creds["refreshToken"]
+            redirect_uri = creds["redirectUri"]
+            token_endpoint = "https://app.asana.com/-/oauth_token"
+            data = {
+                "client_id": clientId,
+                "client_secret": clientSecret,
+                "grant_type": "refresh_token",
+                "refresh_token": refreshToken,
+                "redirect_uri": redirect_uri,
+            }
+            
+            async with aiohttp.ClientSession() as session:
+                async with session.post(token_endpoint, data=data) as response:
+                    response_json = await response.json()
+                    if "access_token" in response_json:
+                        return response_json["access_token"]
+                    else:
+                        raise Exception(
+                            f"Token request failed with status code {response.status}: {await response.text()}"
+                        )
+        elif "accessToken" in creds:
+            return creds["accessToken"]
+        else:
+            raise Exception("Missing Input Data")
+    except Exception as e:
+        raise Exception(e)
+
+class AsanaGetTokenAppIntegration(BaseModel):
+    clientId: str
+    clientSecret: str
+    code: str
+    redirectUri: str
+
+@http_app.post("/bot/asana/getToken")
+async def asana_get_token(payload: AsanaGetTokenAppIntegration):
+    try:
+        
+        url = "https://app.asana.com/-/oauth_token"
+        data = {
+            "client_id": payload.clientId,
+            "client_secret": payload.clientSecret,
+            "code": payload.code,
+            "grant_type": "authorization_code",
+            "redirect_uri": payload.redirectUri,
+        }
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=data) as response:
+                result = await response.json()
+                if "access_token" in result and "refresh_token" in result:
+                    return {"accessToken": result["access_token"], "refreshToken": result["refresh_token"]}
+                else:
+                    raise Exception(
+                        f"Token request failed with status code {response.status}: {await response.text()}"
+                    )
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
 class AsanaAppIntegration(BaseModel):
     credential_name: str
 

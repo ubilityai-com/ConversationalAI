@@ -1,12 +1,55 @@
 import asana
 from asana.rest import ApiException
-import json
+import json, requests
+
+
+def asana_refresh_token(cred):
+    """
+    Refresh the Asana access token using the provided refresh token if present or else return the existing access token.
+
+    :param str clientId: The client ID for the Asana application.
+    :param str clientSecret: The client secret for the Asana application.
+    :param str refreshToken: The refresh token to be used for obtaining a new access token.
+    :param str redirectUri: The redirect URI registered with the Asana application.
+
+    Returns:
+        str: The new access token if the refresh token is provided and valid, otherwise the existing access token.
+    """
+    try:
+        creds=json.loads(cred)
+        if "clientId" in creds and "clientSecret" in creds and "refreshToken" in creds and "redirectUri" in creds:
+            clientId = creds["clientId"]
+            clientSecret = creds["clientSecret"]
+            refreshToken = creds["refreshToken"]
+            redirect_uri = creds["redirectUri"]
+            token_endpoint = "https://app.asana.com/-/oauth_token"
+            data = {
+                "client_id": clientId,
+                "client_secret": clientSecret,
+                "grant_type": "refresh_token",
+                "refresh_token": refreshToken,
+                "redirect_uri": redirect_uri,
+            }
+            response = requests.post(token_endpoint, data=data)
+            response_json = response.json()
+            if "access_token" in response_json:
+                return response_json["access_token"]
+            else:
+                raise Exception(
+                    f"Token request failed with status code {response.status_code}: {response.text}"
+                )
+        elif "accessToken" in creds:
+            return creds["accessToken"]
+        else:
+            raise Exception("Missing Input Data")
+    except Exception as e:
+        raise Exception(e)
 
 def asana_get_many_project(json_cred, params, **kwargs):
     """
     Get multiple projects from Asana.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
 
         - :workspace: (str,required) - The workspace gid to filter projects on.
@@ -18,9 +61,8 @@ def asana_get_many_project(json_cred, params, **kwargs):
 
     """
     try:
-        creds=json.loads(json_cred)
-        if "workspace" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "workspace" in params:
+            accessToken = asana_refresh_token(json_cred)
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
@@ -43,7 +85,7 @@ def asana_get_project(json_cred, params, **kwargs):
     """
     Retrieve details of a specific project from Asana based on the provided project GID.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :project_gid: (str,required) - Globally unique identifier for the project.
@@ -53,9 +95,8 @@ def asana_get_project(json_cred, params, **kwargs):
     """
 
     try:
-        creds=json.loads(json_cred)
-        if "project_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "project_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             project_gid = params["project_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -76,7 +117,7 @@ def asana_create_project(json_cred, params, **kwargs):
     """
     Create a project in Asana.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :name: (str,required) - Name of the project to be created.
@@ -91,9 +132,8 @@ def asana_create_project(json_cred, params, **kwargs):
 
     """
     try:
-        creds=json.loads(json_cred)
-        if "name" in params and "workspace" in params and "team" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "name" in params and "workspace" in params and "team" in params:
+            accessToken = asana_refresh_token(json_cred)
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
@@ -117,7 +157,7 @@ def asana_update_project(json_cred, params, **kwargs):
     """
     Update an Asana project based on provided information.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :project_gid: (str,required) - Globally unique identifier for the project.
@@ -134,9 +174,8 @@ def asana_update_project(json_cred, params, **kwargs):
 
     """
     try:
-        creds=json.loads(json_cred)
-        if "project_gid" in params and "workspace" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "project_gid" in params and "workspace" in params:
+            accessToken = asana_refresh_token(json_cred)
             project_gid = params["project_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -166,7 +205,7 @@ def asana_delete_project(json_cred, params, **kwargs):
     """
     Delete a project in Asana based on provided parameters.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :project_gid: (str,required) - Globally unique identifier for the project.
@@ -176,9 +215,8 @@ def asana_delete_project(json_cred, params, **kwargs):
 
     """
     try:
-        creds=json.loads(json_cred)
-        if "project_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "project_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             project_gid = params["project_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -198,7 +236,7 @@ def asana_create_project_from_template(json_cred, params, **kwargs):
     """
     Create a new project in Asana based on a specified template.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
 
@@ -210,9 +248,8 @@ def asana_create_project_from_template(json_cred, params, **kwargs):
       dict: Information about the newly created project.
     """
     try:
-        creds=json.loads(json_cred)
-        if "project_template_gid" in params and "name" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "project_template_gid" in params and "name" in params:
+            accessToken = asana_refresh_token(json_cred)
             project_template_gid = params["project_template_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -245,7 +282,7 @@ def asana_create_task(json_cred, params, **kwargs):
     """
     Create a new task in Asana
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :name: (str,required) - Name of the task to be created.
@@ -263,9 +300,8 @@ def asana_create_task(json_cred, params, **kwargs):
 
     """
     try:
-        creds=json.loads(json_cred)
-        if "name" in params and "workspace" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "name" in params and "workspace" in params:
+            accessToken = asana_refresh_token(json_cred)
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
@@ -290,7 +326,7 @@ def asana_get_task(json_cred, params, **kwargs):
     """
     Retrieve details of a specific task from Asana based on the provided task GID.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :task_gid: (str,required) - Globally unique identifier for the task.
@@ -299,9 +335,8 @@ def asana_get_task(json_cred, params, **kwargs):
       dict: Details of the retrieved task.
     """
     try:
-        creds=json.loads(json_cred)
-        if "task_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "task_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -322,7 +357,7 @@ def asana_get_many_task(json_cred, params, **kwargs):
     """
     Retrieve multiple tasks from Asana based on specified parameters.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :assignee: (str,optional) - The assignee to filter tasks on.*Note: If you specify `assignee`, you must also specify the `workspace` to filter on.*
@@ -338,22 +373,18 @@ def asana_get_many_task(json_cred, params, **kwargs):
     """
 
     try:
-        creds=json.loads(json_cred)
-        if "accessToken" in creds:
-            accessToken = creds["accessToken"]
-            configuration = asana.Configuration()
-            configuration.access_token = accessToken
-            api_client = asana.ApiClient(configuration)
-            tasks_api_instance = asana.TasksApi(api_client)
-            opts = {}
-            for key, value in params.items():
-                if value:
-                    opts[key] = value
-            api_response = tasks_api_instance.get_tasks(opts)
-            tasks = list(api_response)
-            return {"tasks": tasks}
-        else:
-            raise Exception("Missing Input Data")
+        accessToken = asana_refresh_token(json_cred)
+        configuration = asana.Configuration()
+        configuration.access_token = accessToken
+        api_client = asana.ApiClient(configuration)
+        tasks_api_instance = asana.TasksApi(api_client)
+        opts = {}
+        for key, value in params.items():
+            if value:
+                opts[key] = value
+        api_response = tasks_api_instance.get_tasks(opts)
+        tasks = list(api_response)
+        return {"tasks": tasks}
     except ApiException as e:
         return {"Error": str(json.loads(e.body))}
     except Exception as err:
@@ -364,7 +395,7 @@ def asana_update_task(json_cred, params, **kwargs):
     """
     Update an Asana task based on provided information.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
 
         - :task_gid: (str,required) - Globally unique identifier for the task.
@@ -381,9 +412,8 @@ def asana_update_task(json_cred, params, **kwargs):
 
     """
     try:
-        creds=json.loads(json_cred)
-        if "task_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "task_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -412,7 +442,7 @@ def asana_delete_task(json_cred, params, **kwargs):
     """
     Delete a task in Asana based on provided parameters.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         :task_gid: (str,required) - Globally unique identifier for the task.
@@ -422,9 +452,8 @@ def asana_delete_task(json_cred, params, **kwargs):
 
     """
     try:
-        creds=json.loads(json_cred)
-        if "task_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "task_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -444,7 +473,7 @@ def asana_search_task(json_cred, params, **kwargs):
     """
     Search for tasks in Asana based on specified parameters.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :workspace_gid: (str,required) - Globally unique identifier for the workspace or organization.
@@ -455,9 +484,8 @@ def asana_search_task(json_cred, params, **kwargs):
         list: List of tasks matching the search query.
     """
     try:
-        creds=json.loads(json_cred)
-        if "workspace_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "workspace_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             workspace_gid = params["workspace_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -487,7 +515,7 @@ def asana_duplicate_task(json_cred, params, **kwargs):
     """
     Duplicate a task in Asana.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :task_gid: (str,required) - Globally unique identifier for the task to be duplicated.
@@ -500,9 +528,8 @@ def asana_duplicate_task(json_cred, params, **kwargs):
         dict: Details of the duplicated task.
     """
     try:
-        creds=json.loads(json_cred)
-        if "task_gid" in params and "name" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "task_gid" in params and "name" in params:
+            accessToken = asana_refresh_token(json_cred)
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -529,7 +556,7 @@ def asana_upload_file_task(json_cred, params, **kwargs):
     """
     Upload a file to a task.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :parent: (str,required) - Identifier of the parent task,
@@ -540,9 +567,8 @@ def asana_upload_file_task(json_cred, params, **kwargs):
         dict: Details of the uploaded file attachment.
     """
     try:
-        creds=json.loads(json_cred)
-        if "parent" in params and "url" in params and "name" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "parent" in params and "url" in params and "name" in params:
+            accessToken = asana_refresh_token(json_cred)
             configuration = asana.Configuration()
             configuration.access_token = accessToken
             api_client = asana.ApiClient(configuration)
@@ -568,7 +594,7 @@ def asana_get_user(json_cred, params, **kwargs):
     """
     Retrieve details of a user from Asana
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :user_gid: (str,required) - Globally unique identifier for the user.
@@ -577,9 +603,8 @@ def asana_get_user(json_cred, params, **kwargs):
         dict: Details of the user.
     """
     try:
-        creds=json.loads(json_cred)
-        if "user_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "user_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             user_gid = params["user_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -598,7 +623,7 @@ def asana_get_many_user(json_cred, params, **kwargs):
     """
     Retrieve multiple users from Asana within a specified workspace.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :workspace_gid: (str,required) - Globally unique identifier for the workspace or organization.
@@ -607,9 +632,8 @@ def asana_get_many_user(json_cred, params, **kwargs):
         list: List of users within the specified workspace.
     """
     try:
-        creds=json.loads(json_cred)
-        if "workspace_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "workspace_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             workspace_gid = params["workspace_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -631,7 +655,7 @@ def asana_create_section_project(json_cred, params, **kwargs):
     """
     Create a section within a project in Asana.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :project_gid: (str,required) - Globally unique identifier for the project.
@@ -643,9 +667,8 @@ def asana_create_section_project(json_cred, params, **kwargs):
         dict: Details of the created section.
     """
     try:
-        creds=json.loads(json_cred)
-        if "project_gid" in params and "name" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "project_gid" in params and "name" in params:
+            accessToken = asana_refresh_token(json_cred)
             project_gid = params["project_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -675,7 +698,7 @@ def asana_get_section_project(json_cred, params, **kwargs):
     """
     Retrieve sections within a project in Asana
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
      
         - :project_gid: (str,required) - Globally unique identifier for the project.
@@ -684,9 +707,8 @@ def asana_get_section_project(json_cred, params, **kwargs):
         list: List of sections within the specified project.
     """
     try:
-        creds=json.loads(json_cred)
-        if "project_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "project_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             project_gid = params["project_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -709,7 +731,7 @@ def asana_move_task_to_section(json_cred, params, **kwargs):
     """
     Move a task to a specific section within a project in Asana.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :section_gid: (str,required) - Globally unique identifier for the section.
@@ -719,9 +741,8 @@ def asana_move_task_to_section(json_cred, params, **kwargs):
         dict: A message confirming the moving of the task.
     """
     try:
-        creds=json.loads(json_cred)
-        if "section_gid" in params and "task" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "section_gid" in params and "task" in params:
+            accessToken = asana_refresh_token(json_cred)
             section_gid = params["section_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -751,7 +772,7 @@ def asana_add_project_for_task(json_cred, params, **kwargs):
     """
     Add a project to a task in Asana.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :task_gid: (str,required) - Globally unique identifier for the task.
@@ -764,9 +785,8 @@ def asana_add_project_for_task(json_cred, params, **kwargs):
         dict: A message confirming the addition of the project to the task.
     """
     try:
-        creds=json.loads(json_cred)
-        if "task_gid" in params and "project" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "task_gid" in params and "project" in params:
+            accessToken = asana_refresh_token(json_cred)
             insert_after = params.get("insert_after")
             insert_before = params.get("insert_before")
             section = params.get("section")
@@ -803,7 +823,7 @@ def asana_remove_project_for_task(json_cred, params, **kwargs):
     """
     Remove a project from a task in Asana.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :task_gid: (str,required) - Globally unique identifier for the task.
@@ -814,9 +834,8 @@ def asana_remove_project_for_task(json_cred, params, **kwargs):
    
     """
     try:
-        creds=json.loads(json_cred)
-        if "task_gid" in params and "project" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "task_gid" in params and "project" in params:
+            accessToken = asana_refresh_token(json_cred)
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -844,7 +863,7 @@ def asana_get_tasks_for_project(json_cred, params, **kwargs):
     """
     Retrieve tasks associated with a specific project in Asana
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :project_gid: (str,required) - Globally unique identifier for the project.
@@ -854,9 +873,8 @@ def asana_get_tasks_for_project(json_cred, params, **kwargs):
         list: List of tasks associated with the specified project.
     """
     try:
-        creds=json.loads(json_cred)
-        if "project_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "project_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             project_gid = params["project_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -885,7 +903,7 @@ def asana_create_subtask(json_cred, params, **kwargs):
     """
     Create a new subtask in Asana
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :task_gid: (str,required) - Globally unique identifier for the task.
@@ -903,9 +921,8 @@ def asana_create_subtask(json_cred, params, **kwargs):
 
     """
     try:
-        creds=json.loads(json_cred)
-        if "task_gid" in params and "name" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "task_gid" in params and "name" in params:
+            accessToken = asana_refresh_token(json_cred)
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -934,7 +951,7 @@ def asana_get_many_subtask(json_cred, params, **kwargs):
     """
     Retrieve subtasks of a task in Asana.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :task_gid: (str,required) - Globally unique identifier for the task.
@@ -943,9 +960,8 @@ def asana_get_many_subtask(json_cred, params, **kwargs):
         list: List of subtasks belonging to the specified task.
     """
     try:
-        creds=json.loads(json_cred)
-        if "task_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "task_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             task_gid = params["task_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
@@ -967,7 +983,7 @@ def asana_add_task_comment(json_cred, params, **kwargs):
     """
     Add a comment to a task in Asana.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :task_gid: (str,required) - Globally unique identifier for the task.
@@ -979,9 +995,8 @@ def asana_add_task_comment(json_cred, params, **kwargs):
         dict: Details of the added comment.
     """
     try:
-        creds=json.loads(json_cred)
-        if "task_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "task_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             if "text" in params or "html_text" in params:
                 task_gid = params["task_gid"]
                 configuration = asana.Configuration()
@@ -1015,7 +1030,7 @@ def asana_remove_task_comment(json_cred, params, **kwargs):
     """
     remove a comment to a task in Asana.
 
-    :param str accessToken: Access token for authenticating with Asana API.
+    :param json cred: Credentials for authenticating with Asana API.
     :param dict params: Dictionary containing parameters.
     
         - :story_gid: (str,required) - Globally unique identifier for the story.
@@ -1024,9 +1039,8 @@ def asana_remove_task_comment(json_cred, params, **kwargs):
        dict: A message confirming the deletion of the comment.
     """
     try:
-        creds=json.loads(json_cred)
-        if "story_gid" in params and "accessToken" in creds:
-            accessToken = creds["accessToken"]
+        if "story_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
             story_gid = params["story_gid"]
             configuration = asana.Configuration()
             configuration.access_token = accessToken
