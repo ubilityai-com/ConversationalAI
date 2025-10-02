@@ -373,6 +373,17 @@ export const OAuthSignInServices = {
                 }
             },
         }),
+
+    Asana: (): void =>
+        automateOAuthSignIn({
+            authEndpoint: "https://app.asana.com/-/oauth_authorize",
+            clientIdKey: "clientId",
+            encodeRedirectUri: true,
+            additionalParams: {
+                response_type: "code",
+                state: "Asana_State",
+            },
+        }),
 }
 export const credsThatHaveConsentScreenList = [
     { name: "Google", fn: OAuthSignInServices.Google },
@@ -397,4 +408,5 @@ export const credsThatHaveConsentScreenList = [
     { name: "MailChimp", fn: OAuthSignInServices.MailChimp, condition: true },
     { name: "Snowflake", fn: OAuthSignInServices.Snowflake },
     { name: "Slack", fn: OAuthSignInServices.Slack, condition: true },
+    { name: "Asana", fn: OAuthSignInServices.Asana, condition: true },
 ]

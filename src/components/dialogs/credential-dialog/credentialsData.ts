@@ -42,6 +42,7 @@ const credsThatNeedRedirects: Record<string, CopyField[]> = {
     MailChimp: [oAuth2RedirectUris],
     Snowflake: [oAuth2RedirectUris],
     Slack: [oAuth2RedirectUris],
+    Asana: [oAuth2RedirectUris],
 };
 
 const serviceFields: CredentialInfo[] = [
@@ -113,10 +114,45 @@ const serviceFields: CredentialInfo[] = [
         Service_name: "",
         cred: [
             {
-                label: "Access Token",
-                Credential_name: "accessToken",
-                Credential_value: "",
-                hashed: true,
+                label: "Type",
+                Credential_name: "type",
+                Credential_value: "Access Token",
+                radio: true,
+                credTypeConnection: true,
+                list: [
+                    {
+                        label: "Access Token",
+                        value: "Access Token",
+                    },
+                    {
+                        label: "OAuth Application",
+                        value: "OAuth Application",
+                    },
+                ],
+                options: {
+                    "Access Token": [
+                        {
+                            label: "Access Token",
+                            Credential_name: "accessToken",
+                            Credential_value: "",
+                            hashed: true,
+                        },
+                    ],
+                    "OAuth Application": [
+                        {
+                            label: "Client ID",
+                            Credential_name: "clientId",
+                            Credential_value: "",
+                            hashed: true,
+                        },
+                        {
+                            label: "Client Secret",
+                            Credential_name: "clientSecret",
+                            Credential_value: "",
+                            hashed: true,
+                        },
+                    ],
+                },
             },
         ],
     },

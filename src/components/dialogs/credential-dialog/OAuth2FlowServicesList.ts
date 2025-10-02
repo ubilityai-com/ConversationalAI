@@ -391,4 +391,20 @@ export const OAuth2ServiceTypes = {
             response_path: "data",
             fieldsToAdd: ["accessToken::response", "clientId", "clientSecret", "redirectUri"],
         }),
+    
+    Asana: async (): Promise<void> =>
+        automateOAuth2({
+            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}asana/getToken`,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            payload: {
+                clientId: "{{clientId}}",
+                clientSecret: "{{clientSecret}}",
+                code: "{{code::params}}",
+                redirectUri: window.location.origin + window.location.pathname,
+            },
+            response_path: "data",
+            fieldsToAdd: ["accessToken::response", "refreshToken::response", "clientId", "clientSecret", "redirectUri"],
+        }),
 }
