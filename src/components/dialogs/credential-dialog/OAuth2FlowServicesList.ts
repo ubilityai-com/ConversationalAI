@@ -26,7 +26,8 @@ export const OAuth2ServiceTypes = {
 
     ZohoCRM: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.REACT_APP_DNS_URL}zohoCRM/getRefreshToken`,
+            url: window.location.origin +"/bot/zohoCRM/getRefreshToken",
+            // url: `http://23.88.122.180/bot/zohoCRM/getRefreshToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -48,7 +49,8 @@ export const OAuth2ServiceTypes = {
 
     Zoom: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/zoom/getRefreshToken`,
+            url: window.location.origin +"/bot/zoom/getRefreshToken",
+            // url: `http://23.88.122.180/bot/zoom/getRefreshToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -63,7 +65,8 @@ export const OAuth2ServiceTypes = {
 
     HubSpot: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.REACT_APP_DNS_URL}hubspot/getRefresh`,
+            url: window.location.origin +"/bot/hubspot/getRefresh",
+            // url: `http://23.88.122.180/bot/hubspot/getRefresh`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -95,7 +98,8 @@ export const OAuth2ServiceTypes = {
 
     Microsoft: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.REACT_APP_DNS_URL}microsoft/getToken`,
+            url: window.location.origin +"/bot/microsoft/getToken",
+            // url: `http://23.88.122.180/bot/microsoft/getToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -119,7 +123,8 @@ export const OAuth2ServiceTypes = {
 
     Xero: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/xero/getAccessToken`,
+            url: window.location.origin +"/bot/xero/getAccessToken",
+            // url: `http://23.88.122.180/bot/xero/getAccessToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -141,7 +146,8 @@ export const OAuth2ServiceTypes = {
 
     PipeDrive: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/pipedrive/getToken`,
+            url: window.location.origin +"/bot/pipedrive/getToken",
+            // url: `http://23.88.122.180/bot/pipedrive/getToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -163,7 +169,8 @@ export const OAuth2ServiceTypes = {
 
     QuickBooks: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/quickbooks/getRefreshToken`,
+            url: window.location.origin +"/bot/quickbooks/getRefreshToken",
+            // url: `http://23.88.122.180/bot/quickbooks/getRefreshToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -187,7 +194,8 @@ export const OAuth2ServiceTypes = {
 
     Jira: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/jira/getCredsInfo`,
+            url: window.location.origin +"/bot/jira/getCredsInfo",
+            // url: `http://23.88.122.180/bot/jira/getCredsInfo`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -204,7 +212,8 @@ export const OAuth2ServiceTypes = {
 
     Facebook: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/facebook/getCredsInfo`,
+            url: window.location.origin +"/bot/facebook/getCredsInfo",
+            // url: `http://23.88.122.180/bot/facebook/getCredsInfo`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -221,7 +230,8 @@ export const OAuth2ServiceTypes = {
 
     Instagram: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/instagram/getToken`,
+            url: window.location.origin +"/bot/instagram/getToken",
+            // url: `http://23.88.122.180/bot/instagram/getToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -237,7 +247,8 @@ export const OAuth2ServiceTypes = {
 
     LinkedIn: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/linkedin/getToken`,
+            url: window.location.origin +"/bot/linkedin/getToken",
+            // url: `http://23.88.122.180/bot/linkedin/getToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -253,7 +264,8 @@ export const OAuth2ServiceTypes = {
 
     X: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/x/getToken`,
+            url: window.location.origin +"/bot/x/getToken",
+            // url: `http://23.88.122.180/bot/x/getToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -270,7 +282,8 @@ export const OAuth2ServiceTypes = {
 
     ServiceNow: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/serviceNow/getToken`,
+            url: window.location.origin +"/bot/serviceNow/getToken",
+            // url: `http://23.88.122.180/bot/serviceNow/getToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -288,7 +301,8 @@ export const OAuth2ServiceTypes = {
 
     Reddit: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/reddit/getToken`,
+            url: window.location.origin +"/bot/reddit/getToken",
+            // url: `http://23.88.122.180/bot/reddit/getToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -304,7 +318,8 @@ export const OAuth2ServiceTypes = {
 
     Zendesk: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}zendesk/getToken`,
+            url: window.location.origin +"/bot/zendesk/getToken",
+            // url: `http://23.88.122.180/bot/zendesk/getToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -321,7 +336,8 @@ export const OAuth2ServiceTypes = {
 
     ClickUp: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/clickup/getToken`,
+            url: window.location.origin +"/bot/clickup/getToken",
+            // url: `http://23.88.122.180/bot/clickup/getToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -336,7 +352,8 @@ export const OAuth2ServiceTypes = {
 
     MailChimp: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/mailchimp/getToken`,
+            url: window.location.origin +"/bot/mailchimp/getToken",
+            // url: `http://23.88.122.180/bot/mailchimp/getToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -352,7 +369,8 @@ export const OAuth2ServiceTypes = {
 
     Snowflake: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}/cloud/regular/snowflake/getToken`,
+            url: window.location.origin +"/bot/snowflake/getToken",
+            // url: `http://23.88.122.180/bot/snowflake/getToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -378,7 +396,8 @@ export const OAuth2ServiceTypes = {
 
     Slack: async (): Promise<void> =>
         automateOAuth2({
-            url: `${process.env.APP_PUBLIC_UPLOAD_FILE_URL}slack/getToken`,
+            url: window.location.origin +"/bot/slack/getToken",
+            // url: `http://23.88.122.180/bot/slack/getToken`,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -390,5 +409,22 @@ export const OAuth2ServiceTypes = {
             },
             response_path: "data",
             fieldsToAdd: ["accessToken::response", "clientId", "clientSecret", "redirectUri"],
+        }),
+    
+    Asana: async (): Promise<void> =>
+        automateOAuth2({
+            url: window.location.origin +"/bot/asana/getToken",
+            // url: `http://23.88.122.180/bot/asana/getToken`,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            payload: {
+                clientId: "{{clientId}}",
+                clientSecret: "{{clientSecret}}",
+                code: "{{code::params}}",
+                redirectUri: window.location.origin + window.location.pathname,
+            },
+            response_path: "data",
+            fieldsToAdd: ["accessToken::response", "refreshToken::response", "clientId", "clientSecret", "redirectUri"],
         }),
 }
