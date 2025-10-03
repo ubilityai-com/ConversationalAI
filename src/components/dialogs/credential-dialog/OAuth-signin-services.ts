@@ -174,7 +174,6 @@ export const OAuthSignInServices = {
                 "write:webhook:jira",
                 "delete:webhook:jira",
             ],
-            encodeRedirectUri: true,
             additionalParams: {
                 audience: "api.atlassian.com",
                 prompt: "consent",
@@ -208,7 +207,6 @@ export const OAuthSignInServices = {
     Instagram: (): void =>
         automateOAuthSignIn({
             authEndpoint: "https://www.instagram.com/oauth/authorize",
-            encodeRedirectUri: true,
             additionalParams: {
                 scope: "business_basic,business_manage_messages,business_manage_comments,business_content_publish",
             },
@@ -217,7 +215,6 @@ export const OAuthSignInServices = {
     LinkedIn: (): void =>
         automateOAuthSignIn({
             authEndpoint: "https://www.linkedin.com/oauth/v2/authorization",
-            encodeRedirectUri: true,
             customLogic: () => {
                 const behalfOfCompany = Cookies.get("behalfOfCompany")
                 const scopesWithoutOrganization = ["w_member_social", "profile", "email", "openid"]
@@ -232,7 +229,6 @@ export const OAuthSignInServices = {
     X: (): void =>
         automateOAuthSignIn({
             authEndpoint: "https://twitter.com/i/oauth2/authorize",
-            encodeRedirectUri: true,
             scopes: [
                 "tweet.read",
                 "users.read",
@@ -258,7 +254,6 @@ export const OAuthSignInServices = {
     ServiceNow: (): void =>
         automateOAuthSignIn({
             authEndpoint: `https://${Cookies.get("instanceDomain")}.service-now.com/oauth_auth.do`,
-            encodeRedirectUri: true,
             customLogic: () => {
                 const state = generateRandomString(15)
                 return { state }
@@ -268,7 +263,6 @@ export const OAuthSignInServices = {
     Reddit: (): void =>
         automateOAuthSignIn({
             authEndpoint: "https://www.reddit.com/api/v1/authorize",
-            encodeRedirectUri: true,
             scopeJoiner: "+",
             scopes: [
                 "identity",
@@ -304,27 +298,23 @@ export const OAuthSignInServices = {
         automateOAuthSignIn({
             authEndpoint: `https://${Cookies.get("baseUrl")}.zendesk.com/oauth/authorizations/new`,
             clientIdKey: "clientId",
-            encodeRedirectUri: true,
             scopes: ["read", "write"],
         }),
 
     ClickUp: (): void =>
         automateOAuthSignIn({
             authEndpoint: "https://app.clickup.com/api",
-            encodeRedirectUri: true,
         }),
 
     MailChimp: (): void =>
         automateOAuthSignIn({
             authEndpoint: "https://login.mailchimp.com/oauth2/authorize",
-            encodeRedirectUri: true,
         }),
 
     Snowflake: (): void =>
         automateOAuthSignIn({
             authEndpoint: `https://${Cookies.get("accountId")}.snowflakecomputing.com/oauth/authorize`,
             clientIdKey: "clientId",
-            encodeRedirectUri: true,
             additionalParams: {
                 scope: "refresh_token",
             },
@@ -334,7 +324,6 @@ export const OAuthSignInServices = {
         automateOAuthSignIn({
             authEndpoint: "https://slack.com/oauth/v2/authorize",
             clientIdKey: "clientId",
-            encodeRedirectUri: true,
             customLogic: () => {
                 const scopes = [
                     "chat:write",
@@ -378,7 +367,6 @@ export const OAuthSignInServices = {
         automateOAuthSignIn({
             authEndpoint: "https://app.asana.com/-/oauth_authorize",
             clientIdKey: "clientId",
-            encodeRedirectUri: true,
             additionalParams: {
                 response_type: "code",
                 state: "Asana_State",
