@@ -1027,7 +1027,7 @@ async def asana_get_workspaces(payload: AsanaAppIntegration):
         if "accessToken" not in json_cred:
             return JSONResponse(status_code=400, content={"Error": "Missing required data."})
         
-        accessToken = json_cred["accessToken"]
+        accessToken = await asana_refresh_token(json_cred)
         configuration = asana.Configuration()
         configuration.access_token = accessToken
         api_client = asana.ApiClient(configuration)
@@ -1054,7 +1054,7 @@ async def asana_get_projects(payload: AsanaWithWorkspaceAppIntegration):
         if "accessToken" not in json_cred:
             return JSONResponse(status_code=400, content={"Error": "Missing required data."})
         
-        accessToken = json_cred["accessToken"]
+        accessToken = await asana_refresh_token(json_cred)
         workspace = payload.workspace
         configuration = asana.Configuration()
         configuration.access_token = accessToken
@@ -1081,7 +1081,7 @@ async def asana_get_teams(payload: AsanaWithWorkspaceAppIntegration):
         if "accessToken" not in json_cred:
             return JSONResponse(status_code=400, content={"Error": "Missing required data."})
         
-        accessToken = json_cred["accessToken"]
+        accessToken = await asana_refresh_token(json_cred)
         workspace_gid = payload.workspace
         configuration = asana.Configuration()
         configuration.access_token = accessToken
@@ -1108,7 +1108,7 @@ async def asana_get_users(payload: AsanaWithWorkspaceAppIntegration):
         if "accessToken" not in json_cred:
             return JSONResponse(status_code=400, content={"Error": "Missing required data."})
         
-        accessToken = json_cred["accessToken"]
+        accessToken = await asana_refresh_token(json_cred)
         workspace_gid = payload.workspace
         configuration = asana.Configuration()
         configuration.access_token = accessToken
@@ -1138,7 +1138,7 @@ async def asana_get_sections(payload: AsanaWithProjectGidAppIntegration):
         if "accessToken" not in json_cred:
             return JSONResponse(status_code=400, content={"Error": "Missing required data."})
         
-        accessToken = json_cred["accessToken"]
+        accessToken = await asana_refresh_token(json_cred)
         project_gid = payload.project_gid
         configuration = asana.Configuration()
         configuration.access_token = accessToken
@@ -1162,7 +1162,7 @@ async def asana_get_project_templates(payload: AsanaWithWorkspaceAppIntegration)
         if "accessToken" not in json_cred:
             return JSONResponse(status_code=400, content={"Error": "Missing required data."})
         
-        accessToken = json_cred["accessToken"]
+        accessToken = await asana_refresh_token(json_cred)
         workspace = payload.workspace
         configuration = asana.Configuration()
         configuration.access_token = accessToken
