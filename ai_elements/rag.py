@@ -27,7 +27,7 @@ class RAG:
         self.data = data
         self.credentials = credentials
     
-    async def stream(self, sio, sid, conversation):
+    async def stream(self, sio, sid, conversation, input=None):
         try:
             if "provider" in self.data['embedding'] and "model" in self.data['embedding']:
                 embeddings = Model(provider=self.data['embedding']["provider"], model=self.data['embedding']["model"], credentials=self.credentials[self.data['embedding']['credential']]).embedding()
@@ -65,6 +65,9 @@ class RAG:
                 -------------------
                 context: {context}
                 """
+
+            if input:
+                self.data['inputs']["query"] = input # set the last input value
 
             if self.data['vectorStore']['type'] == 'localStore':
                 input_data = {"question":self.data['inputs']["query"], "context":doc}
