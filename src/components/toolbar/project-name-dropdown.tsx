@@ -25,7 +25,7 @@ import {
 import { Input } from "../ui/input"
 
 export function ProjectNameDropdown() {
-  const { selectedBot, updateBot, deleteBot, isLoadingBot } = useFlowStore()
+  const { selectedBot, updateBot, deleteBot, isLoadingBot, setShowSnackBarMessage } = useFlowStore()
   const [isEditingName, setIsEditingName] = useState(false)
   const [editingName, setEditingName] = useState("")
   const [showDropdown, setShowDropdown] = useState(false)
@@ -60,8 +60,13 @@ export function ProjectNameDropdown() {
   }
 
   const handleDeleteProject = () => {
-    setShowDeleteConfirmation(true)
-    setShowDropdown(false)
+    if (selectedBot?.status === "Active") {
+      setShowSnackBarMessage({ open: true, message: "Please deactivate the chatbot before deleting it.", color: "warning", duration: 2000 })
+    }
+    else {
+      setShowDeleteConfirmation(true)
+      setShowDropdown(false)
+    }
   }
 
   const confirmDeleteProject = async () => {

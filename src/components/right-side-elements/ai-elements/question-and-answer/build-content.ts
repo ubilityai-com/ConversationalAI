@@ -8,14 +8,12 @@ export default function getContent(selectedNode: any) {
     const embedding = rightSideData.extras.embedding
     const vectorStore = rightSideData.extras.vectorStore
 
-    console.log({ rightSideData });
-
     const content = {
         type: "data",
         data: {
             inputs: {
-                "query": rightSideData.json.question,
-                "prompt": getAccvalue(rightSideData.json, "prompt")
+                "query": getAccvalue(rightSideData.json, "question") || "",
+                "prompt": getAccvalue(rightSideData.json, "prompt") || ""
             },
             model: require("../../../properties/contents/model")[model.type](selectedNode),
             cred: extractCreds(selectedNode?.data.rightSideData.extras),
