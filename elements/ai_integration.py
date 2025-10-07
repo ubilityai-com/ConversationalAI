@@ -48,7 +48,11 @@ class AIIntegration:
     
     async def _execute_rag_chain(self, sio, sid, conversation):
         print(f"Executing RAG chain")
-        return await RAG(self.data, self.credentials).stream(sio, sid, conversation)
+        if self.data['inputs']["query"]:
+            last_input_value = self.data['inputs']["query"]
+        else:
+            last_input_value = conversation['variables']['last_input_value'] if conversation else ""
+        return await RAG(self.data, self.credentials).stream(sio, sid, conversation, last_input_value)
 
     async def _execute_react_agent(self, sio, sid, conversation, conversation_id):
         if conversation and conversation['react_fail']:
