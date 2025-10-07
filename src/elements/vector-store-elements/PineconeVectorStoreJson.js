@@ -22,7 +22,7 @@ export const PineconeVectorStoreJson = {
                         key: "method",
                         value: "get",
                     },
-                    
+
                     {
                         key: "url",
                         dependOn: [
@@ -89,23 +89,97 @@ export const PineconeVectorStoreJson = {
                             options: {
                                 "fromList": [
                                     {
-                                        type: "dropdown",
-                                        label: "Model List",
-                                        value: "fromList",
-                                        variableName: "df",
+                                        type: "api",
+                                        label: "Index Name",
+                                        variableName: "index_name",
+                                        value: "",
                                         required: true,
-                                        hasDynamicVariable: false,
-                                        list: [
+                                        hasDynamicVariable: true,
+                                        list: [],
+                                        config: [
                                             {
-                                                option: "test",
-                                                value: "fromList",
+                                                key: "method",
+                                                value: "post",
                                             },
                                             {
-                                                option: "test1",
-                                                value: "byID",
+                                                key: "url",
+                                                dependOn: [
+                                                    {
+                                                        type: "static",
+                                                        value:
+                                                            process.env.REACT_APP_DNS_URL +
+                                                            "pinecone/listIndexes",
+                                                    },
+                                                ],
+                                            },
+                                            {
+                                                key: "headers",
+                                                obj: [
+                                                    {
+                                                        key: "Authorization",
+                                                        dependOn: [
+                                                            {
+                                                                type: "static",
+                                                                value: "Bearer ",
+                                                            },
+                                                            {
+                                                                type: "redux",
+                                                                value: "authentication.authToken",
+                                                            },
+                                                        ],
+                                                    },
+                                                    {
+                                                        key: "content-type",
+                                                        value: "application/json",
+                                                    },
+                                                ],
+                                            },
+                                            {
+                                                key: "data",
+                                                obj: [
+                                                    {
+                                                        key: "credential_name",
+                                                        dependOn: "cred",
+                                                        isAutomation: true,
+                                                    },
+                                                ],
                                             },
                                         ],
-                                    }
+                                        res: {
+                                            path: "data.indexes",
+                                            keys: {
+                                                option: {
+                                                    fields: ["name"],
+                                                },
+                                                value: {
+                                                    fields: ["id"],
+                                                },
+                                            },
+                                            type: [],
+                                            key: true,
+                                        },
+                                        apiDependsOn: [
+                                            {
+                                                type: "dropdown",
+                                                name: "cred",
+                                                isAutomation: true,
+                                            },
+                                        ],
+                                        conditionOnFirstTime: [
+                                            {
+                                                type: "dropdown",
+                                                name: "cred",
+                                                isAutomation: true,
+                                            },
+                                        ],
+                                        conditionOnRefresh: [
+                                            {
+                                                type: "dropdown",
+                                                name: "cred",
+                                                isAutomation: true,
+                                            },
+                                        ],
+                                    },
                                 ],
                                 "byID": [
                                     {
