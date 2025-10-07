@@ -18,7 +18,7 @@ export const LocalVectorStore = (selectedNode: any) => {
     return {
         "type": "localStore",
         "dataFormat": json.type, // Name || URL 
-        "dataType": json.file.split(".")[1],
+        "dataType": json.file.split('.').pop().replace(/[^a-zA-Z0-9]+$/, ''),
         "dialogue_id": chatbot_id,
         "data": json.file
     }
