@@ -4292,6 +4292,43 @@ async def ibm_watsonx_list_models(payload: AiProvidersListModelsAppIntegration):
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
 
+#################################################### Pinecone API's ############################################################
+
+class PineconeIntegration(BaseModel):
+    credential_name: str
+
+@http_app.post("/bot/pinecone/listIndexes")
+async def pinecone_list_indexes(payload: PineconeIntegration):
+    try:
+        json_cred = get_credentials_by_names(payload.credential_name)
+        json_cred = json_cred[payload.credential_name]
+
+        if "pineconeApiKey" not in json_cred:
+            return JSONResponse(status_code=400, content={"Error": "Missing required data."})
+
+        apiKey = json_cred["pineconeApiKey"]
+        url = "https://api.pinecone.io/indexes"
+        headers = {
+            'X-Pinecone-API-Version': '2025-04',
+            'Api-Key': apiKey,
+        }
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                result = await response.json()
+        if "indexes" in result and response.status == 200:
+            indexes = result.get("indexes", [])
+            if indexes:
+                indexes_info = [
+                    {"id": index["name"], "name": index["name"]}
+                    for index in indexes
+                ]
+            return {"indexes": indexes_info}
+        return JSONResponse(status_code=500, content={"Error": str(result)})
+
+    except Exception as error:
+        return JSONResponse(status_code=500, content={"Error": str(error)})
+
+
 ############################## gmail's api#################################
 
 class GmailAppIntegration(BaseModel):
