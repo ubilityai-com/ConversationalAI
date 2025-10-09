@@ -22,7 +22,7 @@ const CredentialsFields = () => {
         try {
             const response = await chatbotApis.getModels(url, {
                 credential_name: cred,
-                modelType: "chat"
+                modelType: modelData.provider === "googleGenerativeAi" ? "generateContent" : "chat",
             });
             setModelData({
                 models: response.data.Models.map((elm: string) => {
@@ -53,7 +53,7 @@ const CredentialsFields = () => {
                     onChange={(value) => {
                         const selectedObj =
                             modelOptions.find((opt) => opt.value === value) || null;
-                        setModelData({ ...selectedObj, model: "", models: [], provider: selectedObj?.value });
+                        setModelData({ ...selectedObj, model: "", models: [], provider: selectedObj?.value, url: selectedObj?.url ? selectedObj.url : "" });
                     }}
                 />
             </div>

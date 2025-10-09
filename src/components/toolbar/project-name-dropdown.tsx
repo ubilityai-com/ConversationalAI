@@ -31,7 +31,7 @@ export function ProjectNameDropdown() {
   const [showDropdown, setShowDropdown] = useState(false)
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
   const [isDeletingProject, setIsDeletingProject] = useState(false)
-
+  const isActive = selectedBot?.status === "Active"
   const navigate = useNavigate()
   const startEditingName = () => {
     if (!selectedBot) return
@@ -125,7 +125,7 @@ export function ProjectNameDropdown() {
           <DropdownMenuItem
             onClick={startEditingName}
             className="flex items-center gap-2 cursor-pointer"
-            disabled={isDeletingProject}
+            disabled={isDeletingProject || isActive}
           >
             <Edit2 className="w-4 h-4" />
             Change Name
@@ -133,7 +133,7 @@ export function ProjectNameDropdown() {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={handleDeleteProject}
-            disabled={isDeletingProject}
+            disabled={isDeletingProject || isActive}
             className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
           >
             <Trash2 className="w-4 h-4" />
