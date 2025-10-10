@@ -2,7 +2,7 @@ import { GripVertical } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useFlowStore } from "../store/flow-store";
 import { PropertiesPanel } from "./properties-panel";
-import { useVariablesPanel, VariablesPanel } from "./variable-picker";
+import { VariablesPanel } from "./variable-picker";
 
 let isFirstTime = true;
 
@@ -49,15 +49,12 @@ export default function RightSideDrawer() {
     document.addEventListener("mouseup", handleMouseUp);
   };
 
-  const variablesPanel = useVariablesPanel();
 
   return (
     <>
       <VariablesPanel
         isOpen={variablesPickerVisible}
-        isMinimized={variablesPanel.isMinimized}
         onClose={() => setVarPicker(false)}
-        onToggleMinimize={variablesPanel.toggleMinimize}
         right={newWidthRightDrawer}
       />
 

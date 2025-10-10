@@ -488,9 +488,9 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
   };
 
   const renderDialogueVariables = () => {
-    
+
     const handleEyeClick = (nodeId: string) => {
-      const nodes =useFlowStore.getState().nodes 
+      const nodes = useFlowStore.getState().nodes
       const node = nodes.find((n) => n.id === nodeId);
       if (node) {
         setClickedElement(null)
@@ -526,7 +526,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
                         {typeof varName}
                       </Badge>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={()=>handleEyeClick(nodeId)}>
+                    <Button variant="ghost" size="sm" onClick={() => handleEyeClick(nodeId)}>
                       <Eye className="w-4 h-4" />
                     </Button>
                   </div>
@@ -666,7 +666,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
               </TabsTrigger>
             </TabsList>
 
-              <ScrollArea className="overflow-y-scroll flex-1 mt-4 px-2 pb-1">
+            <ScrollArea className="overflow-y-scroll flex-1 mt-4 px-2 pb-1">
               <TabsContent value="global" className="mt-0">
                 {renderConstantVariables()}
               </TabsContent>
@@ -676,7 +676,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
               <TabsContent value="dialogue" className="mt-0">
                 {renderDialogueVariables()}
               </TabsContent>
-              </ScrollArea>
+            </ScrollArea>
           </Tabs>
         </div>
       </DialogContent>
