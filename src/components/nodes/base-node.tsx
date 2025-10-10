@@ -19,6 +19,7 @@ export type BaseNodeProps = NodeProps<Node<BaseNodeData>> & {
   header?: React.ReactNode;
   handles?: React.ReactNode;
   bodyWidth?: string;
+  category?: string
 };
 
 export const BaseNode = React.memo(
@@ -31,6 +32,7 @@ export const BaseNode = React.memo(
     header,
     handles,
     type,
+    category,
     data,
     bodyWidth = "w-64",
   }: BaseNodeProps) => {
@@ -80,7 +82,7 @@ export const BaseNode = React.memo(
               <TestStatusIndicator id={id} />
 
               <div className="flex items-start space-x-4">
-                <NodeIcon IconComponent={IconComponent} color={color} type={type} />
+                <NodeIcon IconComponent={IconComponent} color={color} type={type} category={category} />
                 {header}
               </div>
 

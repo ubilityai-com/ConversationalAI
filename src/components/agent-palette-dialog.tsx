@@ -67,7 +67,7 @@ const agentTypes = [
     "type": "Attachment",
     category: "basic",
     "label": "Attachment",
-    "color": "#4BBFFF",
+    "color": "bg-cyan-400",
     description: "Attachment",
     defaultValid: false,
     "defaults": {
@@ -330,7 +330,7 @@ export function AgentPaletteDialog({
                             <img
                               src={"/components-icons/" + agent.type + ".png"}
                               alt="img"
-                              className="w-8 h-8 object-contain"
+                              className={`${agent.category === "basic" ? "w-6 h-6" : "w-8 h-8"} object-contain`}
                             />
                         }
                       </div>

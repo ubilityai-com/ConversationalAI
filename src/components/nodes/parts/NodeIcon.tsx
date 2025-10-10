@@ -5,10 +5,12 @@ interface NodeIconProps {
   IconComponent: React.ComponentType<{ className?: string }> | null;
   color: string;
   type: string;
+  category?: string
 }
 
-export const NodeIcon = React.memo(({ IconComponent, color, type }: NodeIconProps) => (
+export const NodeIcon = React.memo(({ IconComponent, color, type, category }: NodeIconProps) => (
   <div
+    style={{ backgroundColor: category === "basic" ? color : "" }}
     className={`w-12 h-12 ${color} rounded-full flex items-center justify-center shadow-md flex-shrink-0`}
   >
     {IconComponent ? (
@@ -17,7 +19,7 @@ export const NodeIcon = React.memo(({ IconComponent, color, type }: NodeIconProp
       <img
         src={`/components-icons/${type}.png`}
         alt={`${type} icon`}
-        className="w-7 h-7 object-contain"
+        className="w-6 h-6 object-contain"
       />
     )}
   </div>
