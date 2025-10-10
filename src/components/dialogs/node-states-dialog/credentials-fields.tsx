@@ -17,12 +17,14 @@ const CredentialsFields = () => {
     }, [])
 
 
-    const getModels = async (url: string, cred: string): Promise<void> => {
+    const getModels = async (url: string, cred: string, apiVersion?: string): Promise<void> => {
         setIsLoadingList(true)
         try {
             const response = await chatbotApis.getModels(url, {
                 credential_name: cred,
                 modelType: modelData.provider === "googleGenerativeAi" ? "generateContent" : "chat",
+                apiVersion: modelData.provider === "googleGenerativeAi" ? apiVersion || modelData.apiVersion : undefined
+
             });
             setModelData({
                 models: response.data.Models.map((elm: string) => {
@@ -53,11 +55,41 @@ const CredentialsFields = () => {
                     onChange={(value) => {
                         const selectedObj =
                             modelOptions.find((opt) => opt.value === value) || null;
-                        setModelData({ ...selectedObj, model: "", models: [], provider: selectedObj?.value, url: selectedObj?.url ? selectedObj.url : "" });
+                        setModelData({
+                            ...selectedObj, model: "", models: [],
+                            provider: selectedObj?.value,
+                            credential: "",
+                            url: selectedObj?.url ? selectedObj.url : "",
+                            apiVersion: "v1"
+                        });
                     }}
                 />
             </div>
-
+            {modelData.provider === "googleGenerativeAi" && (
+                <div className="flex flex-col w-1/3">
+                    <Label className="text-sm font-medium mb-1">API Version</Label>
+                    <SearchableSelect
+                        className="w-full"
+                        name="extra"
+                        placeholder="Select api version"
+                        options={[
+                            {
+                                label: "Default",
+                                value: "v1"
+                            },
+                            {
+                                label: "Beta",
+                                value: "v1beta"
+                            }
+                        ]}
+                        value={modelData.apiVersion || "v1"}
+                        onChange={(value) => {
+                            setModelData({ ...modelData, apiVersion: value || "" })
+                            if (modelData.url) getModels(modelData.url, modelData.credential, value as string);
+                        }}
+                    />
+                </div>
+            )}
             <div className="flex flex-col w-1/3">
                 <Label className="text-sm font-medium mb-1">Credentials</Label>
                 <SearchableSelect

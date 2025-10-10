@@ -32,6 +32,7 @@ interface ModelData {
   credType: string
   url: string
   models: []
+  apiVersion: string
 }
 export interface WorkflowVariable {
   id: string;
@@ -62,7 +63,7 @@ export interface FlowState extends SlicesStates {
   isPopoverInteracting: boolean;
   setIsPopoverInteracting: (open: boolean) => void;
   setVarPicker: (value: boolean) => void;
-  varPickerProps: { allowedNodeIds: string[],insertVariable: (variable: any) => void  } | null;
+  varPickerProps: { allowedNodeIds: string[], insertVariable: (variable: any) => void } | null;
   setVarPickerProps: (props: { allowedNodeIds: string[], insertVariable: (variable: any) => void } | null) => void;
 
   // Flow instance
@@ -178,7 +179,8 @@ export const useFlowStore = create<FlowState>()((set, get, store) => ({
     model: "",
     credType: "",
     url: "",
-    models: []
+    models: [],
+    apiVersion: "v1"
   },
   setModelData: (data) =>
     set((state) => ({
