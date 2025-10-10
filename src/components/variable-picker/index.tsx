@@ -24,13 +24,10 @@ export function VariablesPanel({ isOpen, onClose, right }: VariablesPanelProps) 
         constantVariables,
         outputVariables,
         dialogueVariables,
-        dataCollectorVariables,
         clickedElement,
         setClickedElement,
         setIsRightOpen,
         nodes,
-        variablesPickerVisibleMinimized: isMinimized,
-        setVariablesPickerVisibleMinimized
     } = useFlowStore();
     const files = useFilesStore((state) => state.files);
 
@@ -67,7 +64,6 @@ export function VariablesPanel({ isOpen, onClose, right }: VariablesPanelProps) 
         constantVariables,
         outputVariables,
         dialogueVariables,
-        dataCollectorVariables,
         files,
         nodeNameMap,
         allowedNodeIds,
@@ -116,17 +112,17 @@ export function VariablesPanel({ isOpen, onClose, right }: VariablesPanelProps) 
         }
     }, [])
     const toggleMinimize = () => {
-        setVariablesPickerVisibleMinimized(prev => {
-            console.log({ prev });
+        // setVariablesPickerVisibleMinimized(prev => {
+        //     console.log({ prev });
 
-            return !prev
-        });
+        //     return !prev
+        // });
     };
     if (!isOpen) return null
 
     return (
         <div
-            className={`fixed bg-background border rounded-lg shadow-lg transition-all duration-300 ease-out z-50 ${isMinimized ? "bottom-3 w-80" : "top-1/2 -translate-y-1/2 w-80"
+            className={`fixed bg-background border rounded-lg shadow-lg transition-all duration-300 ease-out z-50 ${false ? "bottom-3 w-80" : "top-1/2 -translate-y-1/2 w-80"
                 }`}
             style={{ right: `${right + 15}px` }}
             onMouseEnter={() => handlePopoverInteraction(true)}
@@ -134,7 +130,7 @@ export function VariablesPanel({ isOpen, onClose, right }: VariablesPanelProps) 
             onBlur={() => handlePopoverInteraction(false)}
             tabIndex={0}
         >
-            {isMinimized ? (
+            {false ? (
                 <MinimizedView onToggleMinimize={toggleMinimize} />
             ) : (
                 <div className="flex flex-col h-[calc(100vh-160px)]">

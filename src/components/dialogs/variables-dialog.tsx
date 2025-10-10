@@ -33,9 +33,17 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { WorkflowVariable } from "../variable-picker";
 import { ScrollArea } from "../ui/scroll-area";
-
+export interface WorkflowVariable {
+  id: string;
+  name: string;
+  type: "string" | "number" | "boolean" | "object" | "array";
+  value: any;
+  description?: string;
+  category: VariableCategory;
+  createdAt: Date;
+  updatedAt: Date;
+}
 interface VariablesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;

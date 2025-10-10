@@ -7,7 +7,6 @@ interface UseVariablesDataProps {
   constantVariables: Record<string, any>
   outputVariables: Record<string, Record<string, string>>
   dialogueVariables: Record<string, string>
-  dataCollectorVariables: Record<string, string[]>
   files: Array<{ file_name: string }>
   nodeNameMap: Record<string, string>
   allowedNodeIds: string[]
@@ -19,7 +18,6 @@ export function useVariablesData({
   constantVariables,
   outputVariables,
   dialogueVariables,
-  dataCollectorVariables,
   files,
   nodeNameMap,
   allowedNodeIds,
@@ -50,13 +48,7 @@ export function useVariablesData({
     [dialogueVariables, allowedNodeIdsSet]
   )
 
-  const filteredDataCollectorVars = useMemo(
-    () =>
-      Object.entries(dataCollectorVariables).filter(([nodeId]) =>
-        allowedNodeIdsSet.has(nodeId)
-      ),
-    [dataCollectorVariables, allowedNodeIdsSet]
-  )
+ 
 
   // ✅ Step 3 + 4 + 6: Single pass to build all variables + grouped data
   const { allVariables, groupedVariables } = useMemo(() => {
@@ -95,13 +87,6 @@ export function useVariablesData({
       addVariable({ name, type: "dialogue", nodeId, nodeName })
     }
 
-    // Data collector variables
-    for (const [nodeId, values] of filteredDataCollectorVars) {
-      const nodeName = nodeNameMap[nodeId]
-      for (const value of values) {
-        addVariable({ name: value, type: "dataCollector", nodeId, nodeName })
-      }
-    }
 
     return {
       allVariables: variables,
@@ -113,7 +98,6 @@ export function useVariablesData({
     nodeNameMap,
     filteredOutputVars,
     filteredDialogueVars,
-    filteredDataCollectorVars,
   ])
 
   // ✅ Step 7: Simplified, efficient filtering logic
