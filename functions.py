@@ -121,7 +121,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         await handle_flow_invoker(conversation,content)
 
     elif element_type == 'HttpRequest':
-        await handle_http_request(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content)
+        await handle_http_request(sio, sid, conversation, conversation_id, dialogue, current_dialogue, content, state)
         return
 
     elif element_type == 'VariableManager':
@@ -385,7 +385,7 @@ def handle_variable_manager(conversation,content):
     conversation['variables'][result['variable']] = result['value']
 
 
-async def handle_http_request(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content):
+async def handle_http_request(sio, sid, conversation, conversation_id, dialogue, current_dialogue, content, state):
     
     request = await HttpRequest(content["data"]).make_request(conversation['dialogue_id'],conversation_id)
 
@@ -400,8 +400,13 @@ async def handle_http_request(sio, sid, conversation, conversation_id, dialogue,
                 conversation['variables'][element['name']] = value
 
     # continue process execution
-    conversation['current_step'] = current_dialogue['next']
-    await execute_process(sio, sid, conversation, conversation_id, dialogue)
+    if current_dialogue['next']:
+        conversation['current_step'] = current_dialogue['next']
+        await execute_process(sio, sid, conversation, conversation_id, dialogue)
+    else:
+        if state:
+            conversation['execute_state_after_restart'] = True
+        conversation['current_step'] = dialogue['firstElementId']['next']
 
 async def handle_app_integration(sio, sid, conversation, conversation_id, dialogue, current_dialogue, content, state):
 
@@ -430,13 +435,10 @@ async def handle_app_integration(sio, sid, conversation, conversation_id, dialog
 
     # continue process execution
     if current_dialogue['next']:
-        print(" Current existttss")
         conversation['current_step'] = current_dialogue['next']
         await execute_process(sio, sid, conversation, conversation_id, dialogue)
     else:
-        print(" current not exists")
         if state:
-            print("if stateeeeee")
             conversation['execute_state_after_restart'] = True
         conversation['current_step'] = dialogue['firstElementId']['next']
 
