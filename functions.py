@@ -128,7 +128,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         handle_variable_manager(conversation,content)
     
     elif element_type == 'AppIntegration':
-        await handle_app_integration(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content)
+        await handle_app_integration(sio, sid, conversation, conversation_id, dialogue, current_dialogue, content, state)
         return
     
     elif element_type == 'Attachement':
@@ -403,7 +403,7 @@ async def handle_http_request(sio, sid, conversation, conversation_id, dialogue,
     conversation['current_step'] = current_dialogue['next']
     await execute_process(sio, sid, conversation, conversation_id, dialogue)
 
-async def handle_app_integration(sio, sid, conversation, conversation_id, dialogue, current_dialogue,content):
+async def handle_app_integration(sio, sid, conversation, conversation_id, dialogue, current_dialogue, content, state):
 
 
     app_content_json = content["data"]
@@ -429,8 +429,16 @@ async def handle_app_integration(sio, sid, conversation, conversation_id, dialog
                 conversation['variables'][element['name']] = value
 
     # continue process execution
-    conversation['current_step'] = current_dialogue['next']
-    await execute_process(sio, sid, conversation, conversation_id, dialogue)
+    if current_dialogue['next']:
+        print(" Current existttss")
+        conversation['current_step'] = current_dialogue['next']
+        await execute_process(sio, sid, conversation, conversation_id, dialogue)
+    else:
+        print(" current not exists")
+        if state:
+            print("if stateeeeee")
+            conversation['execute_state_after_restart'] = True
+        conversation['current_step'] = dialogue['firstElementId']['next']
 
 
 # async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, current_dialogue, content, save_to_history=True):
