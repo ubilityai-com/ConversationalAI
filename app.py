@@ -192,7 +192,7 @@ async def message(sid, data):
 
             # Reset session state
             conversation['current_step'] = dialogue['firstElementId']['next']
-            conversation['variables'] = {}
+            # conversation['variables'] = {}
             conversation['wait_for_user_input'] = None
             if state:
                 conversation['execute_state_after_restart'] = True
