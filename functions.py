@@ -149,7 +149,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
             # Restart or end conversation
             start_from = current_dialogue.get('startFrom')
             conversation['current_step'] = start_from or dialogue['firstElementId']['next']
-            conversation['variables'] = {}
+            # conversation['variables'] = {}
             return
 
         conversation['current_step'] = next_step
@@ -300,7 +300,7 @@ async def handle_multiple_choice(sio, sid, conversation, conversation_id, dialog
         other = content["data"]['cases'].get('Other')
         if not other: # other is None
             conversation['current_step'] = dialogue['firstElementId']['next']
-            conversation['variables'] = {}
+            # conversation['variables'] = {}
             return
         else:
             conversation['current_step'] = other
@@ -319,7 +319,7 @@ async def handle_router(sio, sid, conversation, conversation_id, dialogue,conten
         await execute_process(sio, sid, conversation, conversation_id, dialogue)
     else: # next is None
         conversation['current_step'] = dialogue['firstElementId']['next']
-        conversation['variables'] = {}
+        # conversation['variables'] = {}
         return
 
 
