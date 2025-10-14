@@ -145,17 +145,9 @@ class CONDITION_AGENT:
 
                 async for chunk in agent.astream_events(input={"messages": self.data['inputs']["query"]}, config={"configurable": {"session_id": f"{conversation_id}-condition"}}):
                     if 'event' in chunk and chunk['event'] == 'on_chat_model_stream':
-                        await sio.emit('message', {
-                                    'type': 'chunk',
-                                    'chunk': chunk['data']['chunk'].content
-                                }, room=sid)
                         result += chunk['data']['chunk'].content
 
                 memory.reset_memory(f"{conversation_id}-condition")
-
-                await sio.emit('message', {
-                    'type': 'end of chunks'
-                }, room=sid)
 
             else:
                 result = raw_agent.invoke(input={"messages": self.data['inputs']["query"]})
