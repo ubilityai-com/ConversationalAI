@@ -60,7 +60,7 @@ export function createFlowObject(): Flow {
                 start: !start,
                 greet: greet.trim() ? greet : null,
                 cancel: cancel.trim() ? cancel : null,
-                saveUserInputAs: start && save ? variableName : null,
+                saveUserInputAs: save ? variableName : null,
             };
         }
         else if (element.type === "StickyNote") {
