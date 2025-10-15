@@ -114,7 +114,7 @@ async def gemini_upload_file(json_cred, params, **kwargs):
                             upload_url = res.headers.get("X-Goog-Upload-URL")
                             if upload_url:
                                 upload_headers = {
-                                    "Content-Length": str(contentData["file_size"]),
+                                    # "Content-Length": str(contentData["file_size"]),
                                     "X-Goog-Upload-Offset": "0",
                                     "X-Goog-Upload-Command": "upload, finalize",
                                 }
@@ -283,16 +283,20 @@ async def gemini_generate_image(json_cred, params, **kwargs):
                 }
                 async with aiohttp.ClientSession() as session:
                     async with session.post(url, headers=headers, json=body) as response:
-                        response.raise_for_status()
                         rs_js = await response.json()
-                binary_res = rs_js["candidates"][0]["content"]["parts"][1]["inlineData"]["data"]
-                image_bytes = base64.b64decode(binary_res)
-                if kwargs:
-                    # Extra conv_id & dialogue_id
-                    dialogue_id = kwargs.get("dialogue_id")
-                    conv_id = kwargs.get("conv_id")
-                    fileData = upload_file(dialogue_id, conv_id, image_bytes)
-                return fileData
+                if rs_js:
+                    parts = rs_js.get("candidates", [])[0].get("content", {}).get("parts", [])
+                    for part in parts:
+                        binary_res = part.get("inlineData", {}).get("data", None)
+                        if binary_res:
+                            image_bytes = base64.b64decode(binary_res)
+                            if kwargs:
+                                # Extra conv_id & dialogue_id
+                                dialogue_id = kwargs.get("dialogue_id")
+                                conv_id = kwargs.get("conv_id")
+                                fileData = upload_file(dialogue_id, conv_id, image_bytes)
+                            return fileData
+                raise Exception(f"Status Code: {response.status}. Response: {await response.text()}")
             else:
                 raise Exception("missing required param(s)")
         else:
@@ -330,6 +334,8 @@ async def gemini_edit_image(json_cred, params, **kwargs):
                 uploaded_file_id = None  # Track uploaded file ID for deletion
                 if mime_type.startswith("image/"):
                     file_info = await gemini_upload_file(json_cred, params, **kwargs)
+                    if "Error" in file_info:
+                        raise Exception(f"File upload failed: {file_info['Error']}")
                     # Extract nested 'file' object
                     file_data = file_info.get("file", {}) if file_info else {}
                     fileUriUploaded = file_data.get("uri")
@@ -342,7 +348,6 @@ async def gemini_edit_image(json_cred, params, **kwargs):
                     headers = {"Content-Type": "application/json", "x-goog-api-key": apiKey}
                     async with aiohttp.ClientSession() as session:
                         async with session.post(url, headers=headers, json=body) as response:
-                            response.raise_for_status()
                             rs_js = await response.json()
                             # Delete uploaded file from Gemini
                             if uploaded_file_id:
@@ -352,19 +357,18 @@ async def gemini_edit_image(json_cred, params, **kwargs):
                                     if delete_response.status != 200:
                                         raise Exception(f"File delete failed: {delete_response.status} - {delete_response.text()}")
                             if rs_js:
-                                parts = rs_js["candidates"][0]["content"]["parts"]
-                                parts[1].get("inlineData", {}).get("data")
-                                inline_data = parts[1].get("inlineData", {})
-                                binary_res = inline_data.get("data")
-                                image_bytes = base64.b64decode(binary_res)
-                                if kwargs:
-                                    # Extra conv_id & dialogue_id
-                                    dialogue_id = kwargs.get("dialogue_id")
-                                    conv_id = kwargs.get("conv_id")
-                                    fileData = upload_file(dialogue_id, conv_id, image_bytes)
-                                return fileData
-                            else:
-                                raise Exception(f"Status Code: {response.status}. Response: {await response.text()}")
+                                parts = rs_js.get("candidates", [])[0].get("content", {}).get("parts", [])
+                                for part in parts:
+                                    binary_res = part.get("inlineData", {}).get("data", None)
+                                    if binary_res:
+                                        image_bytes = base64.b64decode(binary_res)
+                                        if kwargs:
+                                            # Extra conv_id & dialogue_id
+                                            dialogue_id = kwargs.get("dialogue_id")
+                                            conv_id = kwargs.get("conv_id")
+                                            fileData = upload_file(dialogue_id, conv_id, image_bytes)
+                                        return fileData
+                            raise Exception(f"Status Code: {response.status}. Response: {await response.text()}")
                 else:
                     raise Exception(f"Unsupported image MIME type: {mime_type}")
             else:
