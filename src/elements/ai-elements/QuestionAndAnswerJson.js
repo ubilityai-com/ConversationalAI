@@ -46,7 +46,7 @@ export const QuestionAndAnswerJson = {
             minRows: 4,
             variableName: "question",
             value: "",
-            placeholder: "e.g Whats going on your mind ?",
+            placeholder: "By default will take the last user input",
             hasDynamicVariable: true,
           }]]
       },

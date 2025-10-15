@@ -3,9 +3,8 @@ import { removeHTMLTags } from "../../../../lib/utils"
 import { NodeConfigProps } from "../../../../types/automation-types"
 import { LoopFromForm } from "../../../common/loop-from-end"
 import { Editor } from "../../../custom/quill-editor-with-variables"
-import { VariableNameField } from "../../../custom/variable-name-field"
+import { ToggleVariableField } from "../../../custom/ToggleVariableField"
 import { Label } from "../../../ui/label"
-import { Switch } from "../../../ui/switch"
 
 export interface RightSideData {
   botSays?: string;
@@ -93,26 +92,16 @@ export default function MessageForm({
         </div>
       </div>
 
-      <div className="flex items-center space-x-2 mx-2 mb-2">
-        <Switch
-          checked={localConfig.save || false}
-          onCheckedChange={(checked) => {
-            updateNestedConfig("save", checked);
-          }}
-          id="save-switch"
-        />
-        <Label htmlFor="save-switch" className="text-xs font-normal">
-          Save user's reply in a variable
-        </Label>
-      </div>
-
-      {localConfig.save && (
-        <VariableNameField
-          variableName={localConfig.variableName || ""}
-          onChange={(value) => updateNestedConfig("variableName", value)}
-          label="Variable Name"
-        />
-      )}
+      <ToggleVariableField
+        checked={localConfig.save || false}
+        variableName={localConfig.variableName || ""}
+        onVariableNameChange={(value) => updateNestedConfig("variableName", value)}
+        updateNestedConfig={updateNestedConfig}
+        switchId="save-switch"
+        switchLabel="Save user's reply in a variable"
+        configKey="save"
+        selectedNodeId={selectedNodeId}
+      />
 
       <Label className="block text-sm mb-1 font-normal">
         Enable the bot to handle user messages.

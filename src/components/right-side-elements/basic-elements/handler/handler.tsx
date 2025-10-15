@@ -1,8 +1,7 @@
-import { useRef } from "react"
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
-import { useFlowStore } from "../../../../store/flow-store"
 import { NodeConfigProps } from "../../../../types/automation-types"
 import { FieldWrapper } from "../../../custom/field-wrapper"
+import { ToggleVariableField } from "../../../custom/ToggleVariableField"
 import { Input } from "../../../ui/input"
 import { Label } from "../../../ui/label"
 import { Switch } from "../../../ui/switch"
@@ -19,7 +18,7 @@ interface Config {
 function checkIfAllRequiredDataIsFilled(data: Config): boolean {
   if (!data) return false;
 
-  if (data.start && data.save && !data.variableName) {
+  if (data.save && !data.variableName) {
     return false;
   }
 
@@ -28,7 +27,6 @@ function checkIfAllRequiredDataIsFilled(data: Config): boolean {
 
 export default function HandlerForm({ selectedNodeId, content, onContentUpdate }: NodeConfigProps<Config>) {
 
-  const updateDialogueVariable = useFlowStore((state) => state.updateDialogueVariable);
 
   const { localConfig, updateNestedConfig } = useDebounceConfig<Config>(
     content,
@@ -42,17 +40,7 @@ export default function HandlerForm({ selectedNodeId, content, onContentUpdate }
       },
     },
   )
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const debounceHandlerVariable = (value: string) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    // Set new timeout
-    timeoutRef.current = setTimeout(() => {
-      updateDialogueVariable(selectedNodeId, value);
-    }, 1000);
-  }
   return (
     <div className="space-y-4">
 
@@ -101,34 +89,16 @@ export default function HandlerForm({ selectedNodeId, content, onContentUpdate }
           Let the user start the diaolg
         </Label>
       </div>
-      {localConfig.start && <div className="flex items-center space-x-2 mx-2 mb-2">
-        <Switch
-          checked={localConfig.save || false}
-          onCheckedChange={(checked) => {
-            updateNestedConfig("save", checked);
-          }}
-          id="save-switch"
-        />
-        <Label htmlFor="save-switch" className="text-xs font-normal">
-          Save user's reply in a variable
-        </Label>
-      </div>}
-      {localConfig.save && localConfig.start && (
-        <div>
-          <Label className="block text-sm mb-1 font-normal">
-            Variable Name
-          </Label>
-          <Input
-            name="variableName"
-            placeholder="Variable Name"
-            value={localConfig.variableName || ""}
-            onChange={(event) => {
-              debounceHandlerVariable(event.target.value)
-              updateNestedConfig("variableName", event.target.value);
-            }}
-          />
-        </div>
-      )}
+      <ToggleVariableField
+        checked={localConfig.save || false}
+        variableName={localConfig.variableName || ""}
+        onVariableNameChange={(value) => updateNestedConfig("variableName", value)}
+        updateNestedConfig={updateNestedConfig}
+        switchId="save-switch"
+        switchLabel="Save user's reply in a variable"
+        configKey="save"
+        selectedNodeId={selectedNodeId}
+      />
     </div>
   )
 }

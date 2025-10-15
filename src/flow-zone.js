@@ -154,6 +154,7 @@ const FlowZone = () => {
     <div className="relative h-full w-full">
       <ReactFlow
         className='h-full flex-1 w-full'
+        deleteKeyCode={null}
         onNodesChange={applyNodeChangesFunc}
         onEdgesChange={applyEdgeChangesFunc}
         onInit={setReactFlowInstance}

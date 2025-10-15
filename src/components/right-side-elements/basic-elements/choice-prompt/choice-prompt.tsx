@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../..
 import { Input } from "../../../ui/input"
 import { Label } from "../../../ui/label"
 import { Switch } from "../../../ui/switch"
+import { ToggleVariableField } from "../../../custom/ToggleVariableField"
 
 /* -------------------------------------------------------------------------- */
 /*                                    TYPES                                   */
@@ -72,14 +73,12 @@ export default function ChoicePromptForm({ content, onContentUpdate, selectedNod
             },
         },
     )
-    const updateDialogueVariable = useFlowStore(state => state.updateDialogueVariable)
     const choices: Choice[] = localConfig.choices ?? []
     const botSays = localConfig.botSays ?? ""
     const save = localConfig.save ?? ""
     const variableName = localConfig.variableName ?? ""
     const loopFromName = localConfig.loopFromName ?? ""
     const loopFromSwitch = localConfig.loopFromSwitch ?? false
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 
     const addChoice = () => {
@@ -99,15 +98,7 @@ export default function ChoicePromptForm({ content, onContentUpdate, selectedNod
         const updatedChoices = choices.filter((c) => c.id !== choiceId)
         updateNestedConfig("choices", updatedChoices)
     }
-    const debounceMessageVariable = (value: string) => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current);
-        }
-        // Set new timeout
-        timeoutRef.current = setTimeout(() => {
-            updateDialogueVariable(selectedNodeId, value);
-        }, 1000);
-    }
+
     /* ---------------------------------- UI --------------------------------- */
 
     return (
@@ -189,26 +180,16 @@ export default function ChoicePromptForm({ content, onContentUpdate, selectedNod
                     </Button>
                 </CardContent>
             </Card>
-            <div className="flex items-center space-x-2 mx-2 mb-2">
-                <Switch
-                    checked={save || false}
-                    onCheckedChange={(checked) => {
-                        updateNestedConfig("save", checked)
-                    }}
-                    id="save-switch"
-                />
-                <Label htmlFor="save-switch" className="text-xs font-normal">
-                    Save user's reply in a variable
-                </Label>
-            </div>
-
-            {save && (
-                <VariableNameField
-                    variableName={localConfig.variableName || ""}
-                    onChange={(value) => updateNestedConfig("variableName", value)}
-                    label="Variable Name"
-                />
-            )}
+            <ToggleVariableField
+                checked={localConfig.save || false}
+                variableName={localConfig.variableName || ""}
+                onVariableNameChange={(value) => updateNestedConfig("variableName", value)}
+                updateNestedConfig={updateNestedConfig}
+                switchId="save-switch"
+                switchLabel="Save user's reply in a variable"
+                configKey="save"
+                selectedNodeId={selectedNodeId}
+            />
 
             <Label className="block text-sm p-1 mb-1 font-normal">Enable the bot to handle user messages.</Label>
 

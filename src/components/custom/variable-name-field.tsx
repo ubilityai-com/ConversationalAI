@@ -55,7 +55,7 @@ export function VariableNameField({
 
     return (
         <div>
-            <Label className="block text-sm mb-1 font-normal">{label}</Label>
+            <Label className="block text-sm mt-4 mb-1 font-normal">{label}</Label>
             <Input
                 name="variableName"
                 placeholder={label}
