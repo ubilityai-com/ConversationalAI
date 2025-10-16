@@ -125,7 +125,7 @@ export function FieldWrapper({
     <Button
       size="sm"
       variant="ghost"
-      className={`h-8 w-8 p-0 text-cyan-700 hover:text-cyan-900 ${isEditing ? "bg-slate-200" : ""
+      className={`h-8 w-8 p-0 text-cyan-700 hover:text-cyan-900 ${isEditing ? "bg-slate-200 mt-1" : ""
         }`}
       aria-label="Set dynamic value"
       onClick={handleVariableIconClick}
@@ -164,7 +164,7 @@ export function FieldWrapper({
             type={
               field.password
                 ? "password"
-                : field.numberField
+                : field.numberField && !isEditing
                   ? "number"
                   : field.date
                     ? "date"
@@ -184,7 +184,9 @@ export function FieldWrapper({
       </div>
       {/* Show variable button next to input when no label */}
       {field.isExpanded && expandButton}
-      {!field.label && field.type !== "textfield" && variableButton}
+      {!field.label && (field.type !== "textfield"
+        || (field.type === "textfield" && field.numberField)
+      ) && variableButton}
     </div>
   );
 
@@ -197,7 +199,9 @@ export function FieldWrapper({
         </Label>}
       </div>
       {/* Show variable button next to input when no label */}
-      {(!field.label || inlineLabel) && field.type !== "textfield" && variableButton}
+      {(!field.label || inlineLabel) && (field.type !== "textfield"
+        || (field.type === "textfield" && field.numberField)
+      ) && variableButton}
     </div>
   );
 
@@ -211,11 +215,10 @@ export function FieldWrapper({
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </Label>
           {field.type !== "textfield" && variableButton}
-          {/* {field.isExpanded && expandButton} */}
         </div>
       )}
       <div className="flex-1">
-        {isEditing || field.type === "textfield"
+        {isEditing || (field.type === "textfield" && !field.numberField)
           ? inputWithVariables()
           : inputWithoutVariables()}
       </div>
