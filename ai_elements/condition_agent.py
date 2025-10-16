@@ -129,10 +129,8 @@ class CONDITION_AGENT:
 
             try:
                 result = result.replace("'", '"')
-                logger.info(result)
                 return json.loads(result)
             except Exception as ex:
-                logging.warning(result)
                 cleaned = re.sub(r"^```json\n|\n```$", "", result)
                 logger.info(cleaned)
                 return json.loads(cleaned)

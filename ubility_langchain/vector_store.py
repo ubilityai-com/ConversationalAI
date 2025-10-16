@@ -29,8 +29,6 @@ class VectorStore:
                         params = {"indexName":"my_index_name"}
                     )
         """
-        logging.info("--------------Start--------------")
-        logging.info("Setting up vectore store object")
         
         if type in self._VALID_TYPES:
             self.type = type
@@ -42,7 +40,6 @@ class VectorStore:
 
         # Call the vector store functions based on the type
         if self.type == "pinecone":
-            logging.info("It is a pinecone vector store")
             self._setup_pinecone(self.credentials, self.params)
             
 
@@ -52,7 +49,6 @@ class VectorStore:
             if "pineconeApiKey" in cred:
                 self.api_key = cred["pineconeApiKey"]
                 self.index_name=params["indexName"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Pinecone credentials")
         except Exception as error:
@@ -72,7 +68,6 @@ class VectorStore:
             Return VectorStoreRetriever initialized from this VectorStore.
 
         """
-        logging.info("Retrieve data from your vectore store")
         try:
             if self.type == "pinecone":
                 from langchain_pinecone import PineconeVectorStore as langPinecone
