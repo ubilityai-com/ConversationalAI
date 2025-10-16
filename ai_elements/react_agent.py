@@ -2,7 +2,6 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.prebuilt import create_react_agent
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from ubility_langchain.langchain_memory import Memory, get_session_history
-# from langgraph.store.memory import InMemoryStore
 from ubility_langchain.customTools import create_custom_tools
 from langchain_core.messages.ai import AIMessage, AIMessageChunk
 from ubility_langchain.model import Model
@@ -96,14 +95,9 @@ class REACT_AGENT:
     def _setup_mcp_servers(self):
         mcps = {}
         mcps_data = []
-        if isinstance(self.data['tools'], dict) and "toolConfigs" in self.data['tools']:
-            for tool in self.data['tools']['toolConfigs']:
-                if tool["type"] == "mcp":
-                    mcps_data.append(tool)
-        else:
-            for tool in self.data['tools']:
-                if tool["type"] == "mcp":
-                    mcps_data.append(tool)  
+        for tool in self.data['tools']['toolConfigs']:
+            if tool["type"] == "mcp":
+                mcps_data.append(tool)
 
         for mcp in mcps_data:
             if "name" in mcp and "url" in mcp:
@@ -199,7 +193,6 @@ class REACT_AGENT:
                 create_react_agent(model=llm, prompt=prompt, tools=[]),
                 get_session_history,
                 input_messages_key="messages",
-                # store=InMemoryStore()
             )
             status = agent.invoke(input={"messages": ""}, config={'configurable': {'session_id': conv_id}})
             if 'messages' in status:
@@ -256,33 +249,16 @@ class REACT_AGENT:
             if 'tools' in self.data:
                 client = MultiServerMCPClient(self._setup_mcp_servers())
                 # Retrieve MCP tools if exist
-                if isinstance(self.data['tools'], dict) and "selectedTools" in self.data['tools']:
-                    all_tools = await client.get_tools()
-                    tools = self._get_selected_tools(all_tools)
-                else:
-                    tools = await client.get_tools()
+                all_tools = await client.get_tools()
+                tools = self._get_selected_tools(all_tools)
 
                 # Include custom tools if any exist
-                if isinstance(self.data['tools'], dict) and "toolConfigs" in self.data['tools']:
-                    tools = create_custom_tools(tools, self.data['tools']['toolConfigs'], self.credentials)
-                else:
-                    tools = create_custom_tools(tools, self.data['tools'], self.credentials)
+                tools = create_custom_tools(tools, self.data['tools']['toolConfigs'], self.credentials)
 
             llm_model = Model(provider=self.data['model']["provider"], model=self.data['model']["model"] if "model" in self.data['model'] else "", credentials=self.credentials[self.data['model']['credential']], params=self.data['model']["params"]).chat()
 
             if conversation_id:
-                if 'chainMemory' not in self.data or 'type' not in self.data['chainMemory']:
-                    self.data['chainMemory'] = {}
-                    self.data['chainMemory']["type"] = "ConversationBufferMemory"
-
-                if self.data['chainMemory']["type"] == "ConversationSummaryBufferMemory":
-                    self.data['chainMemory']["llm"] = llm_model
-
-                memory = Memory(type=self.data['chainMemory']["type"], historyId=conversation_id, params=self.data['chainMemory'])
-                
-                if 'context' in self.data['chainMemory']:
-                    memory.load_external_context(conversation_id)
-
+                memory = Memory(historyId=conversation_id)
                 # load ubility memory
                 memory.load_streaming_memory(conversation_id)
 
@@ -304,7 +280,6 @@ class REACT_AGENT:
                     raw_agent,
                     get_session_history,
                     input_messages_key="messages",
-                    # store=InMemoryStore()
                 )
 
                 if input:

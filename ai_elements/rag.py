@@ -2,7 +2,6 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.prompts import ChatPromptTemplate
 from typing_extensions import Annotated, TypedDict
 from typing import List
-from ubility_langchain.document_loader import DocumentLoader
 from ubility_langchain.vector_store import VectorStore
 from ubility_langchain.model import Model
 import logging
@@ -39,9 +38,9 @@ class RAG:
                     vectorStore_type = self.data['vectorStore']["type"]
                     retriever = VectorStore(vectorStore_type, self.credentials[self.data['vectorStore']['credential']], self.data['vectorStore']).retrieve_data(embedding=embeddings)
                 else:
-                    # in this case, data['vectorStore'] will contain file name instead of file content ---> get file content from the file name and add this key to data['vectorStore']
                     if conversation: 
                         self.data['vectorStore']['dialogue_id'] = conversation['dialogue_id']
+                    from ubility_langchain.document_loader import DocumentLoader
                     doc = DocumentLoader(type="basicDataLoader").load(self.data['vectorStore'])
             else:
                 raise Exception('Missing VectorStore type')
