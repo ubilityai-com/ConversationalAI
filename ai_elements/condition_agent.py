@@ -6,33 +6,6 @@ from ubility_langchain.model import Model
 import json, logging, re
 from logger_config import logger
 
-DEFAULT_STATE_PROMPT="""
-Your task is to analyze the given input and select one matching scenario from a provided set of scenarios.
-
-    - Input: A string representing the user's query, message or data.
-    - Scenarios: A list of predefined scenarios that relate to the input.
-    - Instruction: {instruction}
-
-Steps:
-
-    1- Read the user input and this list of scenarios:
-        {scenarios}
-    2- Analyze the content of the input to identify its main topic or intention.
-    3- If the input is not a request (examples: "I want to...", "I need to...", "Let's go with...", "What about...") 
-       or if the input is simply providing information or answering a question, then select "Other".
-    4- Otherwise, compare the input with each scenario: Evaluate how well the input's topic or intention aligns with each of the provided scenarios and select the one that is the best fit.
-    5- Output the result: Return the selected scenario in the specified JSON format.
-
-Output Format:
-
-    Output should be the value of the selected scenario under the key 'output', like this: {{"output": ""}}. No explanation is needed.
-    Return the exact sentence containing the selected value, without making any modifications to it, even if it contains mistakes.
-
-Note
-
-    - Ensure that the input scenarios align well with potential user queries for accurate matching.
-    - DO NOT include anything other than the JSON in your response.
-"""
 
 DEFAULT_CONDITION_AGENT_PROMPT = """
 You are part of a multi-agent system designed to make agent coordination and execution easy. Your task is to analyze the given input and select one matching scenario from a provided set of scenarios.
@@ -60,8 +33,6 @@ Note
     - DO NOT include anything other than the JSON in your response.
     - Use your memory to inform and adapt your response whenever relevant information is available.
 """
-
-
 
 
 DEFAULT_STATE_PROMPT = """
@@ -131,7 +102,7 @@ class CONDITION_AGENT:
 
             result = ''
             if sio and sid and conversation_id and self.data['params']['stream']:
-                memory = Memory(type='ConversationBufferMemory', historyId=conversation_id, params={})
+                memory = Memory(historyId=conversation_id)
                 
                 # if react status = fail --> use ubility history
                 if conversation['react_fail']:

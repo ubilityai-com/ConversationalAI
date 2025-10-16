@@ -53,7 +53,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
 
     if 'usedVariables' in current_dialogue:
         used_vars = current_dialogue.get('usedVariables') or []
-        # logger.info("Starting the replace_variables function")
+        logger.info("Starting the replace_variables function")
         content = replace_variables(
             current_dialogue["content"],
             conversation['variables'],
@@ -61,20 +61,15 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         )
 
     if state and conversation['execute_state_after_restart'] and condition:
-        logger.info("^^^^^^^^^^^^^^^^^^^^^^^^^ execute state ^^^^^^^^^^^^^^^^^^^")
         cdt_resp = await execute_state(sio, sid, state, conversation, conversation_id, current_dialogue, credentials)
         if cdt_resp != 'Other' and state[cdt_resp] != conversation['current_step']:
             conversation['current_step'] = state[cdt_resp]
-            logger.info('*************** JUMP TO ANOTHER AGENT ***************')
 
-        # execute_state = False
         conversation['execute_state_after_restart'] = False
-        logger.info("exec")
-        logger.info(conversation['execute_state_after_restart'])
         await execute_process(sio, sid, conversation, conversation_id, dialogue, condition=False)
         return
 
-    # logger.info(f"Element type : {element_type}")
+    logger.info(f"Element type : {element_type}")
     # Element processing
     if element_type == 'Greet':
         if current_dialogue['greet']:
@@ -90,7 +85,6 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
             cdt_resp = await execute_state(sio, sid, state, conversation, conversation_id, current_dialogue, credentials)
             if cdt_resp != 'Other' and state[cdt_resp] != conversation['current_step']:
                 conversation['current_step'] = state[cdt_resp]
-                logger.info('*************** JUMP TO ANOTHER AGENT ***************')
                 await execute_process(sio, sid, conversation, conversation_id, dialogue, condition=False)
                 return
         
@@ -137,7 +131,6 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
     else:
         print(f'[Warning] Invalid element type: {element_type}')
 
-    # conversation['variables']['last_input_value'] = ''
     
     # Post-processing: move to next step if not waiting for user input
     if not wait_for_user:
@@ -149,7 +142,6 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
             # Restart or end conversation
             start_from = current_dialogue.get('startFrom')
             conversation['current_step'] = start_from or dialogue['firstElementId']['next']
-            # conversation['variables'] = {}
             return
 
         conversation['current_step'] = next_step
@@ -161,7 +153,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
 
 
 async def execute_state(sio, sid, state, conversation, conversation_id, current_dialogue, credentials):
-    logger.info("*************** STATE CONDITION AGENT ***************")
+    logger.info("Starting the execute_state function")
     condition_agent_data = {
         "data": {
             "inputs": {
@@ -257,7 +249,7 @@ def create_global_history(conversation_id):
 
 
 def save_data_to_global_history(conversation_id, input, output):
-    # logger.info("====== save data to history ==========")
+    logger.info("====== save data to history ==========")
     current_dir = os.getcwd()
     filePath = f"{current_dir}/langchain_history/{conversation_id}/{conversation_id}.json"
     if os.path.exists(filePath):
@@ -300,7 +292,6 @@ async def handle_multiple_choice(sio, sid, conversation, conversation_id, dialog
         other = content["data"]['cases'].get('Other')
         if not other: # other is None
             conversation['current_step'] = dialogue['firstElementId']['next']
-            # conversation['variables'] = {}
             return
         else:
             conversation['current_step'] = other
@@ -319,7 +310,6 @@ async def handle_router(sio, sid, conversation, conversation_id, dialogue,conten
         await execute_process(sio, sid, conversation, conversation_id, dialogue)
     else: # next is None
         conversation['current_step'] = dialogue['firstElementId']['next']
-        # conversation['variables'] = {}
         return
 
 
@@ -443,11 +433,8 @@ async def handle_app_integration(sio, sid, conversation, conversation_id, dialog
         conversation['current_step'] = dialogue['firstElementId']['next']
 
 
-# async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, current_dialogue, content, save_to_history=True):
-#     result = await AIIntegration(chain_type, credentials, content['data']).execute_ai_element(sio, sid, conversation, conversation_id)
 async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, current_dialogue, content, state=None):
     result = await AIIntegration(chain_type, credentials, content['data']).execute_ai_element(sio, sid, conversation, conversation_id, state)
-    # if save_to_history:
     if "answer" in result:
         save_data_to_global_history(conversation_id=conversation_id, input="", output=str(result["answer"]))
     

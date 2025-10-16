@@ -2,30 +2,7 @@
 # The core element of any language model application is...the model.#
 #####################################################################
 
-
-# pip install -qU langchain-anthropic
-# pip install --upgrade --quiet  langchain-aws
-# pip install langchain-openai
-# pip install --upgrade --quiet  langchain-google-vertexai
-# pip install -U langchain-mistralai
-# pip install --upgrade langchain-together
-# pip install -U langchain-cohere
-# pip install -qU langchain-google-genai
-# pip install -qU langchain-groq
-# pip install langchain-ai21
-# pip install -qU langchain-fireworks
-# pip install -qU langchain-huggingface
-# pip install langchain_nvidia_ai_endpoints
-# pip install langchain_nomic
-# pip install langchain-deepseek
-# pip install langchain-xai
-# pip install langchain-cerebras
-# pip install langchain_ollama
-
 import logging
-from typing import (Any,Callable,Dict,Generator,Iterable,List,Optional,Tuple,Type)
-import os
-import types
 import json
 
 
@@ -124,9 +101,6 @@ class Model:
         elif self.provider == "fireworks":
             logging.info("It is an Fireworks provider")
             self._setup_fireworks(self.credentials)
-        # elif self.provider == "ai21":
-        #     logging.info("It is an Ai21 provider")
-        #     self._setup_ai21(self.credentials)
         elif self.provider =="nvidia" :
             logging.info("It is a nvidia provider")
             self._setup_nvidia(self.credentials)
@@ -353,17 +327,6 @@ class Model:
                 raise Exception("missing Fireworks credentials")
         except Exception as error:
             raise Exception(error)
-
-    # set up ai21 object
-    # def _setup_ai21(self,cred):
-    #     try:
-    #         if "apiKey" in cred:
-    #             self.api_key=cred["apiKey"]
-    #             logging.info("--------------Done--------------")
-    #         else:
-    #             raise Exception("missing AI21 credentials")
-    #     except Exception as error:
-    #         raise Exception(error) 
         
     def _setup_nvidia(self,cred):
         try:
@@ -446,7 +409,7 @@ class Model:
         """
             A chat model is a language model that uses chat messages as inputs and returns chat messages as outputs (as opposed to using plain text)
         """
-        _VALID_CHAT_PROVIDERS=["openAi","ollama","anthropic","awsBedrock","azureOpenAi","mistralAi","cohere","togetherAi","huggingFace","vertexAi","googleGenerativeAi","groq","fireworks","ai21","nvidia", "deepseek", "xai", "openRouter", "cerebras", "ibm", "liteLLM"]
+        _VALID_CHAT_PROVIDERS=["openAi","ollama","anthropic","awsBedrock","azureOpenAi","mistralAi","cohere","togetherAi","huggingFace","vertexAi","googleGenerativeAi","groq","fireworks","nvidia", "deepseek", "xai", "openRouter", "cerebras", "ibm", "liteLLM"]
         logging.info("Create chat model")
         try:
             if self.provider in _VALID_CHAT_PROVIDERS:
@@ -510,9 +473,6 @@ class Model:
                 elif self.provider == "fireworks":
                     from langchain_fireworks import ChatFireworks
                     llm = ChatFireworks(api_key=self.api_key, model=self.model, **optionals)
-                # elif self.provider == "ai21":
-                #     from langchain_ai21 import ChatAI21
-                #     llm = ChatAI21(api_key=self.api_key, model=self.model, **optionals)
                 elif self.provider == "nvidia":    
                     from langchain_nvidia_ai_endpoints import ChatNVIDIA 
                     if self.api_key:
