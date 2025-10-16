@@ -719,7 +719,7 @@ def mysql_execute_sql(json_cred, params, **kwargs):
                         elif isinstance(value, datetime.datetime):
                             record[key] = value.strftime('%Y-%m-%d')
                         elif isinstance(value, bytes):
-                            record[key] = base64.b64decode(value)
+                            record[key] = base64.b64encode(value).decode('utf-8')
                         else:
                             continue
             return response
