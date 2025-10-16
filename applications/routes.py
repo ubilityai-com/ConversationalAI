@@ -430,7 +430,7 @@ async def gemini_list_models(payload: GeminiAppIntegration):
                 if "generateContent" in model.get("supportedGenerationMethods", []):
                     filtered_models.append({
                         "name": model.get("name"),
-                        "displayName": model.get("displayName")
+                        "displayName": model.get("name")
                     })
             return {"models": filtered_models}
         return JSONResponse(status_code=500, content={"Error": str(result)})
@@ -460,7 +460,7 @@ async def gemini_list_image_models(payload: GeminiAppIntegration):
                 if "generateContent" in model.get("supportedGenerationMethods", []) and "image" in model.get("name", "").lower():
                     filtered_models.append({
                         "name": model.get("name"),
-                        "displayName": model.get("displayName")
+                        "displayName": model.get("name")
                     })
             return {"models": filtered_models}
         return JSONResponse(status_code=500, content={"Error": str(result)})
@@ -468,9 +468,11 @@ async def gemini_list_image_models(payload: GeminiAppIntegration):
     except Exception as error:
         return JSONResponse(status_code=500, content={"Error": str(error)})
 
+class GeminiGetFilesAppIntegration(BaseModel):
+    credential_name: str
 
 @http_app.post("/bot/gemini/getFiles")
-async def gemini_get_many_file(payload: GeminiAppIntegration):
+async def gemini_get_many_file(payload: GeminiGetFilesAppIntegration):
     try:
         json_cred = get_credentials_by_names(payload.credential_name)
         json_cred = json_cred[payload.credential_name]
