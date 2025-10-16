@@ -1,7 +1,7 @@
 /// <reference types="webpack-env" />
 
 import { useEffect, useState } from "react";
-import { camelToDashCase } from "../../../lib/utils";
+import { camelToDashCase } from "../../../lib/utils/utils";
 import { SharedSection } from "./shared-section";
 import { SharedListSection } from "./shared-section-list";
 interface DynamicElementLoaderProps {

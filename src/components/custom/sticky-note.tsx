@@ -2,7 +2,7 @@ import { Tooltip, TooltipArrow } from '@radix-ui/react-tooltip'
 import { useReactFlow } from '@xyflow/react'
 import { FilePlus2 } from 'lucide-react'
 import { v4 as uuidv4 } from "uuid"
-import { useFlowStore } from '../../store/flow-store'
+import { useFlowStore } from '../../store/root-store'
 import { Button } from '../ui/button'
 import { TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
 

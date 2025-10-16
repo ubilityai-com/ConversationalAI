@@ -1,5 +1,5 @@
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
-import { removeHTMLTags } from "../../../../lib/utils"
+import { removeHTMLTags } from "../../../../lib/utils/utils"
 import { NodeConfigProps } from "../../../../types/automation-types"
 import { LoopFromForm } from "../../../common/loop-from-end"
 import { Editor } from "../../../custom/quill-editor-with-variables"

@@ -1,7 +1,7 @@
 import { Loader2, Save } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useFlowStore } from "../../store/flow-store";
+import { useFlowStore } from "../../store/root-store";
 import { Button } from "../ui/button";
 import {
   Dialog,

@@ -1,9 +1,9 @@
 import JsonView from "@uiw/react-json-view"
 import { TriangleSolidArrow } from "@uiw/react-json-view/triangle-solid-arrow"
 import * as React from "react"
-import { cn } from "../../lib/utils"
-import { pathExistsInOutputVariables } from "../../lib/variable-utils"
-import { useFlowStore } from "../../store/flow-store"
+import { cn } from "../../lib/utils/utils"
+import { pathExistsInOutputVariables } from "../../lib/utils/variable-utils"
+import { useFlowStore } from "../../store/root-store"
 
 const customTheme = {
     "--w-rjv-font-family": "monospace",

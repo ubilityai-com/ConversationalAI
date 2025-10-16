@@ -1,6 +1,5 @@
-"use client";
 import { Node, Position, type NodeProps } from "@xyflow/react";
-import { CheckSquare, GitBranch } from "lucide-react";
+import { GitBranch } from "lucide-react";
 import { NodeHandle } from "../handles/handle";
 import { BaseNode } from "./index";
 interface Scenario {

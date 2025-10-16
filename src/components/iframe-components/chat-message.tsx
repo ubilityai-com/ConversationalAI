@@ -1,5 +1,5 @@
 import { Download, File } from "lucide-react";
-import { cn } from "../../lib/utils";
+import { cn } from "../../lib/utils/utils";
 import { useChatStore, type Message } from "../../store/chat-store";
 import { Button } from "../ui/button";
 import { useCallback, useState } from "react";

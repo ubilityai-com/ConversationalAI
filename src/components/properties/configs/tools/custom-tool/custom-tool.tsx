@@ -1,6 +1,6 @@
 import { useDebounceConfig } from "../../../../../hooks/use-debounced-config"
-import { isPlainObject, validateArray } from "../../../../../lib/utils"
-import AutomationSimple from "../../../../custom/automation-v4"
+import { isPlainObject, validateArray } from "../../../../../lib/utils/utils"
+import AutomationSimple from "../../../../custom/automation"
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../ui/card"
 import { Separator } from "../../../../ui/separator"
 import ActiveFlows from "./active-flows"

@@ -1,7 +1,7 @@
 import React from "react";
 import { CheckCircle, XCircle, Loader2 } from "lucide-react";
-import { cn } from "../../../lib/utils";
-import { useFlowStore } from "../../../store/flow-store";
+import { cn } from "../../../lib/utils/utils";
+import { useFlowStore } from "../../../store/root-store";
 
 interface TestStatusIndicatorProps {
   id: string;

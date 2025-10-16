@@ -1,8 +1,7 @@
 import Cookies from "js-cookie"
 import axios, { type AxiosRequestConfig } from "axios"
-import { useFlowStore } from "../../../store/flow-store"
+import { useFlowStore } from "../../../store/root-store"
 import { OAuth2ServiceTypes } from "./OAuth2FlowServicesList"
-import { useCredentialStore } from "../../../store/credentials-store"
 
 // Type definitions
 interface MyFunctions {
@@ -271,8 +270,7 @@ export const automateOAuth2 = async ({
 
         }
 
-        // // Use Zustand store instead of dispatch
-        useCredentialStore.getState().createCred(credentialPayload)
+        useFlowStore.getState().createCred(credentialPayload)
     } catch (error) {
         console.log("error", "Failed Creating Credential", "Please Make sure you filled correct Credentials")
     } finally {

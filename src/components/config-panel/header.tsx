@@ -1,5 +1,5 @@
 import { Settings } from "lucide-react";
-import { useFlowStore } from "../../store/flow-store";
+import { useFlowStore } from "../../store/root-store";
 import ActionButtons from "./action-buttons";
 import NodeLabel from "./node-label";
 

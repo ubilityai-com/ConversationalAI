@@ -1,7 +1,7 @@
 import Cookies from "js-cookie"
 import { Copy, Eye, EyeOff, Plus, Settings, Shield, Zap } from "lucide-react"
 import { Fragment, useEffect, useState } from "react"
-import { useCredentialStore } from "../../../store/credentials-store"
+import { useFlowStore } from "../../../store/root-store"
 import type {
     AutoCompleteItem,
     CredentialField,
@@ -53,7 +53,7 @@ export function CreateCredentialDialog({
     const [isLoadingApi, setIsLoadingApi] = useState(false)
     const [isCurrentCredOauth2, setIsCurrentCredOauth2] = useState(defaultCred?.defaultRedirectUri)
     const [showPassword, setShowPassword] = useState<Record<string, boolean>>({})
-    const { createCred, loading, success } = useCredentialStore()
+    const { createCred, loading, success } = useFlowStore()
 
     useEffect(() => {
         resetCredInfo()

@@ -1,10 +1,10 @@
-"use client"
+
 
 import { ListChecks, Plus, Trash2 } from "lucide-react"
 import { useRef } from "react"
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
-import { removeHTMLTags } from "../../../../lib/utils"
-import { useFlowStore } from "../../../../store/flow-store"
+import { removeHTMLTags } from "../../../../lib/utils/utils"
+import { useFlowStore } from "../../../../store/root-store"
 import { NodeConfigProps } from "../../../../types/automation-types"
 import { LoopFromForm } from "../../../common/loop-from-end"
 import { FieldWrapper } from "../../../custom/field-wrapper"

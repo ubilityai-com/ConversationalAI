@@ -1,4 +1,4 @@
-import { useFlowStore } from "../../store/flow-store"
+import { useFlowStore } from "../../store/root-store"
 import { Badge } from "../ui/badge"
 import { CheckCircle, Clock } from "lucide-react"
 

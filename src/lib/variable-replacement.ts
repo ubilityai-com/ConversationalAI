@@ -1,5 +1,4 @@
-import { useFilesStore } from "../store/files-store";
-import { useFlowStore } from "../store/flow-store";
+import { useFlowStore } from "../store/root-store";
 
 // Custom error class for variable replacement errors
 export class VariableReplacementError extends Error {
@@ -25,7 +24,7 @@ export class VariableReplacementError extends Error {
 export function replaceVariablesInObject(obj: any): any {
   const { constantVariables, outputVariables, dialogueVariables, nodeResults } =
     useFlowStore.getState();
-  const { files } = useFilesStore.getState();
+  const { files } = useFlowStore.getState();
 
   const errors: string[] = [];
 

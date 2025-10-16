@@ -1,5 +1,5 @@
 import { getAccvalue } from "../../../../lib/automation-utils";
-import { getOutputVariablesByNodeId } from "../../../../lib/variable-utils";
+import { getOutputVariablesByNodeId } from "../../../../lib/utils/variable-utils";
 
 export default function getContent(selectedNode: any) {
     const rightSideData = selectedNode.data.rightSideData;

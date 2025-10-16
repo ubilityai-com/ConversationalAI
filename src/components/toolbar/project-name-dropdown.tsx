@@ -1,9 +1,9 @@
-"use client"
+
 
 import { Check, ChevronDown, Edit2, Loader2, Trash2, X } from "lucide-react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useFlowStore } from "../../store/flow-store"
+import { useFlowStore } from "../../store/root-store"
 import {
   AlertDialog,
   AlertDialogAction,

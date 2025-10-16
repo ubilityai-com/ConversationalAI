@@ -12,8 +12,8 @@ import { LlmNode } from './components/nodes/llm-node';
 import { MessageNode } from './components/nodes/message-node';
 import { RouterNode } from './components/nodes/router-node';
 import StickyNoteNode from './components/nodes/stickyNote-node';
-import { getAllPreviousNodes } from './lib/utils';
-import { useFlowStore } from './store/flow-store';
+import { getAllPreviousNodes } from './lib/utils/utils';
+import { useFlowStore } from './store/root-store';
 
 const FlowZone = () => {
   const nodeTypes = {
@@ -151,7 +151,7 @@ const FlowZone = () => {
     handleRightDrawerClose()
   };
   return (
-    <div className="relative h-full w-full">
+    <div className="relative w-full">
       <ReactFlow
         className='h-full flex-1 w-full'
         onNodesChange={applyNodeChangesFunc}

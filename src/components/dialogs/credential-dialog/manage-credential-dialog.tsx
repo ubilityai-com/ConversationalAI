@@ -25,7 +25,7 @@ import {
     DropdownMenuTrigger,
 } from "../../ui/dropdown-menu"
 import { Trash2, RefreshCcw, Filter } from "lucide-react"
-import { useCredentialStore } from "../../../store/credentials-store"
+import { useFlowStore } from "../../../store/root-store"
 
 interface ManageCredentialsDialogProps {
     open: boolean
@@ -38,7 +38,7 @@ export function ManageCredentialsDialog({ open, onOpenChange }: ManageCredential
         credentials,
         deleteCred,
         fetchCreds,
-    } = useCredentialStore()
+    } = useFlowStore()
 
     const [search, setSearch] = useState("")
     const [typeFilter, setTypeFilter] = useState<string | null>(null)

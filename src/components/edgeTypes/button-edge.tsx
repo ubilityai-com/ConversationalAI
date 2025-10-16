@@ -6,7 +6,7 @@ import {
 } from '@xyflow/react';
 import { Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { useFlowStore } from '../../store/flow-store';
+import { useFlowStore } from '../../store/root-store';
 
 export default function CustomEdge({
   id,

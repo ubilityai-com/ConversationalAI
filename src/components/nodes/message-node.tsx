@@ -1,7 +1,7 @@
 import { Node, NodeProps } from "@xyflow/react"
 import { MessageCircle } from "lucide-react"
 import { BaseNode } from "./index"
-import { removeHTMLTags } from "../../lib/utils"
+import { removeHTMLTags } from "../../lib/utils/utils"
 interface Data extends Record<string, unknown> {
   label: string
   description: string

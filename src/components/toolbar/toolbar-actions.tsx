@@ -1,9 +1,8 @@
-"use client";
-
 import { TooltipArrow } from "@radix-ui/react-tooltip";
 import { FileText, Goal, Key, Loader2, Rocket, Save } from "lucide-react";
 import { useState } from "react";
-import { useFlowStore } from "../../store/flow-store";
+import { checkIfAllHandlesAreConnected } from "../../lib/flow-validation";
+import { useFlowStore } from "../../store/root-store";
 import { Button } from "../ui/button";
 import {
   Tooltip,
@@ -24,7 +23,6 @@ export function ToolbarActions() {
     setIsFormDialogOpen,
     setFormDialogStatus,
     setDialogProps,
-    handleFlowZoneCheckIfAllHandlesAreConnected,
     nodeStates, modelData
   } = useFlowStore();
   const [isUpdatingBot, setIsUpdatingBot] = useState(false);
@@ -54,10 +52,10 @@ export function ToolbarActions() {
   const handlePublishToggle = () => {
     if (selectedBot?.status === "Active")
       return deactivateBot();
-    const nodesValidation = useFlowStore.getState().nodesValidation;
+    const { nodesValidation, nodes, edges } = useFlowStore.getState();
     const warnings = [];
 
-    const connected = handleFlowZoneCheckIfAllHandlesAreConnected();
+    const connected = checkIfAllHandlesAreConnected(nodes, edges);
     if (!connected) {
       warnings.push({
         id: "missing-handler",

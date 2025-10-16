@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react'
 import chatbotApis from '../../../api/chatbotApis'
-import { useCredentialStore } from '../../../store/credentials-store'
+import { useFlowStore } from '../../../store/root-store'
 import { SearchableSelect } from '../../custom/searchable-select'
 import { Label } from '../../ui/label'
 import { modelOptions } from './static-data'
 import { Input } from '../../ui/input'
-import { useFlowStore } from '../../../store/flow-store'
 
 const CredentialsFields = () => {
-    const { loading, credentials, fetchCreds } = useCredentialStore()
+    const { loading, credentials, fetchCreds } = useFlowStore()
     const { setModelData, modelData } = useFlowStore()
     const [isLoadingList, setIsLoadingList] = useState<boolean>(false);
 

@@ -14,8 +14,8 @@ import {
   X,
   Zap
 } from "lucide-react";
-import { doesVariableExist } from "../../lib/variable-utils";
-import { useFlowStore, VariableCategory } from "../../store/flow-store";
+import { doesVariableExist } from "../../lib/utils/variable-utils";
+import { useFlowStore } from "../../store/root-store";
 import { JsonEditor } from "../custom/json-editor";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Badge } from "../ui/badge";
@@ -44,6 +44,8 @@ export interface WorkflowVariable {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type VariableCategory = "ai" | "dialogue" | "global";
 interface VariablesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -120,7 +122,6 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
     // Clear any existing error
     setVariableExistsError(null);
 
-    console.log({ formData, editingVariable });
 
     let processedValue: any;
 
@@ -429,7 +430,6 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
       </div>
     );
   };
-  console.log({ outputVariables });
 
   const renderOutputVariables = () => {
     const handleDeleteOutputVariable = (nodeId: string, varName: string) => {

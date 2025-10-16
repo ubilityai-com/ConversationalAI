@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios"
 import { memo, useEffect } from "react"
-import { isPlainObject } from "../../../../../lib/utils"
-import { useApiData, useApiStore } from "../../../../../store/api-store"
+import { isPlainObject } from "../../../../../lib/utils/utils"
+import { useApiData, useFlowStore } from "../../../../../store/root-store"
 import { SearchableSelect } from "../../../../custom/searchable-select"
 import { Alert, AlertDescription } from "../../../../ui/alert"
 import { Card, CardContent, CardHeader, CardTitle } from "../../../../ui/card"
@@ -61,7 +61,7 @@ const ActiveFlows: React.FC<ActiveFlowsProps> = ({
     const userId = ""
     const compName = flowZoneSelectedID + "-" + variableName
     const { list: ListsForThisNode, isLoading: isLoadingList, notFetchingAsFirstTime } = useApiData(compName)
-    const { setListAndDropDownList, setIsLoadingList, setFetchList, setNotFetchingListAsFirstTime } = useApiStore()
+    const { setListAndDropDownList, setIsLoadingList, setFetchList, setNotFetchingListAsFirstTime } = useFlowStore()
 
     const getWebhookActiveList = (): void => {
 

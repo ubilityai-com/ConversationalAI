@@ -1,8 +1,8 @@
 import { File } from "lucide-react";
 import { useState } from "react";
 import {
-  useFilesStore
-} from "../../../store/files-store";
+  useFlowStore
+} from "../../../store/root-store";
 import { FileItem } from "./file-item";
 import { FileSkeleton } from "./file-skeleton";
 import { SearchInput } from "./search-input";
@@ -38,7 +38,7 @@ export const FileList: React.FC<FileListProps> = ({
     setFileError,
     files,
     uploadingFiles
-  } = useFilesStore();
+  } = useFlowStore();
   const [searchQuery, setSearchQuery] = useState("");
   const getFilteredFiles = () => {
     if (!searchQuery.trim()) {

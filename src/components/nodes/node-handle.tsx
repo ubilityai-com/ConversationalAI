@@ -1,7 +1,4 @@
-"use client"
-
-import { Handle, HandleProps, Position } from "@xyflow/react"
-import { cn } from "../../lib/utils"
+import { Handle, HandleProps } from "@xyflow/react"
 
 interface NodeHandleProps extends HandleProps {
     variant?: "input" | "output" | "condition" | "choice" | "branch"

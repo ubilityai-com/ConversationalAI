@@ -1,4 +1,4 @@
-import { extractCreds, getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils";
+import { extractCreds, getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils/utils";
 
 export default function getContent(selectedNode: any, params: any) {
     const rightSideData = selectedNode.data.rightSideData;

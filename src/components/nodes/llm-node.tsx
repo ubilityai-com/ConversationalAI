@@ -1,4 +1,4 @@
-"use client"
+
 import { Node, NodeProps } from "@xyflow/react"
 import { Bot } from "lucide-react"
 import { BaseNode } from "./index"

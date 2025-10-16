@@ -1,84 +1,24 @@
+import { GitBranch } from "lucide-react";
+
 export const ConditionAgentJson = {
-    "category": "ai",
     type: "ConditionAgent",
-    label: "Condition agent",
-    color: "#ccd3d5",
-    normalHandle: ["integration", "basic", "automationTools", "ai"],
-    rightSideData: {
-        save: false,
-        variableName: "",
-        loopFromSwitch: false,
-        loopFromName: "",
-        nodesCanConnectWith: {
-            '1': { category: "model", title: "Chat Model", required: true },
-            "2": { category: "outputParser", title: "Output Parser" },
+    label: "Condition Agent",
+    description: "Branch workflow based on conditions",
+    icon: GitBranch,
+    category: "ai",
+    color: "bg-yellow-500",
+    defaults: {
+        scenarios: [{ label: "scenario 1", id: `scenario-${Date.now()}` }],
+        instruction: "Determine which of the provided scenarios is the best fit for the input.",
+        input: "",
+        extras: {
+            model: {
+                enabled: true,
+                type: "",
+                content: {},
+                description: "Select the model that fits your use case",
+                title: "LLM Model",
+            },
         },
-        json: [
-            {
-                type: "textfield",
-                label: "Instruction",
-                required: true,
-                multiline: true,
-                minRows: 4,
-                variableName: "instruction",
-                chatbotQuestion: true,
-                value: "",
-                placeholder: "e.g Whats going on your mind ?",
-                hasDynamicVariable: true,
-            },
-            {
-                type: "textfield",
-                label: "Input",
-                required: true,
-                multiline: true,
-                minRows: 4,
-                variableName: "input",
-                chatbotQuestion: true,
-                value: "",
-                placeholder: "e.g Whats going on your mind ?",
-                hasDynamicVariable: true,
-            },
-            {
-                type: "dynamic",
-                fieldsArray: [],
-                title: "Scenarios",
-                hasAI: true,
-                variableName: "scenarios",
-                required: false,
-                structure: [
-                    {
-                        type: "row",
-                        title: "Scenario",
-                        variableName: "ScenarioRow",
-                        removeButton: true,
-                    },
-                    {
-                        type: "textfield",
-                        value: "",
-                        placeholder: "scenario",
-                        variableName: "scenario",
-                        required: false,
-                        hasDynamicVariable: true,
-                    },
-                ],
-            },
-            {
-                type: "outputJson",
-                value: {
-                    "Output": {
-                        "Agent": {
-                            "Status": "",
-                            "Output": {}
-                        },
-                        "Condition": {
-                            "Status": "",
-                            "Output": {}
-                        }
-                    },
-                    "Error": "",
-                    "Status": "",
-                },
-            },
-        ],
     },
 };

@@ -1,4 +1,4 @@
-import { getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils";
+import { getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils/utils";
 import { RightSideData } from "./choice-prompt";
 
 export default function getContent(selectedNode: any, params: any) {

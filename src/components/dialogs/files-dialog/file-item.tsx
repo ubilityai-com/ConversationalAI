@@ -17,8 +17,8 @@ import {
   XCircle,
 } from "lucide-react";
 import React from "react";
-import { cn } from "../../../lib/utils";
-import { useFilesStore } from "../../../store/files-store";
+import { cn } from "../../../lib/utils/utils";
+import { useFlowStore } from "../../../store/root-store";
 import { Button } from "../../ui/button";
 import { Progress } from "../../ui/progress";
 
@@ -58,7 +58,7 @@ export const FileItem: React.FC<FileItemProps> = ({
   onRemoveFile,
 }) => {
   const { getFile, downloadingFileIds, previewingFileIds } =
-    useFilesStore();
+    useFlowStore();
   const isDownloading = downloadingFileIds.has(fileName);
   const isPreviewing = previewingFileIds.has(fileName);
   const handlePreview = async () => {

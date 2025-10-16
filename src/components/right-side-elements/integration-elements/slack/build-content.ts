@@ -2,7 +2,7 @@ import {
     getAccvalue,
     isJsonString
 } from "../../../../lib/automation-utils";
-import { getOutputVariablesByNodeId } from "../../../../lib/variable-utils";
+import { getOutputVariablesByNodeId } from "../../../../lib/utils/variable-utils";
 
 
 const getOperationName = (type: string, operation: string) => {

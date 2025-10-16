@@ -1,4 +1,3 @@
-"use client";
 import { Node, Position, type NodeProps } from "@xyflow/react";
 import { CheckSquare } from "lucide-react";
 import { NodeHandle } from "../handles/handle";

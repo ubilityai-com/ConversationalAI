@@ -1,4 +1,4 @@
-import { useFlowStore } from "../../store/flow-store";
+import { useFlowStore } from "../../store/root-store";
 import RightSideBody from "../right-side-body";
 import ConfigCard from "./config-card";
 import Header from "./header";

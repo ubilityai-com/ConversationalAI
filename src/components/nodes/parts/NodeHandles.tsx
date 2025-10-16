@@ -1,7 +1,7 @@
 import React from "react";
 import { Position } from "@xyflow/react";
 import { NodeHandle } from "../../handles/handle";
-import { cn } from "../../../lib/utils";
+import { cn } from "../../../lib/utils/utils";
 import { NODE_TYPES } from "../index";
 
 interface NodeHandlesProps {

@@ -1,126 +1,101 @@
-import { useRef } from "react";
-import { useDebounceConfig } from "../hooks/use-debounced-config";
-import {
-    objToReturnDefaultValues,
-    objToReturnValuesToSend,
-} from "../lib/automation-utils";
-import { validateArray } from "../lib/utils";
-import { useRightDrawerStore } from "../store/right-drawer-store";
-import {
-    NodeConfigProps,
-} from "../types/automation-types";
-import AutomationSimple from "./custom/automation-v4";
-import { DynamicElementLoader } from "./properties/shared/DynamicElementLoader";
-function areAllValid(items: { valid: boolean }[]): boolean {
-    for (let i = 0; i < items.length; i++) {
-        if (!items[i].valid) {
-            return false; // stop immediately on first invalid
-        }
-    }
-    return true;
-}
-export function isExtrasValid(extras: any) {
-    for (const key in extras) {
-        const item = extras[key];
 
-        console.log({ extras, key });
 
-        const isRequired = !item.optional;
-
-        if (!isRequired && !item.enabled) continue;
-
-        if (item.multiple) {
-            const list = item.list || [];
-            if (isRequired && list.length === 0)
-                return false
-            return areAllValid(list)
-        } else {
-            if (!item.valid) {
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
+import { useCallback, useMemo } from "react"
+import { useDebounceConfig } from "../hooks/use-debounced-config"
+import { formatAutomationListValues, parseAutomationListValues } from "../lib/automation-utils"
+import { FormFieldKey } from "../lib/constants/form-keys"
+import type { NodeConfigProps } from "../types/automation-types"
+import AutomationSimple from "./custom/automation"
+import { DynamicElementLoader } from "./properties/shared/DynamicElementLoader"
+import { validateFormConfig } from "../lib/utils/validation-utils"
+import { useValidatorRegistry } from "../hooks/use-validator-registry"
 
 export default function TemplateForm({
-    schema,
-    content,
-    onContentUpdate,
-    validate,
-    selectedNodeId,
-    ai,
-    CustomComponent,
-    contentPath
+  schema,
+  content,
+  onContentUpdate,
+  validate,
+  selectedNodeId,
+  ai,
+  CustomComponent,
+  contentPath,
 }: NodeConfigProps) {
-    const parentRef = useRef<{ [key: string]: any }>({})
+  const { registerValidator, validateAll } = useValidatorRegistry(schema, !!ai, !!CustomComponent)
 
-    const { localConfig, updateNestedConfig } = useDebounceConfig<
-        typeof content
-    >(
-        {
-            ...content,
-            json: objToReturnDefaultValues(schema, content.json),
-        },
-        {
-            delay: 300,
-            onSave: (savedConfig) => {
-                let extrasValid = true;
-                if (ai) {
-                    extrasValid = isExtrasValid(savedConfig.extras);
-                }
-                const nodeValid = validateArray(schema, savedConfig.json);
-                let customValid = true
-                if (CustomComponent) {
-                    customValid = parentRef.current.custom(savedConfig)
-                }
-                console.log({ nodeValid, extrasValid, customValid });
+  const extrasKeys = useMemo(() => {
+    return Object.keys(content.extras || {})
+  }, [content.extras])
 
-                validate(nodeValid && extrasValid && customValid);
-                onContentUpdate({
-                    ...savedConfig,
-                    json: objToReturnValuesToSend(schema, savedConfig.json),
-                }, nodeValid && extrasValid && customValid);
-            },
-        }
-    );
-    const extras = localConfig.extras || {};
-    const onValidate = () => { };
-    return (
-        <div className="space-y-6">
-            <AutomationSimple
-                filledDataName={contentPath ? `${contentPath}.json` : "json"}
-                schema={schema}
-                fieldValues={localConfig.json}
-                flowZoneSelectedId={selectedNodeId}
-                onFieldChange={(partialState, replace) => {
-                    if (replace) updateNestedConfig(`${"json"}`, partialState, { replace });
-                    else
-                        updateNestedConfig(`${"json"}`, partialState,);
-                }}
-            />
+  const { localConfig, updateNestedConfig } = useDebounceConfig<typeof content>(
+    {
+      ...content,
+      json: formatAutomationListValues(schema, content.json),
+    },
+    {
+      delay: 300,
+      onSave: (savedConfig) => {
+        const isValid = validateFormConfig(schema, savedConfig, {
+          hasAI: !!ai,
+          hasCustom: !!CustomComponent,
+          customValidator: validateAll(savedConfig).isValid ? undefined : () => false,
+        })
 
-            {CustomComponent && (
-                <CustomComponent
-                    validator={(validator: any) => (parentRef.current["custom"] = validator)}
-                    localConfig={localConfig}
-                    updateNestedConfig={updateNestedConfig}
-                    onValidate={onValidate}
-                />
-            )}
-            {ai &&
-                Object.keys(extras).map((key) => (
-                    <DynamicElementLoader
-                        validators={(validators: any) => (parentRef.current["validators"] = validators)}
-                        key={key}
-                        extrasKey={key}
-                        extrasConfig={extras[key]}
-                        localConfig={localConfig.extras[key]}
-                        selectedNodeId={selectedNodeId}
-                        updateNestedConfig={updateNestedConfig}
-                    />
-                ))}
-        </div>
-    );
+        validate(isValid)
+        onContentUpdate(
+          {
+            ...savedConfig,
+            json: parseAutomationListValues(schema, savedConfig.json),
+          },
+          isValid,
+        )
+      },
+    },
+  )
+
+  const extras = localConfig.extras || {}
+
+  const handleFieldChange = useCallback(
+    (partialState: any, replace?: boolean) => {
+      const updateOptions = replace ? { replace: true } : undefined
+      updateNestedConfig(FormFieldKey.JSON, partialState, updateOptions)
+    },
+    [updateNestedConfig],
+  )
+
+  // Placeholder for validation callback
+  const onValidate = useCallback(() => {}, [])
+
+  return (
+    <div className="space-y-6">
+      <AutomationSimple
+        filledDataName={contentPath ? `${contentPath}.json` : FormFieldKey.JSON}
+        schema={schema}
+        fieldValues={localConfig.json}
+        flowZoneSelectedId={selectedNodeId}
+        onFieldChange={handleFieldChange}
+      />
+
+      {CustomComponent && (
+        <CustomComponent
+          validator={(validator: any) => registerValidator(FormFieldKey.CUSTOM, validator)}
+          localConfig={localConfig}
+          updateNestedConfig={updateNestedConfig}
+          onValidate={onValidate}
+        />
+      )}
+
+      {ai &&
+        extrasKeys.map((key) => (
+          <DynamicElementLoader
+            validators={(validators: any) => registerValidator(FormFieldKey.VALIDATORS, validators)}
+            key={key}
+            extrasKey={key}
+            extrasConfig={extras[key]}
+            localConfig={localConfig.extras[key]}
+            selectedNodeId={selectedNodeId}
+            updateNestedConfig={updateNestedConfig}
+          />
+        ))}
+    </div>
+  )
 }

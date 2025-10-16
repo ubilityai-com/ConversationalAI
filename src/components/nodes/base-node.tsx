@@ -2,7 +2,7 @@ import { Node, NodeProps } from "@xyflow/react";
 import { Copy, Trash2 } from "lucide-react";
 import React from "react";
 import { NODE_TYPES, NodeErrorBoundary, NodeHandles, NodeIcon, StateIndicator, StatusIndicator, TestStatusIndicator, useNodeSelection } from "./index";
-import { useFlowStore } from "../../store/flow-store";
+import { useFlowStore } from "../../store/root-store";
 
 export type BaseNodeData<T = Record<string, any>> = {
   label: string;

@@ -1,7 +1,7 @@
 import { useRef } from "react"
 import ReactQuill from "react-quill"
-import { useFlowStore } from "../../store/flow-store"
-import { getAllPreviousNodes } from "../../lib/utils"
+import { useFlowStore } from "../../store/root-store"
+import { getAllPreviousNodes } from "../../lib/utils/utils"
 import { QuillEditor, QuillEditorProps } from "../ui/quill-editor"
 
 interface EditorProps extends QuillEditorProps {

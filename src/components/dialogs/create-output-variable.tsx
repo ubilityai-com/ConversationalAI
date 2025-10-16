@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { doesVariableExist, reformatCreatedVariablePath } from "../../lib/variable-utils";
-import { useFlowStore } from "../../store/flow-store";
+import { doesVariableExist, reformatCreatedVariablePath } from "../../lib/utils/variable-utils";
+import { useFlowStore } from "../../store/root-store";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -34,7 +34,6 @@ export function CreateOutputVariableDialog({
 
   const [variableName, setVariableName] = useState("");
   const [error, setError] = useState("");
-  console.log({ path });
 
   const handleVariableNameChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -64,7 +63,7 @@ export function CreateOutputVariableDialog({
       return;
     }
 
-    // Get the current node ID (assuming we're creating an output variable for the selected node)
+    // Get the current node ID
     const nodeId = clickedElement?.id;
     if (!nodeId) {
       setError("No node selected");

@@ -1,10 +1,9 @@
-import { useRef, useState, useEffect } from "react";
+import { AlertTriangle } from "lucide-react";
+import { useRef, useState } from "react";
 import { useDebounceConfig } from "../../../hooks/use-debounced-config";
-import { objToReturnDynamicv2 } from "../../../lib/automation-utils";
-import { validateArray } from "../../../lib/utils";
-import { useFlowStore } from "../../../store/flow-store";
-import { useRightDrawerStore } from "../../../store/right-drawer-store";
-import AutomationSimple from "../../custom/automation-v4";
+import { getAutomationListValues } from "../../../lib/automation-utils";
+import { validateArray } from "../../../lib/utils/utils";
+import AutomationSimple from "../../custom/automation";
 import { SearchableSelect } from "../../custom/searchable-select";
 import {
   Accordion,
@@ -15,7 +14,6 @@ import {
 import { Card, CardDescription, CardHeader, CardTitle } from "../../ui/card";
 import { Label } from "../../ui/label";
 import { Switch } from "../../ui/switch";
-import { AlertTriangle } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -172,7 +170,7 @@ export function SharedSection({
                 value={type}
                 onChange={(value) => {
                   const op = elements.find((o) => o.type === value) as any;
-                  const defaultValues = objToReturnDynamicv2(
+                  const defaultValues = getAutomationListValues(
                     op.rightSideData.json
                   );
                   schema.current = op;

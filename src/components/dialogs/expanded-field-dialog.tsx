@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useFlowStore } from "../../store/flow-store";
+import { useFlowStore } from "../../store/root-store";
 import { Button } from "../ui/button";
 import {
     Dialog,
-    DialogClose,
     DialogContent,
     DialogOverlay,
     DialogPortal,
@@ -20,7 +19,7 @@ export function ExpandedFieldDialog({
     open,
     onOpenChange,
 }: ConfigurationDialogProps) {
-    const { dialogProps, setDialogProps, setSelectedOutputOrVariable } = useFlowStore();
+    const { dialogProps } = useFlowStore();
 
     const [inputValue, setInputValue] = useState(dialogProps?.value || "");
 
@@ -34,7 +33,6 @@ export function ExpandedFieldDialog({
         setInputValue(dialogProps?.value || "");
         onOpenChange(false);
     };
-    console.log({ dialogProps });
 
     return (
         <Dialog

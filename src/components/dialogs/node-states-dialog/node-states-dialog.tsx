@@ -1,25 +1,19 @@
 import {
-  ChevronDown,
-  ChevronUp,
   Database,
-  Edit2,
   Eye,
   Filter,
-  Save,
   Search,
   SlidersHorizontal,
-  Trash2,
-  X
+  Trash2
 } from "lucide-react";
 import { useState } from "react";
-import { useFlowStore } from "../../../store/flow-store";
+import { useFlowStore } from "../../../store/root-store";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../ui/accordion";
 import { Badge } from "../../ui/badge";
 import { Button } from "../../ui/button";
 import { Card, CardContent } from "../../ui/card";
-import { Checkbox } from "../../ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../ui/dialog";
 import { Input } from "../../ui/input";
-import { Label } from "../../ui/label";
 import {
   Select,
   SelectContent,
@@ -28,7 +22,6 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { Textarea } from "../../ui/textarea";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../ui/accordion";
 import CredentialsFields from "./credentials-fields";
 
 interface NodeStatesDialogProps {
@@ -96,21 +89,6 @@ export function NodeStatesDialog({
     updateNodeState(nodeId, editDescription.trim());
     setEditingNodeId(null);
     setEditDescription("");
-  };
-
-  const handleEditCancel = () => {
-    setEditingNodeId(null);
-    setEditDescription("");
-  };
-
-  const handleToggleNodeState = (nodeId: string, hasState: boolean) => {
-    if (hasState) {
-      // Add state with empty description
-      addNodeState(nodeId, "");
-    } else {
-      // Remove state
-      removeNodeState(nodeId);
-    }
   };
 
   const handleViewNode = (nodeId: string) => {
@@ -267,7 +245,7 @@ export function NodeStatesDialog({
                   const hasState = nodeStates.hasOwnProperty(node.id) && nodeStates[node.id].trim();
                   const currentDescription = nodeStates[node.id] || "";
                   const isEditing = editingNodeId === node.id;
-                  const nodeCategory = node.data?.category || "basic";
+                  const nodeCategory = (node.data?.category as string) || "basic";
 
                   return (
                     <AccordionItem key={node.id} value={node.id}>
