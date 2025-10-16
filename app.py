@@ -181,6 +181,8 @@ async def message(sid, data):
     # used for the recursive functionality in react agent
     if data_type != "binary":
         conversation['variables']['last_input_value'] = user_message
+        logger.info("*************** USER INPUT ***************")
+        logger.info(user_message)
         save_data_to_global_history(conversation_id, user_message, "")
     
     # Handle cancellation
