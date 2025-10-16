@@ -31,8 +31,6 @@ class Model:
                         model = "text-embedding-3-large"
                     )
         """
-        logging.info("--------------Start--------------")
-        logging.info("Setting up model object")
         
         if provider in self._VALID_PROVIDERS:
             self.provider = provider
@@ -45,67 +43,46 @@ class Model:
         
         # Call the model functions based on the provider
         if self.provider == "openAi":
-            logging.info("It is a openAi provider")
             self._setup_openAi(self.credentials)
         elif self.provider == "ollama":
-            logging.info("It is a ollama provider")
             self._setup_ollama(self.credentials)
         elif self.provider == "anthropic":
-            logging.info("It is an anthropic provider")
             self._setup_anthropic(self.credentials)
         elif self.provider == "awsBedrock":
-            logging.info("It is an awsBedrock provider")
             self._setup_awsBedrock(self.credentials)
         elif self.provider == "deepseek":
-            logging.info("It is a deepseek provider")
             self._setup_deepseek(self.credentials)
         elif self.provider == "xai":
-            logging.info("It is an xai provider")
             self._setup_xai(self.credentials)
         elif self.provider == "openRouter":
-            logging.info("It is an openRouter provider")
             self._setup_openRouter(self.credentials)
         elif self.provider == "cerebras":
-            logging.info("It is an cerebras provider")
             self._setup_cerebras(self.credentials)
         elif self.provider == "ibm":
-            logging.info("It is an IBM Watsonx provider")
             self._setup_ibm(self.credentials)
         elif self.provider == "liteLLM":
-            logging.info("It is an liteLLM provider")
             self._setup_liteLLM(self.credentials)
         elif self.provider == "azureOpenAi":
-            logging.info("It is an azureOpenAi provider")
             self._setup_azureOpenAi(self.credentials)
         elif self.provider == "mistralAi":
-            logging.info("It is an mistralAi provider")
             self._setup_mistralAi(self.credentials)
         elif self.provider == "cohere":
-            logging.info("It is an cohere provider")
             self._setup_cohere(self.credentials)
         elif self.provider == "togetherAi":
-            logging.info("It is an togetherAi provider")
             self._setup_togetherAi(self.credentials)
         elif self.provider == "huggingFace":
-            logging.info("It is an huggingFace provider")
             self._setup_huggingFace(self.credentials)
         elif self.provider == "vertexAi":
-            logging.info("It is an vertexAi provider")
             self._setup_vertexAi(self.credentials)
         elif self.provider == "googleGenerativeAi":
-            logging.info("It is an GoogleGenerativeAi provider")
             self._setup_googleGenerativeAI(self.credentials)
         elif self.provider == "groq":
-            logging.info("It is an Groq provider")
             self._setup_groq(self.credentials)
         elif self.provider == "fireworks":
-            logging.info("It is an Fireworks provider")
             self._setup_fireworks(self.credentials)
         elif self.provider =="nvidia" :
-            logging.info("It is a nvidia provider")
             self._setup_nvidia(self.credentials)
         elif self.provider =="nomic" :
-            logging.info("It is a nomic provider")
             self._setup_nomic(self.credentials)
 
     #set up openAi object 
@@ -113,7 +90,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing OpenAI credentials")
         except Exception as error:
@@ -124,7 +100,6 @@ class Model:
         try:
             if "ollamaBaseUrl" in cred:
                 self.base_url=cred["ollamaBaseUrl"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Ollama credentials")
         except Exception as error:
@@ -135,7 +110,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Anthropic credentials")
         except Exception as error:
@@ -146,7 +120,6 @@ class Model:
         try:
             if "regionName" in cred:
                 self.region_name=cred["regionName"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing AWS Bedrock credentials")
         except Exception as error:
@@ -157,7 +130,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Deepseek credentials")
         except Exception as error:
@@ -168,7 +140,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing XAI credentials")
         except Exception as error:
@@ -179,7 +150,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing OpenRouter credentials")
         except Exception as error:
@@ -190,7 +160,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Cerebras credentials")
         except Exception as error:
@@ -204,7 +173,6 @@ class Model:
                 self.base_url=cred["baseUrl"]
                 self.project_id=cred["projectId"]
                 self.version=cred["version"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing IBM credentials")
         except Exception as error:
@@ -216,7 +184,6 @@ class Model:
             if "apiKey" in cred and "baseUrl" in cred:
                 self.api_key=cred["apiKey"]
                 self.base_url=cred["baseUrl"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing liteLLM credentials")
         except Exception as error:
@@ -229,7 +196,6 @@ class Model:
                 self.api_key=cred["apiKey"]
                 self.api_version=cred["apiVersion"]
                 self.azure_endpoint=f"https://{cred['resourceName']}.openai.azure.com/"
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Azure OpenAI credentials")
         except Exception as error:
@@ -240,7 +206,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing MistralAI credentials")
         except Exception as error:
@@ -251,7 +216,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Cohere credentials")
         except Exception as error:
@@ -262,7 +226,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing TogetherAi credentials")
         except Exception as error:
@@ -273,7 +236,6 @@ class Model:
         try:
             if "apiToken" in cred:
                 self.api_token=cred["apiToken"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing HuggingFace credentials or params")
         except Exception as error:
@@ -289,7 +251,6 @@ class Model:
                         "project": cred["projectId"],
                         "credentials": service_account.Credentials.from_service_account_info(service_account_info)
                     }
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing VertexAI credentials")
         except Exception as error:
@@ -300,7 +261,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Gemini credentials")
         except Exception as error:
@@ -311,7 +271,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Groq credentials")
         except Exception as error:
@@ -322,7 +281,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key = cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Fireworks credentials")
         except Exception as error:
@@ -332,10 +290,8 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             elif "baseUrl" in cred:
                 self.baseUrl= cred["baseUrl"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Nvidia credentials")
         except Exception as error:
@@ -345,7 +301,6 @@ class Model:
         try:
             if "apiKey" in cred:
                 self.api_key=cred["apiKey"]
-                logging.info("--------------Done--------------")
             else:
                 raise Exception("missing Nomic credentials")
         except Exception as error:
@@ -356,7 +311,6 @@ class Model:
             Embedding model are used to transform words into numerical arrays or vectors.
         """
         _VALID_EMBEDDING_PROVIDERS=["openAi","ollama","googleGenerativeAi","togetherAi","cohere","mistralAi","fireworks","nvidia","nomic", "ibm"]
-        logging.info("Create embedding model")
         try:
             if self.provider in _VALID_EMBEDDING_PROVIDERS:
                 optionals = self.params
@@ -410,7 +364,6 @@ class Model:
             A chat model is a language model that uses chat messages as inputs and returns chat messages as outputs (as opposed to using plain text)
         """
         _VALID_CHAT_PROVIDERS=["openAi","ollama","anthropic","awsBedrock","azureOpenAi","mistralAi","cohere","togetherAi","huggingFace","vertexAi","googleGenerativeAi","groq","fireworks","nvidia", "deepseek", "xai", "openRouter", "cerebras", "ibm", "liteLLM"]
-        logging.info("Create chat model")
         try:
             if self.provider in _VALID_CHAT_PROVIDERS:
                 optionals = self.params["optionals"]

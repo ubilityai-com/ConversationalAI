@@ -38,7 +38,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         session (dict): In-memory session store.
         dialogue (dict): The dialogue configuration loaded from JSON.
     """
-    logger.info("Starting the execute_process function")
+    # logger.info("Starting the execute_process function")
     current_step = conversation.get('current_step')
 
     if not current_step:
@@ -53,7 +53,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
 
     if 'usedVariables' in current_dialogue:
         used_vars = current_dialogue.get('usedVariables') or []
-        logger.info("Starting the replace_variables function")
+        # logger.info("Starting the replace_variables function")
         content = replace_variables(
             current_dialogue["content"],
             conversation['variables'],
@@ -69,7 +69,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         await execute_process(sio, sid, conversation, conversation_id, dialogue, condition=False)
         return
 
-    logger.info(f"Element type : {element_type}")
+    # logger.info(f"Element type : {element_type}")
     # Element processing
     if element_type == 'Greet':
         if current_dialogue['greet']:
@@ -81,6 +81,8 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         save_data_to_global_history(conversation_id=conversation_id, input="", output=content["data"]['text'])
 
     elif "LC" in element_type:
+        logger.info("*************** USER INPUT ***************")
+        logger.info(conversation['variables']['last_input_value'])
         if state and condition and element_type != "LC_CONDITION_AGENT" and conversation['last_executed_node'] != "LC_CONDITION_AGENT" and conversation['react_fail']:
             cdt_resp = await execute_state(sio, sid, state, conversation, conversation_id, current_dialogue, credentials)
             if cdt_resp != 'Other' and state[cdt_resp] != conversation['current_step']:
@@ -153,7 +155,6 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
 
 
 async def execute_state(sio, sid, state, conversation, conversation_id, current_dialogue, credentials):
-    logger.info("Starting the execute_state function")
     condition_agent_data = {
         "data": {
             "inputs": {
@@ -187,7 +188,7 @@ def save_user_input(conversation: dict, input_object: dict):
         conversation (dict): The current conversation.
         input_object (dict): The message input object containing 'data'.
     """
-    logger.info("Save user's input to conversation variables")
+    # logger.info("Save user's input to conversation variables")
     conversation['variables'][conversation['wait_for_user_input']] = input_object.get('data')
     conversation['wait_for_user_input'] = None
 
@@ -222,13 +223,11 @@ def replace_variables(template: Union[str, list, dict], variables: dict, used_va
 
 
 def create_global_history(conversation_id):
-    logger.info(f"Create global history for the conversation ID: {conversation_id}")
     current_dir = os.getcwd()
     fullHistoryDir = f"{current_dir}/langchain_history/{conversation_id}"
 
     # Create history directory if it doesn't exist
     if not os.path.exists(fullHistoryDir):
-        logger.info(f"History directory not found, creating: /{conversation_id}")
         os.makedirs(fullHistoryDir)
 
     # Set the full file path for history data
@@ -249,7 +248,6 @@ def create_global_history(conversation_id):
 
 
 def save_data_to_global_history(conversation_id, input, output):
-    logger.info("====== save data to history ==========")
     current_dir = os.getcwd()
     filePath = f"{current_dir}/langchain_history/{conversation_id}/{conversation_id}.json"
     if os.path.exists(filePath):
@@ -440,7 +438,6 @@ async def handle_ai_integration(sio, sid, chain_type, credentials, conversation,
     
     # save result in a variable if user want to
     if result and 'saveOutputAs' in current_dialogue:
-        logger.info(f"Save {chain_type} output in variables")
         if current_dialogue['saveOutputAs']:
             for element in current_dialogue['saveOutputAs']:
                 if not element['path']: # save all result in a variable 

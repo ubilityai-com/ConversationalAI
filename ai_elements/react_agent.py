@@ -200,8 +200,9 @@ class REACT_AGENT:
                     if isinstance(msg, AIMessage):
                         status = msg.content
             memory.reset_memory(conv_id)
-            logging.info("status")
+            logging.info("*************** STATUS OUTPUT ***************")
             logging.info(status)
+            logging.info("*********************************************\n")
             return status
         except Exception as exc:
             raise Exception(exc)
@@ -264,14 +265,11 @@ class REACT_AGENT:
 
             user_prompt = None
             if "prompt" in self.data['inputs'] and self.data['inputs']["prompt"] and "requiredInputs" not in self.data:
-                logging.info("initialize the react agent with custom prompt")
                 user_prompt = self.data['inputs']["prompt"]+ "\nWhen you have fully completed all required tasks, Dont ask if the user needs any further assistance"
                 raw_agent = create_react_agent(model=llm_model, tools=tools, prompt=user_prompt) # If the user provides a custom prompt, initialize the react agent with it
             elif "requiredInputs" in self.data:
-                logging.info("initialize the data collector agent with custom prompt")
                 raw_agent = create_react_agent(model=llm_model, tools=tools, prompt=self._build_data_collector_system_prompt()) # this agent is a data collector
             else:
-                logging.info("initialize react agent without prompt")
                 raw_agent = create_react_agent(model=llm_model, tools=tools) # react agent without prompt
 
 
@@ -309,7 +307,8 @@ class REACT_AGENT:
 
                 return {"answer": result}
             
-
+            logging.info("*************** REACT AGENT OUTPUT ***************")
+            logging.info(result)
             status = self._status(user_prompt, self.data['inputs']["query"], llm_model, result, conversation_id, memory)
             status = status.replace(": '", ': "').replace("': '", '": "').replace(",\n'", ',\n"').replace("':", '":').replace("',", '",').replace("'}", '"}').replace("{'", '{"').replace("'}", '"}')
             try:

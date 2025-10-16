@@ -19,21 +19,17 @@ class Memory:
     global basePath
     
     def __init__(self, historyId: str):
-        logging.info("--------------Start--------------")
-        logging.info("Setting up memory object")
 
         self.historyId = historyId
         self.filePath = "" # directory path that will be joined with history-specific subdirectories (format: /convId/historyId.json)
 
     def load_streaming_memory(self, convId: dict, condition: bool = False):
-        logging.info(f"Loading streaming memory")
 
         convDir = f"/{convId}" # Subdirectory for specific conversation
         fullDirPath = f"{basePath}{convDir}"  # Complete directory path
 
         # Create directories if they don't exist
         if not os.path.exists(fullDirPath):
-            logging.info(f"conversation directory not found, creating: {convDir}")
             os.makedirs(fullDirPath) # create the parent directories
 
         # Set the full file path for history data
@@ -75,7 +71,6 @@ class Memory:
                 file.write(str_)
 
     def reset_memory(self, conv_id):
-        logging.info("Reset memory")
         if conv_id in store:
             store[conv_id].clear()
             del store[conv_id]

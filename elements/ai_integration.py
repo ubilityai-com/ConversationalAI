@@ -19,18 +19,14 @@ class AIIntegration:
     def _handle_status(self, status: str, conversation: dict):
         """Update react_fail based on execution status."""
         if status == 'fail':
-            logger.info(f"Status=fail --> Setting react_fail=True for REACT agent re-execution")
             conversation['react_fail'] = True
         else:
-            logger.info(f"Status=pass --> Setting react_fail=False to stop REACT agent execution")
             conversation['react_fail'] = False
     
     async def _execute_condition_agent(self, sio, sid, conversation, conversation_id, state):
-        logger.info(f"Executing Conditional Agent")
         return await CONDITION_AGENT(self.data, self.credentials).execute(sio, sid, conversation, conversation_id, state)
     
     async def _execute_rag_chain(self, sio, sid, conversation):
-        logger.info(f"Executing RAG chain")
         if self.data['inputs']["query"]:
             last_input_value = self.data['inputs']["query"]
         else:
@@ -40,14 +36,12 @@ class AIIntegration:
     async def _execute_react_agent(self, sio, sid, conversation, conversation_id):
         if conversation and conversation['react_fail']:
             last_input_value = conversation['variables']['last_input_value']
-            logger.info(f"Executing REACT agent with last input value")
             result = await REACT_AGENT(self.data, self.credentials).stream(sio, sid, conversation_id, last_input_value)
             self._handle_status(result["status"], conversation)
             if 'required_inputs' in result:
                 conversation = self._update_conversation_vars(conversation, result)
 
         else:
-            logger.info(f"Executing REACT agent with first input value")
             if conversation and conversation_id:
                 if self.data['inputs']["query"]:
                     last_input_value = self.data['inputs']["query"]
@@ -86,5 +80,5 @@ class AIIntegration:
             return await self._get_ai_execution(sio, sid, conversation, conversation_id, state)
 
         except Exception as error:
-            logger.info(f"AI execution failed for {self.chain_type}: {str(error)}")
+            logger.error(f"AI execution failed for {self.chain_type}: {str(error)}")
             raise Exception(str(error))
