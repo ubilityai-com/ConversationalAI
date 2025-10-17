@@ -46,39 +46,7 @@ interface DynamicInputFieldsProps {
   onFieldChange: (partialState: Record<string, any>, replace?: boolean) => void;
   [key: string]: any;
 }
-function updateByPathImmutable<T>(obj: T, path: string, value: any): T {
-  const keys = path.split(".");
 
-  const recursiveUpdate = (current: any, i: number): any => {
-    const key = keys[i];
-    const isIndex = /^\d+$/.test(key);
-    const isLast = i === keys.length - 1;
-
-    const currentVal = current ?? (isIndex ? [] : {});
-
-    if (isLast) {
-      if (Array.isArray(currentVal)) {
-        const clone = [...currentVal];
-        clone[Number(key)] = value;
-        return clone;
-      } else {
-        return { ...currentVal, [key]: value };
-      }
-    }
-
-    const nextVal = recursiveUpdate(currentVal[key], i + 1);
-
-    if (Array.isArray(currentVal)) {
-      const clone = [...currentVal];
-      clone[Number(key)] = nextVal;
-      return clone;
-    } else {
-      return { ...currentVal, [key]: nextVal };
-    }
-  };
-
-  return recursiveUpdate(obj, 0);
-}
 
 const UseAIIcon: React.FC<{
   isUsingVariable: boolean;
@@ -296,7 +264,7 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
                             ? (json.fieldsArray[0] as AutomationItem[])
                             : json.structure
                         }
-                        InDynamic={true}
+                        inDynamic={true}
                         flowZoneSelectedId={flowZoneSelectedId}
                         onFieldChange={(
                           partialState: any,

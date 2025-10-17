@@ -196,9 +196,7 @@ export function SharedSection({
                 filledDataName={`extras.${variableName}.content.json`}
                 schema={schema.current?.rightSideData?.json}
                 flowZoneSelectedId={id}
-                AllJson={schema.current?.rightSideData?.json}
                 fieldValues={json}
-                firstCall={true}
                 onFieldChange={(partialState, replace) => {
                   updateNestedConfig("json", partialState, { replace });
                 }}
