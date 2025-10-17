@@ -371,7 +371,7 @@ export function initializeBot() {
   return {
     nodes: [
       {
-        id: id,
+        id: `${id}/Handler`,
         type: "Handler",
         data: {
           category: "basic",

@@ -35,7 +35,7 @@ export const createNodeFromConnector = (
   const newDefaults = cloneConnectorDefaults(connector)
 
   const newElement: ElementType = {
-    id: generateID,
+    id: `${generateID}/${connector.type}`,
     type: connector.type,
     position,
     data: {

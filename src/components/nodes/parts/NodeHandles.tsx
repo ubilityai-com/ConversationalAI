@@ -1,7 +1,7 @@
-import React from "react";
 import { Position } from "@xyflow/react";
-import { NodeHandle } from "../../handles/handle";
+import React from "react";
 import { cn } from "../../../lib/utils/utils";
+import { NodeHandle } from "../../handles/handle";
 import { NODE_TYPES } from "../index";
 
 interface NodeHandlesProps {
@@ -11,16 +11,14 @@ interface NodeHandlesProps {
 }
 
 export const NodeHandles = React.memo(
-  ({ id, type, handles }: NodeHandlesProps) => {
+  ({ type, handles }: NodeHandlesProps) => {
     const isStartNode = type === NODE_TYPES.HANDLER;
-    const isEndNode = type === NODE_TYPES.END;
-
     return (
       <>
         {/* Input handle - hide for start node */}
         {!isStartNode && (
           <NodeHandle
-            id={id ? id : null}
+            id={null}
             type="target"
             position={Position.Left}
             className={cn(
@@ -30,16 +28,16 @@ export const NodeHandles = React.memo(
         )}
         {/* Output handle */}
         {handles ??
-          (!isEndNode && (
+          (
             <NodeHandle
-              id={id ? id : null}
+              id={null}
               type="source"
               position={Position.Right}
               className={cn(
                 "w-4 h-4 bg-gray-400 border-2 border-white hover:bg-gray-500 transition-colors"
               )}
             />
-          ))}
+          )}
       </>
     );
   }
