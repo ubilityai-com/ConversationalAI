@@ -1,4 +1,4 @@
-"use client"
+
 
 import { GitBranch, Plus, Trash2 } from "lucide-react";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";

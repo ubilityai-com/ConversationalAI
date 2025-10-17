@@ -1,4 +1,4 @@
-import { getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils";
+import { getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils/utils";
 import { RightSideData } from "./message";
 
 export default function getContent(node: { id: string, data: { rightSideData: RightSideData } }, params: any) {

@@ -1,4 +1,4 @@
-"use client"
+
 import { Node, Position, type NodeProps } from "@xyflow/react";
 import { GitBranch } from "lucide-react";
 import { NodeHandle } from "../handles/handle";

@@ -1,8 +1,6 @@
-"use client";
-
 import { Handle, HandleProps, useNodeId } from "@xyflow/react";
 import { Plus } from "lucide-react";
-import { useFlowStore } from "../../store/flow-store";
+import { useFlowStore } from "../../store/root-store";
 import { Button } from "../ui/button";
 
 interface NodeHandleProps extends HandleProps {

@@ -1,9 +1,7 @@
 import { Node, NodeProps } from "@xyflow/react";
 import { ListChecks, Plus, Trash2 } from "lucide-react";
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config";
-import { useFlowStore } from "../../../../store/flow-store";
 import { NodeConfigProps } from "../../../../types/automation-types";
-import { isExtrasValid } from "../../../automated-template";
 import { FieldWrapper } from "../../../custom/field-wrapper";
 import { DynamicElementLoader } from "../../../properties/shared/DynamicElementLoader";
 import { Button } from "../../../ui/button";
@@ -17,6 +15,7 @@ import {
 import { Input } from "../../../ui/input";
 import { Label } from "../../../ui/label";
 import { Textarea } from "../../../ui/textarea";
+import { isExtrasValid } from "../../../../lib/utils/validation-utils";
 
 interface Scenario {
   id: string;

@@ -1,11 +1,9 @@
-"use client";
-
 import { useState } from "react";
 
 import { ChevronDown, Home, Loader2, Plus, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { formatTimestamp, initializeBot } from "../../lib/utils";
-import { useFlowStore } from "../../store/flow-store";
+import { formatTimestamp, initializeBot } from "../../lib/utils/utils";
+import { useFlowStore } from "../../store/root-store";
 import { Badge } from "../ui/badge";
 import {
   Breadcrumb,

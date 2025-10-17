@@ -1,4 +1,4 @@
-import { useFlowStore } from "../../../store/flow-store"
+import { useFlowStore } from "../../../store/root-store"
 
 export const PineconeVectorStore = (selectedNode: any) => {
     const vectorStore = selectedNode.data.rightSideData.extras.vectorStore

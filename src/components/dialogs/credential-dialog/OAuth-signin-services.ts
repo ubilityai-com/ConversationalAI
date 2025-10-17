@@ -1,5 +1,5 @@
 import Cookies from "js-cookie"
-import { generateRandomString } from "../../../lib/utils"
+import { generateRandomString } from "../../../lib/utils/utils"
 import { automateOAuthSignIn } from "./oauth-signin-automation"
 
 export const OAuthSignInServices = {

@@ -1,8 +1,7 @@
 import { useNodesData } from "@xyflow/react"
 import axios from "axios"
 import { useEffect, useRef } from "react"
-import { useApiData, useApiStore } from "../../store/api-store"
-import { useFlowStore } from "../../store/flow-store"
+import { useApiData, useFlowStore } from "../../store/root-store"
 import { MultiSelect } from "../ui/multi-select"
 import { SearchableSelect } from "./searchable-select"
 
@@ -118,7 +117,7 @@ export function ApiCaller({
     filledDataName = "",
     multiSelect
 }: ApiCallerProps) {
-    const { setListAndDropDownList, setIsLoadingList, setFetchList, setNotFetchingListAsFirstTime } = useApiStore()
+    const { setListAndDropDownList, setIsLoadingList, setFetchList, setNotFetchingListAsFirstTime } = useFlowStore()
     const flowZoneSelectedElement = useNodesData(flowZoneSelectedId || "")
     const compName = getCompNameName({
         id: flowZoneSelectedElement?.id || "",

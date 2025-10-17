@@ -1,7 +1,7 @@
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { VariableNameField } from "./variable-name-field";
-import { useFlowStore } from "../../store/flow-store";
+import { useFlowStore } from "../../store/root-store";
 
 interface ToggleVariableFieldProps {
     checked: boolean;

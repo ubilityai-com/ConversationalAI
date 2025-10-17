@@ -1,7 +1,7 @@
 import { Expand, Variable } from "lucide-react";
 import { useEffect, useState } from "react";
-import { cn, getAllPreviousNodes } from "../../lib/utils";
-import { useFlowStore } from "../../store/flow-store";
+import { cn, getAllPreviousNodes } from "../../lib/utils/utils";
+import { useFlowStore } from "../../store/root-store";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";

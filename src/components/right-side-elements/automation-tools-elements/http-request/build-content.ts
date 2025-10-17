@@ -1,6 +1,6 @@
 import { getAccvalue, isJsonString } from "../../../../lib/automation-utils";
-import { getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils";
-import { getOutputVariablesByNodeId } from "../../../../lib/variable-utils";
+import { getNextNodeId, stringifyAndExtractVariables } from "../../../../lib/utils/utils";
+import { getOutputVariablesByNodeId } from "../../../../lib/utils/variable-utils";
 
 export default function getContent(selectedNode: any) {
     const rightSideData = selectedNode.data.rightSideData

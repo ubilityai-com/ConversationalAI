@@ -1,5 +1,5 @@
 import { getAccvalue } from "../../../../lib/automation-utils";
-import { extractCreds } from "../../../../lib/utils";
+import { extractCreds } from "../../../../lib/utils/utils";
 
 
 export default function getContent(selectedNode: any) {

@@ -108,7 +108,7 @@ function createBuildContentFile(name) {
     const filePath = path.join(dirPath, "build-content.ts");
 
     const template = `import { getAccvalue } from "../../../../lib/automation-utils";
-  import { getOutputVariablesByNodeId } from "../../../../lib/variable-utils";
+  import { getOutputVariablesByNodeId } from "../../../../lib/utils/variable-utils";
   
   export default function getContent(selectedNode: any) {
       const rightSideData = selectedNode.data.rightSideData;

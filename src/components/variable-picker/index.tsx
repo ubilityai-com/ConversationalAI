@@ -1,7 +1,6 @@
 
 import { useEffect, useRef, useState } from "react"
-import { useFilesStore } from "../../store/files-store"
-import { useFlowStore } from "../../store/flow-store"
+import { useFlowStore } from "../../store/root-store"
 import { CardContent } from "../ui/card"
 import { ScrollArea } from "../ui/scroll-area"
 import { EmptyState } from "./empty-state"
@@ -29,7 +28,7 @@ export function VariablesPanel({ isOpen, onClose, right }: VariablesPanelProps) 
         setIsRightOpen,
         nodes,
     } = useFlowStore();
-    const files = useFilesStore((state) => state.files);
+    const files = useFlowStore((state) => state.files);
 
 
 
@@ -56,7 +55,7 @@ export function VariablesPanel({ isOpen, onClose, right }: VariablesPanelProps) 
         }
     }, [isRightSideOpen, setVarPicker])
 
-    const nodeNameMap = Object.fromEntries(nodes.map((n) => [n.id, n.data?.label ?? n.id]))
+    const nodeNameMap: Record<string, string> = Object.fromEntries(nodes.map((n) => [n.id, (n.data?.label as string) ?? n.id]))
 
     const allowedNodeIds = varPickerProps?.allowedNodeIds ?? []
 

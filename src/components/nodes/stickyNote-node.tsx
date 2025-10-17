@@ -1,14 +1,13 @@
-import type React from "react"
-import { useRef, useState, useEffect } from "react"
-import { Trash2, Palette } from "lucide-react"
 import { NodeResizer } from "@xyflow/react"
-import { Button } from "../ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
-import { useFlowStore } from "../../store/flow-store"
-import { useDebounceConfig } from "../../hooks/use-debounced-config"
-import { useRightDrawerStore } from "../../store/right-drawer-store"
+import { Palette, Trash2 } from "lucide-react"
+import type React from "react"
+import { useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import { useDebounceConfig } from "../../hooks/use-debounced-config"
+import { useFlowStore } from "../../store/root-store"
+import { Button } from "../ui/button"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 
 interface StickyNoteData {
     color: string
@@ -38,7 +37,7 @@ export default function StickyNoteNode({ id, data, selected }: StickyNoteNodePro
     const [showToolbar, setShowToolbar] = useState(false)
 
     const deleteNode = useFlowStore(state => state.deleteNode)
-    const updateNodeRightSideData = useRightDrawerStore(
+    const updateNodeRightSideData = useFlowStore(
         (state) => state.updateNodeRightSideData
     );
 

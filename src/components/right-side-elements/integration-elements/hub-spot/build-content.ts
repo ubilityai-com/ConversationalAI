@@ -1,5 +1,5 @@
 import { getAccvalue } from "../../../../lib/automation-utils";
-import { getOutputVariablesByNodeId } from "../../../../lib/variable-utils";
+import { getOutputVariablesByNodeId } from "../../../../lib/utils/variable-utils";
 
 const checkValueIfNone = (inputs: Record<string, any>, name: string) => {
     if (name.includes(".")) {

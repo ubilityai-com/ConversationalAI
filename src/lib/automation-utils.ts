@@ -1,734 +1,183 @@
-import { v4 as uuidv4 } from "uuid";
-import { AutomationItem as BaseAutomationItem } from "../types/automation-types";
+import { AutomationItem } from "../types/automation-types";
+export function getAutomationListValues(apiRes: AutomationItem[]): Record<string, any> {
+  const obj: Record<string, any> = {};
 
-type AutomationItem = BaseAutomationItem & {
-  [key: string]: any;
-};
-/**
- * Recursively processes automation items to set up proper structure with IDs and child relationships
- * @param apiRes - Array of automation items to process
- * @param child - Array of parent values for nested items
- * @returns Processed array of automation items with proper structure
- */
-export const setAutomationArray = (
-  apiRes: AutomationItem[],
-  child?: string[]
-) => {
-  const result: AutomationItem[] = [];
-  console.trace("innn");
-  apiRes.forEach((item) => {
-    const childArray = Array.isArray(child) ? child : [];
+  const processValue = (val: any, typeOfValue?: string): any => {
+    if (typeOfValue === "integer") return parseInt(val) || val;
+    if (typeOfValue === "float") return parseFloat(val);
+    if (typeOfValue === "array") return [val];
+    return val;
+  };
 
-    switch (item.type) {
-      case "dropdown": {
-        if (item.options && "options" in item) {
-          // Handle dropdown with options
-          const clonedItem = { ...item };
-          delete (clonedItem as any).options;
-
-          result.push({
-            ...clonedItem,
-            child: childArray,
-            id: uuidv4(),
-          });
-
-          // Process nested options based on current value
-          if (item.options && item.value && item.options[item.value]) {
-            const nestedItems = setAutomationArray(item.options[item.value], [
-              ...childArray,
-              item.value,
-            ]);
-
-            result.push(...nestedItems);
-          }
-        } else {
-          // Handle simple dropdown without options
-          result.push({
-            ...item,
-            child: childArray,
-            id: uuidv4(),
-            noOpts: true,
-          });
-        }
-        break;
-      }
-
-      case "dynamic": {
-        if (
-          "json" in item &&
-          item.json?.fieldsArray &&
-          Array.isArray(item.json.fieldsArray) &&
-          item.json.fieldsArray.length > 0
-        ) {
-          // Handle dynamic item with json structure
-          result.push({
-            ...item,
-            id: uuidv4(),
-            child: childArray,
-            json: {
-              ...item.json,
-              fieldsArray: item.json.fieldsArray.map((field) =>
-                setAutomationArray(Array.isArray(field) ? field : [field])
-              ),
-            },
-          });
-        } else if (
-          "fieldsArray" in item &&
-          Array.isArray(item.fieldsArray) &&
-          item.fieldsArray.length > 0
-        ) {
-          // Handle dynamic item with direct fieldsArray
-          result.push({
-            ...item,
-            id: uuidv4(),
-            child: childArray,
-            fieldsArray: item.fieldsArray.map((field) =>
-              setAutomationArray(Array.isArray(field) ? field : [field])
-            ),
-          });
-        } else {
-          // Handle empty dynamic item
-          result.push({
-            ...item,
-            id: uuidv4(),
-            child: childArray,
-          });
-        }
-        break;
-      }
-
-      case "accordion": {
-        if ("fieldsArray" in item && Array.isArray(item.fieldsArray)) {
-          result.push({
-            ...item,
-            id: uuidv4(),
-            child: childArray,
-            fieldsArray: item.fieldsArray.map((field) =>
-              setAutomationArray(Array.isArray(field) ? field : [field])
-            ),
-          });
-        } else {
-          result.push({
-            ...item,
-            id: uuidv4(),
-            child: childArray,
-          });
-        }
-        break;
-      }
-
-      default: {
-        // Handle all other item types
-        result.push({
-          ...item,
-          child: childArray,
-          id: uuidv4(),
-        });
-        break;
-      }
+  const mergeOptionFields = (
+    options: Record<string, AutomationItem[]> | undefined,
+    value: string | undefined,
+    accumulator: Record<string, any>
+  ) => {
+    if (options && value && options[value]) {
+      Object.assign(accumulator, getAutomationListValues(options[value]));
     }
-  });
+  };
 
-  return result;
-};
-export const setAutomationArrayV2 = (
-  apiRes: AutomationItem[],
-  filledValues: { [key: string]: any },
-  child?: string[]
-) => {
-  const result: AutomationItem[] = [];
-  // console.log({ apiRes, child, filledValues });
   for (const item of apiRes) {
-    const childArray = Array.isArray(child) ? child : [];
-    // console.log({ item, childArray });
-    if (!filledValues.hasOwnProperty(item.variableName)) {
-      result.push({
-        ...item,
-        child: childArray,
-        id: uuidv4(),
-      });
-      continue;
-    }
     switch (item.type) {
-      case "dropdown": {
-        if (item.options && "options" in item) {
-          // Handle dropdown with options
-          const clonedItem = { ...item };
-          delete (clonedItem as any).options;
-
-          result.push({
-            ...clonedItem,
-            value: filledValues[item.variableName],
-            child: childArray,
-            id: uuidv4(),
-          });
-
-          // Process nested options based on current value
-          if (
-            item.options &&
-            filledValues[item.variableName] &&
-            item.options[filledValues[item.variableName]]
-          ) {
-            const nestedItems = setAutomationArrayV2(
-              item.options[filledValues[item.variableName]],
-              filledValues,
-              [...childArray, filledValues[item.variableName]]
+      // ✅ Dropdown / API
+      case "dropdown":
+      case "api": {
+        if (item.value !== "") {
+          if ("credential" in item && item.credential && item.list) {
+            obj[item.variableName] =
+              item.list.length > 1
+                ? item.list.find((c) => c.option === item.value)?.cred ?? ""
+                : "";
+          } else {
+            obj[item.variableName] = processValue(
+              item.value,
+              "typeOfValue" in item ? item.typeOfValue : undefined
             );
-            // console.log({ nestedItems });
-
-            result.push(...nestedItems);
           }
-        } else {
-          // Handle simple dropdown without options
-          result.push({
-            ...item,
-            child: childArray,
-            id: uuidv4(),
-            noOpts: true,
-          });
+          mergeOptionFields(item.options, item.value, obj);
         }
         break;
       }
 
-      case "dynamic": {
-        if (
-          "json" in item &&
-          item.json?.fieldsArray &&
-          Array.isArray(item.json.fieldsArray) &&
-          item.json.fieldsArray.length > 0
-        ) {
-          // Handle dynamic item with json structure
-          result.push({
-            ...item,
-            id: uuidv4(),
-            child: childArray,
-            json: {
-              ...item.json,
-              fieldsArray: (
-                filledValues[item.variableName] as AutomationItem[][]
-              ).map((field, index) =>
-                setAutomationArrayV2(
-                  Array.isArray(field) ? field : [field],
-                  filledValues[item.variableName][index]
-                )
-              ),
-            },
-          });
-        } else if (
-          "fieldsArray" in item &&
-          Array.isArray(item.fieldsArray) &&
-          item.fieldsArray.length > 0
-        ) {
-          // Handle dynamic item with direct fieldsArray
-          result.push({
-            ...item,
-            id: uuidv4(),
-            child: childArray,
-            fieldsArray: (
-              filledValues[item.variableName] as AutomationItem[][]
-            ).map((field, index) =>
-              setAutomationArrayV2(
-                Array.isArray(field) ? field : [field],
-                filledValues[item.variableName][index]
-              )
-            ),
-          });
-        } else {
-          // Handle empty dynamic item
-          result.push({
-            ...item,
-            value: filledValues[item.variableName],
-            id: uuidv4(),
-            child: childArray,
-          });
+      // ✅ Text input / Editor
+      case "textfield":
+      case "editor": {
+        if (item.value?.toString().trim()) {
+          obj[item.variableName] = processValue(
+            item.value,
+            "typeOfValue" in item ? item.typeOfValue : undefined
+          );
         }
         break;
       }
 
+      // ✅ Text Formatter
+      case "textFormatter": {
+        if (item.value?.trim()) {
+          obj[item.variableName] = item.value;
+        }
+        break;
+      }
+
+      // ✅ MultiSelect
+      case "multiselect": {
+        if (Array.isArray(item.value) && item.value.length > 0) {
+          obj[item.variableName] = item.value;
+        }
+        break;
+      }
+
+      // ✅ Array
+      case "array": {
+        if (Array.isArray(item.value) && item.value.length > 0) {
+          obj[item.variableName] = item.value;
+        }
+        break;
+      }
+
+      // ✅ JSON
+      case "json": {
+        if (item.value && Object.keys(item.value).length > 0) {
+          obj[item.variableName] = item.value;
+        }
+        break;
+      }
+
+      // ✅ Checkbox
+      case "checkbox": {
+        obj[item.variableName] =
+          item.typeOfValue === "string" ? item.value?.toString() : item.value;
+        break;
+      }
+
+      // ✅ RadioButton
+      case "radiobutton": {
+        obj[item.variableName] = item.value;
+        mergeOptionFields(item.options, item.value, obj);
+        break;
+      }
+
+      // ✅ Color
+      case "color": {
+        if (item.value?.trim()) {
+          obj[item.variableName] = item.value;
+        }
+        break;
+      }
+
+      // ✅ Accordion
       case "accordion": {
-        if ("fieldsArray" in item && Array.isArray(item.fieldsArray)) {
-          result.push({
-            ...item,
-            id: uuidv4(),
-            child: childArray,
-            fieldsArray: (
-              filledValues[item.variableName] as AutomationItem[][]
-            ).map((field, index) =>
-              setAutomationArrayV2(
-                Array.isArray(field) ? field : [field],
-                filledValues[item.variableName][index]
-              )
-            ),
-          });
-        } else {
-          result.push({
-            ...item,
-            id: uuidv4(),
-            value: filledValues[item.variableName],
-            child: childArray,
-          });
+        if (item.fieldsArray?.[0]) {
+          obj[item.variableName] = getAutomationListValues(item.fieldsArray[0]);
         }
         break;
       }
 
-      default: {
-        // Handle all other item types
-        result.push({
-          ...item,
-          value: filledValues[item.variableName],
-          child: childArray,
-          id: uuidv4(),
-        });
+      // ✅ Dynamic
+      case "dynamic": {
+        const target = item.json ?? item;
+        if (Array.isArray(target.fieldsArray)) {
+          const arrayData = target.fieldsArray.map((arr) =>
+            getAutomationListValues(arr)
+          );
+          obj[target.variableName] = arrayData;
+        } else {
+          obj[target.variableName] = target.fieldsArray; // if it's "##AI##" or similar
+        }
         break;
       }
+
+      default:
+        break;
     }
   }
-  // console.log({ result });
-
-  return result;
-};
-/**
- * Utility function to safely clone an automation item
- * @param item - The automation item to clone
- * @returns Cloned automation item
- */
-export const cloneAutomationItem = (item: AutomationItem): AutomationItem => {
-  return JSON.parse(JSON.stringify(item));
-};
-
-/**
- * Utility function to find an automation item by ID
- * @param items - Array of automation items to search
- * @param id - ID to search for
- * @returns Found automation item or undefined
- */
-// export const findAutomationItemById = (items: AutomationItem[], id: string): AutomationItem | undefined => {
-//     for (const item of items) {
-//         if (item.id === id) {
-//             return item
-//         }
-
-//         // Search in nested structures
-//         if (item.type === "dynamic") {
-//             if ("json" in item && item.json?.fieldsArray) {
-//                 const found = findAutomationItemById(Array.isArray(item.json.fieldsArray) ? item.json.fieldsArray : [], id)
-//                 if (found) return found
-//             }
-//             if ("fieldsArray" in item && Array.isArray(item.fieldsArray)) {
-//                 for (const fieldArray of item.fieldsArray) {
-//                     const found = findAutomationItemById(Array.isArray(fieldArray) ? fieldArray : [fieldArray], id)
-//                     if (found) return found
-//                 }
-//             }
-//         }
-
-//         if (item.type === "accordion" && "fieldsArray" in item && Array.isArray(item.fieldsArray)) {
-//             for (const fieldArray of item.fieldsArray) {
-//                 const found = findAutomationItemById(Array.isArray(fieldArray) ? fieldArray : [fieldArray], id)
-//                 if (found) return found
-//             }
-//         }
-//     }
-
-//     return undefined
-// }
-
-/**
- * Utility function to update an automation item by ID
- * @param items - Array of automation items
- * @param id - ID of item to update
- * @param updates - Partial updates to apply
- * @returns Updated array of automation items
- */
-// export const updateAutomationItemById = (
-//   items: AutomationItem[],
-//   id: string,
-//   updates: Partial<AutomationItem>,
-// ): AutomationItem[] => {
-//   return items.map((item) => {
-//     if (item.id === id) {
-//       return { ...item, ...updates }
-//     }
-
-//     // Update in nested structures
-//     if (item.type === "dynamic") {
-//       if ("json" in item && item.json?.fieldsArray) {
-//         return {
-//           ...item,
-//           json: {
-//             ...item.json,
-//             fieldsArray: updateAutomationItemById(
-//               Array.isArray(item.json.fieldsArray) ? item.json.fieldsArray : [],
-//               id,
-//               updates,
-//             ),
-//           },
-//         }
-//       }
-//       if ("fieldsArray" in item && Array.isArray(item.fieldsArray)) {
-//         return {
-//           ...item,
-//           fieldsArray: item.fieldsArray.map((fieldArray) =>
-//             updateAutomationItemById(Array.isArray(fieldArray) ? fieldArray : [fieldArray], id, updates),
-//           ),
-//         }
-//       }
-//     }
-
-//     if (item.type === "accordion" && "fieldsArray" in item && Array.isArray(item.fieldsArray)) {
-//       return {
-//         ...item,
-//         fieldsArray: item.fieldsArray.map((fieldArray) =>
-//           updateAutomationItemById(Array.isArray(fieldArray) ? fieldArray : [fieldArray], id, updates),
-//         ),
-//       }
-//     }
-
-//     return item
-//   })
-// }
-
-/**
- * Utility function to remove an automation item by ID
- * @param items - Array of automation items
- * @param id - ID of item to remove
- * @returns Updated array with item removed
- */
-// export const removeAutomationItemById = (items: AutomationItem[], id: string): AutomationItem[] => {
-//   return items
-//     .filter((item) => item.id !== id)
-//     .map((item) => {
-//       // Remove from nested structures
-//       if (item.type === "dynamic") {
-//         if ("json" in item && item.json?.fieldsArray) {
-//           return {
-//             ...item,
-//             json: {
-//               ...item.json,
-//               fieldsArray: removeAutomationItemById(
-//                 Array.isArray(item.json.fieldsArray) ? item.json.fieldsArray : [],
-//                 id,
-//               ),
-//             },
-//           }
-//         }
-//         if ("fieldsArray" in item && Array.isArray(item.fieldsArray)) {
-//           return {
-//             ...item,
-//             fieldsArray: item.fieldsArray.map((fieldArray) =>
-//               removeAutomationItemById(Array.isArray(fieldArray) ? fieldArray : [fieldArray], id),
-//             ),
-//           }
-//         }
-//       }
-
-//       if (item.type === "accordion" && "fieldsArray" in item && Array.isArray(item.fieldsArray)) {
-//         return {
-//           ...item,
-//           fieldsArray: item.fieldsArray.map((fieldArray) =>
-//             removeAutomationItemById(Array.isArray(fieldArray) ? fieldArray : [fieldArray], id),
-//           ),
-//         }
-//       }
-
-//       return item
-//     })
-// }
-
-/**
- * Utility function to validate automation array structure
- * @param items - Array of automation items to validate
- * @returns Validation result with errors if any
- */
-export const validateAutomationArray = (
-  items: AutomationItem[]
-): {
-  isValid: boolean;
-  errors: string[];
-} => {
-  const errors: string[] = [];
-
-  const validateItem = (item: AutomationItem, path = "") => {
-    // Check required fields
-    if (!item.type) {
-      errors.push(`${path}: Missing required field 'type'`);
-    }
-    if (!item.variableName) {
-      errors.push(`${path}: Missing required field 'variableName'`);
-    }
-    if (!item.id) {
-      errors.push(`${path}: Missing required field 'id'`);
-    }
-
-    // Validate nested structures
-    if (item.type === "dynamic") {
-      if ("json" in item && item.json?.fieldsArray) {
-        const fieldsArray = Array.isArray(item.json.fieldsArray)
-          ? item.json.fieldsArray
-          : [];
-        fieldsArray.forEach((fieldList, fieldListIndex) => {
-          fieldList.map((field, index) =>
-            validateItem(
-              field,
-              `${path}.json.fieldsArray[${fieldListIndex}][${index}]`
-            )
-          );
-        });
-      }
-      if ("fieldsArray" in item && Array.isArray(item.fieldsArray)) {
-        item.fieldsArray.forEach((fieldArray, index) => {
-          if (Array.isArray(fieldArray)) {
-            fieldArray.forEach((field, fieldIndex) => {
-              validateItem(
-                field,
-                `${path}.fieldsArray[${index}][${fieldIndex}]`
-              );
-            });
-          } else {
-            validateItem(fieldArray, `${path}.fieldsArray[${index}]`);
-          }
-        });
-      }
-    }
-
-    if (
-      item.type === "accordion" &&
-      "fieldsArray" in item &&
-      Array.isArray(item.fieldsArray)
-    ) {
-      item.fieldsArray.forEach((fieldArray, index) => {
-        if (Array.isArray(fieldArray)) {
-          fieldArray.forEach((field, fieldIndex) => {
-            validateItem(field, `${path}.fieldsArray[${index}][${fieldIndex}]`);
-          });
-        } else {
-          validateItem(fieldArray, `${path}.fieldsArray[${index}]`);
-        }
-      });
-    }
-  };
-
-  items.forEach((item, index) => {
-    validateItem(item, `items[${index}]`);
-  });
-
-  return {
-    isValid: errors.length === 0,
-    errors,
-  };
-};
-
-/**
- * Utility function to get all variable names from automation array
- * @param items - Array of automation items
- * @returns Array of all variable names
- */
-export const getVariableNames = (items: AutomationItem[]): string[] => {
-  const variableNames: string[] = [];
-
-  const extractVariableNames = (item: AutomationItem) => {
-    if (item.variableName) {
-      variableNames.push(item.variableName);
-    }
-
-    // Extract from nested structures
-    if (item.type === "dynamic") {
-      if ("json" in item && item.json?.fieldsArray) {
-        const fieldsArray = Array.isArray(item.json.fieldsArray)
-          ? item.json.fieldsArray
-          : [];
-        fieldsArray.forEach((fieldList) =>
-          fieldList.forEach(extractVariableNames)
-        );
-      }
-      if ("fieldsArray" in item && Array.isArray(item.fieldsArray)) {
-        item.fieldsArray.forEach((fieldArray) => {
-          if (Array.isArray(fieldArray)) {
-            fieldArray.forEach(extractVariableNames);
-          } else {
-            extractVariableNames(fieldArray);
-          }
-        });
-      }
-    }
-
-    if (
-      item.type === "accordion" &&
-      "fieldsArray" in item &&
-      Array.isArray(item.fieldsArray)
-    ) {
-      item.fieldsArray.forEach((fieldArray) => {
-        if (Array.isArray(fieldArray)) {
-          fieldArray.forEach(extractVariableNames);
-        } else {
-          extractVariableNames(fieldArray);
-        }
-      });
-    }
-  };
-
-  items.forEach(extractVariableNames);
-  return [...new Set(variableNames)]; // Remove duplicates
-};
-
-type FieldItem = {
-  type: string;
-  value?: any;
-  variableName: string;
-  typeOfValue?: string;
-  credential?: boolean;
-  list?: { option: string; cred: string }[];
-  options?: Record<string, FieldItem[]>;
-  fieldsArray?: FieldItem[][];
-  structure?: ApiResponse;
-  json?: {
-    variableName: string;
-    fieldsArray: FieldItem[][];
-    structure?: ApiResponse;
-  };
-  custom?: boolean;
-  formats?: Record<string, string>;
-};
-
-type ApiResponse = FieldItem[];
-
-export function objToReturnDynamicv2(apiRes: ApiResponse): Record<string, any> {
-  let obj: Record<string, any> = {};
-
-  apiRes && apiRes.forEach((item) => {
-    const {
-      type,
-      value,
-      variableName,
-      typeOfValue,
-      credential,
-      list,
-      options,
-      fieldsArray,
-      json,
-    } = item;
-
-    const hasValue = value !== undefined && value !== null;
-
-    const processValue = (val: any): any => {
-      if (typeOfValue === "integer") {
-        return parseInt(val) || val;
-      }
-      if (typeOfValue === "float") {
-        return parseFloat(val);
-      }
-      if (typeOfValue === "array") {
-        return [val];
-      }
-      return val;
-    };
-
-    const mergeOptionFields = () => {
-      if (options && value && options[value]) {
-        obj = { ...obj, ...objToReturnDynamicv2(options[value]) };
-      }
-    };
-
-    if (["dropdown", "api"].includes(type) && value !== "") {
-      if (credential && list) {
-        obj[variableName!] =
-          list.length > 1
-            ? list.find((c) => c.option === value)?.cred ?? ""
-            : "";
-      } else {
-        obj[variableName!] = processValue(value);
-      }
-      mergeOptionFields();
-    }
-
-    if (type === "textfield" || type === "editor") {
-      if (value?.toString().trim()) {
-        obj[variableName!] = processValue(value);
-      }
-    }
-
-    if (type === "textFormatter" && value?.trim()) {
-      obj[variableName!] = value;
-    }
-
-    if (type === "multiselect" && Array.isArray(value) && value.length > 0) {
-      obj[variableName!] = value;
-    }
-
-    if (type === "array" && Array.isArray(value) && value.length > 0) {
-      obj[variableName!] = value;
-    }
-
-    if (type === "json" && value && Object.keys(value).length > 0) {
-      obj[variableName!] = value;
-    }
-
-    if (type === "checkbox") {
-      obj[variableName!] = typeOfValue === "string" ? value?.toString() : value;
-    }
-
-    if (type === "radiobutton") {
-      obj[variableName!] = value;
-      mergeOptionFields();
-    }
-
-    if (type === "color" && value?.trim()) {
-      obj[variableName!] = value;
-    }
-
-    if (type === "accordion" && fieldsArray?.[0]) {
-      obj[variableName!] = objToReturnDynamicv2(fieldsArray[0]);
-    }
-
-    if (type === "dynamic") {
-      const target = json ?? item;
-      const arrayData = target.fieldsArray?.map((arr) =>
-        objToReturnDynamicv2(arr)
-      );
-      obj[target.variableName!] = arrayData ?? [];
-    }
-  });
 
   return obj;
 }
+
+
 export function selectedOptionKeys(
-  apiRes: ApiResponse,
+  apiRes: AutomationItem[],
   fieldsValue: Record<string, any>
 ): string[] {
   let keys: string[] = [];
 
-  apiRes.forEach((item) => {
-    const { type, value, variableName, options, json } = item;
-    if (type === "outputJson") return;
-    console.log({ item, keys, variableName });
-    const mergeOptionFields = () => {
-      if (
-        options &&
-        fieldsValue[variableName] &&
-        options[fieldsValue[variableName]]
-      ) {
-        keys = [
-          ...keys,
-          ...selectedOptionKeys(
-            options[fieldsValue[variableName]],
-            fieldsValue
-          ),
-        ];
-      }
-    };
-    if (["dropdown", "radiobutton"].includes(type)) {
-      mergeOptionFields();
-    }
-    if (type === "dynamic") {
-      const target = json ?? item;
-      console.log({ target });
+  for (const item of apiRes) {
+    switch (item.type) {
+      case "outputJson":
+        // Skip outputJson
+        break;
 
-      keys.push(target.variableName);
-    } else keys.push(variableName);
-  });
+      case "dropdown":
+      case "radiobutton": {
+        const selectedValue = fieldsValue[item.variableName];
+        if (item.options && selectedValue && item.options[selectedValue]) {
+          keys = [
+            ...keys,
+            ...selectedOptionKeys(item.options[selectedValue], fieldsValue),
+          ];
+        }
+        keys.push(item.variableName);
+        break;
+      }
+
+      case "dynamic": {
+        const target = item.json ?? item;
+        keys.push(target.variableName);
+        break;
+      }
+
+      default:
+        keys.push(item.variableName);
+        break;
+    }
+  }
 
   return keys;
 }
+
 export function replaceTags(
   inputString: string,
   tagToReplace: string,
@@ -828,241 +277,262 @@ function reverseMultipleOccurrences(inputString: string, array: any): string {
   return str;
 }
 
-export function objToReturnValuesToSend(
-  apiRes: ApiResponse,
+export function parseAutomationListValues(
+  apiRes: AutomationItem[],
   fieldValues: Record<string, any>
 ): Record<string, any> {
-  let obj: Record<string, any> = {};
+  const obj: Record<string, any> = {};
 
-  apiRes.forEach((item) => {
-    const {
-      type,
-      value,
-      variableName,
-      typeOfValue,
-      credential,
-      list,
-      options,
-      fieldsArray,
-      json,
-    } = item;
-    const valueToSend: string = fieldValues[variableName];
-    const hasValue = value !== undefined && value !== null;
+  const processValue = (val: any, typeOfValue?: string): any => {
+    if (typeOfValue === "integer") return parseInt(val) || val;
+    if (typeOfValue === "float") return parseFloat(val);
+    if (typeOfValue === "array") return [val];
+    return val;
+  };
 
-    const processValue = (val: any): any => {
-      if (typeOfValue === "integer") {
-        return parseInt(val) || val;
-      }
-      if (typeOfValue === "float") {
-        return parseFloat(val);
-      }
-      if (typeOfValue === "array") {
-        return [val];
-      }
-      return val;
-    };
-
-    const mergeOptionFields = () => {
-      if (options && valueToSend && options[valueToSend]) {
-        obj = {
-          ...obj,
-          ...objToReturnValuesToSend(options[valueToSend], fieldValues),
-        };
-      }
-    };
-
-    if (
-      (["dropdown", "api"].includes(type) && valueToSend !== "") ||
-      valueToSend
-    ) {
-      if (credential && list) {
-        obj[variableName!] = valueToSend;
-        // list.length > 1
-        //   ? list.find((c) => c.option === valueToSend)?.cred ?? ""
-        //   : "";
-      } else {
-        obj[variableName!] = valueToSend;
-      }
-      mergeOptionFields();
-    }
-
-    if (type === "textfield" || type === "editor") {
-      if (valueToSend?.toString().trim()) {
-        obj[variableName!] = processValue(valueToSend);
-      }
-    }
-
-    if (type === "textFormatter" && valueToSend?.trim()) {
-      obj[variableName!] = item.custom
-        ? replaceMultipleOccurrences(valueToSend, item.formats)
-        : valueToSend.replace(/\n/g, "\\n");
-    }
-
-    if (
-      type === "multiselect" &&
-      Array.isArray(valueToSend) &&
-      valueToSend.length > 0
-    ) {
-      obj[variableName!] = valueToSend;
-    }
-
-    if (
-      type === "array" &&
-      Array.isArray(valueToSend) &&
-      valueToSend.length > 0
-    ) {
-      obj[variableName!] = valueToSend;
-    }
-
-    if (type === "json" && valueToSend && Object.keys(valueToSend).length > 0) {
-      obj[variableName!] = valueToSend;
-    }
-
-    if (type === "checkbox") {
-      obj[variableName!] =
-        typeOfValue === "string" ? valueToSend?.toString() : valueToSend;
-    }
-
-    if (type === "radiobutton") {
-      obj[variableName!] = valueToSend;
-      mergeOptionFields();
-    }
-
-    if (type === "color" && valueToSend?.trim()) {
-      obj[variableName!] = valueToSend;
-    }
-
-    if (type === "accordion" && fieldsArray?.[0] && fieldValues[variableName]) {
-      obj[variableName!] = objToReturnValuesToSend(
-        fieldsArray[0],
-        fieldValues[variableName]
+  const mergeOptionFields = (
+    options: Record<string, AutomationItem[]> | undefined,
+    value: string | undefined,
+    fieldValues: Record<string, any>,
+    accumulator: Record<string, any>
+  ) => {
+    if (options && value && options[value]) {
+      Object.assign(
+        accumulator,
+        parseAutomationListValues(options[value], fieldValues)
       );
     }
+  };
 
-    if (type === "dynamic") {
-      const target = json ?? item;
-      const arrayData = fieldValues[target.variableName]?.map(
-        (arr: Record<string, any>) =>
-          objToReturnValuesToSend(target?.structure as ApiResponse, arr)
-      );
-      obj[target.variableName!] = arrayData ?? [];
-    }
-  });
+  for (const item of apiRes) {
+    const valueToSend = fieldValues[item.variableName];
 
-  return obj;
-}
-export function objToReturnDefaultValues(
-  apiRes: ApiResponse,
-  fieldValues: Record<string, any>
-): Record<string, any> {
-  let obj: Record<string, any> = {};
-  if (fieldValues) {
-    apiRes.forEach((item) => {
-      const {
-        type,
-        value,
-        variableName,
-        typeOfValue,
-        credential,
-        list,
-        options,
-        fieldsArray,
-        json,
-      } = item;
-
-      const valueToSend: string = fieldValues[variableName];
-      const hasValue = value !== undefined && value !== null;
-
-      const mergeOptionFields = () => {
-        if (options && valueToSend && options[valueToSend]) {
-          obj = {
-            ...obj,
-            ...objToReturnDefaultValues(options[valueToSend], fieldValues),
-          };
+    switch (item.type) {
+      case "dropdown":
+      case "api": {
+        if ((valueToSend !== "") || valueToSend) {
+          if ("credential" in item && item.credential && item.list) {
+            obj[item.variableName] = valueToSend;
+          } else {
+            obj[item.variableName] = processValue(
+              valueToSend,
+              "typeOfValue" in item ? item.typeOfValue : undefined
+            );
+          }
+          mergeOptionFields(item.options, valueToSend, fieldValues, obj);
         }
-      };
-
-      if (
-        (["dropdown", "api"].includes(type) && valueToSend !== "") ||
-        valueToSend
-      ) {
-        if (credential && list) {
-          obj[variableName!] = valueToSend;
-        } else {
-          obj[variableName!] = valueToSend;
-        }
-        mergeOptionFields();
+        break;
       }
 
-      if (type === "textfield" || type === "editor") {
+      case "textfield":
+      case "editor": {
         if (valueToSend?.toString().trim()) {
-          obj[variableName!] = valueToSend.toString();
+          obj[item.variableName] = processValue(
+            valueToSend,
+            "typeOfValue" in item ? item.typeOfValue : undefined
+          );
         }
+        break;
       }
 
-      if (type === "textFormatter" && valueToSend?.trim()) {
-        obj[variableName!] = item.custom
-          ? reverseMultipleOccurrences(valueToSend, item.formats)
-          : valueToSend.replace(/\n/g, "\\n");
+      case "textFormatter": {
+        if (valueToSend?.trim()) {
+          obj[item.variableName] = item.custom
+            ? replaceMultipleOccurrences(valueToSend, item.formats)
+            : valueToSend.replace(/\n/g, "\\n");
+        }
+        break;
       }
 
-      if (
-        type === "multiselect" &&
-        Array.isArray(valueToSend) &&
-        valueToSend.length > 0
-      ) {
-        obj[variableName!] = valueToSend;
+      case "multiselect":
+      case "array": {
+        if (Array.isArray(valueToSend) && valueToSend.length > 0) {
+          obj[item.variableName] = valueToSend;
+        }
+        break;
       }
 
-      if (
-        type === "array" &&
-        Array.isArray(valueToSend) &&
-        valueToSend.length > 0
-      ) {
-        obj[variableName!] = valueToSend;
+      case "json": {
+        if (valueToSend && Object.keys(valueToSend).length > 0) {
+          obj[item.variableName] = valueToSend;
+        }
+        break;
       }
 
-      if (
-        type === "json" &&
-        valueToSend &&
-        Object.keys(valueToSend).length > 0
-      ) {
-        obj[variableName!] = valueToSend;
+      case "checkbox": {
+        obj[item.variableName] =
+          "typeOfValue" in item && item.typeOfValue === "string"
+            ? valueToSend?.toString()
+            : valueToSend;
+        break;
       }
 
-      if (type === "checkbox") {
-        obj[variableName!] =
-          typeOfValue === "string" ? valueToSend?.toString() : valueToSend;
+      case "radiobutton": {
+        obj[item.variableName] = valueToSend;
+        mergeOptionFields(item.options, valueToSend, fieldValues, obj);
+        break;
       }
 
-      if (type === "radiobutton") {
-        obj[variableName!] = valueToSend;
-        mergeOptionFields();
+      case "color": {
+        if (valueToSend?.trim()) {
+          obj[item.variableName] = valueToSend;
+        }
+        break;
       }
 
-      if (type === "color" && valueToSend?.trim()) {
-        obj[variableName!] = valueToSend;
+      case "accordion": {
+        if (item.fieldsArray?.[0] && fieldValues[item.variableName]) {
+          obj[item.variableName] = parseAutomationListValues(
+            item.fieldsArray[0],
+            fieldValues[item.variableName]
+          );
+        }
+        break;
       }
 
-      if (type === "accordion" && fieldsArray?.[0]) {
-        obj[variableName!] = objToReturnDefaultValues(
-          fieldsArray[0],
-          fieldValues[variableName]
-        );
+      case "dynamic": {
+        const target = item.json ?? item;
+        const valueArr = fieldValues[target.variableName];
+        if (Array.isArray(valueArr)) {
+          const arrayData = valueArr.map((arr: Record<string, any>) =>
+            parseAutomationListValues(target.structure, arr)
+          );
+          obj[target.variableName] = arrayData;
+        } else {
+          obj[target.variableName] = [];
+        }
+        break;
       }
 
-      if (type === "dynamic") {
-        const target = json ?? item;
-        const arrayData = fieldValues[target.variableName]?.map((arr: any) =>
-          objToReturnDefaultValues(target.structure as ApiResponse, arr)
-        );
-        obj[target.variableName!] = arrayData ?? [];
-      }
-    });
+      default:
+        break;
+    }
   }
 
   return obj;
 }
+export function formatAutomationListValues(
+  apiRes: AutomationItem[],
+  fieldValues: Record<string, any>
+): Record<string, any> {
+  const obj: Record<string, any> = {};
+
+  const mergeOptionFields = (
+    options: Record<string, AutomationItem[]> | undefined,
+    value: string | undefined,
+    fieldValues: Record<string, any>,
+    accumulator: Record<string, any>
+  ) => {
+    if (options && value && options[value]) {
+      Object.assign(
+        accumulator,
+        formatAutomationListValues(options[value], fieldValues)
+      );
+    }
+  };
+
+  for (const item of apiRes) {
+    const valueToSend = fieldValues[item.variableName];
+
+    switch (item.type) {
+      case "dropdown":
+      case "api": {
+        if ((valueToSend !== "") || valueToSend) {
+          if ("credential" in item && item.credential && item.list) {
+            obj[item.variableName] = valueToSend;
+          } else {
+            obj[item.variableName] = valueToSend;
+          }
+          mergeOptionFields(item.options, valueToSend, fieldValues, obj);
+        }
+        break;
+      }
+
+      case "textfield":
+      case "editor": {
+        if (valueToSend?.toString().trim()) {
+          obj[item.variableName] = valueToSend.toString();
+        }
+        break;
+      }
+
+      case "textFormatter": {
+        if (valueToSend?.trim()) {
+          obj[item.variableName] = item.custom
+            ? reverseMultipleOccurrences(valueToSend, item.formats)
+            : valueToSend.replace(/\n/g, "\\n");
+        }
+        break;
+      }
+
+      case "multiselect":
+      case "array": {
+        if (Array.isArray(valueToSend) && valueToSend.length > 0) {
+          obj[item.variableName] = valueToSend;
+        }
+        break;
+      }
+
+      case "json": {
+        if (valueToSend && Object.keys(valueToSend).length > 0) {
+          obj[item.variableName] = valueToSend;
+        }
+        break;
+      }
+
+      case "checkbox": {
+        obj[item.variableName] =
+          "typeOfValue" in item && item.typeOfValue === "string"
+            ? valueToSend?.toString()
+            : valueToSend;
+        break;
+      }
+
+      case "radiobutton": {
+        obj[item.variableName] = valueToSend;
+        mergeOptionFields(item.options, valueToSend, fieldValues, obj);
+        break;
+      }
+
+      case "color": {
+        if (valueToSend?.trim()) {
+          obj[item.variableName] = valueToSend;
+        }
+        break;
+      }
+
+      case "accordion": {
+        if (item.fieldsArray?.[0] && fieldValues[item.variableName]) {
+          obj[item.variableName] = formatAutomationListValues(
+            item.fieldsArray[0],
+            fieldValues[item.variableName]
+          );
+        }
+        break;
+      }
+
+      case "dynamic": {
+        const target = item.json ?? item;
+        const valueArr = fieldValues[target.variableName];
+        if (Array.isArray(valueArr)) {
+          const arrayData = valueArr.map((arr: Record<string, any>) =>
+            formatAutomationListValues(target.structure, arr)
+          );
+          obj[target.variableName] = arrayData;
+        } else {
+          obj[target.variableName] = valueArr;
+        }
+        break;
+      }
+
+      default:
+        break;
+    }
+  }
+
+  return obj;
+}
+
 export const getAccvalue = (finaleObj: any, name: string) => {
   if (name.includes(".")) {
     const properties = name.split(".");

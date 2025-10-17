@@ -21,28 +21,6 @@ interface ValidationDialogProps {
     cancelButtonText?: string
     warnings: ValidationWarning[]
 }
-// const warnings: ValidationWarning[] = [
-//     {
-//         id: "missing-name",
-//         title: "Missing Configuration data",
-//         description: "Please fill all the fields in all Components.",
-//         severity: "high",
-//     },
-//     {
-//         id: "missing-handler",
-//         title: "Missing Connections",
-//         description:
-//             "Please connect all the components together.",
-//         severity: "high",
-//     },
-//     {
-//         id: "missing-connections",
-//         title: "Missing Bot Configuration",
-//         description: "Missing Bot Configuration",
-//         severity: "high",
-//     },
-
-// ]
 
 export function ValidationDialog({
     open,
@@ -52,7 +30,6 @@ export function ValidationDialog({
     cancelButtonText = "Go Back and Fix",
     warnings
 }: ValidationDialogProps) {
-    console.log({ warnings });
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>

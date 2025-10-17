@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useFilesStore } from "../../store/files-store";
+import { useFlowStore } from "../../store/root-store";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { FileUploadContainer } from "./files-dialog/file-upload-container";
 
@@ -9,7 +9,7 @@ interface FilesDialogProps {
 }
 
 export function FilesDialog({ open, onOpenChange }: FilesDialogProps) {
-  const getFiles = useFilesStore((state) => state.getFiles);
+  const getFiles = useFlowStore((state) => state.getFiles);
   useEffect(() => {
     getFiles();
   }, []);

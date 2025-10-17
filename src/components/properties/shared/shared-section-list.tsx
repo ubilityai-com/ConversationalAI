@@ -7,8 +7,8 @@ import {
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { v4 } from "uuid";
-import { objToReturnDynamicv2 } from "../../../lib/automation-utils";
-import { keyBy } from "../../../lib/utils";
+import { getAutomationListValues } from "../../../lib/automation-utils";
+import { keyBy } from "../../../lib/utils/utils";
 import { SearchableSelect } from "../../custom/searchable-select";
 import {
   Accordion,
@@ -160,7 +160,7 @@ export function SharedListSection({
                         const selectedOption = elements.find(
                           (opt) => opt.type === value
                         );
-                        const defaultValues = objToReturnDynamicv2(
+                        const defaultValues = getAutomationListValues(
                           selectedOption.rightSideData.json
                         );
 

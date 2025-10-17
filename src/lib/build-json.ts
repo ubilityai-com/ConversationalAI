@@ -1,9 +1,8 @@
 import { Node } from "@xyflow/react";
-import { useFilesStore } from "../store/files-store";
-import { useFlowStore } from "../store/flow-store";
-import { ConstantVariable } from "../store/variables-store";
-import { camelToDashCase, getNextNodeId, reverseObject, stringifyAndExtractVariables } from "./utils";
-import { getOutputVariablesByNodeId } from "./variable-utils";
+import { useFlowStore } from "../store/root-store";
+import { camelToDashCase, getNextNodeId, reverseObject, stringifyAndExtractVariables } from "./utils/utils";
+import { getOutputVariablesByNodeId } from "./utils/variable-utils";
+import { ConstantVariable } from "../store/slices/variables-slice";
 interface Model {
     provider: string;
     model: string;
@@ -25,7 +24,7 @@ interface Flow {
 
 export function createFlowObject(): Flow {
     const { nodes, edges, constantVariables, nodeStates, modelData } = useFlowStore.getState()
-    const { files: filesList } = useFilesStore.getState()
+    const { files: filesList } = useFlowStore.getState()
     const files = filesList.reduce((acc: ConstantVariable, file) => {
         acc[file.file_name] = file.file_name;
         return acc;

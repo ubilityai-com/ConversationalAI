@@ -1,5 +1,5 @@
 import { Loader2, Trash2, X } from "lucide-react";
-import { useFlowStore } from "../../store/flow-store";
+import { useFlowStore } from "../../store/root-store";
 import { Button } from "../ui/button";
 
 export default function ActionButtons({ id, category, type, cantTest }: { id: string, category: string, type: string, cantTest?: boolean }) {

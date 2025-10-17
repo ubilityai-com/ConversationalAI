@@ -1,4 +1,4 @@
-"use client"
+
 
 import { Braces, ChevronDown, FolderTree } from "lucide-react"
 import React from "react"

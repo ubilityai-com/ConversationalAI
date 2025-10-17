@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { useFilesStore } from "../../../store/files-store";
+import { useFlowStore } from "../../../store/root-store";
 import { FileList } from "./file-list";
 import { FileUploadArea } from "./file-upload-area";
 
 export const FileUploadContainer: React.FC = () => {
   const {
-    files,
     fileStatuses,
     fileProgress,
     fileErrors,
@@ -15,9 +14,7 @@ export const FileUploadContainer: React.FC = () => {
     handleFileSelect,
     retryUpload,
     removeFile,
-    uploadingFiles,
-  } = useFilesStore();
-  console.log({ files, uploadingFiles });
+  } = useFlowStore();
 
 
   return (

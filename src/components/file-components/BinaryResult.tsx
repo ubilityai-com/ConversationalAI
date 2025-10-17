@@ -1,8 +1,7 @@
 import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
-import { pathExistsInOutputVariables } from "../../lib/variable-utils";
-import { useFilesStore } from "../../store/files-store";
-import { useFlowStore } from "../../store/flow-store";
+import { pathExistsInOutputVariables } from "../../lib/utils/variable-utils";
+import { useFlowStore } from "../../store/root-store";
 
 interface ResultOptionsProps {
   activeTab: string;
@@ -52,7 +51,7 @@ const BinaryResult: React.FC<BinaryResultProps> = ({ file, runResult }) => {
   const [viewingFile, setViewingFile] = useState<any>(null);
   const [isLoadingView, setIsLoadingView] = useState(false);
   const [isLoadingDownload, setIsLoadingDownload] = useState(false);
-  const { getFile } = useFilesStore()
+  const { getFile } = useFlowStore()
   const { setFormDialogStatus, setIsFormDialogOpen, setDialogProps, setShowSnackBarMessage, clickedElement, outputVariables } = useFlowStore()
 
   const getMimeType = (ext: string): string => {
@@ -123,7 +122,6 @@ const BinaryResult: React.FC<BinaryResultProps> = ({ file, runResult }) => {
         return <p>Preview not supported for .{extension}. Please download to view.</p>;
     }
   };
-  console.log({ file, runResult });
 
   const handlePreview = async () => {
 

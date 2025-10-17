@@ -1,4 +1,4 @@
-"use client"
+
 
 import { ChevronUp, X } from "lucide-react"
 import { Button } from "../ui/button"

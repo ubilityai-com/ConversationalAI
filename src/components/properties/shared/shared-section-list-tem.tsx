@@ -1,7 +1,7 @@
 /// <reference types="webpack-env" />
 
 import { ComponentType, useEffect, useState } from "react";
-import { camelToDashCase } from "../../../lib/utils";
+import { camelToDashCase } from "../../../lib/utils/utils";
 
 interface SectionProps {
   content: any;

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { cn } from "../../lib/utils";
+import { cn } from "../../lib/utils/utils";
 import { Check, ChevronsUpDown, RefreshCcw, X, Loader2 } from "lucide-react";
 import {
   Command,

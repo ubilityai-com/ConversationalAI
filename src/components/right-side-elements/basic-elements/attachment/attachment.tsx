@@ -1,7 +1,7 @@
 import { useRef } from "react"
 import "react-quill/dist/quill.snow.css"
 import { useDebounceConfig } from "../../../../hooks/use-debounced-config"
-import { useFlowStore } from "../../../../store/flow-store"
+import { useFlowStore } from "../../../../store/root-store"
 import { NodeConfigProps } from "../../../../types/automation-types"
 import { FieldWrapper } from "../../../custom/field-wrapper"
 import { Input } from "../../../ui/input"

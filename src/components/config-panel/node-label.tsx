@@ -1,7 +1,7 @@
 import { Check, Edit2 } from "lucide-react";
 import { useState } from "react";
-import { generateUniqueName } from "../../lib/utils";
-import { useFlowStore } from "../../store/flow-store";
+import { generateUniqueName } from "../../lib/utils/flow-utils";
+import { useFlowStore } from "../../store/root-store";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
