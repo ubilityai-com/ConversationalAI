@@ -1,58 +1,43 @@
-import { TooltipContent } from "@radix-ui/react-tooltip";
-import {
-  AlertTriangle,
-  ListChecks,
-  Plus,
-  Sparkles,
-  Trash2,
-} from "lucide-react";
-import React, { useState } from "react";
-import { getAutomationListValues } from "../../lib/automation-utils";
-import { Alert, AlertDescription } from "../ui/alert";
-import { Button } from "../ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-import { AutomationItem } from "../../types/automation-types";
-import { cn } from "../../lib/utils/utils";
-import AutomationSimple from "./automation";
+import { TooltipContent } from "@radix-ui/react-tooltip"
+import { AlertTriangle, ListChecks, Plus, Sparkles, Trash2 } from "lucide-react"
+import React, { useState } from "react"
+import { getAutomationListValues } from "../../lib/automation-utils"
+import { cn } from "../../lib/utils/utils"
+import { AutomationItem } from "../../types/automation-types"
+import { Alert, AlertDescription } from "../ui/alert"
+import { Button } from "../ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
+import { Input } from "../ui/input"
+import { Label } from "../ui/label"
+import { Tooltip, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
+import AutomationSimple from "./automation"
+
 
 interface DynamicInputFieldsProps {
   json: {
-    type: string;
-    variableName: string;
-    title: string;
-    fieldsArray: AutomationItem[][] | string;
-    structure: AutomationItem[];
-    description?:string
-    required?: boolean;
-    minSize?: number;
-    errorSpan?: string;
-    hasAI?: boolean;
-    [key: string]: any;
-  };
-  disabled?: boolean;
-  filledDataName: string;
-  flowZoneSelectedId: string;
-  // New props for external field values
-  fieldValues?: Record<string, any>;
-  onFieldChange: (partialState: Record<string, any>, replace?: boolean) => void;
-  [key: string]: any;
+    type: string
+    variableName: string
+    title: string
+    fieldsArray: AutomationItem[][] | string
+    structure: AutomationItem[]
+    description?: string
+    required?: boolean
+    minSize?: number
+    errorSpan?: string
+    hasAI?: boolean
+  }
+  disabled?: boolean
+  filledDataName: string
+  flowZoneSelectedId: string
+  fieldValues?: Record<string, any>
+  onFieldChange: (partialState: Record<string, any>, replace?: boolean) => void
+  filledArray: AutomationItem[][] | string
 }
 
-
 const UseAIIcon: React.FC<{
-  isUsingVariable: boolean;
-  onClick: () => void;
-  rightSideInput?: boolean;
-  disabled?: boolean;
+  isUsingVariable: boolean
+  onClick: () => void
+  disabled?: boolean
 }> = ({ isUsingVariable, onClick, disabled }) => (
   <TooltipProvider>
     <Tooltip>
@@ -64,7 +49,7 @@ const UseAIIcon: React.FC<{
             "h-8 w-8 ml-2",
             isUsingVariable
               ? "bg-purple-600 hover:bg-purple-700 text-white"
-              : "border-purple-300 text-purple-600 hover:bg-purple-50"
+              : "border-purple-300 text-purple-600 hover:bg-purple-50",
           )}
           onClick={onClick}
           disabled={disabled}
@@ -72,255 +57,176 @@ const UseAIIcon: React.FC<{
           <Sparkles className="h-4 w-4" />
         </Button>
       </TooltipTrigger>
-      <TooltipContent>
-        {isUsingVariable ? "Stop using AI" : "Use AI"}
-      </TooltipContent>
+      <TooltipContent>{isUsingVariable ? "Stop using AI" : "Use AI"}</TooltipContent>
     </Tooltip>
   </TooltipProvider>
-);
+)
 
-const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
-  const {
-    json,
-    disabled,
-    flowZoneSelectedId,
-    fieldValues,
-    onFieldChange,
-    filledArray,
-    filledDataName,
-  } = props;
+const DynamicInputFields: React.FC<DynamicInputFieldsProps> = ({
+  json,
+  disabled,
+  flowZoneSelectedId,
+  fieldValues,
+  onFieldChange,
+  filledArray,
+  filledDataName,
+}) => {
+  const selectedRPA = { status: "Inactive" }
+  const isActive = selectedRPA?.status === "Active"
 
-  // Mock selector - replace with your actual Redux selector
-  const selectedRPA = { status: "Inactive" }; // useSelector((state) => state.updateRPA.selectedRPA)
-  const isActive = selectedRPA?.status === "Active";
+  const isAIMode = typeof filledArray === "string" && filledArray.trim() && filledArray.startsWith("##AI##")
 
-  const [remove, setRemove] = useState(false);
+  const [isUsingAI, setIsUsingAI] = useState(isAIMode)
 
-  console.log({ filledArray, json });
+  const fieldsArray = Array.isArray(filledArray) ? filledArray : []
 
-  // Get the current fieldsArray value from external state or internal state
-  const getCurrentFieldsArray = () => {
-    return filledArray || [];
-  };
-
-  const currentFieldsArray = getCurrentFieldsArray();
-
-  const valueIsAIOrEmpty =
-    currentFieldsArray &&
-    typeof currentFieldsArray === "string" &&
-    currentFieldsArray.trim() &&
-    currentFieldsArray.startsWith("##AI##");
-
-  const [isUsingAI, setIsUsingAI] = useState(valueIsAIOrEmpty);
-
-  const updateFieldsArray = (newValue: any, replace = false) => {
-    console.log({ newValue });
-
+  const updateFieldsArray = (newValue: any) => {
     if (onFieldChange && json.variableName) {
-      // Use external field change handler with new signature
-      console.log({ json, newValue });
-
-      onFieldChange({ [json.variableName]: newValue }, replace);
+      onFieldChange({ [json.variableName]: newValue }, false)
     }
-  };
-
-  const onAddVariables = () => {
-    if (typeof currentFieldsArray === "string") return;
-
-    const newElt = getAutomationListValues(json.structure);
-    console.log({ newElt });
-
-    const newFlledArray = Array.isArray(filledArray) ? currentFieldsArray : [];
-    updateFieldsArray([...newFlledArray, newElt]);
-  };
-
-  const onRemoveVariables = (index: number) => {
-    const newVariables = currentFieldsArray.filter(
-      (f: any, i: number) => i !== index
-    );
-    updateFieldsArray(newVariables);
-    setRemove((prev) => !prev);
-  };
-
-  const onChangeVariables = ({
-    index,
-    event,
-  }: {
-    index: number;
-    event: any;
-  }) => {
-    if (
-      typeof currentFieldsArray === "string" ||
-      !Array.isArray(currentFieldsArray)
-    )
-      return;
-
-    const newFieldsArray = currentFieldsArray.map((field, ind) => {
-      if (index === ind) {
-        return event;
-      }
-      return field;
-    });
-    updateFieldsArray(newFieldsArray);
-  };
-
-  const onUseAIIconClick = () => {
-    const newValue = isUsingAI ? [] : "##AI##";
-    updateFieldsArray(newValue);
-    setIsUsingAI(!isUsingAI);
-  };
-
-  const UseAIIconHTML = json.hasAI && (
-    <UseAIIcon
-      isUsingVariable={!!isUsingAI}
-      onClick={onUseAIIconClick}
-      rightSideInput={true}
-      disabled={disabled || isActive}
-    />
-  );
-
-  // AI Mode Display
-  if (valueIsAIOrEmpty) {
-    return (
-      <div className="flex items-center space-x-2">
-        <div className="flex-1">
-          <Label className="text-sm font-medium mb-2 block">
-            {json.variableName}
-            {json.required && <span className="text-red-500 ml-1">*</span>}
-          </Label>
-          <Input
-            placeholder="Pick a variable"
-            value="The value will be taken from the query context"
-            readOnly
-            className="bg-purple-50 dark:bg-purple-950 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300"
-          />
-        </div>
-        {UseAIIconHTML}
-      </div>
-    );
   }
 
-  const fieldsArray = Array.isArray(currentFieldsArray)
-    ? currentFieldsArray
-    : [];
-  const hasRequiredError = json.required && fieldsArray.length === 0;
-  const hasRequiredSuccess = json.required && fieldsArray.length > 0;
-  const isAccordion = json.type === "accordion";
-  console.log({ json, currentFieldsArray, fieldsArray });
+  const onAddVariables = () => {
+    if (typeof filledArray === "string") return
+    const newElt = getAutomationListValues(json.structure)
+    updateFieldsArray([...fieldsArray, newElt])
+  }
+
+  const onRemoveVariables = (index: number) => {
+    const newVariables = fieldsArray.filter((_, i) => i !== index)
+    updateFieldsArray(newVariables)
+  }
+
+  const onUseAIIconClick = () => {
+    const newValue = isUsingAI ? [] : "##AI##"
+    updateFieldsArray(newValue)
+    setIsUsingAI(!isUsingAI)
+  }
+
+  const renderAIMode = () => (
+    <div className="flex items-center space-x-2">
+      <div className="flex-1">
+        <Label className="text-sm font-medium mb-2 block">
+          {json.variableName}
+          {json.required && <span className="text-red-500 ml-1">*</span>}
+        </Label>
+        <Input
+          placeholder="Pick a variable"
+          value="The value will be taken from the query context"
+          readOnly
+          className="bg-purple-50 dark:bg-purple-950 border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300"
+        />
+      </div>
+      {json.hasAI && (
+        <UseAIIcon isUsingVariable={!!isUsingAI} onClick={onUseAIIconClick} disabled={disabled || isActive} />
+      )}
+    </div>
+  )
+
+  const renderValidationErrors = () => (
+    <>
+      {json.minSize && json.minSize > fieldsArray.length && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            {json.errorSpan || `Minimum ${json.minSize} ${json.title.toLowerCase()} required`}
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {json.required && fieldsArray.length === 0 && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            This field is required. Please add at least one {json.title.toLowerCase()}.
+          </AlertDescription>
+        </Alert>
+      )}
+    </>
+  )
+
+  const renderFieldSet = (fieldSet: Record<string, any>, fieldSetIndex: number) => {
+    const isAccordion = json.type === "accordion"
+
+    return (
+      <Card key={fieldSetIndex} className={isAccordion ? "border-none" : "border border-gray-200"}>
+        <CardContent className={isAccordion ? "p-0" : "p-4 space-y-3"}>
+          {!isAccordion && (
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-sm">
+                {json.title} {fieldSetIndex + 1}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
+                onClick={() => onRemoveVariables(fieldSetIndex)}
+              >
+                <Trash2 className="w-3 h-3" />
+              </Button>
+            </div>
+          )}
+
+          <AutomationSimple
+            filledDataName={filledDataName}
+            disabled={disabled || isActive}
+            indexForDynamic={fieldSetIndex}
+            schema={isAccordion ? (json.fieldsArray[0] as AutomationItem[]) : json.structure}
+            inDynamic={true}
+            flowZoneSelectedId={flowZoneSelectedId}
+            onFieldChange={(partialState: any, replace?: boolean) => {
+              let newFilledData
+
+              if (isAccordion) {
+                newFilledData = replace ? partialState : { ...fieldSet, ...partialState }
+              } else {
+                newFilledData = fieldsArray.map((item: any, index: number) =>
+                  index === fieldSetIndex ? (replace ? partialState : { ...item, ...partialState }) : item,
+                )
+              }
+
+              onFieldChange({ [json.variableName]: newFilledData }, false)
+            }}
+            fieldValues={fieldSet}
+          />
+        </CardContent>
+      </Card>
+    )
+  }
+
+  // Early return for AI mode
+  if (isAIMode) {
+    return renderAIMode()
+  }
+
+  const isAccordion = json.type === "accordion"
 
   return (
     <div className="space-y-4">
-      <div className={cn("rounded-l-md")}>
+      <div className="rounded-l-md">
         <Card className="border-none">
-          {json.type !== "accordion" && (
+          {!isAccordion && (
             <CardHeader className="pb-3">
               <CardTitle className="text-sm flex items-center">
                 <ListChecks className="w-4 h-4 mr-2" />
                 {json.title}&nbsp;
-                <span className="text-muted-foreground">
-                  ({fieldsArray.length})
-                </span>
+                <span className="text-muted-foreground">({fieldsArray.length})</span>
               </CardTitle>
-              {json.description && <CardDescription>
-                {json.description}
-              </CardDescription>}
+              {json.description && <CardDescription>{json.description}</CardDescription>}
             </CardHeader>
           )}
 
           <CardContent className="p-0 space-y-4">
-            {filledArray.length === 0 && (
+            {fieldsArray.length === 0 && (
               <p className="text-xs text-gray-500">
                 No {json.title} yet. Click "Add {json.title}".
               </p>
             )}
 
-            {filledArray.map(
-              (fieldSet: Record<string, any>, fieldSetInd: number) => (
-                <Card key={fieldSetInd} className={isAccordion ? "border-none" : "border border-gray-200"}>
-                  <CardContent className={isAccordion ? "p-0" : "p-4 space-y-3"}>
-                    {json.type !== "accordion" && (
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-sm">
-                          {json.title} {fieldSetInd + 1}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 w-6 p-0 text-red-500 hover:text-red-700"
-                          onClick={() => onRemoveVariables(fieldSetInd)}
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    )}
+            {fieldsArray.map((fieldSet, fieldSetIndex) => renderFieldSet(fieldSet, fieldSetIndex))}
 
-                    <div>
-                      <AutomationSimple
-                        filledDataName={filledDataName}
-                        disabled={disabled || isActive}
-                        indexForDynamic={fieldSetInd}
-                        schema={
-                          json.type === "accordion"
-                            ? (json.fieldsArray[0] as AutomationItem[])
-                            : json.structure
-                        }
-                        inDynamic={true}
-                        flowZoneSelectedId={flowZoneSelectedId}
-                        onFieldChange={(
-                          partialState: any,
-                          replace?: boolean
-                        ) => {
-                          let newFilledData;
-
-                          if (isAccordion) {
-                            // For accordion, update the entire fieldSet with partialState
-                            newFilledData = replace
-                              ? partialState
-                              : { ...fieldSet, ...partialState };
-                          } else {
-                            // For non-accordion, loop to index and update the item
-                            newFilledData = filledArray.map(
-                              (item: any, index: number) => {
-                                if (index === fieldSetInd) {
-                                  return replace
-                                    ? partialState
-                                    : { ...item, ...partialState };
-                                }
-                                return item;
-                              }
-                            );
-                          }
-
-                          console.log({
-                            partialState,
-                            replace,
-                            fieldValues,
-                            filledArray,
-                            newFilledData,
-                          });
-
-                          onFieldChange(
-                            {
-                              [json.variableName]: newFilledData,
-                            },
-                            false
-                          );
-                        }}
-                        fieldValues={fieldSet}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              )
-            )}
-
-            {json.type !== "accordion" && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onAddVariables}
-                className="h-8 w-full bg-transparent"
-              >
+            {!isAccordion && (
+              <Button variant="outline" size="sm" onClick={onAddVariables} className="h-8 w-full bg-transparent">
                 <Plus className="w-3 h-3 mr-1" />
                 Add {json.title}
               </Button>
@@ -329,29 +235,9 @@ const DynamicInputFields: React.FC<DynamicInputFieldsProps> = (props) => {
         </Card>
       </div>
 
-      {/* Validation Error */}
-      {json.minSize && json.minSize > fieldsArray.length && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            {json.errorSpan ||
-              `Minimum ${json.minSize} ${json.title.toLowerCase()} required`}
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {/* Required Field Error */}
-      {hasRequiredError && (
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            This field is required. Please add at least one{" "}
-            {json.title.toLowerCase()}.
-          </AlertDescription>
-        </Alert>
-      )}
+      {renderValidationErrors()}
     </div>
-  );
-};
+  )
+}
 
-export default React.memo(DynamicInputFields);
+export default React.memo(DynamicInputFields)
