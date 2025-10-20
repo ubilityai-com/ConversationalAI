@@ -35,7 +35,7 @@ export function NodeHandle({
   // Check if this node has any outgoing connections
   const hasOutgoingConnection = edges.some(
     (connection) =>
-      connection.source === source && props.id === connection.sourceHandle
+      connection.source === source && props.id === (connection.sourceHandle ?? null)
   );
 
   const handleShowAddNodeDialog = (
