@@ -6,6 +6,7 @@ langchain-core==0.3.74  # Pinned to a specific compatible version
 langchain-mcp-adapters==0.1.9
 langgraph==0.5.3
 langchain-nvidia-ai-endpoints==0.3.13
+faiss-cpu==1.12.0
 # ============================
 # LLM Providers (Compatible Versions)
 # ============================

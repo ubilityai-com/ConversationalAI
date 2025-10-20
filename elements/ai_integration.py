@@ -26,12 +26,12 @@ class AIIntegration:
     async def _execute_condition_agent(self, sio, sid, conversation, conversation_id, state):
         return await CONDITION_AGENT(self.data, self.credentials).execute(sio, sid, conversation, conversation_id, state)
     
-    async def _execute_rag_chain(self, sio, sid, conversation):
+    async def _execute_rag_chain(self, sio, sid, conversation, conversation_id):
         if self.data['inputs']["query"]:
             last_input_value = self.data['inputs']["query"]
         else:
             last_input_value = conversation['variables']['last_input_value'] if conversation else ""
-        return await RAG(self.data, self.credentials).stream(sio, sid, conversation, last_input_value)
+        return await RAG(self.data, self.credentials).stream(sio, sid, conversation, conversation_id, last_input_value)
 
     async def _execute_react_agent(self, sio, sid, conversation, conversation_id):
         if conversation and conversation['react_fail']:
@@ -66,10 +66,10 @@ class AIIntegration:
         executor = ai_mapping.get(self.chain_type, None)
 
         # Call the selected executor with its parameters
-        if self.chain_type == "LC_REACT_AGENT":
+        if self.chain_type == "LC_REACT_AGENT" or self.chain_type == "LC_RAG":
             return await executor(sio, sid, conversation, conversation_id)
-        elif self.chain_type == "LC_RAG":
-            return await executor(sio, sid, conversation)
+        # elif self.chain_type == "LC_RAG":
+        #     return await executor(sio, sid, conversation)
         elif self.chain_type == "LC_CONDITION_AGENT":
             return await executor(sio, sid, conversation, conversation_id, state)
         else:
