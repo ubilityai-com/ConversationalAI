@@ -2,6 +2,7 @@ import { TooltipArrow } from "@radix-ui/react-tooltip";
 import { FileText, Goal, Key, Loader2, Rocket, Save } from "lucide-react";
 import { useState } from "react";
 import { checkIfAllHandlesAreConnected } from "../../lib/flow-validation";
+import { findNodesWithUndefinedVars, generateValidationMessagesMarkdown } from "../../lib/utils/variable-utils";
 import { useFlowStore } from "../../store/root-store";
 import { Button } from "../ui/button";
 import {
@@ -50,6 +51,7 @@ export function ToolbarActions() {
     }
   };
   const handlePublishToggle = () => {
+
     if (selectedBot?.status === "Active")
       return deactivateBot();
     const { nodesValidation, nodes, edges } = useFlowStore.getState();
@@ -85,7 +87,9 @@ export function ToolbarActions() {
         });
       }
     }
-
+    const nodesWithUndefinedVars = findNodesWithUndefinedVars();
+    if (nodesWithUndefinedVars.length > 0)
+      warnings.push(...generateValidationMessagesMarkdown(nodesWithUndefinedVars))
     if (warnings.length > 0) {
       setIsFormDialogOpen(true);
       setDialogProps({ warnings });

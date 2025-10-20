@@ -1,4 +1,5 @@
 import { useFlowStore } from "../../store/root-store";
+import { Node } from "../../store/slices/flow-slice";
 import { ConstantVariable, DialogueVariables, OutputVariables } from "../../store/slices/variables-slice";
 
 /**
@@ -172,4 +173,70 @@ export function findDetailedVariableOrigins(
   }
 
   return origins;
+}
+
+
+interface NodeUndefinedVars {
+  nodeId: string;
+  label: string;
+  undefinedVars: string[];
+}
+
+const variableRegex = /\$\{([^}]+)\}/g;
+
+// Recursive function to scan any value for undefined variables
+function scanValueForUndefinedVars(
+  value: any,
+  foundVars: Set<string>
+) {
+  const { outputVariables, constantVariables, dialogueVariables, } = useFlowStore.getState()
+
+  if (typeof value === "string") {
+    let match;
+    while ((match = variableRegex.exec(value)) !== null) {
+      const varName = match[1];
+      if (!doesVariableExist(varName, constantVariables, outputVariables, dialogueVariables)) {
+        foundVars.add(varName);
+      }
+    }
+  } else if (Array.isArray(value)) {
+    value.forEach((item) => scanValueForUndefinedVars(item, foundVars));
+  } else if (typeof value === "object" && value !== null) {
+    Object.values(value).forEach((val) => scanValueForUndefinedVars(val, foundVars));
+  }
+}
+
+// Main function
+export function findNodesWithUndefinedVars(): NodeUndefinedVars[] {
+  const result: NodeUndefinedVars[] = [];
+  const { nodes } = useFlowStore.getState()
+
+  nodes.forEach((node: Node) => {
+    const foundVars = new Set<string>();
+    scanValueForUndefinedVars(node.data, foundVars);
+
+    if (foundVars.size > 0) {
+      result.push({
+        nodeId: node.id,
+        label: node.data.label || "",
+        undefinedVars: Array.from(foundVars),
+      });
+    }
+  });
+
+  return result;
+}
+
+export function generateValidationMessagesMarkdown(nodesWithUndefinedVars: NodeUndefinedVars[]) {
+  return nodesWithUndefinedVars.map((node) => {
+    // Add an empty line before the list to ensure ReactMarkdown renders it
+    const markdownList = "\n" + node.undefinedVars.map((v) => `+ **${v}**`).join("\n");
+
+    return {
+      id: node.nodeId,
+      title: `Node "${node.label}" uses undefined variables`,
+      description: markdownList,
+      severity: "high",
+    };
+  });
 }

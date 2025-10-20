@@ -1,10 +1,10 @@
 import { AlertTriangle } from "lucide-react"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert"
 import { Button } from "../ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog"
 import { ScrollArea } from "../ui/scroll-area"
-
-
 export interface ValidationWarning {
     id: string
     title: string
@@ -69,7 +69,11 @@ export function ValidationDialog({
                                     <AlertTitle className="font-medium">{warning.title}</AlertTitle>
                                 </div>
 
-                                <AlertDescription className="text-sm">{warning.description}</AlertDescription>
+                                <AlertDescription className="text-sm prose prose-slate  dark:prose-invert max-w-none prose-p:my-2 prose-p:leading-relaxed prose-headings:mt-3 prose-headings:mb-2 prose-p:inline">
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                        {warning.description}
+                                    </ReactMarkdown>
+                                </AlertDescription>
                             </Alert>
                         ))}
                     </div>

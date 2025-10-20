@@ -13,6 +13,16 @@ import { FlowStore } from "../root-store"
 
 export type Node = Omit<N, 'type'> & {
   type: string;
+  data: {
+    label: string;
+    description?: string;
+    category?: string;
+    automationConfig?: any;
+    rightSideData?: any;
+    color?: string;
+    notTestable?: boolean;
+    [key: string]: any;
+  };
 };
 
 
