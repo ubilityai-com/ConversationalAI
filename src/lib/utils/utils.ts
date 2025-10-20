@@ -367,11 +367,11 @@ export function reverseObject<
  * Initializes a new bot with default start node
  */
 export function initializeBot() {
-  const id = uuidv4()
+  const id = `${uuidv4()}/Handler`
   return {
     nodes: [
       {
-        id: `${id}/Handler`,
+        id: `${id}`,
         type: "Handler",
         data: {
           category: "basic",
