@@ -25,6 +25,7 @@ import { Checkbox } from "../ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { ScrollArea } from "../ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -33,7 +34,6 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { ScrollArea } from "../ui/scroll-area";
 export interface WorkflowVariable {
   id: string;
   name: string;
@@ -56,6 +56,7 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
     constantVariables,
     outputVariables,
     dialogueVariables,
+    files,
     addConstantVariable,
     updateConstantVariable,
     deleteConstantVariable,
@@ -97,7 +98,8 @@ export function VariablesDialog({ open, onOpenChange }: VariablesDialogProps) {
       name,
       constantVariables,
       outputVariables,
-      dialogueVariables
+      dialogueVariables,
+      files
     );
   };
 

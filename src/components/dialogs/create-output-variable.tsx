@@ -28,6 +28,7 @@ export function CreateOutputVariableDialog({
     constantVariables,
     outputVariables,
     dialogueVariables,
+    files,
     addOutputVariable,
     clickedElement,
   } = useFlowStore();
@@ -56,7 +57,8 @@ export function CreateOutputVariableDialog({
         variableName,
         constantVariables,
         outputVariables,
-        dialogueVariables
+        dialogueVariables,
+        files
       )
     ) {
       setError("Variable name already exists");

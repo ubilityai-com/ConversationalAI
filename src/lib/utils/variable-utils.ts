@@ -1,4 +1,5 @@
 import { useFlowStore } from "../../store/root-store";
+import { FileItem } from "../../store/slices/files-slice";
 import { Node } from "../../store/slices/flow-slice";
 import { ConstantVariable, DialogueVariables, OutputVariables } from "../../store/slices/variables-slice";
 
@@ -31,11 +32,13 @@ export function doesVariableExist(
   name: string,
   constantVariables: ConstantVariable,
   outputVariables: OutputVariables,
-  dialogueVariables: DialogueVariables
+  dialogueVariables: DialogueVariables,
+  fileVariables: FileItem[]
 ): boolean {
   return doesVariableExistInConstants(name, constantVariables) ||
     doesVariableExistInOutputs(name, outputVariables) ||
-    doesVariableExistInDialogues(name, dialogueVariables);
+    doesVariableExistInDialogues(name, dialogueVariables) ||
+    doesVariableExistInFiles(name, fileVariables);
 }
 export function doesVariableExistInConstants(
   name: string,
@@ -59,6 +62,12 @@ export function doesVariableExistInDialogues(
   dialogueVariables: DialogueVariables
 ): boolean {
   return Object.values(dialogueVariables).includes(name);
+}
+export function doesVariableExistInFiles(
+  name: string,
+  files: FileItem[]
+): boolean {
+  return !!files.find((file) => file.file_name === name);
 }
 export function isPickedPathAlreadyExistsInCreatedVariables(aPath: string, flowZoneSelectedID: string, createdVariables: OutputVariables) {
   let toReturn: boolean | string = false;
@@ -189,13 +198,13 @@ function scanValueForUndefinedVars(
   value: any,
   foundVars: Set<string>
 ) {
-  const { outputVariables, constantVariables, dialogueVariables, } = useFlowStore.getState()
+  const { outputVariables, constantVariables, dialogueVariables, files } = useFlowStore.getState()
 
   if (typeof value === "string") {
     let match;
     while ((match = variableRegex.exec(value)) !== null) {
       const varName = match[1];
-      if (!doesVariableExist(varName, constantVariables, outputVariables, dialogueVariables)) {
+      if (!doesVariableExist(varName, constantVariables, outputVariables, dialogueVariables, files)) {
         foundVars.add(varName);
       }
     }

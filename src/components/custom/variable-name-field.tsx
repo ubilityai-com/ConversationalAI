@@ -26,9 +26,9 @@ export function VariableNameField({
     )
 
     const varExist = (varName: string) => {
-        const { constantVariables, outputVariables, dialogueVariables } =
+        const { constantVariables, outputVariables, dialogueVariables, files } =
             useFlowStore.getState()
-        return doesVariableExist(varName, constantVariables, outputVariables, dialogueVariables) ? varName : ""
+        return doesVariableExist(varName, constantVariables, outputVariables, dialogueVariables, files) ? varName : ""
     }
 
     const checkIfVariableExist = (varName: string) => {
