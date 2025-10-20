@@ -81,8 +81,6 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
         save_data_to_global_history(conversation_id=conversation_id, input="", output=content["data"]['text'])
 
     elif "LC" in element_type:
-        logger.info("*************** USER INPUT ***************")
-        logger.info(conversation['variables']['last_input_value'])
         if state and condition and element_type != "LC_CONDITION_AGENT" and conversation['last_executed_node'] != "LC_CONDITION_AGENT" and conversation['react_fail']:
             cdt_resp = await execute_state(sio, sid, state, conversation, conversation_id, current_dialogue, credentials)
             if cdt_resp != 'Other' and state[cdt_resp] != conversation['current_step']:

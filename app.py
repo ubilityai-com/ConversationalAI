@@ -134,23 +134,22 @@ async def connect(sid, environ, auth=None):
     # Greet the user if the current step is configured to do so
     if dialogue[current_step].get('start'):
         async def greet_and_execute():
+            wait_for_user = dialogue[current_step].get('saveUserInputAs', None)
             if dialogue[current_step]['greet']:
                 logger.info("Ubility bot will send greet message on connection")
                 greet_message = Message(dialogue[current_step]['greet'])
                 await greet_message.send(sio, sid)
-                save_data_to_global_history(
-                    conversation_id=conversation_id,
-                    input="",
-                    output=dialogue[current_step]['greet']
-                )
-            conversation['current_step'] = dialogue[current_step]['next']
-            await execute_process(sio, sid, conversation, conversation_id, dialogue)
+                save_data_to_global_history(conversation_id=conversation_id, input="", output=dialogue[current_step]['greet'])
+
+            if not wait_for_user:
+                conversation['current_step'] = dialogue[current_step]['next']
+                await execute_process(sio, sid, conversation, conversation_id, dialogue)
+            else:
+                logger.info("Waiting for user input ...")
+                conversation['wait_for_user_input'] = wait_for_user
+                conversation['current_step'] = dialogue[current_step].get('next')
 
         asyncio.create_task(greet_and_execute())
-        
-    # save user message if user start the conversation
-    if dialogue[current_step]['saveUserInputAs']:
-        conversation['wait_for_user_input'] = dialogue[current_step]['saveUserInputAs']
 
 
 @sio.event
@@ -181,6 +180,8 @@ async def message(sid, data):
     # used for the recursive functionality in react agent
     if data_type != "binary":
         conversation['variables']['last_input_value'] = user_message
+        logger.info("*************** USER INPUT ***************")
+        logger.info(user_message)
         save_data_to_global_history(conversation_id, user_message, "")
     
     # Handle cancellation
