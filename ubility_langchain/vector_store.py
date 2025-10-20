@@ -3,18 +3,20 @@
 # A vector store takes care of storing embedded data and performing vector search.#
 ###################################################################################
 import logging
+from typing import List
 from langchain_core.embeddings import Embeddings
+from langchain_core.documents import Document
 
 
 class VectorStore:
     
-    _VALID_TYPES=["pinecone"]
+    _VALID_TYPES=["pinecone", "localStore"]
     
     
     def __init__(
         self,
         type: str,
-        credentials: dict,
+        credentials: dict = {},
         params: dict = {}
         ):
         """
@@ -57,7 +59,8 @@ class VectorStore:
  
     def retrieve_data(
         self,
-        embedding:Embeddings
+        embedding:Embeddings,
+        documents:List[Document] = None
         ):
         """
             Retrieve data from your vectore store
@@ -71,13 +74,17 @@ class VectorStore:
         try:
             if self.type == "pinecone":
                 from langchain_pinecone import PineconeVectorStore as langPinecone
-                vectordb = langPinecone(
+                vectorstore = langPinecone(
                     embedding=embedding,
                     index_name=self.index_name,
                     pinecone_api_key=self.api_key
                 )
-                retriever = vectordb.as_retriever()
-
+            
+            if self.type == "localStore":
+                from langchain_community.vectorstores import FAISS
+                vectorstore = FAISS.from_documents(documents, embedding=embedding)
+            
+            retriever = vectorstore.as_retriever()
             return retriever
         except ValueError as error:
             raise ValueError(error)
