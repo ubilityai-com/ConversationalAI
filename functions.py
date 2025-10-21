@@ -153,6 +153,7 @@ async def execute_process(sio, sid, conversation, conversation_id, dialogue, con
 
 
 async def execute_state(sio, sid, state, conversation, conversation_id, current_dialogue, credentials):
+    logger.info("*************** START STATE CONDITION AGENT ***************")
     condition_agent_data = {
         "data": {
             "inputs": {
@@ -173,8 +174,6 @@ async def execute_state(sio, sid, state, conversation, conversation_id, current_
     await handle_ai_integration(sio, sid, "LC_CONDITION_AGENT", credentials, conversation, conversation_id, current_dialogue, condition_agent_data, state)
 
     cdt_resp = conversation['variables'].get("LC_CONDITION_AGENT_OUTPUT-var", '')
-    logger.info("*************** STATE CONDITION AGENT RESULT ***************")
-    logger.info(cdt_resp)
     return cdt_resp
 
 
@@ -431,6 +430,8 @@ async def handle_app_integration(sio, sid, conversation, conversation_id, dialog
 
 async def handle_ai_integration(sio, sid, chain_type, credentials, conversation, conversation_id, current_dialogue, content, state=None):
     result = await AIIntegration(chain_type, credentials, content['data']).execute_ai_element(sio, sid, conversation, conversation_id, state)
+    logger.info(f"*************** {chain_type} OUTPUT ***************")
+    logger.info(f"{result}\n")
     if "answer" in result:
         save_data_to_global_history(conversation_id=conversation_id, input="", output=str(result["answer"]))
     
