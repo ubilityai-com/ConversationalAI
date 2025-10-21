@@ -246,5 +246,5 @@ class RAG:
             raise Exception(exc)
 
     async def stream(self, sio, sid, conversation, conversation_id, input=None):
-        return await self._execute_rag_with_memory(sio, sid, conversation, conversation_id, input)
-        # return await self._execute_rag_without_memory(sio, sid, conversation, input)
+        # return await self._execute_rag_with_memory(sio, sid, conversation, conversation_id, input)
+        return await self._execute_rag_without_memory(sio, sid, conversation, input)

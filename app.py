@@ -181,7 +181,7 @@ async def message(sid, data):
     if data_type != "binary":
         conversation['variables']['last_input_value'] = user_message
         logger.info("*************** USER INPUT ***************")
-        logger.info(user_message)
+        logger.info(f"{user_message}\n")
         save_data_to_global_history(conversation_id, user_message, "")
     
     # Handle cancellation

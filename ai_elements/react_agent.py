@@ -307,8 +307,6 @@ class REACT_AGENT:
 
                 return {"answer": result}
             
-            logging.info("*************** REACT AGENT OUTPUT ***************")
-            logging.info(result)
             status = self._status(user_prompt, self.data['inputs']["query"], llm_model, result, conversation_id, memory)
             status = status.replace(": '", ': "').replace("': '", '": "').replace(",\n'", ',\n"').replace("':", '":').replace("',", '",').replace("'}", '"}').replace("{'", '{"').replace("'}", '"}')
             try:
