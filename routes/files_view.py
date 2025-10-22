@@ -144,7 +144,7 @@ async def list_uploaded_files(dialogue: str = Query(None)):
         STORAGE_DIR = os.path.join(current_dir, "temp", dialogue)
 
         if not os.path.exists(STORAGE_DIR):
-            return JSONResponse(status_code=404, content={"error": f"Folder for dialogue '{dialogue}' not found"})
+            return JSONResponse(status_code=200, content={"Message": "No uploaded file yet"})
 
         mime = magic.Magic(mime=True)
         file_list = []
