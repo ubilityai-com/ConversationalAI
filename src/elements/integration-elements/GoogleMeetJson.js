@@ -16,7 +16,7 @@ export const GoogleMeetJson = {
         variableName: "cred",
         required: true,
         credential: true,
-        credType: "Google",
+        credType: "GoogleMeet",
         value: "",
         list: [],
         config: [

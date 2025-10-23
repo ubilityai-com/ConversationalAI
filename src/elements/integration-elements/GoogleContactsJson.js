@@ -16,7 +16,7 @@ export const GoogleContactsJson = {
         "variableName": "cred",
         "required": true,
         "credential": true,
-        "credType": "Google",
+        "credType": "GoogleContacts",
         "value": "",
         "list": [],
         "config": [
