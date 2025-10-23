@@ -1,0 +1,1087 @@
+import asana
+from asana.rest import ApiException
+import json, requests
+
+
+def asana_refresh_token(cred):
+    """
+    Refresh the Asana access token using the provided refresh token if present or else return the existing access token.
+
+    :param str clientId: The client ID for the Asana application.
+    :param str clientSecret: The client secret for the Asana application.
+    :param str refreshToken: The refresh token to be used for obtaining a new access token.
+    :param str redirectUri: The redirect URI registered with the Asana application.
+
+    Returns:
+        str: The new access token if the refresh token is provided and valid, otherwise the existing access token.
+    """
+    try:
+        creds=json.loads(cred)
+        if "clientId" in creds and "clientSecret" in creds and "refreshToken" in creds and "redirectUri" in creds:
+            clientId = creds["clientId"]
+            clientSecret = creds["clientSecret"]
+            refreshToken = creds["refreshToken"]
+            redirect_uri = creds["redirectUri"]
+            token_endpoint = "https://app.asana.com/-/oauth_token"
+            data = {
+                "client_id": clientId,
+                "client_secret": clientSecret,
+                "grant_type": "refresh_token",
+                "refresh_token": refreshToken,
+                "redirect_uri": redirect_uri,
+            }
+            response = requests.post(token_endpoint, data=data)
+            response_json = response.json()
+            if "access_token" in response_json:
+                return response_json["access_token"]
+            else:
+                raise Exception(
+                    f"Token request failed with status code {response.status_code}: {response.text}"
+                )
+        elif "accessToken" in creds:
+            return creds["accessToken"]
+        else:
+            raise Exception("Missing Input Data")
+    except Exception as e:
+        raise Exception(e)
+
+def asana_get_many_project(json_cred, params, **kwargs):
+    """
+    Get multiple projects from Asana.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+
+        - :workspace: (str,required) - The workspace gid to filter projects on.
+        - :team: (str,optional) - The team to filter projects on.
+        - :archived: (bool,optional) - Only return projects whose archived field takes on the value of this parameter.
+
+    Returns:
+      list: A list of projects retrieved from Asana.
+
+    """
+    try:
+        if "workspace" in params:
+            accessToken = asana_refresh_token(json_cred)
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            projects_api_instance = asana.ProjectsApi(api_client)
+            opts = {}
+            for key, value in params.items():
+                if value:
+                    opts[key] = value
+            api_response = projects_api_instance.get_projects(opts)
+            projects = list(api_response)
+            return {"projects": projects}
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+def asana_get_project(json_cred, params, **kwargs):
+    """
+    Retrieve details of a specific project from Asana based on the provided project GID.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :project_gid: (str,required) - Globally unique identifier for the project.
+
+    Returns:
+      dict: Details of the requested project.
+    """
+
+    try:
+        if "project_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            project_gid = params["project_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            projects_api_instance = asana.ProjectsApi(api_client)
+            opts = {}
+            project = projects_api_instance.get_project(project_gid, opts)
+            return project
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_create_project(json_cred, params, **kwargs):
+    """
+    Create a project in Asana.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :name: (str,required) - Name of the project to be created.
+        - :workspace: (str,required) - The gid of a workspace.
+        - :team: (str,required) - The team that this project is shared with.
+        - :color: (str,optional) - Color of the project.
+        - :due_on: (date,optional) - The day on which this project is due. This takes a date with format YYYY-MM-DD.
+        - :notes: (str,optional) - Description of the project.
+
+    Returns:
+      dict: Details of the newly created project.
+
+    """
+    try:
+        if "name" in params and "workspace" in params and "team" in params:
+            accessToken = asana_refresh_token(json_cred)
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            projects_api_instance = asana.ProjectsApi(api_client)
+            body_data = {}
+            for key, value in params.items():
+                body_data[key] = value
+            body = {"data": body_data}
+            opts = {}
+            response = projects_api_instance.create_project(body, opts)
+            return response
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_update_project(json_cred, params, **kwargs):
+    """
+    Update an Asana project based on provided information.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :project_gid: (str,required) - Globally unique identifier for the project.
+        - :workspace: (str,required) - The gid of a workspace.
+        - :name: (str,optional) - Name of the project .
+        - :team: (str,optional) - The team that this project is shared with.
+        - :color: (str,optional) - Color of the project.
+        - :due_on: (date,optional) - The day on which this project is due. This takes a date with format YYYY-MM-DD.
+        - :notes: (str,optional) - Description of the project.
+        - :owner: (str,optional) - The current owner of the project.
+        
+    Returns:
+      dict: Updated project information.
+
+    """
+    try:
+        if "project_gid" in params and "workspace" in params:
+            accessToken = asana_refresh_token(json_cred)
+            project_gid = params["project_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            projects_api_instance = asana.ProjectsApi(api_client)
+            body_data = {}
+            for key, value in params.items():
+                skip_keys = ["project_gid"]
+                if key in skip_keys:
+                    continue
+                if value:
+                    body_data[key] = value
+            body = {"data": body_data}
+            opts = {}
+            response = projects_api_instance.update_project(
+                body, project_gid, opts)
+            return response
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_delete_project(json_cred, params, **kwargs):
+    """
+    Delete a project in Asana based on provided parameters.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :project_gid: (str,required) - Globally unique identifier for the project.
+
+    Returns:
+      dict: A message confirming the deletion of the project.
+
+    """
+    try:
+        if "project_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            project_gid = params["project_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            projects_api_instance = asana.ProjectsApi(api_client)
+            projects_api_instance.delete_project(project_gid)
+            return {"message": f"Deleted project with ID {project_gid}"}
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_create_project_from_template(json_cred, params, **kwargs):
+    """
+    Create a new project in Asana based on a specified template.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+
+        - :name: (str,required) - The name of the new project.
+        - :project_template_gid: (str,required) - Globally unique identifier for the project template.
+        - :public: (bool,optional) - Sets the project to public to its team.
+
+    Returns:
+      dict: Information about the newly created project.
+    """
+    try:
+        if "project_template_gid" in params and "name" in params:
+            accessToken = asana_refresh_token(json_cred)
+            project_template_gid = params["project_template_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            project_templates_api_instance = asana.ProjectTemplatesApi(
+                api_client)
+            body_data = {
+                "public": False,
+            }
+            for key, value in params.items():
+                skip_keys = ["project_template_gid"]
+                if key in skip_keys:
+                    continue
+                if value:
+                    body_data[key] = value
+            opts = {"body": {"data": body_data}}
+            api_response = project_templates_api_instance.instantiate_project(
+                project_template_gid, opts
+            )
+            return api_response
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_create_task(json_cred, params, **kwargs):
+    """
+    Create a new task in Asana
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :name: (str,required) - Name of the task to be created.
+        - :workspace: (str,required) - Gid of a workspace.
+        - :assignee: (str,optional) -   Assignee ID for the task (gid of user).
+        - :assignee_status: (str,optional) -   Assignee status for the task (Inbox, Today, Upcoming, Later).
+        - :completed: (bool,optional) - Indicates if the task is completed or not.
+        - :liked: (bool,optional) - Indicates if the task is liked or not.
+        - :due_on: (date,optional) - Due date of the task (format: YYYY-MM-DD or null).
+        - :notes: (str,optional) - Description of the task.
+        - :projects: (array , optional) - Array of project IDs where the task will be added.
+
+    Returns:
+      dict: Information about the created task.
+
+    """
+    try:
+        if "name" in params and "workspace" in params:
+            accessToken = asana_refresh_token(json_cred)
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            tasks_api_instance = asana.TasksApi(api_client)
+            body_data = {}
+            for key, value in params.items():
+                if value:
+                    body_data[key] = value
+            body = {"data": body_data}
+            opts = {}
+            api_response = tasks_api_instance.create_task(body, opts)
+            return api_response
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_get_task(json_cred, params, **kwargs):
+    """
+    Retrieve details of a specific task from Asana based on the provided task GID.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+
+    Returns:
+      dict: Details of the retrieved task.
+    """
+    try:
+        if "task_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            task_gid = params["task_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            tasks_api_instance = asana.TasksApi(api_client)
+            opts = {}
+            api_response = tasks_api_instance.get_task(task_gid, opts)
+            return api_response
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_get_many_task(json_cred, params, **kwargs):
+    """
+    Retrieve multiple tasks from Asana based on specified parameters.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :assignee: (str,optional) - The assignee to filter tasks on.*Note: If you specify `assignee`, you must also specify the `workspace` to filter on.*
+        - :project: (str,optional) - The project to filter tasks on.
+        - :section: (str,optional) - The section to filter tasks on.
+        - :workspace: (str,optional) - The workspace to filter tasks on.
+            *Note: If you specify `workspace`, you must also specify the `assignee` to filter on.*
+        - :completed_since: (datetime,optional) - Only return tasks that are either incomplete or that have been completed since this time. 
+        - :modified_since: (datetime,optional) - Only return tasks that have been modified since the given time. 
+
+    Returns:
+      list: List of tasks retrieved.
+    """
+
+    try:
+        accessToken = asana_refresh_token(json_cred)
+        configuration = asana.Configuration()
+        configuration.access_token = accessToken
+        api_client = asana.ApiClient(configuration)
+        tasks_api_instance = asana.TasksApi(api_client)
+        opts = {}
+        for key, value in params.items():
+            if value:
+                opts[key] = value
+        api_response = tasks_api_instance.get_tasks(opts)
+        tasks = list(api_response)
+        return {"tasks": tasks}
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_update_task(json_cred, params, **kwargs):
+    """
+    Update an Asana task based on provided information.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+        - :name: (str,optional) - Name of the task to be updated.
+        - :assignee: (str,optional) - Assignee ID for the task (gid of user).
+        - :assignee_status: (str,optional) - Assignee status for the task (Inbox, Today, Upcoming, Later).
+        - :completed: (bool,optional) - Indicates if the task is completed or not.
+        - :liked: (bool,optional) - Indicates if the task is liked or not.
+        - :due_on: (date,optional) : Due date of the task (format: YYYY-MM-DD or null).
+        - :notes: (str,optional) - Description of the task.
+
+    Returns:
+        dict: Updated task information.
+
+    """
+    try:
+        if "task_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            task_gid = params["task_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            tasks_api_instance = asana.TasksApi(api_client)
+            body_data = {}
+            for key, value in params.items():
+                skip_keys = ["task_gid"]
+                if key in skip_keys:
+                    continue
+                if value:
+                    body_data[key] = value
+            body = {"data": body_data}
+            opts = {}
+            api_response = tasks_api_instance.update_task(body, task_gid, opts)
+            return api_response
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_delete_task(json_cred, params, **kwargs):
+    """
+    Delete a task in Asana based on provided parameters.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        :task_gid: (str,required) - Globally unique identifier for the task.
+
+    Returns:
+      dict: A message confirming the deletion of the task.
+
+    """
+    try:
+        if "task_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            task_gid = params["task_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            tasks_api_instance = asana.TasksApi(api_client)
+            tasks_api_instance.delete_task(task_gid)
+            return {"message": f"Deleted project with ID {task_gid}"}
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_search_task(json_cred, params, **kwargs):
+    """
+    Search for tasks in Asana based on specified parameters.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :workspace_gid: (str,required) - Globally unique identifier for the workspace or organization.
+        - :text: (str,optional) - Performs full-text search on both task name and description
+        - :completed: (bool,optional) - Filter to completed tasks
+
+    Returns:
+        list: List of tasks matching the search query.
+    """
+    try:
+        if "workspace_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            workspace_gid = params["workspace_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            tasks_api_instance = asana.TasksApi(api_client)
+            opts = {"completed": False}
+            for key, value in params.items():
+                skip_keys = ["workspace_gid"]
+                if key in skip_keys:
+                    continue
+                if value:
+                    opts[key] = value
+            api_response = tasks_api_instance.search_tasks_for_workspace(
+                workspace_gid, opts
+            )
+            tasks = list(api_response)
+            return {"tasks": tasks}
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_duplicate_task(json_cred, params, **kwargs):
+    """
+    Duplicate a task in Asana.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task to be duplicated.
+        - :name: (str,required) - Name for the new duplicated task.
+        - :include: (str,optional) - A comma-separated list of fields to be duplicated to the new task . 
+
+            Available options for 'include' fields: assignee-attachments-dates-dependencies-followers-notes-parent-projects-subtasks-tags
+
+    Returns:
+        dict: Details of the duplicated task.
+    """
+    try:
+        if "task_gid" in params and "name" in params:
+            accessToken = asana_refresh_token(json_cred)
+            task_gid = params["task_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            tasks_api_instance = asana.TasksApi(api_client)
+            body_data = {}
+            for key, value in params.items():
+                if value:
+                    body_data[key] = value
+            body = {"data": body_data}
+            opts = {}
+            api_response = tasks_api_instance.duplicate_task(
+                body, task_gid, opts)
+            return api_response
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_upload_file_task(json_cred, params, **kwargs):
+    """
+    Upload a file to a task.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :parent: (str,required) - Identifier of the parent task,
+        - :url: (str,required) - The URL of the external resource being attached. 
+        - :name: (str,required) - The name of the external resource being attached.
+
+    Returns:
+        dict: Details of the uploaded file attachment.
+    """
+    try:
+        if "parent" in params and "url" in params and "name" in params:
+            accessToken = asana_refresh_token(json_cred)
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            attachments_api_instance = asana.AttachmentsApi(api_client)
+            opts = {
+                "resource_subtype": "external",
+            }
+            for key, value in params.items():
+                if value:
+                    opts[key] = value
+            api_response = attachments_api_instance.create_attachment_for_object(
+                opts)
+            return api_response
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_get_user(json_cred, params, **kwargs):
+    """
+    Retrieve details of a user from Asana
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :user_gid: (str,required) - Globally unique identifier for the user.
+
+    Returns:
+        dict: Details of the user.
+    """
+    try:
+        if "user_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            user_gid = params["user_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            users_api_instance = asana.UsersApi(api_client)
+            opts = {}
+            api_response = users_api_instance.get_user(user_gid, opts)
+            return api_response
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_get_many_user(json_cred, params, **kwargs):
+    """
+    Retrieve multiple users from Asana within a specified workspace.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :workspace_gid: (str,required) - Globally unique identifier for the workspace or organization.
+
+    Returns:
+        list: List of users within the specified workspace.
+    """
+    try:
+        if "workspace_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            workspace_gid = params["workspace_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            users_api_instance = asana.UsersApi(api_client)
+            opts = {}
+            api_response = users_api_instance.get_users_for_workspace(
+                workspace_gid, opts)
+            users = list(api_response)
+            return {"users": users}
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+def asana_create_section_project(json_cred, params, **kwargs):
+    """
+    Create a section within a project in Asana.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :project_gid: (str,required) - Globally unique identifier for the project.
+        - :name: (str,required) - Name for the new section.
+        - :insert_before: (str,optional) - An existing section within this project before which the added section should be inserted.
+        - :insert_after: (str,optional) - An existing section within this project after which the added section should be inserted. Cannot be provided together with insert_before.
+
+    Returns:
+        dict: Details of the created section.
+    """
+    try:
+        if "project_gid" in params and "name" in params:
+            accessToken = asana_refresh_token(json_cred)
+            project_gid = params["project_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            sections_api_instance = asana.SectionsApi(api_client)
+            body_data = {}
+            for key, value in params.items():
+                skip_keys = ["project_gid"]
+                if key in skip_keys:
+                    continue
+                if value:
+                    body_data[key] = value
+            opts = {
+                "body": {"data": body_data},
+            }
+            api_response = sections_api_instance.create_section_for_project(
+                project_gid, opts)
+            return api_response
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+def asana_get_section_project(json_cred, params, **kwargs):
+    """
+    Retrieve sections within a project in Asana
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+     
+        - :project_gid: (str,required) - Globally unique identifier for the project.
+
+    Returns:
+        list: List of sections within the specified project.
+    """
+    try:
+        if "project_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            project_gid = params["project_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            sections_api_instance = asana.SectionsApi(api_client)
+            opts = {}
+            api_response = sections_api_instance.get_sections_for_project(
+                project_gid, opts)
+            sections = list(api_response)
+            return {"sections": sections}
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+    
+
+def asana_move_task_to_section(json_cred, params, **kwargs):
+    """
+    Move a task to a specific section within a project in Asana.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :section_gid: (str,required) - Globally unique identifier for the section.
+        - :task: (str,required) - The task to add to this section.
+             
+    Returns:
+        dict: A message confirming the moving of the task.
+    """
+    try:
+        if "section_gid" in params and "task" in params:
+            accessToken = asana_refresh_token(json_cred)
+            section_gid = params["section_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            sections_api_instance = asana.SectionsApi(api_client)
+            body_data = {}
+            for key, value in params.items():
+                skip_keys = ["section_gid"]
+                if key in skip_keys:
+                    continue
+                if value:
+                    body_data[key] = value
+            opts = {
+                "body": {"data": body_data},
+            }
+            sections_api_instance.add_task_for_section(section_gid, opts)
+            return {"message": f"Successfully Moved the task"}
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+    
+
+def asana_add_project_for_task(json_cred, params, **kwargs):
+    """
+    Add a project to a task in Asana.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+        - :project: (str,required) - The project to add the task to.
+        - :section: (str,optional) - A section in the project to insert the task into
+        - :insert_after: (str,optional) - A task in the project to insert the task after.
+        - :insert_before: (str,optional) - A task in the project to insert the task before.
+
+    Returns:
+        dict: A message confirming the addition of the project to the task.
+    """
+    try:
+        if "task_gid" in params and "project" in params:
+            accessToken = asana_refresh_token(json_cred)
+            insert_after = params.get("insert_after")
+            insert_before = params.get("insert_before")
+            section = params.get("section")
+            provided_params = [param for param in (
+                insert_after, insert_before, section) if param is not None]
+            if len(provided_params) < 1 or len(provided_params) == 1:
+                task_gid = params["task_gid"]
+                configuration = asana.Configuration()
+                configuration.access_token = accessToken
+                api_client = asana.ApiClient(configuration)
+                tasks_api_instance = asana.TasksApi(api_client)
+                body_data = {}
+                for key, value in params.items():
+                    skip_keys = ["task_gid"]
+                    if key in skip_keys:
+                        continue
+                    if value:
+                        body_data[key] = value
+                body = {"data": body_data}
+                tasks_api_instance.add_project_for_task(body, task_gid)
+                return {"message": f"Successfully added the specified project to the task."}
+            else:
+                raise Exception(
+                    "You can specify at most one of insert_after, insert_before, or section.")
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_remove_project_for_task(json_cred, params, **kwargs):
+    """
+    Remove a project from a task in Asana.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+        - :project: (str,required) - The project to remove the task from.
+
+    Returns:
+        dict: A message confirming the removal of the project from the task.
+   
+    """
+    try:
+        if "task_gid" in params and "project" in params:
+            accessToken = asana_refresh_token(json_cred)
+            task_gid = params["task_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            tasks_api_instance = asana.TasksApi(api_client)
+            body_data = {}
+            for key, value in params.items():
+                skip_keys = ["task_gid"]
+                if key in skip_keys:
+                    continue
+                if value:
+                    body_data[key] = value
+            body = {"data": body_data}
+            tasks_api_instance.remove_project_for_task(body, task_gid)
+            return {"message": f"Successfully removed the specified project from the task."}
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_get_tasks_for_project(json_cred, params, **kwargs):
+    """
+    Retrieve tasks associated with a specific project in Asana
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :project_gid: (str,required) - Globally unique identifier for the project.
+        - :completed_since: (datetime,optional) - Only return tasks that are either incomplete or that have been completed since this time. 
+        
+    Returns:
+        list: List of tasks associated with the specified project.
+    """
+    try:
+        if "project_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            project_gid = params["project_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            tasks_api_instance = asana.TasksApi(api_client)
+            opts = {}
+            for key, value in params.items():
+                skip_keys = ["project_gid"]
+                if key in skip_keys:
+                    continue
+                if value:
+                    opts[key] = value
+            api_response = tasks_api_instance.get_tasks_for_project(
+                project_gid, opts)
+            tasks = list(api_response)
+            return {"tasks": tasks}
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_create_subtask(json_cred, params, **kwargs):
+    """
+    Create a new subtask in Asana
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+        - :name: (str,required) - Name of the task.
+        - :workspace: (str,required) - Gid of a workspace.
+        - :assignee: (str,optional) - Gid of a user.
+        - :assignee_status: (str,optional) - Assignee status for the task (Inbox, Today, Upcoming, Later).
+        - :completed: (bool,optional) - Indicates if the task is completed or not.
+        - :liked: (bool,optional) - Indicates if the task is liked or not.
+        - :due_on: (date,optional) - Due date of the task (format: YYYY-MM-DD or null).
+        - :notes: (str,optional) - Description of the task.
+
+    Returns:
+      dict: Information about the created subtask.
+
+    """
+    try:
+        if "task_gid" in params and "name" in params:
+            accessToken = asana_refresh_token(json_cred)
+            task_gid = params["task_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            tasks_api_instance = asana.TasksApi(api_client)
+            body_data = {}
+            for key, value in params.items():
+                skip_keys = ["task_gid"]
+                if key in skip_keys:
+                    continue
+                if value:
+                    body_data[key] = value
+            body = {"data": body_data}
+            opts = {}
+            api_response = tasks_api_instance.create_subtask_for_task(
+                body, task_gid, opts)
+            return api_response
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+    
+def asana_get_many_subtask(json_cred, params, **kwargs):
+    """
+    Retrieve subtasks of a task in Asana.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+
+    Returns:
+        list: List of subtasks belonging to the specified task.
+    """
+    try:
+        if "task_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            task_gid = params["task_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            tasks_api_instance = asana.TasksApi(api_client)
+            opts = {}
+            api_response = tasks_api_instance.get_subtasks_for_task(
+                task_gid, opts)
+            subtasks = list(api_response)
+            return {"subtasks": subtasks}
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+def asana_add_task_comment(json_cred, params, **kwargs):
+    """
+    Add a comment to a task in Asana.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :task_gid: (str,required) - Globally unique identifier for the task.
+        - :text: (str,optional) - The plain text of the comment to add.
+        - :html_text: (str,optional) - HTML formatted text for a comment. e.g <body>This is a comment.</body> 
+        - :is_pinned: (bool,optional) - Conditional. Whether the story should be pinned on the resource.
+
+    Returns:
+        dict: Details of the added comment.
+    """
+    try:
+        if "task_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            if "text" in params or "html_text" in params:
+                task_gid = params["task_gid"]
+                configuration = asana.Configuration()
+                configuration.access_token = accessToken
+                api_client = asana.ApiClient(configuration)
+                stories_api_instance = asana.StoriesApi(api_client)
+                body_data = {}
+                for key, value in params.items():
+                    skip_keys = ["task_gid"]
+                    if key in skip_keys:
+                        continue
+                    if value:
+                        body_data[key] = value
+                body = {"data": body_data}
+                opts = {}
+                api_response = stories_api_instance.create_story_for_task(
+                    body, task_gid, opts)
+                return api_response
+            else:
+                raise Exception(
+                    "Must specify either text or html_text of comment")
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+def asana_remove_task_comment(json_cred, params, **kwargs):
+    """
+    remove a comment to a task in Asana.
+
+    :param json cred: Credentials for authenticating with Asana API.
+    :param dict params: Dictionary containing parameters.
+    
+        - :story_gid: (str,required) - Globally unique identifier for the story.
+
+    Returns:
+       dict: A message confirming the deletion of the comment.
+    """
+    try:
+        if "story_gid" in params:
+            accessToken = asana_refresh_token(json_cred)
+            story_gid = params["story_gid"]
+            configuration = asana.Configuration()
+            configuration.access_token = accessToken
+            api_client = asana.ApiClient(configuration)
+            stories_api_instance = asana.StoriesApi(api_client)
+            stories_api_instance.delete_story(story_gid)
+            return {"message": f"Successfully deleted the specified comment."}
+        else:
+            raise Exception("Missing Input Data")
+    except ApiException as e:
+        return {"Error": str(json.loads(e.body))}
+    except Exception as err:
+        return {"Error": str(err)}
+
+
+
+operations = {
+    'Get Many Project':asana_get_many_project,
+    'Get Project':asana_get_project,
+    'Create Project':asana_create_project,
+    'Update Project':asana_update_project,
+    'Delete Project':asana_delete_project,
+    'Create Project Template':asana_create_project_from_template,
+    'Create Task':asana_create_task,
+    'Get Task':asana_get_task,
+    'Get Many Task':asana_get_many_task,
+    'Update Task':asana_update_task,
+    'Delete Task':asana_delete_task,
+    'Search Task':asana_search_task,
+    'Duplicate Task':asana_duplicate_task,
+    'Upload File':asana_upload_file_task,
+    'Get User':asana_get_user,
+    'Get Many User':asana_get_many_user,
+    'Create Section Project':asana_create_section_project,
+    'Get Section Project':asana_get_section_project,
+    'Move Task To Section':asana_move_task_to_section,
+    'Add Project For Task':asana_add_project_for_task,
+    'Remove Project For Task':asana_remove_project_for_task,
+    'Get Tasks For Project':asana_get_tasks_for_project,
+    'Create Subtask':asana_create_subtask,
+    'Get Many Subtask':asana_get_many_subtask,
+    'Add Task Comment':asana_add_task_comment,
+    'Remove Task Comment':asana_remove_task_comment
+}
