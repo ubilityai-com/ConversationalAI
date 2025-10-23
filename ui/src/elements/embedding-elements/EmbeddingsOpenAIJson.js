@@ -1,0 +1,187 @@
+
+export const EmbeddingsOpenAIJson = {
+  "nodeType": "embedding",
+  type: "EmbeddingsOpenAI",
+  label: "Embeddings OpenAI",
+  color: "#72797b",
+  description: "Use Embeddings OpenAI",
+  rightSideData: {
+    json: [
+      {
+        type: "api",
+        label: "Credentials",
+        variableName: "cred",
+        required: true,
+        credential: true,
+        credType: "OpenAI",
+        value: "",
+        list: [],
+        config: [
+          {
+            key: "method",
+            value: "get",
+          },
+          
+          {
+            key: "url",
+            dependOn: [
+              {
+                type: "static",
+                value:
+                  process.env.REACT_APP_DNS_URL + "credentials",
+              },
+            ],
+          },
+        ],
+        res: {
+          path: "data",
+          keys: {
+            option: {
+              fields: ["name"],
+            },
+            value: {
+              fields: ["name"],
+            },
+            type: { fields: ["type"] },
+          },
+        },
+        apiDependsOn: [],
+        conditionOnFirstTime: [],
+        conditionOnRefresh: [],
+      },
+      {
+        type: "api",
+        label: "Model",
+        variableName: "model",
+        value: "",
+        required: true,
+        list: [],
+        config: [
+          {
+            key: "method",
+            value: "post",
+          },
+          {
+            key: "url",
+            dependOn: [
+              {
+                type: "static",
+                value:
+                  process.env.REACT_APP_DNS_URL +
+                  "openai/listModels",
+              },
+            ],
+          },
+          
+          {
+            key: "data",
+            obj: [
+              {
+                key: "credential_name",
+                dependOn: "cred",
+                isAutomation: true,
+              },
+              {
+                key: "modelType",
+                value: "embedding"
+              }
+            ],
+          },
+        ],
+        res: {
+          path: "data.Models",
+          type: [],
+          key: true,
+        },
+        apiDependsOn: [
+          {
+            type: "dropdown",
+            name: "cred",
+            isAutomation: true,
+          },
+        ],
+        conditionOnFirstTime: [
+          {
+            type: "dropdown",
+            name: "cred",
+            isAutomation: true,
+          },
+        ],
+        conditionOnRefresh: [
+          {
+            type: "dropdown",
+            name: "cred",
+            isAutomation: true,
+          },
+        ],
+      },
+      {
+        title: "Additional Fields",
+        type: "accordion",
+        accTitle: "Base Url",
+        variableName: "baseUrl",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              label: "Base Url",
+              variableName: "baseUrl",
+              value: "https://api.openai.com/v1",
+              placeholder: "Base Url",
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Batch Size",
+        variableName: "batchSize",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              label: "Batch Size",
+              variableName: "batchSize",
+              numberField: true,
+              value: 512,
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Strip New Lines",
+        variableName: "stripNewLines",
+        fieldsArray: [
+          [
+            {
+              type: "checkbox",
+              value: false,
+              variableName: "stripNewLines",
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Timeout",
+        variableName: "timeout",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              label: "Timeout",
+              variableName: "timeout",
+              numberField: true,
+              value: -1,
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+
+    ],
+  },
+};

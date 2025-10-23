@@ -1,0 +1,153 @@
+export const SerpApiToolJson = {
+  category: "tool",
+  type: "SerpApiTool",
+  label: "SerpApi",
+  color: "#72797b",
+  automationConfig: "automated",
+  description:
+    "Useful to get real user search results from all major search engines",
+  rightSideData: {
+    json: [
+      {
+        type: "api",
+        label: "Credentials",
+        variableName: "cred",
+        required: true,
+        credential: true,
+        credType: "SerpApi",
+        value: "",
+        list: [],
+        config: [
+          {
+            key: "method",
+            value: "get",
+          },
+          
+          {
+            key: "url",
+            dependOn: [
+              {
+                type: "static",
+                value: process.env.REACT_APP_DNS_URL + "credentials",
+              },
+            ],
+          },
+        ],
+        res: {
+          path: "data",
+          keys: {
+            option: {
+              fields: ["name"],
+            },
+            value: {
+              fields: ["name"],
+            },
+            type: { fields: ["type"] },
+          },
+        },
+        apiDependsOn: [],
+        conditionOnFirstTime: [],
+        conditionOnRefresh: [],
+      },
+      {
+        type: "textfield",
+        label: "Description",
+        variableName: "description",
+        value: "",
+        multiline: true,
+        minRows: 3,
+        placeholder:
+          "e.g useful to get real user search results from all major search engines",
+        hasDynamicVariable: true,
+      },
+      {
+        title: "Additional Fields",
+        type: "accordion",
+        accTitle: "Country",
+        variableName: "country",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              label: "Country",
+              variableName: "country",
+              value: "us",
+              placeholder: "us",
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Device",
+        variableName: "device",
+        fieldsArray: [
+          [
+            {
+              type: "dropdown",
+              label: "Device",
+              variableName: "device",
+              value: "Desktop",
+              hasDynamicVariable: true,
+              list: [
+                { option: "Desktop", value: "Desktop" },
+                { option: "Mobile", value: "Mobile" },
+                { option: "Tablet", value: "Tablet" },
+              ],
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Explicit Array",
+        variableName: "explicitArray",
+        fieldsArray: [
+          [
+            {
+              type: "checkbox",
+              variableName: "explicitArray",
+              value: false,
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Google Domain",
+        variableName: "googleDomain",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              label: "Google Domain",
+              variableName: "googleDomain",
+              value: "google.com",
+              placeholder: "google.com",
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Language",
+        variableName: "language",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              label: "Language",
+              variableName: "language",
+              value: "en",
+              placeholder: "en",
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+    ],
+  },
+};

@@ -1,0 +1,132 @@
+export const HuggingFaceChatModelJson = {
+  category: "model",
+  type: "HuggingFaceChatModel",
+  label: "Hugging Face Chat Model",
+  color: "#72797b",
+  description: "Language Model HuggingFaceInference",
+  rightSideData: {
+    json: [
+      {
+        type: "api",
+        label: "Credentials",
+        variableName: "cred",
+        required: true,
+        credential: true,
+        credType: "HuggingFace",
+        value: "",
+        list: [],
+        config: [
+          {
+            key: "method",
+            value: "get",
+          },
+          
+          {
+            key: "url",
+            dependOn: [
+              {
+                type: "static",
+                value:
+                  process.env.REACT_APP_DNS_URL + "credentials",
+              },
+            ],
+          },
+        ],
+        res: {
+          path: "data",
+          keys: {
+            option: {
+              fields: ["name"],
+            },
+            value: {
+              fields: ["name"],
+            },
+            type: { fields: ["type"] },
+          },
+        },
+        apiDependsOn: [],
+        conditionOnFirstTime: [],
+        conditionOnRefresh: [],
+      },
+      {
+        type: "textfield",
+        label: "Model",
+        variableName: "model",
+        value: "",
+        placeholder: "Model",
+        require: true,
+        hasDynamicVariable: true,
+        helperSpan: "The model is identified by the repo_id on Hugging Face."
+      },
+
+      {
+        title: "Additional Fields",
+        type: "accordion",
+        accTitle: "Max Tokens",
+        variableName: "maxNewTokens",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              variableName: "maxNewTokens",
+              numberField: true,
+              value: 4096,
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Sampling Temperature",
+        variableName: "samplingTemperature",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              variableName: "samplingTemperature",
+              numberField: true,
+              value: 0.8,
+              placeholder: "Sampling Temperature",
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Top K",
+        variableName: "topK",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              variableName: "topK",
+              value: 40,
+              numberField: true,
+              placeholder: "Top K",
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+      {
+        type: "accordion",
+        accTitle: "Top P",
+        variableName: "topP",
+        fieldsArray: [
+          [
+            {
+              type: "textfield",
+              variableName: "topP",
+              numberField: true,
+              value: 0.9,
+              placeholder: "Top P",
+              hasDynamicVariable: true,
+            },
+          ],
+        ],
+      },
+    ],
+  },
+};

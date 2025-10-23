@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Successful - UAE PASS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 28rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo-container {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .logo {
+            max-width: 280px;
+            width: auto;
+            height: auto;
+        }
+
+        .success-section {
+            margin-bottom: 2rem;
+        }
+
+        .success-icon {
+            width: 3rem;
+            height: 3rem;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .checkmark {
+            width: 1.5rem;
+            height: 1.5rem;
+            color: white;
+            stroke-width: 3;
+        }
+
+        .success-text {
+            color: #374151;
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+
+        .button-section {
+            margin-bottom: 1rem;
+        }
+
+        .whatsapp-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            border-radius: 9999px;
+            padding: 0;
+        }
+
+        .whatsapp-button:hover {
+            transform: scale(1.05);
+        }
+
+        .whatsapp-button:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+        }
+
+        .button-image {
+            max-width: 180px;
+            width: auto;
+            height: auto;
+        }
+
+        .instruction-text {
+            color: #6b7280;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            max-width: 20rem;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 640px) {
+            .logo {
+                max-width: 240px;
+            }
+            
+            .button-image {
+                max-width: 160px;
+            }
+            
+            .instruction-text {
+                font-size: 0.8125rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- UAE PASS Logo -->
+        <div class="logo-container">
+            <img src="uaepass-logo.png" alt="UAE PASS Logo" class="logo">
+        </div>
+
+        <!-- Success Message -->
+        <div class="success-section">
+            <div class="success-icon">
+                <svg class="checkmark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <p class="success-text">You have been verified!</p>
+        </div>
+
+        <!-- WhatsApp Button -->
+        <div class="button-section">
+            <button class="whatsapp-button" onclick="handleButtonClick()">
+                <img src="button.png" alt="WhatsApp and Dubai Digital Agent Button" class="button-image">
+            </button>
+        </div>
+
+        <!-- Instruction Text -->
+        <p class="instruction-text">
+            Tap on the icon above to go back to your Digital Dubai AI Agent.
+        </p>
+    </div>
+
+    <script>
+        function handleButtonClick() {
+            // Add functionality here - could redirect to WhatsApp or another service
+            console.log('Button clicked - redirect to Digital Dubai AI Agent');
+            window.open('https://wa.me/+15556440789', '_blank');
+        }
+    </script>
+</body>
+</html>

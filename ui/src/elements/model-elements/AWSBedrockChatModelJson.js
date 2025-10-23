@@ -1,0 +1,95 @@
+export const AWSBedrockChatModelJson = {
+    "category": "model",
+    type: "AWSBedrockChatModel",
+    label: "AWS Bedrock Chat Model",
+    color: "#72797b",
+    description: "Language Model AWS Bedrock",
+    rightSideData: {
+        json: [
+            {
+                type: "api",
+                label: "Credentials",
+                variableName: "cred",
+                required: true,
+                credential: true,
+                credType: "AWSBedrock",
+                value: "",
+                list: [],
+                config: [
+                    {
+                        key: "method",
+                        value: "get",
+                    },
+                    
+                    {
+                        key: "url",
+                        dependOn: [
+                            {
+                                type: "static",
+                                value:
+                                    process.env.REACT_APP_DNS_URL + "credentials",
+                            },
+                        ],
+                    },
+                ],
+                res: {
+                    path: "data",
+                    keys: {
+                        option: {
+                            fields: ["name"],
+                        },
+                        value: {
+                            fields: ["name"],
+                        },
+                        type: { fields: ["type"] },
+                    },
+                },
+                apiDependsOn: [],
+                conditionOnFirstTime: [],
+                conditionOnRefresh: [],
+            },
+            {
+                type: "textfield",
+                label: "Model",
+                variableName: "model",
+                required: true,
+                value: "",
+                placeholder: "Model",
+                hasDynamicVariable: true,
+            },
+            {
+                title: "Additional Fields",
+                type: "accordion",
+                accTitle: "Temperature",
+                variableName: "samplingTemperature",
+                fieldsArray: [
+                    [
+                        {
+                            type: "textfield",
+                            variableName: "samplingTemperature",
+                            numberField: true,
+                            value: "0.8",
+                            hasDynamicVariable: true,
+                        },
+                    ],
+                ],
+            },
+            {
+                type: "accordion",
+                accTitle: "Max Tokens",
+                variableName: "maximumNumberOfTokens",
+                fieldsArray: [
+                    [
+                        {
+                            type: "textfield",
+                            variableName: "maximumNumberOfTokens",
+                            numberField: true,
+                            value: "4096",
+                            hasDynamicVariable: true,
+                        },
+                    ],
+                ],
+            },
+        ],
+    },
+};
