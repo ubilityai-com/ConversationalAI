@@ -291,8 +291,10 @@ export const automateOAuth2 = async ({
 export const StartOAuth2Flow = async (): Promise<void> => {
     const credType = Cookies.get("type")
     console.log({ credType })
-
-    if (credType && OAuth2ServiceTypes.hasOwnProperty(credType)) {
+    if (credType && credType.startsWith("Google")) {
+        OAuth2ServiceTypes["Google"]();
+    }
+    else if (credType && OAuth2ServiceTypes.hasOwnProperty(credType)) {
         await OAuth2ServiceTypes[credType as keyof typeof OAuth2ServiceTypes]()
     } else {
         console.log("Error: cred type does not exist")
