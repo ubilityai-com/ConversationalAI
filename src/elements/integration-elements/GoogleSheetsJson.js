@@ -16,7 +16,7 @@ export const GoogleSheetsJson = {
         "variableName": "cred",
         "required": true,
         "credential": true,
-        "credType": "Google",
+        "credType": "GoogleSheets",
         "value": "",
         "list": [],
         "config": [

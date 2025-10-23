@@ -16,7 +16,7 @@ export const GmailJson = {
         variableName: "cred",
         required: true,
         credential: true,
-        credType: "Google",
+        credType: "GoogleGmail",
         value: "",
         list: [],
         config: [

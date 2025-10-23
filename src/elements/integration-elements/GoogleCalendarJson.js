@@ -16,7 +16,7 @@ export const GoogleCalendarJson = {
         variableName: "cred",
         required: true,
         credential: true,
-        credType: "Google",
+        credType: "GoogleCalendar",
         value: "",
         list: [],
         config: [
