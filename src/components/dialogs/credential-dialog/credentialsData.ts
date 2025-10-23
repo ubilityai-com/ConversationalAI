@@ -1,4 +1,5 @@
 import { CopyField, CredentialField, CredentialInfo, CredentialOption } from "../../../types/credentials-types";
+import { buildGoogleCredentialTemplate, googleServicesData } from "./GoogleCredData";
 /*
  * Create form to request access token from Google's OAuth 2.0 server.
  */
@@ -19,30 +20,40 @@ const websiteUrl: CopyField = {
     label: "Website Url",
     value: window.location.href ?? "",
 };
+
+const commonRedirects = [oAuth2RedirectUris];
+const googleRedirects = [oAuth2RedirectUris, javascriptOrigins];
+const xRedirects = [oAuth2RedirectUris, websiteUrl];
+
+const googleServices = Object.keys(googleServicesData);
+const simpleRedirectServices = [
+    "ZohoCRM",
+    "SalesForce",
+    "PipeDrive",
+    "Zoom",
+    "HubSpot",
+    "Dropbox",
+    "Microsoft",
+    "Xero",
+    "QuickBooks",
+    "Jira",
+    "Facebook",
+    "Instagram",
+    "LinkedIn",
+    "ServiceNow",
+    "Reddit",
+    "Zendesk",
+    "ClickUp",
+    "MailChimp",
+    "Snowflake",
+    "Slack",
+    "Asana",
+] as const;
+
 const credsThatNeedRedirects: Record<string, CopyField[]> = {
-    Google: [oAuth2RedirectUris, javascriptOrigins],
-    ZohoCRM: [oAuth2RedirectUris],
-    SalesForce: [oAuth2RedirectUris],
-    PipeDrive: [oAuth2RedirectUris],
-    Zoom: [oAuth2RedirectUris],
-    HubSpot: [oAuth2RedirectUris],
-    Dropbox: [oAuth2RedirectUris],
-    Microsoft: [oAuth2RedirectUris],
-    Xero: [oAuth2RedirectUris],
-    QuickBooks: [oAuth2RedirectUris],
-    Jira: [oAuth2RedirectUris],
-    Facebook: [oAuth2RedirectUris],
-    Instagram: [oAuth2RedirectUris],
-    LinkedIn: [oAuth2RedirectUris],
-    X: [oAuth2RedirectUris, websiteUrl],
-    ServiceNow: [oAuth2RedirectUris],
-    Reddit: [oAuth2RedirectUris],
-    Zendesk: [oAuth2RedirectUris],
-    ClickUp: [oAuth2RedirectUris],
-    MailChimp: [oAuth2RedirectUris],
-    Snowflake: [oAuth2RedirectUris],
-    Slack: [oAuth2RedirectUris],
-    Asana: [oAuth2RedirectUris],
+    ...Object.fromEntries(googleServices.map(name => [name, googleRedirects])),
+    X: xRedirects,
+    ...Object.fromEntries(simpleRedirectServices.map(name => [name, commonRedirects])),
 };
 
 const serviceFields: CredentialInfo[] = [
@@ -595,19 +606,7 @@ const serviceFields: CredentialInfo[] = [
             },
         ],
     },
-    // {
-    //   type: "DataMatrix",
-    //   service: "DataMatrix",
-    //   Service_name: "",
-    //   cred: [
-    //     {
-    //       label: "API key",
-    //       Credential_name: "apiKey",
-    //       Credential_value: "",
-    //       hashed: true,
-    //     },
-    //   ]
-    // },
+
     {
         type: "Discord",
         service: "Discord",
@@ -802,47 +801,6 @@ const serviceFields: CredentialInfo[] = [
                 Credential_value: "",
                 hashed: true,
             },
-            // {
-            //   label: "Type",
-            //   Credential_name: "type",
-            //   Credential_value: "Access Token",
-            //   radio: true,
-            //   credTypeConnection: true,
-            //   list: [
-            //     {
-            //       label: "Access Token",
-            //       value: "Access Token",
-            //     },
-            //     {
-            //       label: "OAuth Application",
-            //       value: "OAuth Application",
-            //     },
-            //   ],
-            //   options: {
-            //     "Access Token": [
-            //       {
-            //         label: "Access Token",
-            //         Credential_name: "accessToken",
-            //         Credential_value: "",
-            //         hashed: true,
-            //       },
-            //     ],
-            //     "OAuth Application": [
-            //       {
-            //         label: "Client ID",
-            //         Credential_name: "clientID",
-            //         Credential_value: "",
-            //         hashed: true,
-            //       },
-            //       {
-            //         label: "Client Secret",
-            //         Credential_name: "clientSecret",
-            //         Credential_value: "",
-            //         hashed: true,
-            //       },
-            //     ],
-            //   },
-            // },
         ],
     },
     {
@@ -871,46 +829,9 @@ const serviceFields: CredentialInfo[] = [
             },
         ],
     },
-    {
-        type: "Google",
-        service: "Google",
-        Service_name: "",
-        defaultRedirectUri: true,
-        cred: [
-            {
-                label: "Client ID",
-                Credential_name: "clientID",
-                Credential_value: "",
-                hashed: true,
-            },
-            {
-                label: "Client Secret",
-                Credential_name: "clientSecret",
-                Credential_value: "",
-                hashed: true,
-            },
-            {
-                label: "Developer Token",
-                Credential_name: "developerToken",
-                Credential_value: "",
-                optional: true,
-                hashed: true,
-            },
-            {
-                label: "Private Key",
-                Credential_name: "privateKey",
-                Credential_value: "",
-                optional: true,
-                hashed: true,
-            },
-            {
-                label: "Service Account Email",
-                Credential_name: "clientEmail",
-                Credential_value: "",
-                optional: true,
-            },
-        ],
-    },
+    ...Object.keys(googleServicesData).map(serviceType => (
+        buildGoogleCredentialTemplate(serviceType)
+    )),
     {
         type: "GoogleSearch",
         service: "GoogleSearch",
@@ -1817,76 +1738,6 @@ const serviceFields: CredentialInfo[] = [
                     ],
                 },
             },
-            // {
-            //     label: "SSH Tunnel",
-            //     Credential_name: "sshEnabled",
-            //     Credential_value: false,
-            //     switch: true,
-            //     typeOfValue: "string",
-            //     options: {
-            //         true: [
-            //             {
-            //                 label: "SSH Authenticate with",
-            //                 Credential_name: "sshAuthenticateWith",
-            //                 Credential_value: "Private Key",
-            //                 dropdown: true,
-            //                 list: [
-            //                     {
-            //                         label: "Private Key",
-            //                         value: "Private Key",
-            //                     },
-            //                     {
-            //                         label: "Password",
-            //                         value: "Password",
-            //                     },
-            //                 ],
-            //                 options: {
-            //                     "Private Key": [
-            //                         {
-            //                             label: "Private Key",
-            //                             Credential_name: "sshPrivateKey",
-            //                             Credential_value: "",
-            //                             hashed: true,
-            //                         },
-            //                         {
-            //                             label: "Passphrase",
-            //                             Credential_name: "sshPassphrase",
-            //                             Credential_value: "",
-            //                         },
-            //                     ],
-            //                     Password: [
-            //                         {
-            //                             label: "SSH Password",
-            //                             Credential_name: "sshPassword",
-            //                             Credential_value: "",
-            //                             hashed: true,
-            //                         },
-            //                     ],
-            //                 },
-            //             },
-            //             {
-            //                 label: "SSH Host",
-            //                 Credential_name: "sshHost",
-            //                 Credential_value: "",
-            //             },
-            //             {
-            //                 label: "SSH Port",
-            //                 Credential_name: "sshPort",
-            //                 Credential_value: "",
-            //             },
-            //             {
-            //                 label: "SSH MySQL Port",
-            //                 Credential_name: "sshMysqlPort",
-            //                 Credential_value: "",
-            //             },
-            //             {
-            //                 label: "SSH User",
-            //                 Credential_name: "sshUser",
-            //                 Credential_value: "",
-            //             },
-            //         ],
-            //     },
-            // },
         ],
     },
     {

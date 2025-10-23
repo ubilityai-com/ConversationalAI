@@ -1,31 +1,18 @@
 import Cookies from "js-cookie"
 import { generateRandomString } from "../../../lib/utils/utils"
 import { automateOAuthSignIn } from "./oauth-signin-automation"
+import { googleServicesData } from "./GoogleCredData"
 
 export const OAuthSignInServices = {
-    Google: (): void =>
+    GoogleOauthSignIn: (scopes: string[]): void =>
         automateOAuthSignIn({
             authEndpoint: "https://accounts.google.com/o/oauth2/auth",
-            scopes: [
-                "https://mail.google.com/",
-                "https://www.googleapis.com/auth/spreadsheets",
-                "https://www.googleapis.com/auth/documents",
-                "https://www.googleapis.com/auth/drive",
-                "https://www.googleapis.com/auth/calendar",
-                "https://www.googleapis.com/auth/contacts",
-                "https://www.googleapis.com/auth/adwords",
-                "https://www.googleapis.com/auth/youtube",
-                "https://www.googleapis.com/auth/pubsub",
-                "https://www.googleapis.com/auth/books",
-                "https://www.googleapis.com/auth/tasks",
-                "https://www.googleapis.com/auth/presentations",
-            ],
+            scopes,
             additionalParams: {
                 access_type: "offline",
                 prompt: "consent",
             },
         }),
-
     SalesForce: (): void =>
         automateOAuthSignIn({
             authEndpoint: `https://${Cookies.get("domainName")}.my.salesforce.com/services/oauth2/authorize`,
@@ -373,8 +360,13 @@ export const OAuthSignInServices = {
             },
         }),
 }
+type GoogleServiceKey = keyof typeof googleServicesData;
+const googleProviders = Object.keys(googleServicesData) as GoogleServiceKey[];
 export const credsThatHaveConsentScreenList = [
-    { name: "Google", fn: OAuthSignInServices.Google },
+    ...googleProviders.map(service => ({
+        name: service,
+        fn: () => OAuthSignInServices.GoogleOauthSignIn(googleServicesData[service].scopes),
+    })),
     { name: "SalesForce", fn: OAuthSignInServices.SalesForce },
     { name: "ZohoCRM", fn: OAuthSignInServices.ZohoCRM },
     { name: "Zoom", fn: OAuthSignInServices.Zoom },

@@ -46,7 +46,7 @@ export function CreateCredentialDialog({
     credentialsList = [],
 }: CredentialModalProps) {
     const defaultCred: CredentialInfo = serviceFields.find((cred) => cred.service === credType) || serviceFields[0]
-    const [searchText, setSearchText] = useState("Google")
+    const [searchText, setSearchText] = useState("GoogleGmail")
     const [autoCompleteList, setAutoCompleteList] = useState<AutoCompleteItem[]>(credsWithImagesList(serviceFields))
     const [credInfo, setCredInfo] = useState<CredentialInfo>(defaultCred)
     const [error, setError] = useState<string | boolean>("")
